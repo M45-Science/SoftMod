@@ -1,4 +1,4 @@
---v036-12-01-2019-0657pm
+--v037-1-2-2020
 local util = require("util")
 local silo_script = require("silo-script")
 
@@ -346,7 +346,7 @@ function get_permgroup()
 	end
         
       else
-        if ( global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > ( 15 * 60 * 60 ) ) then
+        if ( global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > ( 30 * 60 * 60 ) ) then
           if ( player.permission_group ~= nil and player.permission_group.name == "Default" ) then
             if ( global.trustedgroup.add_player( player ) == true ) then
               player.print ( "(SERVER) You have now been playing long enough, that the new-user restrictions on your character have been lifted... Have fun, and be nice!" )
@@ -360,13 +360,22 @@ function get_permgroup()
   end
 end
 
-script.on_event(defines.events.on_player_placed_equipment, function(event)
+script.on_event(defines.events.on_built_entity, function(event)
 	local player = game.players[event.player_index]
+	local created_entity = event.created_entity
+	local surface = created_entity.surface
+
 	if ( global.actual_playtime and global.actual_playtime[player.index] ) then
 		global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
 	else
 		global.actual_playtime[player.index] = 0.0
 	end
+
+	if created_entity.name == "programmable-speaker" then
+		created_entity.destroy()
+		player.print("Programmable speakers are not allowed.")
+	end
+	
 end)
 
 --Console chat can activate this
@@ -437,6 +446,8 @@ if (game.tick - global.last_s_tick >= 600 ) then
 			global.actual_playtime[player.index] = 0.0
 		end
 	end
+
+	//Remove old corpse tags
 	if ( global.corpselist ) then
 		for _, corpse in pairs(global.corpselist) do
 			if ( corpse.tick and ( corpse.tick + (15 * 60 * 60) ) < game.tick ) then
@@ -446,6 +457,7 @@ if (game.tick - global.last_s_tick >= 600 ) then
 					--message_debug("Corpse map tag was no longer there!")
 				end
 				toremove = corpse
+				break
 			end
 		end
 	end
@@ -453,8 +465,10 @@ if (game.tick - global.last_s_tick >= 600 ) then
 		toremove.tag = nil
 		toremove.tick = nil
 		toremove = nil
-		--message_debug("Tag killed.")
+		--message_debug("Corpse tag removed")
 	end
+
+
 	
 	if ( global.servertag and not global.servertag.valid ) then
 			global.servertag = nil
@@ -468,7 +482,7 @@ if (game.tick - global.last_s_tick >= 600 ) then
 		local chartTag = {position={0,0}, icon={type="item",name="programmable-speaker"}, text=label}
 		global.servertag = game.forces['player'].add_chart_tag ( game.surfaces["nauvis"], chartTag )
 	end
-	
+
 	get_permgroup()
 	global.last_s_tick = game.tick
 	
@@ -489,4 +503,16 @@ function message_debug(message)
   end
 
 end
+
+--global messages--
+function message_all(message)
+
+	for _, player in pairs(game.connected_players) do
+
+		player.print( message)
+		return
+	  
+	end
+  
+  end
 
