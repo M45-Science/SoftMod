@@ -90,8 +90,16 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 	--player.print ( "Disabled tech: landfill" )
 	--player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
 	--player.print ( "Disabled tech: None, CHEATS ON" )
-	player.print ( "Disabled tech: none" )
+	--player.print ( "Disabled tech: none" )
 	--player.cheat_mode=true
+	--player.surface.always_day=true
+	--if ( player.character )  then
+		--temp = player.character
+		--player.character=nil
+		--temp.destroy()
+	--end
+
+	
 end)
 
 script.on_event(defines.events.on_player_respawned, function(event)
