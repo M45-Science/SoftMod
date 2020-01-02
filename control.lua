@@ -447,7 +447,7 @@ if (game.tick - global.last_s_tick >= 600 ) then
 		end
 	end
 
-	//Remove old corpse tags
+	--Remove old corpse tags
 	if ( global.corpselist ) then
 		for _, corpse in pairs(global.corpselist) do
 			if ( corpse.tick and ( corpse.tick + (15 * 60 * 60) ) < game.tick ) then
