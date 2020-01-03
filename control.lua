@@ -68,9 +68,8 @@ script.on_event(defines.events.on_player_created, function(event)
 		else
 		game.show_message_dialog{text = {"msg-intro"}}
 	end
-  end
 
-  silo_script.on_event(event)
+	silo_script.on_event(event)
 	player.force.friendly_fire = false --friendly fire
 	
 	if ( not global.actual_playtime ) then
@@ -85,6 +84,7 @@ script.on_event(defines.events.on_player_created, function(event)
 	--game.forces["player"].technologies["railway"].enabled = false
 	
 end)
+
 script.on_event(defines.events.on_player_joined_game, function(event)
 	local player = game.players[event.player_index]
 	--player.print ( "Disabled tech: landfill" )
