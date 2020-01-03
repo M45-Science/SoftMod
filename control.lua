@@ -1,4 +1,4 @@
---v037-1-3-2020c
+--v037-1-3-2020b
 local util = require("util")
 local silo_script = require("silo-script")
 
@@ -63,14 +63,14 @@ script.on_event(defines.events.on_player_created, function(event)
 	player.force.chart(player.surface, {{player.position.x - r, player.position.y - r}, {player.position.x + r, player.position.y + r}})
 
 	if not global.skip_intro then
-		if game.is_multiplayer() then
-			player.print({"msg-intro"})
-		else
-			game.show_message_dialog{text = {"msg-intro"}}
-		end
+	if game.is_multiplayer() then
+		player.print({"msg-intro"})
+	else
+		game.show_message_dialog{text = {"msg-intro"}}
 	end
+  end
 
-	silo_script.on_event(event)
+  silo_script.on_event(event)
 	player.force.friendly_fire = false --friendly fire
 	
 	if ( not global.actual_playtime ) then
@@ -85,23 +85,19 @@ script.on_event(defines.events.on_player_created, function(event)
 	--game.forces["player"].technologies["railway"].enabled = false
 	
 end)
-
 script.on_event(defines.events.on_player_joined_game, function(event)
 	local player = game.players[event.player_index]
 	--player.print ( "Disabled tech: landfill" )
 	--player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
+	--player.print ( "Disabled tech: None, CHEATS ON" )
 	--player.print ( "Disabled tech: none" )
-
-	--Comment out for sandbox
-	return
-	player.print ( "Disabled tech: None, CHEATS ON" )
-	player.cheat_mode=true
-	player.surface.always_day=true
-	if ( player.character )  then
-		temp = player.character
-		player.character=nil
-		temp.destroy()
-	end
+	--player.cheat_mode=true
+	--player.surface.always_day=true
+	--if ( player.character )  then
+		--temp = player.character
+		--player.character=nil
+		--temp.destroy()
+	--end
 
 	
 end)
@@ -178,7 +174,7 @@ script.on_load(function()
 	        
 		for _, player in pairs(game.connected_players) do
       
-			if ( player and player.valid and player.connected ) then
+			if ( player and player.valid and player.connected and player.character and player.character.valid ) then
 				numpeople = (numpeople + 1)
 				admintag = " "
 		
@@ -245,7 +241,7 @@ commands.add_command( "ctag", "clear speaker map tags", function(param)
 	end
     local player = game.players[param.player_index]
     
-    if ( player and player.valid and player.connected) then
+    if ( player and player.valid and player.connected and player.character and player.character.valid ) then
     
 		if ( player.admin == false ) then
 			player.print ( "No." )
@@ -409,7 +405,7 @@ function get_permgroup()
     global.admingroup = game.permissions.get_group("Admin")
 
     for _, player in pairs(game.connected_players) do
-    if ( player and player.valid and player.connected ) then
+    if ( player and player.valid and player.connected and player.character and player.character.valid ) then
     
       if (player.admin) then
         if (player.permission_group ~= nil ) then
@@ -421,15 +417,15 @@ function get_permgroup()
         end
 		
         for _, player in pairs(game.connected_players) do
-			for _, regular in pairs(regulars) do
-			  if ( regular == player.name ) then
-				if (player.permission_group.name == "Default" ) then
-					global.trustedgroup.add_player(player)
-					message_debug ( player.name .. " moved to regulars..." )
-					player.print ( "Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!" )
-				end
-	  		end
-		end
+	for _, regular in pairs(regulars) do
+	  if ( regular == player.name ) then
+			if (player.permission_group.name == "Default" ) then
+				global.trustedgroup.add_player(player)
+				message_debug ( player.name .. " moved to regulars..." )
+				player.print ( "Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!" )
+			end
+	  end
+	end
 	end
         
       else
@@ -662,4 +658,3 @@ function message_all(message)
 	print("[MSG] " .. message)
   
   end
-
