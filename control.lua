@@ -251,6 +251,26 @@ end)
      	player.print ( "Error..." )
    end
 end)
+
+commands.add_command( "tp", "teleport to x,y", function(param)
+    local player = game.players[param.player_index]
+    
+    if ( player and player.valid and player.connected and player.character and player.character.valid ) then
+    
+		if ( player.admin == false ) then
+			player.print ( "No." )
+			return
+		end
+      
+		if param.parameter then
+				player.teleport ( param.parameter )
+				player.print ( "Okay." )
+				return
+			end
+		end
+     	player.print ( "Error..." )
+   end
+end)
   
 commands.add_command( "tfrom", "teleport player to me", function(param)
 	local player = game.players[param.player_index]
@@ -379,11 +399,32 @@ script.on_event(defines.events.on_built_entity, function(event)
 		global.actual_playtime[player.index] = 0.0
 	end
 
-	if created_entity.name == "programmable-speaker" then
-		created_entity.destroy()
-		player.print("Programmable speakers are not allowed.")
+	if player and created_entity and surface then
+		if created_entity.name == "programmable-speaker" then
+			message = (player.name .. " placed a programmable speaker at " .. created_entity.position )
+			message_all(message)
+
+			if ( not global.speakerlist ) then
+				global.speakerlist = { pin = {}, speaker = {} }
+			end
+
+			local chartTag = {position=created_entity.position, icon={type="item",name="programmable-speaker"}, text=""}
+			qtag = player.force.add_chart_tag ( player.surface, chartTag )
+		
+			table.insert(global.speakerlist, { pin = qtag, speaker = created_entity, })
+		end
 	end
 	
+end)
+
+script.on_event(on_character_corpse_expired, fuction(event)
+
+	local corpselost = event.corpse
+	if corpselost then
+		if corpselost.name
+			message_all ( corpselost.name .. "'s corpse decomposed, and the items within were lost...")
+		end
+	end
 end)
 
 --Console chat can activate this
@@ -401,12 +442,20 @@ script.on_event(defines.events.on_console_chat, function(event)
 	end
 end)
 
-script.on_event(defines.events.on_player_mined_entity, function(event)
+script.on_event(defines.events.on_pre_player_mined_item, function(event)
 	local player = game.players[event.player_index]
+	local mined_entity = event.entity
+
 	if ( global.actual_playtime and global.actual_playtime[player.index] ) then
 		global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
 	else
 		global.actual_playtime[player.index] = 0.0
+	end
+
+	if player and mined_entity then
+		if mined_entity.name == "programmable-speaker" then
+
+		end
 	end
 end)
 
@@ -442,18 +491,7 @@ if ( not global.last_s_tick ) then
 	global.last_s_tick = 0
 end
 
-if ( not global.actual_playtime ) then
-	global.actual_playtime = {}
-	global.actual_playtime[0] = 0
-end
-
 if (game.tick - global.last_s_tick >= 600 ) then
-	
-	for _, player in pairs(game.players) do
-		if ( global.actual_playtime[player.index] == nil ) then
-			global.actual_playtime[player.index] = 0.0
-		end
-	end
 
 	--Remove old corpse tags
 	if ( global.corpselist ) then
