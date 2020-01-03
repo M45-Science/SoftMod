@@ -62,14 +62,6 @@ script.on_event(defines.events.on_player_created, function(event)
 	local r = global.chart_distance or 200
 	player.force.chart(player.surface, {{player.position.x - r, player.position.y - r}, {player.position.x + r, player.position.y + r}})
 
-	if not global.skip_intro then
-		if game.is_multiplayer() then
-			player.print({"msg-intro"})
-		else
-			game.show_message_dialog{text = {"msg-intro"}}
-		end
-	end
-
 	silo_script.on_event(event)
 	player.force.friendly_fire = false --friendly fire
 	
