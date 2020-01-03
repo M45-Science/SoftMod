@@ -234,6 +234,37 @@ commands.add_command( "gspeed", "change game speed ( with auto walk speed adjust
     
 end)
   
+
+commands.add_command( "ctag", "clear speaker map tags", function(param)
+	if not param then
+		return
+	end
+    local player = game.players[param.player_index]
+    
+    if ( player and player.valid and player.connected and player.character and player.character.valid ) then
+    
+		if ( player.admin == false ) then
+			player.print ( "No." )
+			return
+		end
+	  
+		x = 0
+		--Remove old speakertags
+		if ( global.speakerlist ) then
+			for _, speaker in pairs(global.speakerlist) do
+				if ( speaker.pin and speaker.pin.valid ) then
+					speaker.pin.destroy()
+					x = x + 1
+				end
+			end
+		end
+		global.speakerlist = nil
+		player.print (x .. " speaker tags cleared...")
+		return
+   end
+   player.print ( "Error..." )
+end)
+
   
 commands.add_command( "tto", "teleport to", function(param)
 	if not param then
@@ -401,7 +432,8 @@ function get_permgroup()
         if ( global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > ( 30 * 60 * 60 ) ) then
           if ( player.permission_group ~= nil and player.permission_group.name == "Default" ) then
             if ( global.trustedgroup.add_player( player ) == true ) then
-              player.print ( "(SERVER) You have now been playing long enough, that the new-user restrictions on your character have been lifted... Have fun, and be nice!" )
+			  player.print ( "(SERVER) You have now been playing long enough, that the new-user restrictions on your character have been lifted... Have fun, and be nice!" )
+			  player.print ( "(SERVER) Discord server: Link on page at: http://BHMM.NET/" )
               message_debug ( player.name .. " was moved to trusted users." )
             end
           end
@@ -430,30 +462,20 @@ script.on_event(defines.events.on_built_entity, function(event)
 
 	if player and created_entity and surface then
 		if created_entity.name == "programmable-speaker" then
-			message = (player.name .. " placed speaker: " .. created_entity.position.x .. "," .. created_entity.position.y )
-			print(message)
+			message = (player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) )
+			message_debug(message)
 
 			if ( not global.speakerlist ) then
-				global.speakerlist = { pin = {}, speaker = {}, tick = {}, }
+				global.speakerlist = { pin = {}, speaker = {}, tick = {}, pos = {}, }
 			end
 
 			local chartTag = {position=created_entity.position, icon={type="item",name="programmable-speaker"}, text=label}
 			qtag = player.force.add_chart_tag ( player.surface, chartTag )
 		
-			table.insert(global.speakerlist, { pin = qtag, speaker = created_entity, tick = game.tick })
+			table.insert(global.speakerlist, { pin = qtag, speaker = created_entity, tick = game.tick, pos = created_entity.position })
 		end
 	end
 	
-end)
-
-script.on_event(defines.events.on_character_corpse_expired, function(event)
-
-	local corpselost = event.corpse
-	if corpselost then
-		if corpselost.name then
-			message_all ( corpselost.name .. "'s corpse decomposed, and the items within were lost...")
-		end
-	end
 end)
 
 --Console chat can activate this
@@ -522,7 +544,7 @@ script.on_event(defines.events.on_pre_player_died, function(event)
 
 	local player = game.players[event.player_index]
 	local centerPosition = player.position
-	local label = "Corpse of: " .. player.name
+	local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
 	local chartTag = {position=centerPosition, icon=signalID, text=label}
 	qtag = player.force.add_chart_tag ( player.surface, chartTag )
 
@@ -538,7 +560,8 @@ if ( not global.last_s_tick ) then
 end
 
 if (game.tick - global.last_s_tick >= 600 ) then
-
+	toremove = -1
+	x = 1
 	--Remove old corpse tags
 	if ( global.corpselist ) then
 		for _, corpse in pairs(global.corpselist) do
@@ -548,18 +571,49 @@ if (game.tick - global.last_s_tick >= 600 ) then
 				--else
 					--message_debug("Corpse map tag was no longer there!")
 				end
-				toremove = corpse
+				toremove = x
 				break
 			end
+			x = x + 1
 		end
 	end
-	if ( toremove ) then
-		toremove.tag = nil
-		toremove.tick = nil
-		toremove = nil
-		--message_debug("Corpse tag removed")
+	if ( toremove >= 0 and global.corpselist) then
+			table.remove(global.corpselist, toremove)
 	end
 
+	--Remove old speakertags
+	toremove = -1
+	x = 1
+	if ( global.speakerlist ) then
+		for _, speaker in pairs(global.speakerlist) do
+
+			--If the speaker isn't there anymore, remove the tag
+			if ( not speaker.speaker ) then
+				if ( speaker.pin and speaker.pin.valid ) then
+					--message_debug ("Speaker was nil.")
+					speaker.pin.destroy()
+				end
+				toremove = x
+				break
+			end
+			--If the speaker isn't valid anymore, remove the tag
+			if ( speaker.speaker ) then
+				if ( not speaker.speaker.valid ) then 
+					if ( speaker.pin and speaker.pin.valid ) then
+						--message_debug ("Speaker was invalid.")
+						speaker.pin.destroy()
+					end
+					toremove = x
+					break
+				end
+			end
+			x = x + 1
+		end
+	end
+	if ( toremove >= 0 and global.speakerlist ) then
+		table.remove(global.speakerlist, toremove)
+		--message_debug("Corpse tag removed")
+	end
 
 	
 	if ( global.servertag and not global.servertag.valid ) then
@@ -588,7 +642,8 @@ function message_debug(message)
   for _, player in pairs(game.connected_players) do
 
     if (player.admin) then
-      player.print( "(INFO) " .. message)
+	  player.print( "(INFO) " .. message)
+	  print(message)
       return
     end
 	
@@ -602,6 +657,7 @@ function message_all(message)
 	for _, player in pairs(game.connected_players) do
 
 		player.print( message)
+		print(message)
 		return
 	  
 	end
