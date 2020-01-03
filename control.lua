@@ -612,7 +612,6 @@ if (game.tick - global.last_s_tick >= 600 ) then
 	end
 	if ( toremove >= 0 and global.speakerlist ) then
 		table.remove(global.speakerlist, toremove)
-		--message_debug("Corpse tag removed")
 	end
 
 	
