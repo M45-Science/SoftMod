@@ -392,6 +392,11 @@ script.on_event(defines.events.on_built_entity, function(event)
 	local created_entity = event.created_entity
 	local surface = created_entity.surface
 
+	if ( not global.actual_playtime ) then
+		global.actual_playtime = {}
+		global.actual_playtime[0] = 0
+	end
+
 	if ( global.actual_playtime and global.actual_playtime[player.index] ) then
 		global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
 	else
@@ -430,6 +435,12 @@ end)
 script.on_event(defines.events.on_console_chat, function(event)
 	if ( event and event.player_index ) then
 		local player = game.players[event.player_index]
+
+		if ( not global.actual_playtime ) then
+			global.actual_playtime = {}
+			global.actual_playtime[0] = 0
+		end
+
 		if ( player and player.valid ) then
 
 			if ( global.actual_playtime and global.actual_playtime[player.index] ) then
@@ -444,6 +455,11 @@ end)
 script.on_event(defines.events.on_pre_player_mined_item, function(event)
 	local player = game.players[event.player_index]
 	local mined_entity = event.entity
+
+	if ( not global.actual_playtime ) then
+		global.actual_playtime = {}
+		global.actual_playtime[0] = 0
+	end
 
 	if ( global.actual_playtime and global.actual_playtime[player.index] ) then
 		global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
@@ -460,6 +476,12 @@ end)
 
 script.on_event(defines.events.on_player_changed_position, function(event)
 	local player = game.players[event.player_index]
+
+	if ( not global.actual_playtime ) then
+		global.actual_playtime = {}
+		global.actual_playtime[0] = 0
+	end
+	
 	if ( global.actual_playtime and global.actual_playtime[player.index] ) then
 		global.actual_playtime[player.index] = global.actual_playtime[player.index] + ( 6.67 ) --Estimate... 
 	else
