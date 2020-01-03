@@ -229,7 +229,7 @@ commands.add_command( "gspeed", "change game speed ( with auto walk speed adjust
 end)
   
   
-  commands.add_command( "tto", "teleport to", function(param)
+commands.add_command( "tto", "teleport to", function(param)
     local player = game.players[param.player_index]
     
     if ( player and player.valid and player.connected and player.character and player.character.valid ) then
@@ -263,10 +263,9 @@ commands.add_command( "tp", "teleport to x,y", function(param)
 		end
       
 		if param.parameter then
-				player.teleport ( param.parameter )
-				player.print ( "Okay." )
-				return
-			end
+			player.teleport ( param.parameter )
+			player.print ( "Okay." )
+			return
 		end
      	player.print ( "Error..." )
    end
@@ -405,10 +404,10 @@ script.on_event(defines.events.on_built_entity, function(event)
 			message_all(message)
 
 			if ( not global.speakerlist ) then
-				global.speakerlist = { pin = {}, speaker = {} }
+				global.speakerlist = { pin = {}, speaker = {}, }
 			end
 
-			local chartTag = {position=created_entity.position, icon={type="item",name="programmable-speaker"}, text=""}
+			local chartTag = {position=created_entity.position, icon={type="item",name="programmable-speaker"}, text=label}
 			qtag = player.force.add_chart_tag ( player.surface, chartTag )
 		
 			table.insert(global.speakerlist, { pin = qtag, speaker = created_entity, })
@@ -417,11 +416,11 @@ script.on_event(defines.events.on_built_entity, function(event)
 	
 end)
 
-script.on_event(on_character_corpse_expired, fuction(event)
+script.on_event(defines.events.on_character_corpse_expired, function(event)
 
 	local corpselost = event.corpse
 	if corpselost then
-		if corpselost.name
+		if corpselost.name then
 			message_all ( corpselost.name .. "'s corpse decomposed, and the items within were lost...")
 		end
 	end
