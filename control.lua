@@ -89,15 +89,18 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 	local player = game.players[event.player_index]
 	--player.print ( "Disabled tech: landfill" )
 	--player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
-	--player.print ( "Disabled tech: None, CHEATS ON" )
 	--player.print ( "Disabled tech: none" )
-	--player.cheat_mode=true
-	--player.surface.always_day=true
-	--if ( player.character )  then
-		--temp = player.character
-		--player.character=nil
-		--temp.destroy()
-	--end
+	--player.print ( "Disabled tech: None, CHEATS ON" )
+
+	return
+	player.cheat_mode=true
+	player.surface.always_day=true
+
+	if ( player.character )  then
+		temp = player.character
+		player.character=nil
+		temp.destroy()
+	end
 
 	
 end)
@@ -174,7 +177,7 @@ script.on_load(function()
 	        
 		for _, player in pairs(game.connected_players) do
       
-			if ( player and player.valid and player.connected and player.character and player.character.valid ) then
+			if ( player and player.valid and player.connected ) then
 				numpeople = (numpeople + 1)
 				admintag = " "
 		
@@ -241,7 +244,7 @@ commands.add_command( "ctag", "clear speaker map tags", function(param)
 	end
     local player = game.players[param.player_index]
     
-    if ( player and player.valid and player.connected and player.character and player.character.valid ) then
+    if ( player and player.valid and player.connected ) then
     
 		if ( player.admin == false ) then
 			player.print ( "No." )
@@ -405,7 +408,7 @@ function get_permgroup()
     global.admingroup = game.permissions.get_group("Admin")
 
     for _, player in pairs(game.connected_players) do
-    if ( player and player.valid and player.connected and player.character and player.character.valid ) then
+    if ( player and player.valid and player.connected ) then
     
       if (player.admin) then
         if (player.permission_group ~= nil ) then
