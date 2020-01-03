@@ -66,7 +66,8 @@ script.on_event(defines.events.on_player_created, function(event)
 		if game.is_multiplayer() then
 			player.print({"msg-intro"})
 		else
-		game.show_message_dialog{text = {"msg-intro"}}
+			game.show_message_dialog{text = {"msg-intro"}}
+		end
 	end
 
 	silo_script.on_event(event)
