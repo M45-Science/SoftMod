@@ -642,9 +642,8 @@ function message_debug(message)
 
     if (player.admin) then
 	  player.print( "(INFO) " .. message)
-	  print("[MSG] " .. message)
-      return
-    end
+	end
+	print("[MSG] " .. message)
 	
   end
 
@@ -654,12 +653,9 @@ end
 function message_all(message)
 
 	for _, player in pairs(game.connected_players) do
-
 		player.print( message)
-		print("[MSG] " .. message)
-		return
-	  
 	end
+	print("[MSG] " .. message)
   
   end
 
