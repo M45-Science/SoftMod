@@ -70,7 +70,7 @@ script.on_event(defines.events.on_player_created, function(event)
 	end
   end
 
-	silo_script.on_event(event)
+  silo_script.on_event(event)
 	player.force.friendly_fire = false --friendly fire
 	
 	if ( not global.actual_playtime ) then
@@ -132,6 +132,9 @@ script.on_load(function()
 
 	--ONLINE--
 	commands.add_command( "online", "See who is online", function(param)
+		if not param then
+			return
+		end
 	
 		local numpeople = 0
 		local victim = game.players[param.player_index]
@@ -201,6 +204,9 @@ script.on_load(function()
 end)
   
 commands.add_command( "gspeed", "change game speed ( with auto walk speed adjustment )", function(param)
+	if not param then
+		return
+	end
 	local player = game.players[param.player_index]
 	
 	if ( player == nil ) then
@@ -230,6 +236,9 @@ end)
   
   
 commands.add_command( "tto", "teleport to", function(param)
+	if not param then
+		return
+	end
     local player = game.players[param.player_index]
     
     if ( player and player.valid and player.connected and player.character and player.character.valid ) then
@@ -253,6 +262,9 @@ commands.add_command( "tto", "teleport to", function(param)
 end)
 
 commands.add_command( "tp", "teleport to x,y", function(param)
+	if not param then
+		return
+	end
     local player = game.players[param.player_index]
     
     if ( player and player.valid and player.connected and player.character and player.character.valid ) then
@@ -263,8 +275,21 @@ commands.add_command( "tp", "teleport to x,y", function(param)
 		end
       
 		if param.parameter then
-			player.teleport ( param.parameter )
-			player.print ( "Okay." )
+			str=param.parameter
+			xpos = "0.0"
+			ypos = "0.0"
+
+			xpos, ypos = str:match("([^,]+),([^,]+)")
+			position = { x=xpos, y=ypos, }
+
+			if position then
+				if position.x and position.y then
+					player.teleport ( position )
+					player.print ( "Okay." )
+				else
+					player.print ( "invalid x/y." )
+				end
+			end
 			return
 		end
      	player.print ( "Error..." )
@@ -405,17 +430,17 @@ script.on_event(defines.events.on_built_entity, function(event)
 
 	if player and created_entity and surface then
 		if created_entity.name == "programmable-speaker" then
-			message = (player.name .. " placed a programmable speaker at " .. created_entity.position )
-			message_all(message)
+			message = (player.name .. " placed speaker: " .. created_entity.position.x .. "," .. created_entity.position.y )
+			print(message)
 
 			if ( not global.speakerlist ) then
-				global.speakerlist = { pin = {}, speaker = {}, }
+				global.speakerlist = { pin = {}, speaker = {}, tick = {}, }
 			end
 
 			local chartTag = {position=created_entity.position, icon={type="item",name="programmable-speaker"}, text=label}
 			qtag = player.force.add_chart_tag ( player.surface, chartTag )
 		
-			table.insert(global.speakerlist, { pin = qtag, speaker = created_entity, })
+			table.insert(global.speakerlist, { pin = qtag, speaker = created_entity, tick = game.tick })
 		end
 	end
 	
