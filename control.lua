@@ -646,9 +646,9 @@ function message_debug(message)
         if (player.admin) then
             player.print("(INFO) " .. message)
         end
-        print("[MSG] " .. message)
     
     end
+    print("[MSG] " .. message)
 
 end
 
