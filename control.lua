@@ -177,8 +177,8 @@ script.on_load(function()
                     
                     --Lets limit number of results
                     for ipos, time in pairs(playtime) do
-                        if ( time != nil ) then
-                            if (time.time != nil ) then
+                        if ( time ~= nil ) then
+                            if (time.time ~= nil ) then
                                 if ipos > ( plen - 20 ) then
                                     victim.print(string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
                                 end
