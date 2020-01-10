@@ -49,7 +49,22 @@ local regulars = {
     "Daddyrilla",
     "Andro",
     "zlema01",
-    "literallyjustanegg"
+    "literallyjustanegg",
+    "FuzzyOne",
+    "adee",
+    "BlackJaBus",
+    "AryanCoconut",
+    "DZCM",
+    "chrisg23",
+    "A7fie",
+    "funork",
+    "Corruptarc",
+    "chubbins"
+    "Castleboy2000",
+    "D_Riv",
+    "mojosa",
+    "VortexBerserker",
+    "Merciless210"
 }
 
 for k, v in pairs(silo_script.get_events()) do
