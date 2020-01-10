@@ -122,6 +122,10 @@ local function sortTime(a, b)
         return false
     end
 
+    if ( a.time == nil || b.time == nil ) then
+        return false
+    end
+
     if (a.time < b.time) then
         return true
     elseif (a.time > b.time) then
