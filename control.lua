@@ -174,6 +174,8 @@ script.on_load(function()
                         playtime[pos] = {time = global.actual_playtime[player.index], name = game.players[player.index].name}
                         plen = plen + 1
                     end
+
+                    table.sort(playtime, sortTime)
                     
                     --Lets limit number of results
                     for ipos, time in pairs(playtime) do
