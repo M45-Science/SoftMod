@@ -118,6 +118,10 @@ script.on_configuration_changed(function(event)
 end)
 
 local function sortTime(a, b)
+    if ( a == nil or b == nil ) then
+        return false
+    end
+
     if (a.time < b.time) then
         return true
     elseif (a.time > b.time) then
@@ -165,9 +169,13 @@ script.on_load(function()
                     end
                     
                     table.sort(playtime, sortTime)
+                    plen = len(playtime)
                     
+                    --Lets limit number of results
                     for ipos, time in pairs(playtime) do
-                        victim.print(string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
+                        if ipos > ( plen - 20 ) then
+                            victim.print(string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
+                        then
                     end
                 
                 
