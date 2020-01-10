@@ -400,6 +400,10 @@ script.on_init(function()
     global.created_items = created_items()
     global.respawn_items = respawn_items()
     silo_script.on_init()
+    global.corpselist = nil
+    global.last_s_tick = nil
+    global.speakerlist = nil
+    global.servertag = nil
 end)
 
 silo_script.add_remote_interface()
