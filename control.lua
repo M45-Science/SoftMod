@@ -130,6 +130,11 @@ script.on_configuration_changed(function(event)
     global.created_items = global.created_items or created_items()
     global.respawn_items = global.respawn_items or respawn_items()
     silo_script.on_configuration_changed(event)
+    global.corpselist = nil
+    global.last_s_tick = nil
+    global.speakerlist = nil
+    global.servertag = nil
+
 end)
 
 local function sortTime(a, b)
