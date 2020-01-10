@@ -163,13 +163,13 @@ script.on_load(function()
             if (param.parameter == "active" and victim.admin) then
                 if (global.actual_playtime) then
                     
+                    plen = 0
+
                     playtime = {}
                     for pos, player in pairs(game.players) do
                         playtime[pos] = {time = global.actual_playtime[player.index], name = game.players[player.index].name}
+                        plen = plen + 1
                     end
-                    
-                    table.sort(playtime, sortTime)
-                    plen = table.getn(playtime)
                     
                     --Lets limit number of results
                     for ipos, time in pairs(playtime) do
