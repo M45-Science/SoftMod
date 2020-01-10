@@ -169,7 +169,7 @@ script.on_load(function()
                     end
                     
                     table.sort(playtime, sortTime)
-                    plen = len(playtime)
+                    plen = table.getn(playtime)
                     
                     --Lets limit number of results
                     for ipos, time in pairs(playtime) do
