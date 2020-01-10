@@ -122,7 +122,7 @@ local function sortTime(a, b)
         return false
     end
 
-    if ( a.time == nil || b.time == nil ) then
+    if ( a.time == nil or b.time == nil ) then
         return false
     end
 
