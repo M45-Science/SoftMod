@@ -175,7 +175,7 @@ script.on_load(function()
                     for ipos, time in pairs(playtime) do
                         if ipos > ( plen - 20 ) then
                             victim.print(string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
-                        then
+                        end
                     end
                 
                 
