@@ -59,7 +59,7 @@ local regulars = {
     "A7fie",
     "funork",
     "Corruptarc",
-    "chubbins"
+    "chubbins",
     "Castleboy2000",
     "D_Riv",
     "mojosa",
