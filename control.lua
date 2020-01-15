@@ -47,39 +47,17 @@ local regulars = {
     "Merciless210"
 }
 
---Player created
-script.on_event(defines.events.on_player_created, function(event)
-    local player = game.players[event.player_index]
+--Global messages--
+local function message_all(message)
+    
+    for _, player in pairs(game.connected_players) do
+        player.print(message)
+    end
+    print("[MSG] " .. message)
 
-    player.force.friendly_fire = false --friendly fire
-    --disable tech
-    --game.forces["player"].technologies["landfill"].enabled = false
-    --game.forces["player"].technologies["solar-energy"].enabled = false
-    --game.forces["player"].technologies["logistic-robotics"].enabled = false
-    --game.forces["player"].technologies["railway"].enabled = false
-end)
+end
 
---Player Login
---script.on_event(defines.events.on_player_joined_game, function(event)
-    --local player = game.players[event.player_index]
-    --player.print ( "Disabled tech: landfill" )
-    --player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
-    --player.print ( "Disabled tech: none" )
-    --player.print ( "Disabled tech: None, CHEATS ON" )
-
-    --if (sandbox == true) then
-        --player.cheat_mode = true
-        --player.surface.always_day = true
-      
-        --if (player.character) then
-            --temp = player.character
-            --player.character = nil
-            --temp.destroy()
-        --end
-    --end
---end)
-
---Sort players
+--Sort players--
 local function sortTime(a, b)
     if ( a == nil or b == nil ) then
         return false
@@ -98,9 +76,66 @@ local function sortTime(a, b)
     end
 end
 
---On load, add commands.
-script.on_load(function()
+--Auto permisisons--
+local function get_permgroup()
     
+    global.trustedgroup = game.permissions.get_group("Trusted")
+    global.admingroup = game.permissions.get_group("Admin")
+    
+    if (global.trustedgroup == nil) then
+        game.permissions.create_group("Trusted")
+    end
+    
+    if (global.admingroup == nil) then
+        game.permissions.create_group("Admin")
+    end
+    
+    global.trustedgroup = game.permissions.get_group("Trusted")
+    global.admingroup = game.permissions.get_group("Admin")
+    
+    for _, player in pairs(game.connected_players) do
+        if (player and player.valid and player.connected) then
+            
+            if (player.admin) then
+                if (player.permission_group ~= nil) then
+                    if (player.permission_group.name ~= "Admin") then
+                        global.admingroup.add_player(player)
+                        message_all(player.name .. " moved to admins...")
+                        player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
+                    end
+                end
+                
+                for _, player in pairs(game.connected_players) do
+                    for _, regular in pairs(regulars) do
+                        if (regular == player.name) then
+                            if (player.permission_group.name == "Default") then
+                                global.trustedgroup.add_player(player)
+                                message_all(player.name .. " moved to regulars...")
+                                player.print("Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!")
+                            end
+                        end
+                    end
+                end
+            
+            else
+                if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
+                    if (player.permission_group ~= nil and player.permission_group.name == "Default") then
+                        if (global.trustedgroup.add_player(player) == true) then
+                            player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
+                            player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                            message_all(player.name .. " was moved to trusted users.")
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+--On load, add commands--
+script.on_load(function()
+	
+	--Only add if no commands yet
     if (commands.commands.server_interface == nil) then
 
         --Online
@@ -111,7 +146,8 @@ script.on_load(function()
             
             local numpeople = 0
             local victim = game.players[param.player_index]
-            
+			
+			--Should be moved into different command
             if (param.parameter == "reveal" and victim.admin) then
                 game.forces.player.chart(victim.surface, {lefttop = {x = -2048, y = -2048}, rightbottom = {x = 2048, y = 2048}})
                 victim.print("Revealing...")
@@ -121,7 +157,8 @@ script.on_load(function()
                 game.forces.player.clear_chart()
                 victim.print("Recharting...")
                 return
-            end
+			end
+			--
 
             if (param.parameter == "active" and victim.admin) then
                 if (global.actual_playtime) then
@@ -183,7 +220,7 @@ script.on_load(function()
         end)
         
         --Game speed
-        commands.add_command("gspeed", "change game speed ( with auto walk speed adjustment )", function(param)
+        commands.add_command("gspeed", "change game speed to <%percent speed>", function(param)
             if not param.player_index then
                 return
             end
@@ -211,7 +248,7 @@ script.on_load(function()
         end)
         
         --Teleport to
-        commands.add_command("tto", "teleport to", function(param)
+        commands.add_command("tto", "teleport to <player>", function(param)
             if not param.player_index then
                 return
             end
@@ -238,7 +275,7 @@ script.on_load(function()
         end)
         
         --Teleport x,y
-        commands.add_command("tp", "teleport to x,y", function(param)
+        commands.add_command("tp", "teleport to <x,y>", function(param)
             if not param.player_index then
                 return
             end
@@ -274,7 +311,7 @@ script.on_load(function()
         end)
         
         --Teleport player to me
-        commands.add_command("tfrom", "teleport player to me", function(param)
+        commands.add_command("tfrom", "teleport <player> to me", function(param)
             if not param.player_index then
                 return
             end
@@ -304,63 +341,46 @@ script.on_load(function()
     end
 end)
 
---Auto permisisons--
-function get_permgroup()
-    
-    global.trustedgroup = game.permissions.get_group("Trusted")
-    global.admingroup = game.permissions.get_group("Admin")
-    
-    if (global.trustedgroup == nil) then
-        game.permissions.create_group("Trusted")
-    end
-    
-    if (global.admingroup == nil) then
-        game.permissions.create_group("Admin")
-    end
-    
-    global.trustedgroup = game.permissions.get_group("Trusted")
-    global.admingroup = game.permissions.get_group("Admin")
-    
-    for _, player in pairs(game.connected_players) do
-        if (player and player.valid and player.connected) then
-            
-            if (player.admin) then
-                if (player.permission_group ~= nil) then
-                    if (player.permission_group.name ~= "Admin") then
-                        global.admingroup.add_player(player)
-                        message_all(player.name .. " moved to admins...")
-                        player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
-                    end
-                end
-                
-                for _, player in pairs(game.connected_players) do
-                    for _, regular in pairs(regulars) do
-                        if (regular == player.name) then
-                            if (player.permission_group.name == "Default") then
-                                global.trustedgroup.add_player(player)
-                                message_all(player.name .. " moved to regulars...")
-                                player.print("Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!")
-                            end
-                        end
-                    end
-                end
-            
-            else
-                if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
-                    if (player.permission_group ~= nil and player.permission_group.name == "Default") then
-                        if (global.trustedgroup.add_player(player) == true) then
-                            player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
-                            player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
-                            message_all(player.name .. " was moved to trusted users.")
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-
 --EVENTS--
+
+--Player created
+script.on_event(defines.events.on_player_created, function(event)
+    local player = game.players[event.player_index]
+
+    player.force.friendly_fire = false --friendly fire
+    --disable tech
+    --game.forces["player"].technologies["landfill"].enabled = false
+    --game.forces["player"].technologies["solar-energy"].enabled = false
+    --game.forces["player"].technologies["logistic-robotics"].enabled = false
+	--game.forces["player"].technologies["railway"].enabled = false
+	
+	player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+end)
+
+--Player Login
+--script.on_event(defines.events.on_player_joined_game, function(event)
+    --local player = game.players[event.player_index]
+    --player.print ( "Disabled tech: landfill" )
+    --player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
+    --player.print ( "Disabled tech: none" )
+    --player.print ( "Disabled tech: None, CHEATS ON" )
+
+    --player.cheat_mode = true
+	--player.surface.always_day = true
+	--for name, recipe in pairs(player.force.recipes) do recipe.enabled = true end
+	--player.force.laboratory_speed_modifier=1
+	--player.zoom=0.1
+	--player.force.manual_mining_speed_modifier=1000
+	--player.force.manual_crafting_speed_modifier=1000
+	--player.force.research_all_technologies()
+      
+    --if (player.character) then
+        --temp = player.character
+        --player.character = nil
+        --temp.destroy()
+    --end
+--end)
+
 script.on_event(defines.events.on_built_entity, function(event)
     local player = game.players[event.player_index]
     local created_entity = event.created_entity
@@ -375,13 +395,19 @@ script.on_event(defines.events.on_built_entity, function(event)
     else
         global.actual_playtime[player.index] = 0.0
     end
-    
-    if player and created_entity and surface then
-        if created_entity.name == "programmable-speaker" then
-            local message = (player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
-            message_all(message)
-        end
-    end
+	
+	if (not global.last_warning) then
+		global.last_warning = 0
+	end
+	
+	if (game.tick - global.last_warning >= 600 ) then
+		if player and created_entity then
+        	if created_entity.name == "programmable-speaker" then
+				message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+				global.last_warning = game.tick
+	        end
+		end
+	end
 
 end)
 
@@ -424,7 +450,7 @@ script.on_event(defines.events.on_pre_player_died, function(event)
     local player = game.players[event.player_index]
     local centerPosition = player.position
     local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
-    local chartTag = {position = centerPosition, icon = signalID, text = label}
+    local chartTag = {position = centerPosition, icon = nil, text = label}
     local qtag = player.force.add_chart_tag(player.surface, chartTag)
     
     table.insert(global.corpselist, {tag = qtag, tick = game.tick, })
@@ -433,7 +459,7 @@ end)
 --Tick loop--
 --Keep to minimum--
 script.on_event(defines.events.on_tick, function(event)
-        
+        local toremove
         if (not global.last_s_tick) then
             global.last_s_tick = 0
         end
@@ -452,7 +478,9 @@ script.on_event(defines.events.on_tick, function(event)
                 end
             end
             if (toremove) then
-		        toremove = nil
+		        toremove.tag = nil
+				toremove.tick = nil
+				toremove = nil
             end
 
             if (global.servertag and not global.servertag.valid) then
@@ -475,12 +503,3 @@ script.on_event(defines.events.on_tick, function(event)
 
 end)
 
---global messages--
-function message_all(message)
-    
-    for _, player in pairs(game.connected_players) do
-        player.print(message)
-    end
-    print("[MSG] " .. message)
-
-end
