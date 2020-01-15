@@ -62,7 +62,7 @@ end
 --Global messages--
 local function message_all(message)
     
-    for _, player in pairs(game.connected_players) do
+    for _, player in pairs (game.connected_players) do
         player.print(message)
     end
     print("[MSG] " .. message)
@@ -387,10 +387,6 @@ script.on_event(defines.events.on_player_created, function(event)
     
     --Show players online, send help messages
     show_player(player)
-    player.print("(SERVER) To see users online, chat /online")
-    player.print("(SERVER) To chat use the ~ or ` key, or check settings/controls for chat")
-    player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
-    player.print("(SERVER) You are currently a new player on this map, and some options will be disabled for you.")
 end)
 
 --Player Login
