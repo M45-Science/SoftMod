@@ -47,6 +47,16 @@ local regulars = {
     "Merciless210"
 }
 
+--Smart Print--
+local function smart_print(player, message)
+    if player then
+        player.print(message)
+    else
+        rcon.print(message)
+        print(message)
+    end
+end
+
 --Global messages--
 local function message_all(message)
     
@@ -132,7 +142,7 @@ local function get_permgroup()
     end
 end
 
-local function show_player (victim)
+local function show_player(victim)
     local numpeople = 0
 
     for _, player in pairs(game.connected_players) do
@@ -157,13 +167,8 @@ local function show_player (victim)
             end
             
             if (global.actual_playtime and global.actual_playtime[player.index]) then
-                    local line = string.format(string.format("%-4d: %-32s Active: %-4.2fm Online: %-4.2fm%s",
-                        numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0), (player.online_time / 60.0 / 60.0), admintag))
-                if victim then
-                    victim.print(line)
-                else
-                    rcon.print(line)
-                end
+                smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm Online: %-4.2fm%s",
+                    numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0), (player.online_time / 60.0 / 60.0), admintag))
             end
         end
     
@@ -232,28 +237,37 @@ script.on_load(function()
         
         --Game speed
         commands.add_command("gspeed", "change game speed to <%percent speed>", function(param)
-            if not param.player_index then
-                return
+            local player = nil
+            local isadmin = true
+
+            if param.player_index then
+                player = game.players[param.player_index]
             end
-            local player = game.players[param.player_index]
             
-            if (player.admin == false) then
-                player.print("Nope.")
+            if ( player != nil ) then
+                if ( player.admin == false ) then
+                    isadmin = false
+                end
+            end
+
+            if ( isadmin == false ) then
+                smart_print (player, "Nope.")
                 return
             end
             
             if (param.parameter == nil) then
+                smart_print (player, "But what speed percentage?")
                 return
             end
             
             local value = tonumber(param.parameter)
             if (value >= 0.1 and value <= 10.0) then
                 game.speed = value
-                player.force.character_running_speed_modifier = ((1.0 / value) - 1.0)
-                player.print("Game speed: " .. value .. " Walk speed: " .. player.force.character_running_speed_modifier)
-                game.print("(System) Game speed set to %" .. (game.speed * 100.00))
+                game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
+                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. player.force.character_running_speed_modifier)
+                message_all("Game speed set to %" .. (game.speed * 100.00))
             else
-                player.print("That doesn't seem like a good idea...")
+                smart_print (player, "That doesn't seem like a good idea...")
             end
         
         end)
