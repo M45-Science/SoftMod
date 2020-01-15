@@ -162,7 +162,7 @@ local function show_player (victim)
                 if victim then
                     victim.print(line)
                 else
-                    print(line)
+                    rcon.print(line)
                 end
             end
         end
