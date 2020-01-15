@@ -348,6 +348,8 @@ script.on_event(defines.events.on_player_created, function(event)
     local player = game.players[event.player_index]
 
     player.force.friendly_fire = false --friendly fire
+    player.force.research_queue_enabled = true --nice to have
+
     --disable tech
     --game.forces["player"].technologies["landfill"].enabled = false
     --game.forces["player"].technologies["solar-energy"].enabled = false
@@ -396,20 +398,38 @@ script.on_event(defines.events.on_built_entity, function(event)
         global.actual_playtime[player.index] = 0.0
     end
 	
-	if (not global.last_warning) then
-		global.last_warning = 0
+	if (not global.last_speaker_warning) then
+		global.last_speaker_warning = 0
 	end
 	
-	if (game.tick - global.last_warning >= 600 ) then
+	if (game.tick - global.last_speaker_warning >= 300 ) then
 		if player and created_entity then
         	if created_entity.name == "programmable-speaker" then
 				message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
-				global.last_warning = game.tick
+				global.last_speaker_warning = game.tick
 	        end
 		end
 	end
 
 end)
+
+--Deconstuction planner warning
+script.on_event(defines.events.on_player_deconstructed_area, function(event)
+    local player = game.players[event.player_index]
+    local area = event.area
+    
+	if (not global.last_decon_warning) then
+		global.last_decon_warning = 0
+	end
+	
+	if (game.tick - global.last_decon_warning >= 300 ) then
+	    message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom .x) .. "," .. math.floor(area.right_bottom .y) )
+		global.last_decon_warning = game.tick
+	end
+
+end)
+
+
 
 script.on_event(defines.events.on_pre_player_mined_item, function(event)
     local player = game.players[event.player_index]
