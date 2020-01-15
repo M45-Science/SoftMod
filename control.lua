@@ -236,7 +236,7 @@ script.on_load(function()
         end)
         
         --Game speed
-        commands.add_command("gspeed", "change game speed to <%percent speed>", function(param)
+        commands.add_command("gspeed", "change game speed, 1.0 normal speed", function(param)
             local player = nil
             local isadmin = true
 
@@ -256,7 +256,7 @@ script.on_load(function()
             end
             
             if (param.parameter == nil) then
-                smart_print (player, "But what speed percentage?")
+                smart_print (player, "But what speed? 0.1 to 10")
                 return
             end
             
@@ -264,7 +264,7 @@ script.on_load(function()
             if (value >= 0.1 and value <= 10.0) then
                 game.speed = value
                 game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. player.force.character_running_speed_modifier)
+                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier)
                 message_all("Game speed set to %" .. (game.speed * 100.00))
             else
                 smart_print (player, "That doesn't seem like a good idea...")
