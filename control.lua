@@ -104,6 +104,7 @@ local function get_permgroup()
     global.admingroup = game.permissions.get_group("Admin")
     
     for _, player in pairs(game.connected_players) do
+        x = x + 1
         if (player and player.valid and player.connected) then
             
             if (player.admin) then
@@ -171,7 +172,9 @@ local function show_player(victim)
                     numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0), (player.online_time / 60.0 / 60.0), admintag))
             end
         end
-    
+    end
+    if numpeople == 0 then
+        smart_print ("No players online.")
     end
 end
 
