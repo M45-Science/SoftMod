@@ -131,9 +131,9 @@ local function get_permgroup()
                 if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
                     if (player.permission_group ~= nil and player.permission_group.name == "Default") then
                         if (global.trustedgroup.add_player(player) == true) then
+                            message_all(player.name .. " was moved to trusted users.")
                             player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
                             player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
-                            message_all(player.name .. " was moved to trusted users.")
                         end
                     end
                 end
@@ -379,7 +379,9 @@ script.on_event(defines.events.on_player_created, function(event)
     --game.forces["player"].technologies["landfill"].enabled = false
     --game.forces["player"].technologies["solar-energy"].enabled = false
     --game.forces["player"].technologies["logistic-robotics"].enabled = false
-	--game.forces["player"].technologies["railway"].enabled = false
+    --game.forces["player"].technologies["railway"].enabled = false
+    
+    --Show players online, send help messages
     show_player(player)
     player.print("(SERVER) To see users online, chat /online")
     player.print("(SERVER) To chat use the ~ or ` key, or check settings/controls for chat")
@@ -450,8 +452,10 @@ script.on_event(defines.events.on_player_deconstructed_area, function(event)
 		global.last_decon_warning = 0
 	end
 	
-	if (game.tick - global.last_decon_warning >= 300 ) then
-	    message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom .x) .. "," .. math.floor(area.right_bottom .y) )
+    if (game.tick - global.last_decon_warning >= 300 ) then
+        if player.admin == false then --Don't bother with admins
+            message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom .x) .. "," .. math.floor(area.right_bottom .y) )
+        end
 		global.last_decon_warning = game.tick
 	end
 
