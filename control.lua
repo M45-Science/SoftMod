@@ -1,4 +1,6 @@
 --v037-1-14-2020b
+local sandbox = false
+
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
@@ -203,7 +205,7 @@ script.on_load(function()
                 victim.print("Recharting...")
                 return
 			end
-			--
+			--Should be moved into different command
 
             if (param.parameter == "active" and victim.admin) then
                 if (global.actual_playtime) then
@@ -392,28 +394,31 @@ script.on_event(defines.events.on_player_created, function(event)
 end)
 
 --Player Login
---script.on_event(defines.events.on_player_joined_game, function(event)
-    --local player = game.players[event.player_index]
+script.on_event(defines.events.on_player_joined_game, function(event)
+    local player = game.players[event.player_index]
     --player.print ( "Disabled tech: landfill" )
     --player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
     --player.print ( "Disabled tech: none" )
     --player.print ( "Disabled tech: None, CHEATS ON" )
 
-    --player.cheat_mode = true
-	--player.surface.always_day = true
-	--for name, recipe in pairs(player.force.recipes) do recipe.enabled = true end
-	--player.force.laboratory_speed_modifier=1
-	--player.zoom=0.1
-	--player.force.manual_mining_speed_modifier=1000
-	--player.force.manual_crafting_speed_modifier=1000
-	--player.force.research_all_technologies()
+    if sandbox == true then
+
+        player.cheat_mode = true
+        player.surface.always_day = true
+	    for name, recipe in pairs(player.force.recipes) do recipe.enabled = true end
+	    player.force.laboratory_speed_modifier=1
+	    player.zoom=0.1
+	    player.force.manual_mining_speed_modifier=1000
+	    player.force.manual_crafting_speed_modifier=1000
+	    player.force.research_all_technologies()
       
-    --if (player.character) then
-        --temp = player.character
-        --player.character = nil
-        --temp.destroy()
-    --end
---end)
+        if (player.character) then
+            local temp = player.character
+            player.character = nil
+            temp.destroy()
+        end
+    end
+end)
 
 script.on_event(defines.events.on_built_entity, function(event)
     local player = game.players[event.player_index]
