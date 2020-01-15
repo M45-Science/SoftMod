@@ -179,6 +179,7 @@ script.on_load(function()
         --Online
         commands.add_command("online", "See who is online", function(param)
             if not param.player_index then
+                show_player(nil)
                 return
             end
             
