@@ -244,7 +244,7 @@ script.on_load(function()
                 player = game.players[param.player_index]
             end
             
-            if ( player != nil ) then
+            if ( player ~= nil ) then
                 if ( player.admin == false ) then
                     isadmin = false
                 end
