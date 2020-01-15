@@ -132,6 +132,44 @@ local function get_permgroup()
     end
 end
 
+local function show_player (victim)
+    local numpeople = 0
+
+    for _, player in pairs(game.connected_players) do
+                
+        if (player and player.valid and player.connected) then
+            numpeople = (numpeople + 1)
+            local admintag = " "
+            
+            if (player.admin) then
+                admintag = "  --  (ADMIN)"
+            end
+            
+            if (player.permission_group ~= nil) then
+                if (player.permission_group.name == "Default") then
+                    admintag = "  --  (NEW)"
+                end
+            end
+            if (player.permission_group ~= nil) then
+                if (player.permission_group.name == "Trusted") then
+                    admintag = "  --  (MEMBER)"
+                end
+            end
+            
+            if (global.actual_playtime and global.actual_playtime[player.index]) then
+                    local line = string.format(string.format("%-4d: %-32s Active: %-4.2fm Online: %-4.2fm%s",
+                        numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0), (player.online_time / 60.0 / 60.0), admintag))
+                if victim then
+                    victim.print(line)
+                else
+                    print(line)
+                end
+            end
+        end
+    
+    end
+end
+
 --On load, add commands--
 script.on_load(function()
 	
@@ -144,7 +182,6 @@ script.on_load(function()
                 return
             end
             
-            local numpeople = 0
             local victim = game.players[param.player_index]
 			
 			--Should be moved into different command
@@ -187,35 +224,8 @@ script.on_load(function()
                 end
                 return
             end
-            
-            for _, player in pairs(game.connected_players) do
-                
-                if (player and player.valid and player.connected) then
-                    numpeople = (numpeople + 1)
-                    local admintag = " "
-                    
-                    if (player.admin) then
-                        admintag = "  --  (ADMIN)"
-                    end
-                    
-                    if (player.permission_group ~= nil) then
-                        if (player.permission_group.name == "Default") then
-                            admintag = "  --  (NEW)"
-                        end
-                    end
-                    if (player.permission_group ~= nil) then
-                        if (player.permission_group.name == "Trusted") then
-                            admintag = "  --  (MEMBER)"
-                        end
-                    end
-                    
-                    if (global.actual_playtime and global.actual_playtime[player.index]) then
-                        victim.print(string.format("%-4d: %-32s Active: %-4.2fm Online: %-4.2fm%s",
-                            numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0), (player.online_time / 60.0 / 60.0), admintag))
-                    end
-                end
-            
-            end
+
+            show_player(victim)
         
         end)
         
