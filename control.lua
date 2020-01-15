@@ -356,7 +356,8 @@ script.on_event(defines.events.on_player_created, function(event)
     --game.forces["player"].technologies["logistic-robotics"].enabled = false
 	--game.forces["player"].technologies["railway"].enabled = false
 	
-	player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+    player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+    player.print("(SERVER) You are currently a new player on this map, and some options will be disabled for you.")
 end)
 
 --Player Login
