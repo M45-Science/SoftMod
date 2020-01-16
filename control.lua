@@ -384,20 +384,17 @@ script.on_load(
                                     size = rsize
                                 end
                             end
+                        end
 
-                            if surface ~= nil and pforce ~= nil then
-                                pforce.chart(
-                                    surface,
-                                    {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
-                                )
-                                local sstr = string.format("%04.0f", size)
-                                smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
-                            else
-                                smart_print(
-                                    victim,
-                                    "Either couldn't find surface nauvis, or couldn't find force player."
-                                )
-                            end
+                        if surface ~= nil and pforce ~= nil then
+                            pforce.chart(
+                                surface,
+                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
+                            )
+                            local sstr = string.format("%-4.0f", size)
+                            smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
+                        else
+                            smart_print(victim, "Either couldn't find surface nauvis, or couldn't find force player.")
                         end
                     else
                         smart_print(victim, "Admins only.")
