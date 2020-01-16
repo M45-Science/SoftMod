@@ -1,5 +1,7 @@
---v037-1-14-2020b
-local sandbox = false
+local svers = "v039-1-16-2020"
+local is_sandbox = false
+local ranonce = false
+local boot_time = nil
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -60,6 +62,40 @@ local regulars = {
     "zlema01"
 }
 
+local function uptime()
+    local results = "Error"
+
+    if boot_time ~= nil then
+        local uphours = (game.tick - boot_time) / 60.0 / 60.0 / 60.0
+        results = string.format("UPTIME: %-4.2fh", uphours)
+    end
+
+    return results
+end
+
+local function sandbox_mode(player)
+    if is_sandbox == true and player ~= nil then
+        player.cheat_mode = true
+        player.surface.always_day = true
+        player.force.laboratory_speed_modifier = 1
+        player.zoom = 0.1
+        player.force.manual_mining_speed_modifier = 1000
+        player.force.manual_crafting_speed_modifier = 1000
+        player.force.research_all_technologies()
+
+        for name, recipe in pairs(player.force.recipes) do
+            recipe.enabled = true
+        end
+
+        --Remove character, for godmode
+        if (player.character) then
+            local temp = player.character
+            player.character = nil
+            temp.destroy()
+        end
+    end
+end
+
 local function set_perms()
     --Auto set default group permissions
     if game ~= nil then
@@ -99,6 +135,26 @@ local function set_perms()
     end
 end
 
+local function run_once(player)
+    if player ~= nil then
+        if game ~= nil then
+            local pforce = game.forces["player"]
+
+            if pforce ~= nil then
+            --disable tech
+            --game.forces["player"].technologies["landfill"].enabled = false
+            --game.forces["player"].technologies["solar-energy"].enabled = false
+            --game.forces["player"].technologies["logistic-robotics"].enabled = false
+            --game.forces["player"].technologies["railway"].enabled = false
+            end
+        end
+
+        player.force.friendly_fire = false --friendly fire
+        player.force.research_queue_enabled = true --nice to have
+    end
+    set_perms()
+end
+
 --Is player in regulars list--
 local function is_regular(pname)
     for _, regular in pairs(regulars) do
@@ -115,7 +171,6 @@ local function smart_print(player, message)
         player.print(message)
     else
         rcon.print(message)
-        print(message)
     end
 end
 
@@ -178,9 +233,7 @@ local function get_permgroup()
                         if (player.permission_group.name == "Default") then
                             global.trustedgroup.add_player(player)
                             message_all(player.name .. " moved to regulars...")
-                            player.print(
-                                "Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!"
-                            )
+                            player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
                         end
                     end
                 end
@@ -210,33 +263,36 @@ local function show_player(victim)
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
-            local admintag = " "
+            local utag = " "
 
             if (player.admin) then
-                admintag = "  --  (ADMIN)"
+                utag = " (ADMIN)"
             end
 
             if (player.permission_group ~= nil) then
                 if (player.permission_group.name == "Default") then
-                    admintag = "  --  (NEW)"
+                    utag = " (NEW)"
                 end
             end
             if (player.permission_group ~= nil) then
                 if (player.permission_group.name == "Trusted") then
-                    admintag = "  --  (MEMBER)"
+                    utag = " (MEMBER)"
                 end
+            end
+            if is_regular(player.name) then
+                utag = " (REGULARS)"
             end
 
             if (global.actual_playtime and global.actual_playtime[player.index]) then
                 smart_print(
                     victim,
                     string.format(
-                        "%-4d: %-32s Active: %-4.2fm Online: %-4.2fm%s",
+                        "%-3d: %-18s Active: %-4.2fh, Online: %-4.2fh, %s",
                         numpeople,
                         player.name,
-                        (global.actual_playtime[player.index] / 60.0 / 60.0),
-                        (player.online_time / 60.0 / 60.0),
-                        admintag
+                        (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0),
+                        (player.online_time / 60.0 / 60.0 / 60.0),
+                        utag
                     )
                 )
             end
@@ -250,37 +306,134 @@ end
 --On load, add commands--
 script.on_load(
     function()
+        if (game ~= nil) then
+            boot_time = game.tick
+        end
+
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
+            --Status
+            commands.add_command(
+                "stat",
+                "Shows server stats",
+                function(param)
+                    local victim = nil
+                    local is_admin = true
+
+                    if param.player_index then
+                        victim = game.players[param.player_index]
+                        if victim.admin == false then
+                            is_admin = false
+                        end
+                    end
+
+                    if is_admin then
+                        local buf = string.format("Sandbox: " .. is_sandbox .. ", uptime: " .. uptime())
+                        smart_print(victim, buf)
+                    else
+                        smart_print(victim, "Admins only.")
+                    end
+                end
+            )
+
+            --Reveal map
+            commands.add_command(
+                "reveal",
+                "reveal (optional) <x> units of map. Default: 1024, max 4096",
+                function(param)
+                    local is_admin = true
+
+                    if param.player_index then
+                        local victim = game.players[param.player_index]
+                        if victim.admin == false then
+                            is_admin = false
+                        end
+                    end
+
+                    if (is_admin) then
+                        local surface = game.surfaces["nauvis"]
+                        local pforce = game.forces["player"]
+                        local size = 1024
+
+                        if param.parameter then
+                            local rsize = param.parameter
+
+                            --limits
+                            if rsize > 0 then
+                                if rsize < 128 then
+                                    rsize = 128
+                                else
+                                    if rsize > 4096 then
+                                        rsize = 4096
+                                    end
+                                    size = rsize
+                                end
+                            end
+
+                            if surface ~= nil and pforce ~= nil then
+                                pforce.chart(
+                                    surface,
+                                    {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
+                                )
+                                smart_print(victim, "Revealing...")
+                            else
+                                smart_print(
+                                    victim,
+                                    "Either couldn't find surface nauvis, or couldn't find force player."
+                                )
+                            end
+                        end
+                    else
+                        smart_print(victim, "Admins only.")
+                    end
+                end
+            )
+
+            --Rechart map
+            commands.add_command(
+                "rechart",
+                "rechart: resets fog of war",
+                function(param)
+                    local is_admin = true
+
+                    if param.player_index then
+                        local victim = game.players[param.player_index]
+                        if victim.admin == false then
+                            is_admin = false
+                        end
+                    end
+
+                    if (is_admin) then
+                        local pforce = game.forces["player"]
+
+                        if pforce ~= nil then
+                            pforce.clear_chart()
+                            smart_print(victim, "Recharting map...")
+                        else
+                            smart_print(victim, "Couldn't find force: player")
+                        end
+                    else
+                        smart_print(victim, "Admins only.")
+                    end
+                end
+            )
+
             --Online
             commands.add_command(
                 "online",
-                "See who is online",
+                "See who is online!",
                 function(param)
-                    if not param.player_index then
-                        show_player(nil)
-                        return
+                    local victim = nil
+                    local is_admin = true
+
+                    if param.player_index then
+                        victim = game.players[param.player_index]
+                        if victim.admin == false then
+                            is_admin = false
+                        end
                     end
 
-                    local victim = game.players[param.player_index]
-
-                    --Should be moved into different command
-                    if (param.parameter == "reveal" and victim.admin) then
-                        game.forces.player.chart(
-                            victim.surface,
-                            {lefttop = {x = -2048, y = -2048}, rightbottom = {x = 2048, y = 2048}}
-                        )
-                        victim.print("Revealing...")
-                        return
-                    end
-                    if (param.parameter == "rechart" and victim.admin) then
-                        game.forces.player.clear_chart()
-                        victim.print("Recharting...")
-                        return
-                    end
-                    --Should be moved into different command
-
-                    if (param.parameter == "active" and victim.admin) then
+                    if (param.parameter == "active" and is_admin) then
                         if (global.actual_playtime) then
                             local plen = 0
                             local playtime = {}
@@ -299,7 +452,8 @@ script.on_load(
                                 if (time ~= nil) then
                                     if (time.time ~= nil) then
                                         if ipos > (plen - 20) then
-                                            victim.print(
+                                            smart_print(
+                                                victim,
                                                 string.format(
                                                     "%-4d: %-32s Active: %-4.2fm",
                                                     ipos,
@@ -322,7 +476,7 @@ script.on_load(
             --Game speed
             commands.add_command(
                 "gspeed",
-                "change game speed, 1.0 normal speed",
+                "change game speed. Default: 1.0, min 0.1, max 10.0",
                 function(param)
                     local player = nil
                     local isadmin = true
@@ -338,7 +492,7 @@ script.on_load(
                     end
 
                     if (isadmin == false) then
-                        smart_print(player, "Nope.")
+                        smart_print(player, "Admins only..")
                         return
                     end
 
@@ -350,13 +504,20 @@ script.on_load(
                     local value = tonumber(param.parameter)
                     if (value >= 0.1 and value <= 10.0) then
                         game.speed = value
-                        game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                        smart_print(
-                            player,
-                            "Game speed: " ..
-                                value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
-                        )
-                        message_all("Game speed set to %" .. (game.speed * 100.00))
+
+                        local pforce = game.forces["player"]
+
+                        if pforce ~= nil then
+                            game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
+                            smart_print(
+                                player,
+                                "Game speed: " ..
+                                    value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
+                            )
+                            message_all("Game speed set to %" .. (game.speed * 100.00))
+                        else
+                            smart_print(player, "Force: Player doesn't seem to exsist.")
+                        end
                     else
                         smart_print(player, "That doesn't seem like a good idea...")
                     end
@@ -375,7 +536,7 @@ script.on_load(
 
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
-                            player.print("Nope.")
+                            player.print("Admins only.")
                             return
                         end
 
@@ -405,7 +566,7 @@ script.on_load(
 
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
-                            player.print("Nope.")
+                            player.print("Admins only.")
                             return
                         end
 
@@ -444,7 +605,7 @@ script.on_load(
 
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
-                            player.print("Nope.")
+                            player.print("Admins only.")
                             return
                         end
 
@@ -473,19 +634,13 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        player.force.friendly_fire = false --friendly fire
-        player.force.research_queue_enabled = true --nice to have
-
-        --disable tech
-        --game.forces["player"].technologies["landfill"].enabled = false
-        --game.forces["player"].technologies["solar-energy"].enabled = false
-        --game.forces["player"].technologies["logistic-robotics"].enabled = false
-        --game.forces["player"].technologies["railway"].enabled = false
-
         --Show players online, send help messages
         show_player(player)
-        set_perms()
 
+        if ranonce == false then
+            ranonce = true
+            run_once(player)
+        end
     end
 )
 
@@ -494,32 +649,12 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
-        --player.print ( "Disabled tech: landfill" )
-        --player.print ( "Disabled tech: landfill, solar, robots, railway, accumulators" )
-        --player.print ( "Disabled tech: none" )
-        --player.print ( "Disabled tech: None, CHEATS ON" )
 
-        if sandbox == true then
-            player.cheat_mode = true
-            player.surface.always_day = true
-            for name, recipe in pairs(player.force.recipes) do
-                recipe.enabled = true
-            end
-            player.force.laboratory_speed_modifier = 1
-            player.zoom = 0.1
-            player.force.manual_mining_speed_modifier = 1000
-            player.force.manual_crafting_speed_modifier = 1000
-            player.force.research_all_technologies()
-
-            if (player.character) then
-                local temp = player.character
-                player.character = nil
-                temp.destroy()
-            end
-        end
+        sandbox_mode(player)
     end
 )
 
+--Build stuff
 script.on_event(
     defines.events.on_built_entity,
     function(event)
@@ -587,6 +722,7 @@ script.on_event(
     end
 )
 
+--Mined item
 script.on_event(
     defines.events.on_pre_player_mined_item,
     function(event)
@@ -605,6 +741,7 @@ script.on_event(
     end
 )
 
+--Walking/Driving
 script.on_event(
     defines.events.on_player_changed_position,
     function(event)
