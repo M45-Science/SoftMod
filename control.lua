@@ -334,7 +334,8 @@ script.on_load(
                 function(param)
                     local is_admin = true
                     local victim = nil
-                    local new_pos = {0,0}
+                    local new_pos_x = 0.0
+                    local new_pos_y = 0.0
 
                     if param.player_index then
                         victim = game.players[param.player_index]
@@ -342,16 +343,16 @@ script.on_load(
                         if victim.admin == false then
                             is_admin = false
                         else
-                            new_pos[0] = victim.position.x
-                            new_pos[1] = victim.position.y
-                            
+                            new_pos_x= victim.position.x
+                            new_pos_y = victim.position.y
+
                             if param.parameter then
                                 local xytable = mysplit(param.parameter, ",")
-                                if #xytable > 0 then
+                                if xytable[0] > 0 then
                                     local argx = xytable[0]
                                     local argy = xytable[1]
-                                    new_pos[0] = argx
-                                    new_pos[1] = argy
+                                    new_pos_x = argx
+                                    new_pos_y = argy
                                 else
                                     smart_print(victim,"Invalid argument.")
                                 end
@@ -369,8 +370,8 @@ script.on_load(
                         end
 
                         if pforce ~= nil and psurface ~= nil then
-                            pforce.set_spawn_position(new_pos, psurface)
-                            smart_print(victim, string.format("New spawn point set: %8.0f,%8.0f", new_pos[0], new_pos[1]))
+                            pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
+                            smart_print(victim, string.format("New spawn point set: %8.0f,%8.0f", new_pos_x, new_pos_y))
                         else
                             smart_print(victim, "Couldn't find force or surface...")
                         end
