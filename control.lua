@@ -60,6 +60,45 @@ local regulars = {
     "zlema01"
 }
 
+local function set_perms()
+    --Auto set default group permissions
+    if game ~= nil then
+        local dperms = game.permissions.get_group("Default")
+
+        if dperms ~= nil then
+            dperms.set_allows_action(defines.input_action.activate_cut, false)
+            dperms.set_allows_action(defines.input_action.add_train_station, false)
+            dperms.set_allows_action(defines.input_action.build_terrain, false)
+            dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
+            dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+            dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
+            dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
+            dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
+            dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
+            dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
+            dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
+            dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
+            dperms.set_allows_action(defines.input_action.deconstruct, false)
+            dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
+            dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
+            dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
+            dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
+            dperms.set_allows_action(defines.input_action.launch_rocket, false)
+            dperms.set_allows_action(defines.input_action.remove_cables, false)
+            dperms.set_allows_action(defines.input_action.remove_train_station, false)
+            dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
+            dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
+            dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
+            dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
+            dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
+            dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
+            dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
+            dperms.set_allows_action(defines.input_action.set_signal, false)
+            dperms.set_allows_action(defines.input_action.set_train_stopped, false)
+        end
+    end
+end
+
 --Is player in regulars list--
 local function is_regular(pname)
     for _, regular in pairs(regulars) do
@@ -211,43 +250,6 @@ end
 --On load, add commands--
 script.on_load(
     function()
-        --Auto set default group permissions
-        if game ~= nil then
-            local dperms = game.permissions.get_group("Default")
-
-            if dperms ~= nil then
-                dperms.set_allows_action(defines.input_action.activate_cut, false)
-                dperms.set_allows_action(defines.input_action.add_train_station, false)
-                dperms.set_allows_action(defines.input_action.build_terrain, false)
-                dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
-                dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
-                dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-                dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
-                dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
-                dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
-                dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
-                dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
-                dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
-                dperms.set_allows_action(defines.input_action.deconstruct, false)
-                dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
-                dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
-                dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
-                dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
-                dperms.set_allows_action(defines.input_action.launch_rocket, false)
-                dperms.set_allows_action(defines.input_action.remove_cables, false)
-                dperms.set_allows_action(defines.input_action.remove_train_station, false)
-                dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
-                dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
-                dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
-                dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
-                dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
-                dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
-                dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
-                dperms.set_allows_action(defines.input_action.set_signal, false)
-                dperms.set_allows_action(defines.input_action.set_train_stopped, false)
-            end
-        end
-
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
             --Online
@@ -482,6 +484,8 @@ script.on_event(
 
         --Show players online, send help messages
         show_player(player)
+        set_perms()
+
     end
 )
 
