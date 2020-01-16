@@ -212,38 +212,40 @@ end
 script.on_load(
     function()
         --Auto set default group permissions
-        local dperms = game.permissions.get_group("Default")
+        if game ~= nil then
+            local dperms = game.permissions.get_group("Default")
 
-        if dperms ~= nil then
-            dperms.set_allows_action(defines.input_action.activate_cut, false)
-            dperms.set_allows_action(defines.input_action.add_train_station, false)
-            dperms.set_allows_action(defines.input_action.build_terrain, false)
-            dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
-            dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
-            dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
-            dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
-            dperms.set_allows_action(defines.input_action.deconstruct, false)
-            dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
-            dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
-            dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
-            dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
-            dperms.set_allows_action(defines.input_action.launch_rocket, false)
-            dperms.set_allows_action(defines.input_action.remove_cables, false)
-            dperms.set_allows_action(defines.input_action.remove_train_station, false)
-            dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
-            dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
-            dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
-            dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
-            dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
-            dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
-            dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
-            dperms.set_allows_action(defines.input_action.set_signal, false)
-            dperms.set_allows_action(defines.input_action.set_train_stopped, false)
+            if dperms ~= nil then
+                dperms.set_allows_action(defines.input_action.activate_cut, false)
+                dperms.set_allows_action(defines.input_action.add_train_station, false)
+                dperms.set_allows_action(defines.input_action.build_terrain, false)
+                dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
+                dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+                dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
+                dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
+                dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
+                dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
+                dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
+                dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
+                dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
+                dperms.set_allows_action(defines.input_action.deconstruct, false)
+                dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
+                dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
+                dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
+                dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
+                dperms.set_allows_action(defines.input_action.launch_rocket, false)
+                dperms.set_allows_action(defines.input_action.remove_cables, false)
+                dperms.set_allows_action(defines.input_action.remove_train_station, false)
+                dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
+                dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
+                dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
+                dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
+                dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
+                dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
+                dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
+                dperms.set_allows_action(defines.input_action.set_signal, false)
+                dperms.set_allows_action(defines.input_action.set_train_stopped, false)
+            end
         end
 
         --Only add if no commands yet
@@ -610,8 +612,8 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
+            --Estimate...
             global.actual_playtime[player.index] = global.actual_playtime[player.index] + (6.67)
-         --Estimate...
         else
             global.actual_playtime[player.index] = 0.0
         end
