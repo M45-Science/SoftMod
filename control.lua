@@ -323,7 +323,7 @@ script.on_load(
                 function(param)
                     local is_admin = true
                     local victim = nil
-                    local newpos = {x = 0, y = 0}
+                    local new_pos = {x = 0, y = 0}
 
                     if param.player_index then
                         victim = game.players[param.player_index]
@@ -331,14 +331,14 @@ script.on_load(
                         if victim.admin == false then
                             is_admin = false
                         else
-                            newpos = victim.position
+                            new_pos = victim.position
                             if param.parameter then
                                 local splitstr = split(param.parameter, ",")
                                 if len(splitstr) > 0 then
                                     local argx = splitstr[0]
                                     local argy = splitstr[1]
-                                    newpos.x = argx
-                                    newpos.y = argy
+                                    new_pos.x = argx
+                                    new_pos.y = argy
                                 else
                                     smart_print(victim,"Invalid argument.")
                                 end
