@@ -332,7 +332,15 @@ script.on_load(
                     if is_admin then
                         local utime = uptime()
                         if utime ~= nil then
-                            local buf = string.format("Sandbox: " .. is_sandbox .. ", uptime: " .. utime)
+                            local sandstr = "error"
+
+                            if is_sandbox == true then
+                                sandstr = "yes"
+                            else
+                                sandstr = "no"
+                            end
+
+                            local buf = string.format("Sandbox: " .. sandstr .. ", uptime: " .. utime)
                             smart_print(victim, buf)
                         end
                     else
@@ -347,9 +355,10 @@ script.on_load(
                 "reveal (optional) <x> units of map. Default: 1024, max 4096",
                 function(param)
                     local is_admin = true
+                    local victim = nil
 
                     if param.player_index then
-                        local victim = game.players[param.player_index]
+                        victim = game.players[param.player_index]
                         if victim.admin == false then
                             is_admin = false
                         end
