@@ -308,8 +308,7 @@ end
 --On load, add commands--
 script.on_load(
     function()
-
-        boot_time = game.tick --Set boot time here
+        boot_time = 0
 
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
@@ -801,11 +800,18 @@ script.on_event(
     defines.events.on_tick,
     function(event)
         local toremove
+
         if (not global.last_s_tick) then
             global.last_s_tick = 0
         end
 
         if (game.tick - global.last_s_tick >= 600) then
+
+            --Uptime hack
+            if boot_time == 0 then
+                boot_time = game.tick
+            end
+
             --Remove old corpse tags
             if (global.corpselist) then
                 for _, corpse in pairs(global.corpselist) do
