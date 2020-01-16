@@ -451,7 +451,7 @@ script.on_load(
                     end
 
                     local utime = uptime()
-                    smart_print("Uptime: " .. utime)
+                    smart_print(victim, "Uptime: " .. utime)
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.actual_playtime) then
