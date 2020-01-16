@@ -830,34 +830,12 @@ script.on_event(
     end
 )
 
-data:extend({{
-    type = "flying-text",
-    name = "static-text",
-    flags = {"not-on-map", "placeable-off-grid"},
-    time_to_live = 0,
-    speed = 0
-    }})
-
 --Tick loop--
 --Keep to minimum--
 script.on_event(
     defines.events.on_tick,
     function(event)
         local toremove
-
-        for _, player in pairs(game.connected_players) do
-            if player.position ~= nil then
-                player.surface.create_entity{
-                type = "static-text",
-                flags = {"not-on-map", "placeable-off-grid"},
-                time_to_live = "0",
-                speed = "0.0",
-                position = {player.position.x + 1, player.position.y + 1},
-                text = string.format("%d,%d",math.floor(player.position.x), math.floor(player.position.y)),
-                color = {r = 0, g = 255, b = 255},
-            }
-            end
-        end
 
         if (not global.last_s_tick) then
             global.last_s_tick = 0
