@@ -838,7 +838,9 @@ script.on_event(
         local toremove
 
         for _, player in pairs(game.connected_players) do
-            player.surface.create_entity{name="flying-text", position={player.cursor_position.x + 10, player.cursor_position.y + 10}, text={string.format("%d,%d",math.floor(player.cursor_position.x), math.floor(player.cursor_position.y))}, color={r = 0, g = 255, b = 255}, time_to_live=1}
+            if player.cursor_position != nil then
+                player.surface.create_entity{name="flying-text", position={player.cursor_position.x + 10, player.cursor_position.y + 10}, text={string.format("%d,%d",math.floor(player.cursor_position.x), math.floor(player.cursor_position.y))}, color={r = 0, g = 255, b = 255}, time_to_live=1}
+            end
         end
 
         if (not global.last_s_tick) then
