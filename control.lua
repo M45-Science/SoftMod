@@ -308,9 +308,8 @@ end
 --On load, add commands--
 script.on_load(
     function()
-        if (game ~= nil) then
-            boot_time = game.tick
-        end
+
+        boot_time = game.tick --Set boot time here
 
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
@@ -332,7 +331,7 @@ script.on_load(
                     if is_admin then
                         local utime = uptime()
                         if utime ~= nil then
-                            local sandstr = "error"
+                            local sandstr = "Error"
 
                             if is_sandbox == true then
                                 sandstr = "yes"
@@ -389,7 +388,8 @@ script.on_load(
                                     surface,
                                     {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
                                 )
-                                smart_print(victim, "Revealing...")
+                                local sstr = string.format("%04.0f", size)
+                                smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                             else
                                 smart_print(
                                     victim,
@@ -409,9 +409,10 @@ script.on_load(
                 "rechart: resets fog of war",
                 function(param)
                     local is_admin = true
+                    local victim = nil
 
                     if param.player_index then
-                        local victim = game.players[param.player_index]
+                        victim = game.players[param.player_index]
                         if victim.admin == false then
                             is_admin = false
                         end
