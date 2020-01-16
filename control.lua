@@ -355,6 +355,7 @@ script.on_load(
                                     new_pos_y = argy
                                 else
                                     smart_print(victim,"Invalid argument.")
+                                    return
                                 end
                             end
                         end
@@ -371,7 +372,8 @@ script.on_load(
 
                         if pforce ~= nil and psurface ~= nil then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(victim, string.format("New spawn point set: %8.0f,%8.0f", new_pos_x, new_pos_y))
+                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
+                            smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                         else
                             smart_print(victim, "Couldn't find force or surface...")
                         end
