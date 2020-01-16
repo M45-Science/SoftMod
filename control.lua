@@ -342,7 +342,9 @@ script.on_load(
                         if victim.admin == false then
                             is_admin = false
                         else
-                            new_pos = victim.position
+                            new_pos[0] = victim.position.x
+                            new_pos[1] = victim.position.y
+                            
                             if param.parameter then
                                 local xytable = mysplit(param.parameter, ",")
                                 if #xytable > 0 then
@@ -368,7 +370,7 @@ script.on_load(
 
                         if pforce ~= nil and psurface ~= nil then
                             pforce.set_spawn_position(new_pos, psurface)
-                            smart_print(victim, string.format("New spawn point set: %8.0f,%8.0f", new_pos.x, new_pos.y))
+                            smart_print(victim, string.format("New spawn point set: %8.0f,%8.0f", new_pos[0], new_pos[1]))
                         else
                             smart_print(victim, "Couldn't find force or surface...")
                         end
