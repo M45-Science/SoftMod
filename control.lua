@@ -345,19 +345,6 @@ script.on_load(
                         else
                             new_pos_x= victim.position.x
                             new_pos_y = victim.position.y
-
-                            if param.parameter then
-                                local xytable = mysplit(param.parameter, ",")
-                                if xytable ~= nil then
-                                    local argx = xytable[1]
-                                    local argy = xytable[2]
-                                    new_pos_x = argx
-                                    new_pos_y = argy
-                                else
-                                    smart_print(victim,"Invalid argument.")
-                                    return
-                                end
-                            end
                         end
                     end
 
@@ -368,6 +355,19 @@ script.on_load(
                         if victim ~= nil then
                             pforce = victim.force
                             psurface = victim.surface
+                        end
+
+                        if param.parameter then
+                            local xytable = mysplit(param.parameter, ",")
+                            if xytable ~= nil then
+                                local argx = xytable[1]
+                                local argy = xytable[2]
+                                new_pos_x = argx
+                                new_pos_y = argy
+                            else
+                                smart_print(victim,"Invalid argument.")
+                                return
+                            end
                         end
 
                         if pforce ~= nil and psurface ~= nil then
@@ -580,6 +580,7 @@ script.on_load(
                 "teleport to <player>",
                 function(param)
                     if not param.player_index then
+                        smart_print(nil,"You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
@@ -610,6 +611,7 @@ script.on_load(
                 "teleport to <x,y>",
                 function(param)
                     if not param.player_index then
+                        smart_print(nil,"You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
@@ -649,6 +651,7 @@ script.on_load(
                 "teleport <player> to me",
                 function(param)
                     if not param.player_index then
+                        smart_print(nil,"You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
