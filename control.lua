@@ -345,7 +345,7 @@ script.on_load(
                             new_pos = victim.position
                             if param.parameter then
                                 local splitstr = mysplit(param.parameter, ",")
-                                if len(splitstr) > 0 then
+                                if table.getn(splitstr) > 0 then
                                     local argx = splitstr[0]
                                     local argy = splitstr[1]
                                     new_pos.x = argx
