@@ -2,6 +2,7 @@
 local svers = "v039-1-16-2020"
 local server_tag = "discord.gg/Ps2jnm7"
 local is_sandbox = false
+local warning_delay = 300
 local probation_score = 30
 local update_ticks = 600
 
@@ -118,61 +119,62 @@ end
 
 local function set_perms()
     --Auto set default group permissions
-    if game ~= nil then
-        local dperms = game.permissions.get_group("Default")
+    local dperms = game.permissions.get_group("Default")
 
-        if dperms ~= nil then
-            dperms.set_allows_action(defines.input_action.activate_cut, false)
-            dperms.set_allows_action(defines.input_action.add_train_station, false)
-            dperms.set_allows_action(defines.input_action.build_terrain, false)
-            dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
-            dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
-            dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
-            dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
-            dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
-            dperms.set_allows_action(defines.input_action.deconstruct, false)
-            dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
-            dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
-            dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
-            dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
-            dperms.set_allows_action(defines.input_action.launch_rocket, false)
-            dperms.set_allows_action(defines.input_action.remove_cables, false)
-            dperms.set_allows_action(defines.input_action.remove_train_station, false)
-            dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
-            dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
-            dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
-            dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
-            dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
-            dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
-            dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
-            dperms.set_allows_action(defines.input_action.set_signal, false)
-            dperms.set_allows_action(defines.input_action.set_train_stopped, false)
-        end
+    if dperms ~= nil then
+        dperms.set_allows_action(defines.input_action.activate_cut, false)
+        dperms.set_allows_action(defines.input_action.add_train_station, false)
+        dperms.set_allows_action(defines.input_action.build_terrain, false)
+        dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
+        dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+        dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
+        dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
+        dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
+        dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
+        dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
+        dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
+        dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
+        dperms.set_allows_action(defines.input_action.deconstruct, false)
+        dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
+        dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
+        dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
+        dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
+        dperms.set_allows_action(defines.input_action.launch_rocket, false)
+        dperms.set_allows_action(defines.input_action.remove_cables, false)
+        dperms.set_allows_action(defines.input_action.remove_train_station, false)
+        dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
+        dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
+        dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
+        dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
+        dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
+        dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
+        dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
+        dperms.set_allows_action(defines.input_action.set_signal, false)
+        dperms.set_allows_action(defines.input_action.set_train_stopped, false)
     end
 end
 
 local function run_once(player)
-    if player ~= nil then
+    if ranonce == false then
         if game ~= nil then
-            local pforce = game.forces["player"]
+            if player ~= nil then
+                set_perms()
 
-            if pforce ~= nil then
-            --disable tech
-            --game.forces["player"].technologies["landfill"].enabled = false
-            --game.forces["player"].technologies["solar-energy"].enabled = false
-            --game.forces["player"].technologies["logistic-robotics"].enabled = false
-            --game.forces["player"].technologies["railway"].enabled = false
+                player.force.friendly_fire = false --friendly fire
+                player.force.research_queue_enabled = true --nice to have
+
+                local pforce = game.forces["player"]
+                if pforce ~= nil then
+                --disable tech
+                --game.forces["player"].technologies["landfill"].enabled = false
+                --game.forces["player"].technologies["solar-energy"].enabled = false
+                --game.forces["player"].technologies["logistic-robotics"].enabled = false
+                --game.forces["player"].technologies["railway"].enabled = false
+                end
+                ranonce = true
             end
         end
-
-        player.force.friendly_fire = false --friendly fire
-        player.force.research_queue_enabled = true --nice to have
     end
-    set_perms()
 end
 
 --Is player in regulars list--
@@ -277,7 +279,7 @@ local function get_permgroup()
     end
 end
 
-local function show_player(victim)
+local function show_players(victim)
     local numpeople = 0
 
     for _, player in pairs(game.connected_players) do
@@ -529,7 +531,7 @@ script.on_load(
                         return
                     end
 
-                    show_player(victim)
+                    show_players(victim)
                 end
             )
 
@@ -691,29 +693,15 @@ script.on_load(
 
 --EVENTS--
 
---Player created
+--New player created
 script.on_event(
     defines.events.on_player_created,
     function(event)
         local player = game.players[event.player_index]
 
-        --Show players online
-        show_player(player)
-
-        if ranonce == false then
-            ranonce = true
-            run_once(player)
-        end
-    end
-)
-
---Player Login
-script.on_event(
-    defines.events.on_player_joined_game,
-    function(event)
-        local player = game.players[event.player_index]
-
+        show_players(player)
         sandbox_mode(player)
+        run_once(player)
     end
 )
 
@@ -739,7 +727,7 @@ script.on_event(
             global.last_speaker_warning = 0
         end
 
-        if (game.tick - global.last_speaker_warning >= 300) then
+        if (game.tick - global.last_speaker_warning >= warning_delay) then
             if player and created_entity then
                 if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
@@ -768,7 +756,7 @@ script.on_event(
             global.last_decon_warning = 0
         end
 
-        if (game.tick - global.last_decon_warning >= 300) then
+        if (game.tick - global.last_decon_warning >= warning_delay) then
             if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
                 message_all(
                     player.name ..
@@ -848,13 +836,14 @@ script.on_event(
 script.on_event(
     defines.events.on_tick,
     function(event)
-        local toremove
-
         if (not global.last_s_tick) then
             global.last_s_tick = 0
         end
 
         if (game.tick - global.last_s_tick >= update_ticks) then
+            global.last_s_tick = game.tick --Reset timer
+            local toremove
+
             --Uptime hack
             if boot_time == 0 then
                 boot_time = game.tick
@@ -895,7 +884,6 @@ script.on_event(
             end
 
             get_permgroup()
-            global.last_s_tick = game.tick
         end
     end
 )
