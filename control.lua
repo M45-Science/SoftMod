@@ -316,33 +316,50 @@ script.on_load(
 
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
-            --Status
+            --Reveal map
             commands.add_command(
-                "stat",
-                "Shows server stats",
+                "cspawn",
+                "cspawn: set your current location -or- cpsawn <x,y>. Changes default spawn location",
                 function(param)
-                    local victim = nil
                     local is_admin = true
+                    local victim = nil
+                    local newpos = {x = 0, y = 0}
 
                     if param.player_index then
                         victim = game.players[param.player_index]
+
                         if victim.admin == false then
                             is_admin = false
+                        else
+                            newpos = victim.position
+                            if param.parameter then
+                                local splitstr = split(param.parameter, ",")
+                                if len(splitstr) > 0 then
+                                    local argx = splitstr[0]
+                                    local argy = splitstr[1]
+                                    newpos.x = argx
+                                    newpos.y = argy
+                                else
+                                    smart_print(victim,"Invalid argument.")
+                                end
+                            end
                         end
                     end
 
                     if is_admin then
-                        local utime = uptime()
-                        if utime ~= nil then
-                            local sandstr = "Error"
+                        local psurface = game.surfaces["nauvis"]
+                        local pforce = game.forces["player"]
 
-                            if is_sandbox == true then
-                                sandstr = "yes"
-                            else
-                                sandstr = "no"
-                            end
-                            smart_print(victim, "Sandbox: " .. sandstr)
-                            smart_print(victim, "Uptime: " .. utime)
+                        if victim ~= nil then
+                            pforce = victim.force
+                            psurface = victim.surface
+                        end
+
+                        if pforce ~= nil and psurface ~= nil then
+                            pforce.set_spawn_position(new_pos, psurface)
+                            smart_print(victim, string.format("New spawn point set: %8.0f,%8.0f", new_pos.x, new_pos.y))
+                        else
+                            smart_print(victim, "Couldn't find force or surface...")
                         end
                     else
                         smart_print(victim, "Admins only.")
@@ -366,7 +383,7 @@ script.on_load(
                     end
 
                     if (is_admin) then
-                        local surface = game.surfaces["nauvis"]
+                        local psurface = game.surfaces["nauvis"]
                         local pforce = game.forces["player"]
                         local size = 1024
 
@@ -386,9 +403,9 @@ script.on_load(
                             end
                         end
 
-                        if surface ~= nil and pforce ~= nil then
+                        if psurface ~= nil and pforce ~= nil then
                             pforce.chart(
-                                surface,
+                                psurface,
                                 {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
                             )
                             local sstr = string.format("%-4.0f", size)
