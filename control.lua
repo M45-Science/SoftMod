@@ -830,20 +830,20 @@ script.on_event(
     end
 )
 
+data:extend({{
+    type = "flying-text",
+    name = "static-text",
+    flags = {"not-on-map", "placeable-off-grid"},
+    time_to_live = 0,
+    speed = 0
+    }})
+
 --Tick loop--
 --Keep to minimum--
 script.on_event(
     defines.events.on_tick,
     function(event)
         local toremove
-
-        data:extend({{
-            type = "flying-text",
-            name = "static-text",
-            flags = {"not-on-map", "placeable-off-grid"},
-            time_to_live = 0,
-            speed = 0
-            }})
 
         for _, player in pairs(game.connected_players) do
             if player.position ~= nil then
