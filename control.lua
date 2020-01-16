@@ -348,9 +348,9 @@ script.on_load(
 
                             if param.parameter then
                                 local xytable = mysplit(param.parameter, ",")
-                                if xytable[0] > 0 then
-                                    local argx = xytable[0]
-                                    local argy = xytable[1]
+                                if xytable ~= nil then
+                                    local argx = xytable[1]
+                                    local argy = xytable[2]
                                     new_pos_x = argx
                                     new_pos_y = argy
                                 else
