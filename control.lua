@@ -49,6 +49,16 @@ local regulars = {
     "Merciless210"
 }
 
+--Is player in regulars list--
+local function is_regular(pname)
+    for _, regular in pairs(regulars) do
+        if (regular == pname) then
+            return true
+        end
+    end
+    return false
+end
+
 --Smart Print--
 local function smart_print(player, message)
     if player then
@@ -118,13 +128,11 @@ local function get_permgroup()
                 end
                 
                 for _, player in pairs(game.connected_players) do
-                    for _, regular in pairs(regulars) do
-                        if (regular == player.name) then
-                            if (player.permission_group.name == "Default") then
-                                global.trustedgroup.add_player(player)
-                                message_all(player.name .. " moved to regulars...")
-                                player.print("Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!")
-                            end
+                    if is_regular(player.name) then
+                        if (player.permission_group.name == "Default") then
+                            global.trustedgroup.add_player(player)
+                            message_all(player.name .. " moved to regulars...")
+                            player.print("Welcome back, " .. player.name .. "! Moving you into trusted users group... Have fun!")
                         end
                     end
                 end
@@ -436,11 +444,13 @@ script.on_event(defines.events.on_built_entity, function(event)
 	end
 	
 	if (game.tick - global.last_speaker_warning >= 300 ) then
-		if player and created_entity then
-        	if created_entity.name == "programmable-speaker" then
-				message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
-				global.last_speaker_warning = game.tick
-	        end
+        if player and created_entity then
+            if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
+            	if created_entity.name == "programmable-speaker" then
+			    	message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+				    global.last_speaker_warning = game.tick
+                end
+            end
 		end
 	end
 
@@ -456,7 +466,7 @@ script.on_event(defines.events.on_player_deconstructed_area, function(event)
 	end
 	
     if (game.tick - global.last_decon_warning >= 300 ) then
-        if player.admin == false then --Don't bother with admins
+        if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
             message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom .x) .. "," .. math.floor(area.right_bottom .y) )
         end
 		global.last_decon_warning = game.tick
