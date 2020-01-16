@@ -843,10 +843,10 @@ script.on_event(
                 type = "flying-text",
                 name = "flying-text",
                 flags = {"not-on-map", "placeable-off-grid"},
-                position={player.position.x + 10, player.position.y + 10},
-                text={string.format("%d,%d",math.floor(player.position.x), math.floor(player.position.y))},
+                position={player.position.x + 1, player.position.y + 1},
+                text=string.format("%d,%d",math.floor(player.position.x), math.floor(player.position.y)),
                 color={r = 0, g = 255, b = 255},
-                time_to_live=1,
+                time_to_live=0,
                 speed=0,
             }
             end
