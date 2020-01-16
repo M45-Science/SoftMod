@@ -334,7 +334,7 @@ script.on_load(
                 function(param)
                     local is_admin = true
                     local victim = nil
-                    local new_pos = {x = 0, y = 0}
+                    local new_pos = {0,0}
 
                     if param.player_index then
                         victim = game.players[param.player_index]
@@ -348,8 +348,8 @@ script.on_load(
                                 if #xytable > 0 then
                                     local argx = xytable[0]
                                     local argy = xytable[1]
-                                    new_pos.x = argx
-                                    new_pos.y = argy
+                                    new_pos[0] = argx
+                                    new_pos[1] = argy
                                 else
                                     smart_print(victim,"Invalid argument.")
                                 end
