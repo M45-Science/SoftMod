@@ -344,10 +344,10 @@ script.on_load(
                         else
                             new_pos = victim.position
                             if param.parameter then
-                                local splitstr = mysplit(param.parameter, ",")
-                                if table.getn(splitstr) > 0 then
-                                    local argx = splitstr[0]
-                                    local argy = splitstr[1]
+                                local xytable = mysplit(param.parameter, ",")
+                                if #xytable > 0 then
+                                    local argx = xytable[0]
+                                    local argy = xytable[1]
                                     new_pos.x = argx
                                     new_pos.y = argy
                                 else
