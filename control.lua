@@ -67,9 +67,13 @@ local regulars = {
 local function uptime()
     local results = "Error"
 
+    if boot_time == 0 then
+        boot_time = game.tick
+    end
+
     if boot_time ~= nil then
         local uphours = (game.tick - boot_time) / 60.0 / 60.0 / 60.0
-        results = string.format("uptime: %-4.2fh", uphours)
+        results = string.format("%-4.2fh", uphours)
     end
 
     return results
@@ -337,9 +341,8 @@ script.on_load(
                             else
                                 sandstr = "no"
                             end
-
-                            local buf = string.format("Sandbox: " .. sandstr .. ", uptime: " .. utime)
-                            smart_print(victim, buf)
+                            smart_print(victim, "Sandbox: " .. sandstr)
+                            smart_print(victim, "Uptime: " .. utime)
                         end
                     else
                         smart_print(victim, "Admins only.")
@@ -446,6 +449,9 @@ script.on_load(
                             is_admin = false
                         end
                     end
+
+                    local utime = uptime()
+                    smart_print("Uptime: " .. utime)
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.actual_playtime) then
@@ -806,7 +812,6 @@ script.on_event(
         end
 
         if (game.tick - global.last_s_tick >= 600) then
-
             --Uptime hack
             if boot_time == 0 then
                 boot_time = game.tick
