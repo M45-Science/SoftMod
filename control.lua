@@ -63,12 +63,17 @@ local regulars = {
     "zendesigner",
     "zlema01"
 }
-function string:split(sep)
-    local sep, fields = sep or ":", {}
-    local pattern = string.format("([^%s]+)", sep)
-    self:gsub(pattern, function(c) fields[#fields+1] = c end)
-    return fields
- end
+
+local function mysplit (inputstr, sep)
+    if sep == nil then
+            sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+            table.insert(t, str)
+    end
+    return t
+end
 
 local function uptime()
     local results = "Error"
@@ -339,7 +344,7 @@ script.on_load(
                         else
                             new_pos = victim.position
                             if param.parameter then
-                                local splitstr = split(param.parameter, ",")
+                                local splitstr = mysplit(param.parameter, ",")
                                 if len(splitstr) > 0 then
                                     local argx = splitstr[0]
                                     local argy = splitstr[1]
