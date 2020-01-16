@@ -1,5 +1,7 @@
 local svers = "v039-1-16-2020"
 local is_sandbox = false
+local probation_score = 30
+
 local ranonce = false
 local boot_time = nil
 
@@ -67,7 +69,7 @@ local function uptime()
 
     if boot_time ~= nil then
         local uphours = (game.tick - boot_time) / 60.0 / 60.0 / 60.0
-        results = string.format("UPTIME: %-4.2fh", uphours)
+        results = string.format("uptime: %-4.2fh", uphours)
     end
 
     return results
@@ -240,7 +242,7 @@ local function get_permgroup()
             else
                 if
                     (global.actual_playtime and global.actual_playtime[player.index] and
-                        global.actual_playtime[player.index] > (30 * 60 * 60))
+                        global.actual_playtime[player.index] > (probation_score * 60 * 60))
                  then
                     if (player.permission_group ~= nil and player.permission_group.name == "Default") then
                         if (global.trustedgroup.add_player(player) == true) then
@@ -328,8 +330,11 @@ script.on_load(
                     end
 
                     if is_admin then
-                        local buf = string.format("Sandbox: " .. is_sandbox .. ", uptime: " .. uptime())
-                        smart_print(victim, buf)
+                        local utime = uptime()
+                        if utime ~= nil then
+                            local buf = string.format("Sandbox: " .. is_sandbox .. ", uptime: " .. utime)
+                            smart_print(victim, buf)
+                        end
                     else
                         smart_print(victim, "Admins only.")
                     end
@@ -356,7 +361,7 @@ script.on_load(
                         local size = 1024
 
                         if param.parameter then
-                            local rsize = param.parameter
+                            local rsize = tonumber(param.parameter)
 
                             --limits
                             if rsize > 0 then
