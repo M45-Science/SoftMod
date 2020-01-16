@@ -839,7 +839,7 @@ script.on_event(
 
         for _, player in pairs(game.connected_players) do
             if player.cursor_position ~= nil then
-                player.surface.create_entity{name="flying-text", position={player.cursor_position.x + 10, player.cursor_position.y + 10}, text={string.format("%d,%d",math.floor(player.cursor_position.x), math.floor(player.cursor_position.y))}, color={r = 0, g = 255, b = 255}, time_to_live=1}
+                player.surface.create_entity{name="flying-text", position={player.position.x + 10, player.position.y + 10}, text={string.format("%d,%d",math.floor(player.position.x), math.floor(player.position.y))}, color={r = 0, g = 255, b = 255}, time_to_live=1}
             end
         end
 
