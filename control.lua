@@ -1,6 +1,9 @@
+--Settings
 local svers = "v039-1-16-2020"
+local server_tag = "discord.gg/Ps2jnm7"
 local is_sandbox = false
 local probation_score = 30
+local update_ticks = 600
 
 local ranonce = false
 local boot_time = nil
@@ -64,13 +67,13 @@ local regulars = {
     "zlema01"
 }
 
-local function mysplit (inputstr, sep)
+local function mysplit(inputstr, sep)
     if sep == nil then
-            sep = "%s"
+        sep = "%s"
     end
-    local t={}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-            table.insert(t, str)
+    local t = {}
+    for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
+        table.insert(t, str)
     end
     return t
 end
@@ -327,7 +330,7 @@ script.on_load(
 
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
-            --Reveal map
+            --Change default spawn point
             commands.add_command(
                 "cspawn",
                 "cspawn: set your current location -or- cpsawn <x,y>. Changes default spawn location",
@@ -343,7 +346,7 @@ script.on_load(
                         if victim.admin == false then
                             is_admin = false
                         else
-                            new_pos_x= victim.position.x
+                            new_pos_x = victim.position.x
                             new_pos_y = victim.position.y
                         end
                     end
@@ -365,14 +368,21 @@ script.on_load(
                                 new_pos_x = argx
                                 new_pos_y = argy
                             else
-                                smart_print(victim,"Invalid argument.")
+                                smart_print(victim, "Invalid argument.")
                                 return
                             end
                         end
 
                         if pforce ~= nil and psurface ~= nil then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
+                            smart_print(
+                                victim,
+                                string.format(
+                                    "New spawn point set: %d,%d",
+                                    math.floor(new_pos_x),
+                                    math.floor(new_pos_y)
+                                )
+                            )
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                         else
                             smart_print(victim, "Couldn't find force or surface...")
@@ -580,7 +590,7 @@ script.on_load(
                 "teleport to <player>",
                 function(param)
                     if not param.player_index then
-                        smart_print(nil,"You want me to teleport a remote console somewhere???")
+                        smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
@@ -611,7 +621,7 @@ script.on_load(
                 "teleport to <x,y>",
                 function(param)
                     if not param.player_index then
-                        smart_print(nil,"You want me to teleport a remote console somewhere???")
+                        smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
@@ -651,7 +661,7 @@ script.on_load(
                 "teleport <player> to me",
                 function(param)
                     if not param.player_index then
-                        smart_print(nil,"You want me to teleport a remote console somewhere???")
+                        smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
@@ -687,7 +697,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        --Show players online, send help messages
+        --Show players online
         show_player(player)
 
         if ranonce == false then
@@ -844,7 +854,7 @@ script.on_event(
             global.last_s_tick = 0
         end
 
-        if (game.tick - global.last_s_tick >= 600) then
+        if (game.tick - global.last_s_tick >= update_ticks) then
             --Uptime hack
             if boot_time == 0 then
                 boot_time = game.tick
@@ -875,7 +885,7 @@ script.on_event(
                 global.servertag = nil
             end
             if (not global.servertag) then
-                local label = "discord.gg/Ps2jnm7"
+                local label = server_tag
                 local chartTag = {
                     position = {0, 0},
                     icon = {type = "item", name = "programmable-speaker"},
