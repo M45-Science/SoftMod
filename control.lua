@@ -698,7 +698,7 @@ script.on_event(
 
         if (game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
-                if player.permission_group ~= nil and global.regulargroup.name ~= nil then
+                if player.permission_group ~= nil and global.regulargroup ~= nil then
                     if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
                         if created_entity.name == "programmable-speaker" then
                             message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
@@ -723,7 +723,7 @@ script.on_event(
         end
 
         if (game.tick - global.last_decon_warning >= 300) then
-            if player.permission_group ~= nil and global.regulargroup.name ~= nil then
+            if player.permission_group ~= nil and global.regulargroup ~= nil then
                 if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
                     message_all(
                         player.name ..
