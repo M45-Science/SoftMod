@@ -105,7 +105,7 @@ local function coal_mode()
             pforce.technologies["solar-energy"].enabled = false
             pforce.technologies["logistic-robotics"].enabled = false
             pforce.technologies["electronics"].enabled = false
-            pforce.technologies["ptics"].enabled = false
+            pforce.technologies["optics"].enabled = false
             pforce.technologies["electric-inserter"].enabled = false
             pforce.technologies["railway"].enabled = false
         end
