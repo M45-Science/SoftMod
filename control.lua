@@ -101,6 +101,7 @@ local function coal_mode(player)
         local pforce = game.forces["player"]
         if pforce ~= nil then
             --disable tech
+            game.player.force.reset()
             pforce.technologies["landfill"].enabled = false
             pforce.technologies["solar-energy"].enabled = false
             pforce.technologies["logistic-robotics"].enabled = false
@@ -114,6 +115,7 @@ end
 
 local function sandbox_mode(player)
     if global.sandboxmode ~= nil and player ~= nil then
+        game.player.force.reset()
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
