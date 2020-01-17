@@ -72,7 +72,6 @@ local function mysplit(inputstr, sep)
 end
 
 local function sandbox_mode(player)
-    
     if 1 == 2 and player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
@@ -133,24 +132,23 @@ local function set_perms()
 end
 
 local function game_settings(player)
+    if game ~= nil then
+        if player ~= nil then
+            set_perms()
 
-        if game ~= nil then
-            if player ~= nil then
-                set_perms()
+            player.force.friendly_fire = false --friendly fire
+            player.force.research_queue_enabled = true --nice to have
 
-                player.force.friendly_fire = false --friendly fire
-                player.force.research_queue_enabled = true --nice to have
-
-                local pforce = game.forces["player"]
-                if pforce ~= nil then
-                --disable tech
-                --game.forces["player"].technologies["landfill"].enabled = false
-                --game.forces["player"].technologies["solar-energy"].enabled = false
-                --game.forces["player"].technologies["logistic-robotics"].enabled = false
-                --game.forces["player"].technologies["railway"].enabled = false
-                end
+            local pforce = game.forces["player"]
+            if pforce ~= nil then
+            --disable tech
+            --game.forces["player"].technologies["landfill"].enabled = false
+            --game.forces["player"].technologies["solar-energy"].enabled = false
+            --game.forces["player"].technologies["logistic-robotics"].enabled = false
+            --game.forces["player"].technologies["railway"].enabled = false
             end
         end
+    end
 end
 
 --Is player in regulars list--
@@ -217,39 +215,30 @@ local function get_permgroup()
 
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
-            if (player.admin) then
-                if (player.permission_group ~= nil) then
+            if (player.permission_group ~= nil) then
+
+                if (player.admin) then
                     if (player.permission_group.name ~= "Admin") then
                         global.admingroup.add_player(player)
                         message_all(player.name .. " moved to admins...")
                         player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                     end
-                end
-
-                for _, player in pairs(game.connected_players) do
-                    if is_regular(player.name) then
-                        if (player.permission_group.name == "Default") then
-                            global.trustedgroup.add_player(player)
-                            message_all(player.name .. " moved to regulars...")
-                            player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
-                        end
+                elseif is_regular(player.name) then
+                    if (player.permission_group.name == "Default") then
+                        global.trustedgroup.add_player(player)
+                        message_all(player.name .. " moved to regulars...")
+                        player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
                     end
-                end
-            else
-                if
-                    (global.actual_playtime and global.actual_playtime[player.index] and
-                        global.actual_playtime[player.index] > (30 * 60 * 60))
-                 then
-                    if (player.permission_group ~= nil and player.permission_group.name == "Default") then
+                elseif (player.permission_group.name == "Default") then
+                    if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
                         if (global.trustedgroup.add_player(player) == true) then
                             message_all(player.name .. " was moved to trusted users.")
-                            player.print(
-                                "(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!"
-                            )
+                            player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
                             player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                         end
                     end
                 end
+                
             end
         end
     end
@@ -304,7 +293,6 @@ end
 --On load, add commands--
 script.on_load(
     function()
-
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
             --Change default spawn point
@@ -352,14 +340,7 @@ script.on_load(
 
                         if pforce ~= nil and psurface ~= nil then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(
-                                victim,
-                                string.format(
-                                    "New spawn point set: %d,%d",
-                                    math.floor(new_pos_x),
-                                    math.floor(new_pos_y)
-                                )
-                            )
+                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                         else
                             smart_print(victim, "Couldn't find force or surface...")
@@ -407,10 +388,7 @@ script.on_load(
                         end
 
                         if psurface ~= nil and pforce ~= nil then
-                            pforce.chart(
-                                psurface,
-                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
-                            )
+                            pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
                             local sstr = string.format("%-4.0f", size)
                             smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                         else
@@ -486,15 +464,7 @@ script.on_load(
                                 if (time ~= nil) then
                                     if (time.time ~= nil) then
                                         if ipos > (plen - 20) then
-                                            smart_print(
-                                                victim,
-                                                string.format(
-                                                    "%-4d: %-32s Active: %-4.2fm",
-                                                    ipos,
-                                                    time.name,
-                                                    time.time / 60.0 / 60.0
-                                                )
-                                            )
+                                            smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
                                         end
                                     end
                                 end
@@ -543,11 +513,7 @@ script.on_load(
 
                         if pforce ~= nil then
                             game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                            smart_print(
-                                player,
-                                "Game speed: " ..
-                                    value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
-                            )
+                            smart_print(player, "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier)
                             message_all("Game speed set to %" .. (game.speed * 100.00))
                         else
                             smart_print(player, "Force: Player doesn't seem to exsist.")
@@ -703,12 +669,7 @@ script.on_event(
             if player and created_entity then
                 if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
-                        message_all(
-                            player.name ..
-                                " placed speaker: " ..
-                                    math.floor(created_entity.position.x) ..
-                                        "," .. math.floor(created_entity.position.y)
-                        )
+                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
                         global.last_speaker_warning = game.tick
                     end
                 end
@@ -733,11 +694,7 @@ script.on_event(
                 message_all(
                     player.name ..
                         " is using the deconstruction planner: " ..
-                            math.floor(area.left_top.x) ..
-                                "," ..
-                                    math.floor(area.left_top.y) ..
-                                        " to " ..
-                                            math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
                 )
             end
             global.last_decon_warning = game.tick
@@ -794,8 +751,7 @@ script.on_event(
 
         local player = game.players[event.player_index]
         local centerPosition = player.position
-        local label =
-            "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+        local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
         local chartTag = {position = centerPosition, icon = nil, text = label}
         local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
