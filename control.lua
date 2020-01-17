@@ -200,10 +200,15 @@ end
 --Auto permisisons--
 local function get_permgroup()
     global.trustedgroup = game.permissions.get_group("Trusted")
+    global.regulargroup = game.permissions.get_group("Regulars")
     global.admingroup = game.permissions.get_group("Admin")
 
     if (global.trustedgroup == nil) then
         game.permissions.create_group("Trusted")
+    end
+
+    if (global.regulargroup == nil) then
+        game.permissions.create_group("Regulars")
     end
 
     if (global.admingroup == nil) then
@@ -211,34 +216,41 @@ local function get_permgroup()
     end
 
     global.trustedgroup = game.permissions.get_group("Trusted")
+    global.regulargroup = game.permissions.get_group("Regulars")
     global.admingroup = game.permissions.get_group("Admin")
 
+    --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
+            --Handle nil permissions, for mod compatability
             if (player.permission_group ~= nil) then
+                --Only move from default groups, for mod compatability
+                if (player.permission_group.name == "Default" or player.permission_group.name == "Trusted" or player.permission_group.name == "Regulars") then
 
-                if (player.admin) then
-                    if (player.permission_group.name ~= "Admin") then
-                        global.admingroup.add_player(player)
-                        message_all(player.name .. " moved to admins...")
-                        player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
-                    end
-                elseif is_regular(player.name) then
-                    if (player.permission_group.name == "Default") then
-                        global.trustedgroup.add_player(player)
-                        message_all(player.name .. " moved to regulars...")
-                        player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
-                    end
-                elseif (player.permission_group.name == "Default") then
-                    if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
-                        if (global.trustedgroup.add_player(player) == true) then
+
+                    if (player.admin) then
+                        if (player.permission_group.name ~= "Admin") then
+                            global.admingroup.add_player(player)
+                            message_all(player.name .. " moved to admins...")
+                            player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
+                        end
+                    elseif is_regular(player.name) then
+                        if (player.permission_group.name ~= "Regulars") then
+                            global.regulargroup.add_player(player)
+                            message_all(player.name .. " moved to regulars...")
+                            player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
+                        end
+                    elseif (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
+                        if (player.permission_group.name ~= "Default") then
+                            global.trustedgroup.add_player(player)
                             message_all(player.name .. " was moved to trusted users.")
                             player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
                             player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                         end
                     end
+
+
                 end
-                
             end
         end
     end
