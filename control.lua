@@ -96,12 +96,27 @@ local function mysplit(inputstr, sep)
     return t
 end
 
+local function coal_mode(player)
+    if global.coalmode ~= nil and player ~= nil then
+        local pforce = game.forces["player"]
+        if pforce ~= nil then
+            --disable tech
+            pforce.technologies["landfill"].enabled = false
+            pforce.technologies["solar-energy"].enabled = false
+            pforce.technologies["logistic-robotics"].enabled = false
+            pforce.technologies["basic-electronics"].enabled = false
+            pforce.technologies["basic-optics"].enabled = false
+            pforce.technologies["electric-inserter"].enabled = false
+            pforce.technologies["railway"].enabled = false
+        end
+    end
+end
+
 local function sandbox_mode(player)
-    if 1 == 2 and player ~= nil then
+    if global.sandboxmode ~= nil and player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
-        player.zoom = 0.1
         player.force.manual_mining_speed_modifier = 1000
         player.force.manual_crafting_speed_modifier = 1000
         player.force.research_all_technologies()
@@ -160,19 +175,10 @@ local function game_settings(player)
     if game ~= nil then
         if player ~= nil then
             set_perms()
-
-            player.force.friendly_fire = false --friendly fire
-            player.force.research_queue_enabled = true --nice to have
-
-            local pforce = game.forces["player"]
-            if pforce ~= nil then
-            --disable tech
-            --pforce.technologies["landfill"].enabled = false
-            --pforce.technologies["solar-energy"].enabled = false
-            --pforce.technologies["logistic-robotics"].enabled = false
-            --pforce.technologies["railway"].enabled = false
-            end
         end
+
+        player.force.friendly_fire = false --friendly fire
+        player.force.research_queue_enabled = true --nice to have
     end
 end
 
@@ -304,10 +310,52 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
+            --Change game mode
+            commands.add_command(
+                "mode",
+                "mode: /mode <mode>, options: sandbox, coal.",
+                function(param)
+                    local is_admin = true
+                    local victim = nil
+
+                    if param.player_index then
+                        victim = game.players[param.player_index]
+                        if victim.admin == false then
+                            is_admin = false
+                        end
+                    end
+
+                    if is_admin then
+                        if param.parameter == "sandbox" then
+                            if global.sandboxmode == true then
+                                global.sandboxmode = nil
+                                smart_print(victim, "Sandbox mode disabled.")
+                            else
+                                global.sandboxmode = true
+                                sandbox_mode(victim)
+                                smart_print(victim, "Sandbox mode enabled.")
+                            end
+                        elseif param.parameter == "coal" then
+                            if global.coalmode == true then
+                                global.coalmode = nil
+                                smart_print(victim, "Coal mode disabled.")
+                            else
+                                global.coalmode = true
+                                coal_mode(victim)
+                                smart_print(victim, "Coal mode enabled.")
+                            end
+                        else
+                            smart_print(victim, "Valid modes: sandbox, coal")
+                        end
+                    else
+                        smart_print(victim, "Admins only.")
+                    end
+                end
+            )
             --Change default spawn point
             commands.add_command(
                 "cspawn",
-                "cspawn: set your current location -or- cpsawn <x,y>. Changes default spawn location",
+                "/cspawn <x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -363,7 +411,7 @@ script.on_load(
             --Reveal map
             commands.add_command(
                 "reveal",
-                "reveal (optional) <x> units of map. Default: 1024, max 4096",
+                "/reveal <size> -- <x> units of map. Default: 1024, max 4096",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -412,7 +460,7 @@ script.on_load(
             --Rechart map
             commands.add_command(
                 "rechart",
-                "rechart: resets fog of war",
+                "/rechart -- resets fog of war",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -442,7 +490,7 @@ script.on_load(
             --Online
             commands.add_command(
                 "online",
-                "See who is online!",
+                "/online -- See who is online!",
                 function(param)
                     local victim = nil
                     local is_admin = true
@@ -489,7 +537,7 @@ script.on_load(
             --Game speed
             commands.add_command(
                 "gspeed",
-                "change game speed. Default: 1.0, min 0.1, max 10.0",
+                "/gspeed <x,x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
                 function(param)
                     local player = nil
                     local isadmin = true
@@ -536,7 +584,7 @@ script.on_load(
             --Teleport to
             commands.add_command(
                 "tto",
-                "teleport to <player>",
+                "/tto <player> -- teleport to <player>",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -567,7 +615,7 @@ script.on_load(
             --Teleport x,y
             commands.add_command(
                 "tp",
-                "teleport to <x,y>",
+                "/tp <x,y> -- teleport to <x,y>",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -607,7 +655,7 @@ script.on_load(
             --Teleport player to me
             commands.add_command(
                 "tfrom",
-                "teleport <player> to me",
+                "/tfrom <player> -- teleport <player> to me",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -670,6 +718,7 @@ script.on_event(
         create_groups()
         show_players(player)
         sandbox_mode(player)
+        coal_mode(player)
         game_settings(player)
     end
 )
