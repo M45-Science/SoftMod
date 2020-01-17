@@ -647,7 +647,7 @@ script.on_event(
         local player = game.players[event.player_index]
 
         --Moved here to reduce on_tick
-        if player.permission_group ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
+        if player.permission_group ~= nil and global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
             if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
                 if is_regular(player.name) then
                     if (player.permission_group.name ~= global.regulargroup.name) then
