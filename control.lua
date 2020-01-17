@@ -281,7 +281,7 @@ local function show_players(victim)
                 smart_print(
                     victim,
                     string.format(
-                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%30s)",
+                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)",
                         numpeople,
                         player.name,
                         (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0),
