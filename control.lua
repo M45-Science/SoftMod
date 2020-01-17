@@ -73,7 +73,7 @@ end
 local function sandbox_mode(player)
     return
 
-    if player ~= nil then
+    if 1 == 2 and player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
