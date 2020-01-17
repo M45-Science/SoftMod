@@ -693,6 +693,7 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
+        create_groups()
 
         --Moved here to reduce on_tick
         if player.permission_group ~= nil and global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
