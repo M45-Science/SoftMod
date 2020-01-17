@@ -259,34 +259,29 @@ end
 local function show_players(victim)
     local numpeople = 0
 
+    --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
-            local utag = " "
+            local utag = "(error)"
 
-            if (player.admin) then
-                utag = " (ADMIN)"
-            end
-
-            if (player.permission_group ~= nil) then
-                if (player.permission_group.name == "Default") then
-                    utag = " (NEW)"
+            if player.permission_group ~= nil then
+                local gname = player.permission_group.name
+                if gname == "Default" then
+                    gname = "NEW"
                 end
-            end
-            if (player.permission_group ~= nil) then
-                if (player.permission_group.name == "Trusted") then
-                    utag = " (MEMBER)"
-                end
-            end
-            if is_regular(player.name) then
-                utag = " (REGULARS)"
+
+                utag = gname
+            else
+                utag = "(none)"
             end
 
+            smart_print( victim, "\n" ) -- Formatting for discord
             if (global.actual_playtime and global.actual_playtime[player.index]) then
                 smart_print(
                     victim,
                     string.format(
-                        "%-3d: %-18s Active: %-4.2fh, Online: %-4.2fh, %s",
+                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%30s)",
                         numpeople,
                         player.name,
                         (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0),
