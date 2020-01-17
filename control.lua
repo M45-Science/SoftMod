@@ -1,22 +1,10 @@
---v039-1-16-2020
+--v039-1-17-2020
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
 
 local regulars = {
-    "Estabon",
-    "GregorS",
-    "Killy71",
-    "Mike-_-",
-    "Nasphere",
-    "POI_780",
-    "brftjx",
-    "jslannon",
-    "lipinkaixin",
-    "mueppel",
-    "twist.mills",
-    "yanivger",
     "A7fie",
     "Aidenkrz",
     "Andro",
@@ -30,12 +18,16 @@ local regulars = {
     "D_Riv",
     "Daddyrilla",
     "Darsin",
+    "Estabon",
     "Footy",
     "FuzzyOne",
     "GregorS",
+    "Killy71",
     "Merciless210",
+    "Mike-_-",
     "Moose1301",
     "Nasphere",
+    "POI_780",
     "Rylabs",
     "SmokuNoPico",
     "SpacecatCybran",
@@ -44,21 +36,54 @@ local regulars = {
     "VortexBerserker",
     "adee",
     "bazus1",
+    "brftjx",
     "chrisg23",
     "chubbins",
     "funork",
+    "john_zivanovik_f",
+    "jslannon",
+    "lipinkaixin",
     "literallyjustanegg",
     "luckcolors",
     "mehdi2344",
     "mojosa",
+    "mueppel",
     "nickoe",
     "skymory_24",
     "twist.mills",
+    "yanivger",
     "ytremors",
     "zendesigner",
-    "zlema01",
-    "john_zivanovik_f"
+    "zlema01"
 }
+
+local function create_groups()
+    global.defaultgroup = game.permissions.get_group("Default")
+    global.trustedgroup = game.permissions.get_group("Trusted")
+    global.regulargroup = game.permissions.get_group("Regulars")
+    global.admingroup = game.permissions.get_group("Admin")
+
+    if (global.defaultgroup == nil) then
+        game.permissions.create_group("Default")
+    end
+
+    if (global.trustedgroup == nil) then
+        game.permissions.create_group("Trusted")
+    end
+
+    if (global.regulargroup == nil) then
+        game.permissions.create_group("Regulars")
+    end
+
+    if (global.admingroup == nil) then
+        game.permissions.create_group("Admin")
+    end
+
+    global.defaultgroup = game.permissions.get_group("Default")
+    global.trustedgroup = game.permissions.get_group("Trusted")
+    global.regulargroup = game.permissions.get_group("Regulars")
+    global.admingroup = game.permissions.get_group("Admin")
+end
 
 local function mysplit(inputstr, sep)
     if sep == nil then
@@ -142,10 +167,10 @@ local function game_settings(player)
             local pforce = game.forces["player"]
             if pforce ~= nil then
             --disable tech
-            --game.forces["player"].technologies["landfill"].enabled = false
-            --game.forces["player"].technologies["solar-energy"].enabled = false
-            --game.forces["player"].technologies["logistic-robotics"].enabled = false
-            --game.forces["player"].technologies["railway"].enabled = false
+            --pforce.technologies["landfill"].enabled = false
+            --pforce.technologies["solar-energy"].enabled = false
+            --pforce.technologies["logistic-robotics"].enabled = false
+            --pforce.technologies["railway"].enabled = false
             end
         end
     end
@@ -199,57 +224,27 @@ end
 
 --Auto permisisons--
 local function get_permgroup()
-    global.trustedgroup = game.permissions.get_group("Trusted")
-    global.regulargroup = game.permissions.get_group("Regulars")
-    global.admingroup = game.permissions.get_group("Admin")
-
-    if (global.trustedgroup == nil) then
-        game.permissions.create_group("Trusted")
-    end
-
-    if (global.regulargroup == nil) then
-        game.permissions.create_group("Regulars")
-    end
-
-    if (global.admingroup == nil) then
-        game.permissions.create_group("Admin")
-    end
-
-    global.trustedgroup = game.permissions.get_group("Trusted")
-    global.regulargroup = game.permissions.get_group("Regulars")
-    global.admingroup = game.permissions.get_group("Admin")
-
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             --Handle nil permissions, for mod compatability
-            if (player.permission_group ~= nil) then
+            if (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and global.regulargroup ~= nil and global.admingroup ~= nil) then
                 --Only move from default groups, for mod compatability
-                if (player.permission_group.name == "Default" or player.permission_group.name == "Trusted" or player.permission_group.name == "Regulars") then
-
-
+                if (player.permission_group == global.defaultgroup or player.permission_group == global.trustedgroup or player.permission_group == global.regulargroup) then
                     if (player.admin) then
-                        if (player.permission_group.name ~= "Admin") then
+                        if (player.permission_group ~= global.admingroup) then
                             global.admingroup.add_player(player)
                             message_all(player.name .. " moved to admins...")
                             player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                         end
-                    elseif is_regular(player.name) then
-                        if (player.permission_group.name ~= "Regulars") then
-                            global.regulargroup.add_player(player)
-                            message_all(player.name .. " moved to regulars...")
-                            player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
-                        end
                     elseif (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
-                        if (player.permission_group.name ~= "Default") then
+                        if (player.permission_group ~= global.defaultgroup) then
                             global.trustedgroup.add_player(player)
                             message_all(player.name .. " was moved to trusted users.")
                             player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
                             player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                         end
                     end
-
-
                 end
             end
         end
@@ -276,7 +271,7 @@ local function show_players(victim)
                 utag = "(none)"
             end
 
-            smart_print( victim, "\n" ) -- Formatting for discord
+            smart_print(victim, "\n") -- Formatting for discord
             if (global.actual_playtime and global.actual_playtime[player.index]) then
                 smart_print(
                     victim,
@@ -638,12 +633,30 @@ script.on_load(
 
 --EVENTS--
 
+--Player connected
+script.on_event(
+    defines.events.on_player_joined_game,
+    function(event)
+        local player = game.players[event.player_index]
+
+        --Moved here to reduce on_tick
+        if is_regular(player.name) then
+            if (player.permission_group ~= global.regulargroup) then
+                global.regulargroup.add_player(player)
+                message_all(player.name .. " moved to regulars...")
+                player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
+            end
+        end
+    end
+)
+
 --New player created
 script.on_event(
     defines.events.on_player_created,
     function(event)
         local player = game.players[event.player_index]
 
+        create_groups()
         show_players(player)
         sandbox_mode(player)
         game_settings(player)
@@ -674,7 +687,7 @@ script.on_event(
 
         if (game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
-                if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
+                if player.permission_group ~= global.regulargroup and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
                         message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
                         global.last_speaker_warning = game.tick
@@ -697,7 +710,7 @@ script.on_event(
         end
 
         if (game.tick - global.last_decon_warning >= 300) then
-            if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
+            if player.permission_group ~= global.regulargroup and player.admin == false then --Dont bother with regulars/admins
                 message_all(
                     player.name ..
                         " is using the deconstruction planner: " ..
@@ -796,6 +809,7 @@ script.on_event(
                 toremove = nil
             end
 
+            --Server tag
             if (global.servertag and not global.servertag.valid) then
                 global.servertag = nil
             end
@@ -810,7 +824,12 @@ script.on_event(
                     icon = {type = "item", name = "programmable-speaker"},
                     text = label
                 }
-                global.servertag = game.forces["player"].add_chart_tag(game.surfaces["nauvis"], chartTag)
+                local pforce = game.forces["player"]
+                local psurface = game.surfaces["nauvis"]
+
+                if pforce ~= nil and psurface ~= nil then
+                    global.servertag = pforce.add_chart_tag(psurface, chartTag)
+                end
             end
 
             get_permgroup()
