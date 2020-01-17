@@ -54,7 +54,8 @@ local regulars = {
     "yanivger",
     "ytremors",
     "zendesigner",
-    "zlema01"
+    "zlema01",
+    "haja112"
 }
 
 local function create_groups()
@@ -268,7 +269,6 @@ local function show_players(victim)
     local numpeople = 0
 
     --Cleaned up 1-2020
-    smart_print(victim, "\n") -- Formatting for discord
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
