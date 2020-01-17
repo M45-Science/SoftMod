@@ -230,19 +230,26 @@ local function get_permgroup()
             --Handle nil permissions, for mod compatability
             if (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and global.regulargroup ~= nil and global.admingroup ~= nil) then
                 --Only move from default groups, for mod compatability
-                if (player.permission_group == global.defaultgroup or player.permission_group == global.trustedgroup or player.permission_group == global.regulargroup) then
+                if
+                    (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or
+                        player.permission_group.name == global.regulargroup.name)
+                 then
                     if (player.admin) then
-                        if (player.permission_group ~= global.admingroup) then
+                        if (player.permission_group.name ~= global.admingroup.name) then
                             global.admingroup.add_player(player)
                             message_all(player.name .. " moved to admins...")
                             player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                         end
-                    elseif (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
-                        if (player.permission_group ~= global.defaultgroup) then
-                            global.trustedgroup.add_player(player)
-                            message_all(player.name .. " was moved to trusted users.")
-                            player.print("(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!")
-                            player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                    elseif player.permission_group.name == global.defaultgroup.name then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
+                            if (player.permission_group.name ~= global.trustedgroup.name) then
+                                global.trustedgroup.add_player(player)
+                                message_all(player.name .. " was moved to trusted users.")
+                                player.print(
+                                    "(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!"
+                                )
+                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                            end
                         end
                     end
                 end
@@ -640,11 +647,15 @@ script.on_event(
         local player = game.players[event.player_index]
 
         --Moved here to reduce on_tick
-        if is_regular(player.name) then
-            if (player.permission_group ~= global.regulargroup) then
-                global.regulargroup.add_player(player)
-                message_all(player.name .. " moved to regulars...")
-                player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
+        if player.permission_group ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
+            if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
+                if is_regular(player.name) then
+                    if (player.permission_group.name ~= global.regulargroup.name) then
+                        global.regulargroup.add_player(player)
+                        message_all(player.name .. " moved to regulars...")
+                        player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
+                    end
+                end
             end
         end
     end
@@ -687,10 +698,12 @@ script.on_event(
 
         if (game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
-                if player.permission_group ~= global.regulargroup and player.admin == false then --Dont bother with regulars/admins
-                    if created_entity.name == "programmable-speaker" then
-                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
-                        global.last_speaker_warning = game.tick
+                if player.permission_group ~= nil and global.regulargroup.name ~= nil then
+                    if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
+                        if created_entity.name == "programmable-speaker" then
+                            message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+                            global.last_speaker_warning = game.tick
+                        end
                     end
                 end
             end
@@ -710,12 +723,15 @@ script.on_event(
         end
 
         if (game.tick - global.last_decon_warning >= 300) then
-            if player.permission_group ~= global.regulargroup and player.admin == false then --Dont bother with regulars/admins
-                message_all(
-                    player.name ..
-                        " is using the deconstruction planner: " ..
-                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
-                )
+            if player.permission_group ~= nil and global.regulargroup.name ~= nil then
+                if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
+                    message_all(
+                        player.name ..
+                            " is using the deconstruction planner: " ..
+                                math.floor(area.left_top.x) ..
+                                    "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+                    )
+                end
             end
             global.last_decon_warning = game.tick
         end
