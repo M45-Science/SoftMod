@@ -56,7 +56,8 @@ local regulars = {
     "twist.mills",
     "ytremors",
     "zendesigner",
-    "zlema01"
+    "zlema01",
+    "john_zivanovik_f"
 }
 
 local function mysplit(inputstr, sep)
