@@ -262,6 +262,7 @@ local function show_players(victim)
     local numpeople = 0
 
     --Cleaned up 1-2020
+    smart_print(victim, "\n") -- Formatting for discord
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
@@ -278,7 +279,6 @@ local function show_players(victim)
                 utag = "(none)"
             end
 
-            smart_print(victim, "\n") -- Formatting for discord
             if (global.actual_playtime and global.actual_playtime[player.index]) then
                 smart_print(
                     victim,
