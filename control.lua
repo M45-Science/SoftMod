@@ -96,16 +96,16 @@ local function mysplit(inputstr, sep)
     return t
 end
 
-local function coal_mode(player)
-    if global.coalmode ~= nil and player ~= nil then
+local function coal_mode()
+    if global.coalmode ~= nil then
         local pforce = game.forces["player"]
         if pforce ~= nil then
             --disable tech
             pforce.technologies["landfill"].enabled = false
             pforce.technologies["solar-energy"].enabled = false
             pforce.technologies["logistic-robotics"].enabled = false
-            pforce.technologies["basic-electronics"].enabled = false
-            pforce.technologies["basic-optics"].enabled = false
+            pforce.technologies["electronics"].enabled = false
+            pforce.technologies["ptics"].enabled = false
             pforce.technologies["electric-inserter"].enabled = false
             pforce.technologies["railway"].enabled = false
         end
@@ -341,7 +341,7 @@ script.on_load(
                                 smart_print(victim, "Coal mode disabled.")
                             else
                                 global.coalmode = true
-                                coal_mode(victim)
+                                coal_mode()
                                 smart_print(victim, "Coal mode enabled.")
                             end
                         else
@@ -719,7 +719,7 @@ script.on_event(
         create_groups()
         show_players(player)
         sandbox_mode(player)
-        coal_mode(player)
+        coal_mode()
         game_settings(player)
     end
 )
