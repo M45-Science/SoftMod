@@ -1,13 +1,4 @@
---Settings
-local svers = "v039-1-16-2020"
-local server_tag = "discord.gg/Ps2jnm7"
-local is_sandbox = false
-local warning_delay = 300
-local probation_score = 30
-local update_ticks = 600
-
-local ranonce = false
-local boot_time = nil
+--v039-1-16-2020
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -79,23 +70,10 @@ local function mysplit(inputstr, sep)
     return t
 end
 
-local function uptime()
-    local results = "Error"
-
-    if boot_time == 0 then
-        boot_time = game.tick
-    end
-
-    if boot_time ~= nil then
-        local uphours = (game.tick - boot_time) / 60.0 / 60.0 / 60.0
-        results = string.format("%-4.2fh", uphours)
-    end
-
-    return results
-end
-
 local function sandbox_mode(player)
-    if is_sandbox == true and player ~= nil then
+    return
+
+    if player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
@@ -154,8 +132,8 @@ local function set_perms()
     end
 end
 
-local function run_once(player)
-    if ranonce == false then
+local function game_settings(player)
+
         if game ~= nil then
             if player ~= nil then
                 set_perms()
@@ -171,10 +149,8 @@ local function run_once(player)
                 --game.forces["player"].technologies["logistic-robotics"].enabled = false
                 --game.forces["player"].technologies["railway"].enabled = false
                 end
-                ranonce = true
             end
         end
-    end
 end
 
 --Is player in regulars list--
@@ -262,7 +238,7 @@ local function get_permgroup()
             else
                 if
                     (global.actual_playtime and global.actual_playtime[player.index] and
-                        global.actual_playtime[player.index] > (probation_score * 60 * 60))
+                        global.actual_playtime[player.index] > (30 * 60 * 60))
                  then
                     if (player.permission_group ~= nil and player.permission_group.name == "Default") then
                         if (global.trustedgroup.add_player(player) == true) then
@@ -328,7 +304,6 @@ end
 --On load, add commands--
 script.on_load(
     function()
-        boot_time = 0
 
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
@@ -491,9 +466,6 @@ script.on_load(
                             is_admin = false
                         end
                     end
-
-                    local utime = uptime()
-                    smart_print(victim, "Uptime: " .. utime)
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.actual_playtime) then
@@ -701,7 +673,7 @@ script.on_event(
 
         show_players(player)
         sandbox_mode(player)
-        run_once(player)
+        game_settings(player)
     end
 )
 
@@ -727,7 +699,7 @@ script.on_event(
             global.last_speaker_warning = 0
         end
 
-        if (game.tick - global.last_speaker_warning >= warning_delay) then
+        if (game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
                 if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
@@ -756,7 +728,7 @@ script.on_event(
             global.last_decon_warning = 0
         end
 
-        if (game.tick - global.last_decon_warning >= warning_delay) then
+        if (game.tick - global.last_decon_warning >= 300) then
             if is_regular(player.name) == false and player.admin == false then --Dont bother with regulars/admins
                 message_all(
                     player.name ..
@@ -840,14 +812,9 @@ script.on_event(
             global.last_s_tick = 0
         end
 
-        if (game.tick - global.last_s_tick >= update_ticks) then
+        if (game.tick - global.last_s_tick >= 600) then
             global.last_s_tick = game.tick --Reset timer
             local toremove
-
-            --Uptime hack
-            if boot_time == 0 then
-                boot_time = game.tick
-            end
 
             --Remove old corpse tags
             if (global.corpselist) then
@@ -874,7 +841,7 @@ script.on_event(
                 global.servertag = nil
             end
             if (not global.servertag) then
-                local label = server_tag
+                local label = "discord.gg/Ps2jnm7"
                 local chartTag = {
                     position = {0, 0},
                     icon = {type = "item", name = "programmable-speaker"},
