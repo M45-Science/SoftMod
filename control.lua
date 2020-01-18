@@ -5,17 +5,48 @@ handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
 
 local coal_mode_recipes = {
-    "electric-mining-drill",
-    "electric-furnace"
+    "accumulator",
+    "beacon",
+    "belt-immunity-equipment",
+    "defender-capsule",
+    "destroyer-capsule",
+    "discharge-defense-equipment",
+    "discharge-defense-remote",
+    "distractor-capsule",
+    "effectivity-module",
+    "effectivity-module-2",
+    "effectivity-module-3",
+    "exoskeleton-equipment",
+    "flying-robot-frame",
+    "fusion-reactor-equipment",
+    "laser-turret",
+    "night-vision-equipment",
+    "personal-laser-defense-equipment",
+    "personal-roboport-equipment",
+    "personal-roboport-mk2-equipment",
+    "poison-capsule",
+    "power-armor",
+    "power-armor-mk2",
+    "processing-unit",
+    "railgun",
+    "roboport",
+    "rocket-control-unit",
+    "rocket-silo",
+    "satellite",
+    "slowdown-capsule",
+    "solar-panel",
+    "speed-module",
+    "speed-module-2",
+    "speed-module-3"
 }
 
 local coal_mode_techs = {
- "landfill",
- "solar-energy",
- "logistic-robotics",
- "electronics",
- "optics",
- "railway"
+    "landfill",
+    "solar-energy",
+    "logistic-robotics",
+    "robotics",
+    "laser",
+    "logistic-system"
 }
 
 local regulars = {
@@ -112,28 +143,35 @@ local function mysplit(inputstr, sep)
 end
 
 local function coal_mode()
-    if global.coalmode ~= nil then
-        local pforce = game.forces["player"]
-        if pforce ~= nil then
+    local pforce = game.forces["player"]
 
+    if pforce ~= nil then
+        if global.coalmode ~= nil then
             for _, gtech in pairs(pforce.technologies) do
                 for _, ctech in pairs(coal_mode_techs) do
-                  if gtech.name == ctech then
-                    pforce.technologies[ctech].enabled = false
-                    print("Disabled tech: " .. ctech)
-                  end
-              end
+                    if gtech.name == ctech then
+                        pforce.technologies[ctech].enabled = false
+                        print("Disabled tech: " .. ctech)
+                    end
+                end
             end
 
             for _, recipe in pairs(pforce.recipes) do
-                for _, crep in pairs (coal_mode_recipes) do
+                for _, crep in pairs(coal_mode_recipes) do
                     if recipe.name == crep then
                         recipe.enabled = false
                         print("Disabled recipe: " .. crep)
                     end
                 end
             end
-            
+        else
+            for _, gtech in pairs(pforce.technologies) do
+                pforce.technologies[gtech.name].enabled = true
+            end
+
+            for _, recipe in pairs(pforce.recipes) do
+                recipe.enabled = true
+            end
         end
     end
 end
