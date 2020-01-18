@@ -273,6 +273,18 @@ local function message_all(message)
     print("[MSG] " .. message)
 end
 
+--Global messages (players only)--
+local function message_allp(message)
+    for _, player in pairs(game.connected_players) do
+        player.print(message)
+    end
+end
+
+--Global messages-- (discord only)
+local function message_alld(message)
+    print("[MSG] " .. message)
+end
+
 --Sort players--
 local function sortTime(a, b)
     if (a == nil or b == nil) then
@@ -779,6 +791,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
+        message_allp ( player.name .." is a new character!")
         create_groups()
         show_players(player)
         sandbox_mode(player)
@@ -830,20 +843,35 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local area = event.area
+        local prob_safe = false
 
         if (not global.last_decon_warning) then
             global.last_decon_warning = 0
         end
 
-        if (game.tick - global.last_decon_warning >= 300) then
+        --If they are active over this amount, probably don't need to alert.
+        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (120 * 60 * 60)) then
+            prob_safe = true
+        end
+
+        if (game.tick - global.last_decon_warning >= 600) then
+
             if player.permission_group ~= nil and global.regulargroup ~= nil then
                 if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
-                    message_all(
-                        player.name ..
-                            " is using the deconstruction planner: " ..
-                                math.floor(area.left_top.x) ..
-                                    "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
-                    )
+
+                    local message = player.name ..
+                    " is using the deconstruction planner: " ..
+                        math.floor(area.left_top.x) ..
+                            "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+
+                    if prob_safe == false then
+                        --Warn everyone
+                        message_all(message)
+                    else
+                        --Log it anyway
+                        print(message)
+                    end
+
                 end
             end
             global.last_decon_warning = game.tick
@@ -856,7 +884,9 @@ script.on_event(
     defines.events.on_pre_player_mined_item,
     function(event)
         local player = game.players[event.player_index]
+        local obj  = event.entity
 
+        print(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
         if (not global.actual_playtime) then
             global.actual_playtime = {}
             global.actual_playtime[0] = 0
@@ -905,6 +935,9 @@ script.on_event(
         local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
         table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+
+        --Log to discord
+        message_alld ( player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) )
     end
 )
 
