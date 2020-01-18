@@ -126,7 +126,7 @@ local function coal_mode()
             end
 
             for _, recipe in pairs(pforce.recipes) do
-                for _, crep in coal_mode_recipes do
+                for _, crep in pairs (coal_mode_recipes) do
                     if recipe.name == crep then
                         recipe.enabled = false
                         print("Disabled recipe: " .. crep)
