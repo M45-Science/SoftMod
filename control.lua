@@ -166,7 +166,7 @@ local function coal_mode()
             end
         else
             for _, gtech in pairs(pforce.technologies) do
-                pforce.technologies[gtech.name].enabled = true
+                gtech.enabled = true
             end
 
             for _, recipe in pairs(pforce.recipes) do
