@@ -41,7 +41,6 @@ local coal_mode_recipes = {
 }
 
 local coal_mode_techs = {
-    "landfill",
     "solar-energy",
     "logistic-robotics",
     "robotics",
