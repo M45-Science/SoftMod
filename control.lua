@@ -109,6 +109,7 @@ local function coal_mode()
             pforce.technologies["optics"].enabled = false
             pforce.technologies["electric-inserter"].enabled = false
             pforce.technologies["railway"].enabled = false
+            print("debug: tech disabled")
         end
     end
 end
