@@ -116,7 +116,7 @@ local function coal_mode()
         local pforce = game.forces["player"]
         if pforce ~= nil then
 
-            for _, gtech in pairs(data.raw.technologies) do
+            for _, gtech in pairs(pforce.technologies) do
                 for _, ctech in pairs(coal_mode_techs) do
                   if gtech.name == ctech then
                     pforce.technologies[ctech].enabled = false
@@ -125,7 +125,7 @@ local function coal_mode()
               end
             end
 
-            for _, recipe in pairs(data.raw.recipe) do
+            for _, recipe in pairs(pforce.recipes) do
                 for _, crep in coal_mode_recipes do
                     if recipe.name == crep then
                         recipe.enabled = false
