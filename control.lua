@@ -4,6 +4,20 @@ local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
 
+local coal_mode_recipes = {
+    "electric-mining-drill",
+    "electric-furnace"
+}
+
+local coal_mode_techs = {
+ "landfill",
+ "solar-energy",
+ "logistic-robotics",
+ "electronics",
+ "optics",
+ "railway"
+}
+
 local regulars = {
     "A7fie",
     "Aidenkrz",
@@ -101,15 +115,25 @@ local function coal_mode()
     if global.coalmode ~= nil then
         local pforce = game.forces["player"]
         if pforce ~= nil then
-            --disable tech
-            pforce.technologies["landfill"].enabled = false
-            pforce.technologies["solar-energy"].enabled = false
-            pforce.technologies["logistic-robotics"].enabled = false
-            pforce.technologies["electronics"].enabled = false
-            pforce.technologies["optics"].enabled = false
-            pforce.technologies["electric-inserter"].enabled = false
-            pforce.technologies["railway"].enabled = false
-            print("debug: tech disabled")
+
+            for _, gtech in pairs(data.raw.technologies) do
+                for _, ctech in pairs(coal_mode_techs) do
+                  if gtech.name == ctech then
+                    pforce.technologies[ctech].enabled = false
+                    print("Disabled tech: " .. ctech)
+                  end
+              end
+            end
+
+            for _, recipe in pairs(data.raw.recipe) do
+                for _, crep in coal_mode_recipes do
+                    if recipe.name == crep then
+                        recipe.enabled = false
+                        print("Disabled recipe: " .. crep)
+                    end
+                end
+            end
+            
         end
     end
 end
