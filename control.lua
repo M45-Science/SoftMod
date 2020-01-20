@@ -814,6 +814,29 @@ script.on_load(
 )
 
 --EVENTS--
+--Command logging
+script.on_event(
+    defines.events.on_console_command,
+    function(event)
+        local command = ""
+        local args = ""
+
+        if event.command then
+            command = event.command
+        end
+
+        if event.parameters then
+            args = event.parameters
+        end
+
+        if event.player_index then
+            local player = game.players[event.player_index]
+            print("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args )
+        else
+            print("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args)
+        end
+    end
+)
 
 --Player connected
 script.on_event(
