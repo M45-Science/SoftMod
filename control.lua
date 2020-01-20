@@ -49,29 +49,6 @@ local coal_mode_techs = {
 }
 
 local regulars = {
-	"A7fie",
-	"Acid_wars",
-	"DIBBG4MER",
-	"Estabon",
-	"Gatis",
-	"GregorS",
-	"ItsAMeeeLuigi",
-	"Killy71",
-	"Merciless210",
-	"Moose1301",
-	"Nasphere",
-	"That_Dude",
-	"Thoren",
-	"antuan309",
-	"brftjx",
-	"haja112",
-	"jetboy57",
-	"john_zivanovik_f",
-	"mueppel",
-	"sosofly",
-	"sukram72",
-	"twist.mills",
-	"yanivger",
     "A7fie",
     "Aidenkrz",
     "Andro",
@@ -107,7 +84,6 @@ local regulars = {
     "chrisg23",
     "chubbins",
     "funork",
-    "haja112",
     "john_zivanovik_f",
     "jslannon",
     "lipinkaixin",
@@ -122,7 +98,8 @@ local regulars = {
     "yanivger",
     "ytremors",
     "zendesigner",
-    "zlema01"
+    "zlema01",
+    "haja112"
 }
 
 local function create_groups()
