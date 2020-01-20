@@ -831,9 +831,9 @@ script.on_event(
 
         if event.player_index then
             local player = game.players[event.player_index]
-            print("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args )
-        else
-            print("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args)
+            print(fmt.Sprintf("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
+        elseif command ~= "time" and command ~= "p o c" then --Ignore spammy commands
+            print(fmt.Sprintf("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args))
         end
     end
 )
