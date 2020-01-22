@@ -168,7 +168,7 @@ local function coal_mode()
     local pforce = game.forces["player"]
 
     if pforce ~= nil then
-        if global.coalmode ~= nil then
+        if global.coalmode == true then
             for _, gtech in pairs(pforce.technologies) do
                 for _, ctech in pairs(coal_mode_techs) do
                     if gtech.name == ctech then
@@ -199,7 +199,7 @@ local function coal_mode()
 end
 
 local function sandbox_mode(player)
-    if global.sandboxmode ~= nil and player ~= nil then
+    if global.sandboxmode == true and player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
