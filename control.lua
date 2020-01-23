@@ -876,7 +876,6 @@ script.on_event(
         create_groups()
         show_players(player)
         sandbox_mode(player)
-        coal_mode()
         game_settings(player)
     end
 )
