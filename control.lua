@@ -239,11 +239,14 @@ local function set_perms()
     local dperms = game.permissions.get_group("Default")
 
     if dperms ~= nil then
+
+        dperms.set_allows_action(defines.input_action.wire_dragging, false)
         dperms.set_allows_action(defines.input_action.activate_cut, false)
         dperms.set_allows_action(defines.input_action.add_train_station, false)
         dperms.set_allows_action(defines.input_action.build_terrain, false)
         dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
         dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+        dperms.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
         dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
         dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
         dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
