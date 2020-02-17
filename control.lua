@@ -1077,6 +1077,20 @@ script.on_event(
     end
 )
 
+--Research Finished
+script.on_event(
+    defines.events.on_research_finished,
+    function(event)
+        local tech = event.research
+
+
+        --Log to discord
+        message_alld(
+            "Research" .. tech.name .. " completed."
+        )
+    end
+)
+
 --Tick loop--
 --Keep to minimum--
 script.on_event(
