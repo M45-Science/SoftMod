@@ -1083,10 +1083,19 @@ script.on_event(
     function(event)
         local tech = event.research
 
+        --Disable mining/rotating once we get far enough along
+        if tech.name == "chemical-science-pack" then
+            local dperms = game.permissions.get_group("Default")
+            if dperms ~= nil then
+                message_alld ("Automatically disabling rotating and mining objects for new users.")
+                dperms.set_allows_action(defines.input_action.begin_mining, false)
+                dperms.set_allows_action(defines.input_action.rotate_entity, false)
+            end
+        end
 
         --Log to discord
         message_alld(
-            "Research" .. tech.name .. " completed."
+            "Research " .. tech.name .. " completed."
         )
     end
 )
