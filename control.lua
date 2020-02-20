@@ -823,7 +823,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -912,12 +912,176 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
     end
 )
+
+--Craft item
+script.on_event(
+    defines.events.on_player_crafted_item,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+
+--Player inventory
+script.on_event(
+    defines.events.on_player_main_inventory_changed,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+
+--Mine tiles
+script.on_event(
+    defines.events.on_player_mined_tile,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Place equipment
+script.on_event(
+    defines.events.on_player_placed_equipment,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Remove equipment
+script.on_event(
+    defines.events.on_player_removed_equipment,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Repair entity
+script.on_event(
+    defines.events.on_player_repaired_entity,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Rotate entity
+script.on_event(
+    defines.events.on_player_rotated_entity,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Fast transfer
+script.on_event(
+    defines.events.on_player_fast_transferred,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+
 
 --Walking/Driving
 script.on_event(
@@ -932,7 +1096,7 @@ script.on_event(
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
             --Estimate...
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + (6.67)
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + (7)
         else
             global.actual_playtime[player.index] = 0.0
         end
