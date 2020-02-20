@@ -1,4 +1,4 @@
---v040-2-18-2020
+--v040-2-20-2020
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -823,7 +823,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -898,6 +898,7 @@ script.on_event(
     end
 )
 
+--Activity events
 --Mined item
 script.on_event(
     defines.events.on_pre_player_mined_item,
@@ -912,7 +913,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -932,7 +933,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -953,7 +954,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -974,7 +975,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -994,7 +995,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1014,7 +1015,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1034,7 +1035,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1054,7 +1055,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1074,13 +1075,13 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
         else
             global.actual_playtime[player.index] = 0.0
         end
     end
 )
-
+--End Activity
 
 
 --Walking/Driving
