@@ -823,7 +823,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -913,7 +913,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -933,7 +933,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -954,7 +954,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -975,7 +975,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -995,7 +995,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1015,7 +1015,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1035,7 +1035,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1055,7 +1055,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1075,7 +1075,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 4
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1097,7 +1097,7 @@ script.on_event(
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
             --Estimate...
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + (7)
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 7
         else
             global.actual_playtime[player.index] = 0.0
         end
