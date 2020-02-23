@@ -1330,7 +1330,7 @@ script.on_nth_tick(
             global.servertag = nil
         end
         if (not global.servertag) then
-            local label = "discord.gg/Ps2jnm7\nhttp://bhmm.net"
+            local label = "discord.gg/Ps2jnm7"
             local chartTag = {
                 position = {0, 0},
                 icon = {type = "item", name = "programmable-speaker"},
