@@ -823,7 +823,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -913,7 +913,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -925,15 +925,14 @@ script.on_event(
     defines.events.on_player_crafted_item,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
-
+        
         if (not global.actual_playtime) then
             global.actual_playtime = {}
             global.actual_playtime[0] = 0
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -946,7 +945,6 @@ script.on_event(
     defines.events.on_player_main_inventory_changed,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -954,7 +952,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -967,7 +965,6 @@ script.on_event(
     defines.events.on_player_mined_tile,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -975,7 +972,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -987,7 +984,6 @@ script.on_event(
     defines.events.on_player_placed_equipment,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -995,7 +991,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1007,7 +1003,6 @@ script.on_event(
     defines.events.on_player_removed_equipment,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -1015,7 +1010,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1027,7 +1022,6 @@ script.on_event(
     defines.events.on_player_repaired_entity,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -1035,7 +1029,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1047,7 +1041,6 @@ script.on_event(
     defines.events.on_player_rotated_entity,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -1055,7 +1048,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1067,7 +1060,25 @@ script.on_event(
     defines.events.on_player_fast_transferred,
     function(event)
         local player = game.players[event.player_index]
-        local obj = event.entity
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Shooting
+script.on_event(
+    defines.input_action.change_shooting_state,
+    function(event)
+        local player = game.players[event.player_index]
 
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -1081,6 +1092,48 @@ script.on_event(
         end
     end
 )
+
+--Selecting
+script.on_event(
+    defines.input_action.select_item,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Chatting
+script.on_event(
+    defines.events.on_console_chat,
+    function(event)
+        --Can be triggered by console, so check for nil
+        if event.player_index ~= nil then
+            local player = game.players[event.player_index]
+
+            if (not global.actual_playtime) then
+                global.actual_playtime = {}
+                global.actual_playtime[0] = 0
+            end
+
+            if (global.actual_playtime and global.actual_playtime[player.index]) then
+                global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            else
+                global.actual_playtime[player.index] = 0.0
+            end
+        end
+    end
+)
+
 --End Activity
 
 
@@ -1153,15 +1206,14 @@ script.on_event(
 
 --Tick loop--
 --Keep to minimum--
-script.on_event(
-    defines.events.on_tick,
+script.on_nth_tick(600, f)(
     function(event)
-        if (not global.last_s_tick) then
-            global.last_s_tick = 0
-        end
+        --if (not global.last_s_tick) then
+        --    global.last_s_tick = 0
+        --end
 
-        if (game.tick - global.last_s_tick >= 600) then
-            global.last_s_tick = game.tick --Reset timer
+        --if (game.tick - global.last_s_tick >= 540) then
+        --    global.last_s_tick = game.tick --Reset timer
             local toremove
 
             --Remove old corpse tags
@@ -1190,7 +1242,7 @@ script.on_event(
                 global.servertag = nil
             end
             if (not global.servertag) then
-                local label = "discord.gg/Ps2jnm7"
+                local label = "discord.gg/Ps2jnm7\nhttp://bhmm.net"
                 local chartTag = {
                     position = {0, 0},
                     icon = {type = "item", name = "programmable-speaker"},
@@ -1205,6 +1257,6 @@ script.on_event(
             end
 
             get_permgroup()
-        end
+        --end
     end
 )
