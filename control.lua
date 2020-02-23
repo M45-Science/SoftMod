@@ -49,7 +49,125 @@ local coal_mode_techs = {
 }
 
 local regulars = {
-    "A7fie", "Acid_wars", "Aidenkrz", "Andro", "ArmadaX", "AryanCoconut", "Avaren", "Azcrew_", "BlackJaBus", "Blitztexen", "BloodWolfmann", "ButterMeister", "Castleboy2000", "Corruptarc", "DIBBG4MER", "DZCM", "D_Riv", "Daddyrilla", "Darsin", "Decaliss", "Dr.Cube", "Estabon", "Fighterxx64", "Flyrockmaster", "Fondofblack", "Footy", "ForsakenWiz", "FoxMayham", "Fraanek", "FuzzyOne", "Gatis", "GregorS", "Huelsensack", "Impregneerspuit", "ItsAMeeeLuigi", "JerAdams", "Jeremykyle", "Killy71", "Mazzeneko", "Merciless210", "Micahgee", "Mike-_-", "Mikel3", "Moose1301", "Nasphere", "Odinoki86", "PEEK1995", "POI_780", "Quinlan", "R2Boyo25", "Ratuz", "Robbie06", "RoninM3", "Rylabs", "SmokuNoPico", "SpacecatCybran", "Starrs", "StevenMatthews", "That_Dude", "The-Player", "Thoren", "Trent333", "U_Wot", "VortexBerserker", "Zewex", "Zory", "adamcode", "adee", "antuan309", "bazus1", "bobbythebob12", "boeljoet", "brftjx", "chickenspie", "chrisg23", "chrisgamer2902", "chubbins", "clonedlemmings", "crystalspider37", "cubun_2009", "dangerarea", "dbt0", "dooces", "enderwolfer", "fluckinnuts", "fufexan", "funork", "haja112", "iansuarus", "jetboy57", "john_zivanovik_f", "jslannon", "julng", "komikoze", "lipinkaixin", "literallyjustanegg", "luckcolors", "luigil101", "magichobo", "mehdi2344", "mojosa", "mpsv7", "mraadx", "mueppel", "nickoe", "pakjce", "ruetama", "sage307", "skymory_24", "sm2008", "sosofly", "sukram72", "thanhatam7123", "twist.mills", "wampastompa09", "yanivger", "ytremors", "zendesigner", "zlema01"
+    "A7fie",
+    "Acid_wars",
+    "Aidenkrz",
+    "Andro",
+    "ArmadaX",
+    "AryanCoconut",
+    "Avaren",
+    "Azcrew_",
+    "BlackJaBus",
+    "Blitztexen",
+    "BloodWolfmann",
+    "ButterMeister",
+    "Castleboy2000",
+    "Corruptarc",
+    "DIBBG4MER",
+    "DZCM",
+    "D_Riv",
+    "Daddyrilla",
+    "Darsin",
+    "Decaliss",
+    "Dr.Cube",
+    "Estabon",
+    "Fighterxx64",
+    "Flyrockmaster",
+    "Fondofblack",
+    "Footy",
+    "ForsakenWiz",
+    "FoxMayham",
+    "Fraanek",
+    "FuzzyOne",
+    "Gatis",
+    "GregorS",
+    "Huelsensack",
+    "Impregneerspuit",
+    "ItsAMeeeLuigi",
+    "JerAdams",
+    "Jeremykyle",
+    "Killy71",
+    "Mazzeneko",
+    "Merciless210",
+    "Micahgee",
+    "Mike-_-",
+    "Mikel3",
+    "Moose1301",
+    "Nasphere",
+    "Odinoki86",
+    "PEEK1995",
+    "POI_780",
+    "Quinlan",
+    "R2Boyo25",
+    "Ratuz",
+    "Robbie06",
+    "RoninM3",
+    "Rylabs",
+    "SmokuNoPico",
+    "SpacecatCybran",
+    "Starrs",
+    "StevenMatthews",
+    "That_Dude",
+    "The-Player",
+    "Thoren",
+    "Trent333",
+    "U_Wot",
+    "VortexBerserker",
+    "Zewex",
+    "Zory",
+    "adamcode",
+    "adee",
+    "antuan309",
+    "bazus1",
+    "bobbythebob12",
+    "boeljoet",
+    "brftjx",
+    "chickenspie",
+    "chrisg23",
+    "chrisgamer2902",
+    "chubbins",
+    "clonedlemmings",
+    "crystalspider37",
+    "cubun_2009",
+    "dangerarea",
+    "dbt0",
+    "dooces",
+    "enderwolfer",
+    "fluckinnuts",
+    "fufexan",
+    "funork",
+    "haja112",
+    "iansuarus",
+    "jetboy57",
+    "john_zivanovik_f",
+    "jslannon",
+    "julng",
+    "komikoze",
+    "lipinkaixin",
+    "literallyjustanegg",
+    "luckcolors",
+    "luigil101",
+    "magichobo",
+    "mehdi2344",
+    "mojosa",
+    "mpsv7",
+    "mraadx",
+    "mueppel",
+    "nickoe",
+    "pakjce",
+    "ruetama",
+    "sage307",
+    "skymory_24",
+    "sm2008",
+    "sosofly",
+    "sukram72",
+    "thanhatam7123",
+    "twist.mills",
+    "wampastompa09",
+    "yanivger",
+    "ytremors",
+    "zendesigner",
+    "zlema01"
 }
 
 local function create_groups()
@@ -152,7 +270,6 @@ local function set_perms()
     local dperms = game.permissions.get_group("Default")
 
     if dperms ~= nil then
-
         dperms.set_allows_action(defines.input_action.wire_dragging, false)
         dperms.set_allows_action(defines.input_action.activate_cut, false)
         dperms.set_allows_action(defines.input_action.add_train_station, false)
@@ -925,7 +1042,7 @@ script.on_event(
     defines.events.on_player_crafted_item,
     function(event)
         local player = game.players[event.player_index]
-        
+
         if (not global.actual_playtime) then
             global.actual_playtime = {}
             global.actual_playtime[0] = 0
@@ -938,7 +1055,6 @@ script.on_event(
         end
     end
 )
-
 
 --Player inventory
 script.on_event(
@@ -958,7 +1074,6 @@ script.on_event(
         end
     end
 )
-
 
 --Mine tiles
 script.on_event(
@@ -1117,7 +1232,6 @@ script.on_event(
 
 --End Activity
 
-
 --Walking/Driving
 script.on_event(
     defines.events.on_player_changed_position,
@@ -1172,72 +1286,64 @@ script.on_event(
         if tech.name == "chemical-science-pack" then
             local dperms = game.permissions.get_group("Default")
             if dperms ~= nil then
-                message_alld ("Automatically disabling rotating and mining objects for new users.")
+                message_alld("Automatically disabling rotating and mining objects for new users.")
                 dperms.set_allows_action(defines.input_action.begin_mining, false)
                 dperms.set_allows_action(defines.input_action.rotate_entity, false)
             end
         end
 
         --Log to discord
-        message_alld(
-            "Research " .. tech.name .. " completed."
-        )
+        message_alld("Research " .. tech.name .. " completed.")
     end
 )
 
 --Tick loop--
 --Keep to minimum--
-script.on_nth_tick(600,
+script.on_nth_tick(
+    600, --10 seconds
     function(event)
-        --if (not global.last_s_tick) then
-        --    global.last_s_tick = 0
-        --end
+        local toremove
 
-        --if (game.tick - global.last_s_tick >= 540) then
-        --    global.last_s_tick = game.tick --Reset timer
-            local toremove
-
-            --Remove old corpse tags
-            if (global.corpselist) then
-                for _, corpse in pairs(global.corpselist) do
-                    if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
-                        if (corpse.tag and corpse.tag.valid) then
-                            corpse.tag.destroy()
-                        end
-                        toremove = corpse
+        --Remove old corpse tags
+        if (global.corpselist) then
+            for _, corpse in pairs(global.corpselist) do
+                if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
+                    if (corpse.tag and corpse.tag.valid) then
+                        corpse.tag.destroy()
                     end
+                    toremove = corpse
                 end
             end
-            if (toremove) then
-                toremove.tag = nil
-                toremove.tick = nil
-                toremove = nil
-            end
+        end
+        if (toremove) then
+            toremove.tag = nil
+            toremove.tick = nil
+            toremove = nil
+        end
 
-            --Server tag
-            if (global.servertag and not global.servertag.valid) then
-                global.servertag = nil
-            end
-            if (global.servertag and global.servertag.valid) then
-                global.servertag.destroy()
-                global.servertag = nil
-            end
-            if (not global.servertag) then
-                local label = "discord.gg/Ps2jnm7\nhttp://bhmm.net"
-                local chartTag = {
-                    position = {0, 0},
-                    icon = {type = "item", name = "programmable-speaker"},
-                    text = label
-                }
-                local pforce = game.forces["player"]
-                local psurface = game.surfaces["nauvis"]
+        --Server tag
+        if (global.servertag and not global.servertag.valid) then
+            global.servertag = nil
+        end
+        if (global.servertag and global.servertag.valid) then
+            global.servertag.destroy()
+            global.servertag = nil
+        end
+        if (not global.servertag) then
+            local label = "discord.gg/Ps2jnm7\nhttp://bhmm.net"
+            local chartTag = {
+                position = {0, 0},
+                icon = {type = "item", name = "programmable-speaker"},
+                text = label
+            }
+            local pforce = game.forces["player"]
+            local psurface = game.surfaces["nauvis"]
 
-                if pforce ~= nil and psurface ~= nil then
-                    global.servertag = pforce.add_chart_tag(psurface, chartTag)
-                end
+            if pforce ~= nil and psurface ~= nil then
+                global.servertag = pforce.add_chart_tag(psurface, chartTag)
             end
+        end
 
-            get_permgroup()
-        --end
+        get_permgroup()
     end
 )
