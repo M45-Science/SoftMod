@@ -1093,25 +1093,6 @@ script.on_event(
     end
 )
 
---Selecting
-script.on_event(
-    defines.input_action.select_item,
-    function(event)
-        local player = game.players[event.player_index]
-
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
-        end
-
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
-        else
-            global.actual_playtime[player.index] = 0.0
-        end
-    end
-)
-
 --Chatting
 script.on_event(
     defines.events.on_console_chat,
