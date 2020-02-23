@@ -1300,7 +1300,7 @@ script.on_event(
 --Tick loop--
 --Keep to minimum--
 script.on_nth_tick(
-    600, --10 seconds
+    900, --15 seconds
     function(event)
         local toremove
 
