@@ -1187,7 +1187,7 @@ script.on_event(
 
 --Tick loop--
 --Keep to minimum--
-script.on_nth_tick(600, f)(
+script.on_nth_tick(600,
     function(event)
         --if (not global.last_s_tick) then
         --    global.last_s_tick = 0
