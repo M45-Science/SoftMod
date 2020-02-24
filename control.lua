@@ -521,8 +521,55 @@ script.on_load(
 
                 if (victim and victim.valid) then
                     --Lame, but works
-                    global.actual_playtime[victim.index] = (31 * 60 * 60)
-                    smart_print(player, "Player set to trusted.")
+                    if global.actual_playtime[victim.index] then
+                        if global.actual_playtime[victim.index] < (30 * 60 * 60) then
+                            global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
+                            smart_print(player, "Player set to trusted.")
+                            return
+                        else
+                            smart_print(player, "Player was already trusted.")
+                        end
+                    return
+                end
+                smart_print(player, "Error.")
+
+            end
+        )
+
+        --Set user to regular
+        commands.add_command(
+            "regular",
+            "/regular <player> -- sets user to regular status",
+            function(param)
+                local is_admin = true
+                local player = nil
+
+                if (not global.actual_playtime) then
+                    global.actual_playtime = {}
+                    global.actual_playtime[0] = 0
+                end
+                
+                if param.player_index then
+                    player = game.players[param.player_index]
+                    if player.admin == false then
+                        is_admin = false
+                        smart_print(player, "Admins only.")
+                        return
+                    end
+                end
+
+                local victim = game.players[param.parameter]
+
+                if (victim and victim.valid) then
+                    --Lame, but works
+                    if global.actual_playtime[victim.index] then
+                        if global.actual_playtime[victim.index] < (2 * 60 * 60) then
+                            global.actual_playtime[victim.index] = (2 * 60 * 60) + 1
+                            smart_print(player, "Player set to regular.")
+                            return
+                        else
+                            smart_print(player, "Player was already a regular.")
+                        end
                     return
                 end
                 smart_print(player, "Error.")
