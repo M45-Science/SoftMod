@@ -499,6 +499,42 @@ script.on_load(
         if (commands.commands.server_interface == nil) then
             --Trust user
             commands.add_command(
+                "reset",
+                "/reset  <player> -- sets player active time to 0",
+                function(param)
+                    local is_admin = true
+                    local player = nil
+
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
+                    end
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local victim = game.players[param.parameter]
+
+                    if (victim and victim.valid) then
+                        --Lame, but works
+                        if global.actual_playtime[victim.index] then
+                            global.actual_playtime[victim.index] = 0
+                            smart_print(player, "Player set to untrusted.")
+                            return
+                        end
+                    end
+                    smart_print(player, "Error.")
+                end
+            )
+
+            --Trust user
+            commands.add_command(
                 "trust",
                 "/trust <player> -- sets user to trusted",
                 function(param)
