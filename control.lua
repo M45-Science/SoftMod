@@ -1426,6 +1426,7 @@ script.on_event(
             global.actual_playtime[0] = 0
         end
 
+        --Only count if actually walking...
         if player and player.valid and player.walking_state ~= nil then
             local walking_state = player.walking_state.walking
 
