@@ -495,89 +495,88 @@ end
 --On load, add commands--
 script.on_load(
     function()
-
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
             --Trust user
-        commands.add_command(
-            "trust",
-            "/trust <player> -- sets user to trusted",
-            function(param)
-                local is_admin = true
-                local player = nil
+            commands.add_command(
+                "trust",
+                "/trust <player> -- sets user to trusted",
+                function(param)
+                    local is_admin = true
+                    local player = nil
 
-                if (not global.actual_playtime) then
-                    global.actual_playtime = {}
-                    global.actual_playtime[0] = 0
-                end
-                
-                if param.player_index then
-                    player = game.players[param.player_index]
-                    if player.admin == false then
-                        is_admin = false
-                        smart_print(player, "Admins only.")
-                        return
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
                     end
-                end
 
-                local victim = game.players[param.parameter]
-
-                if (victim and victim.valid) then
-                    --Lame, but works
-                    if global.actual_playtime[victim.index] then
-                        if global.actual_playtime[victim.index] < (30 * 60 * 60) then
-                            global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
-                            smart_print(player, "Player set to trusted.")
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
                             return
                         end
-                        smart_print(player, "Player was already trusted.")
-                    return
-                end
-                smart_print(player, "Error.")
-
-            end
-        )
-
-        --Set user to regular
-        commands.add_command(
-            "regular",
-            "/regular <player> -- sets user to regular status",
-            function(param)
-                local is_admin = true
-                local player = nil
-
-                if (not global.actual_playtime) then
-                    global.actual_playtime = {}
-                    global.actual_playtime[0] = 0
-                end
-                
-                if param.player_index then
-                    player = game.players[param.player_index]
-                    if player.admin == false then
-                        is_admin = false
-                        smart_print(player, "Admins only.")
-                        return
                     end
-                end
 
-                local victim = game.players[param.parameter]
+                    local victim = game.players[param.parameter]
 
-                if (victim and victim.valid) then
-                    --Lame, but works
-                    if global.actual_playtime[victim.index] then
-                        if global.actual_playtime[victim.index] < (2 * 60 * 60) then
-                            global.actual_playtime[victim.index] = (2 * 60 * 60) + 1
-                            smart_print(player, "Player set to regular.")
+                    if (victim and victim.valid) then
+                        --Lame, but works
+                        if global.actual_playtime[victim.index] then
+                            if global.actual_playtime[victim.index] < (30 * 60 * 60) then
+                                global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
+                                smart_print(player, "Player set to trusted.")
+                                return
+                            end
+                            smart_print(player, "Player was already trusted.")
                             return
                         end
-                        smart_print(player, "Player was already a regular.")
-                        
-                    return
+                    end
+                    smart_print(player, "Error.")
                 end
-                smart_print(player, "Error.")
+            )
 
-            end
-        )
+            --Set user to regular
+            commands.add_command(
+                "regular",
+                "/regular <player> -- sets user to regular status",
+                function(param)
+                    local is_admin = true
+                    local player = nil
+
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
+                    end
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local victim = game.players[param.parameter]
+
+                    if (victim and victim.valid) then
+                        --Lame, but works
+                        if global.actual_playtime[victim.index] then
+                            if global.actual_playtime[victim.index] < (2 * 60 * 60) then
+                                global.actual_playtime[victim.index] = (2 * 60 * 60) + 1
+                                smart_print(player, "Player set to regular.")
+                                return
+                            end
+                            smart_print(player, "Player was already a regular.")
+
+                            return
+                        end
+                    end
+                    smart_print(player, "Error.")
+                end
+            )
 
             --Change game mode
             commands.add_command(
