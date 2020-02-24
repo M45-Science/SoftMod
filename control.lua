@@ -529,9 +529,8 @@ script.on_load(
                             global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
                             smart_print(player, "Player set to trusted.")
                             return
-                        else
-                            smart_print(player, "Player was already trusted.")
                         end
+                        smart_print(player, "Player was already trusted.")
                     return
                 end
                 smart_print(player, "Error.")
@@ -570,16 +569,16 @@ script.on_load(
                             global.actual_playtime[victim.index] = (2 * 60 * 60) + 1
                             smart_print(player, "Player set to regular.")
                             return
-                        else
-                            smart_print(player, "Player was already a regular.")
                         end
+                        smart_print(player, "Player was already a regular.")
+                        
                     return
                 end
                 smart_print(player, "Error.")
 
             end
         )
-        
+
             --Change game mode
             commands.add_command(
                 "mode",
