@@ -495,7 +495,10 @@ end
 --On load, add commands--
 script.on_load(
     function()
-        --Trust user
+
+        --Only add if no commands yet
+        if (commands.commands.server_interface == nil) then
+            --Trust user
         commands.add_command(
             "trust",
             "/trust <player> -- sets user to trusted",
@@ -576,9 +579,7 @@ script.on_load(
 
             end
         )
-
-        --Only add if no commands yet
-        if (commands.commands.server_interface == nil) then
+        
             --Change game mode
             commands.add_command(
                 "mode",
