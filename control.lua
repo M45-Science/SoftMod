@@ -463,17 +463,12 @@ local function get_permgroup()
                             end
                         end
                     elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
-                        if
-                            (global.actual_playtime and global.actual_playtime[player.index] and
-                                global.actual_playtime[player.index] > (2 * 60 * 60 * 60))
-                         then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (2 * 60 * 60 * 60)) then
                             if (player.permission_group.name ~= global.regulargroup.name) then
-                                global.regulargroup.add_player(player)
-                                message_all(player.name .. " was moved to regulars.")
-                                player.print(
-                                    "(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!"
-                                )
-                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                                --global.regulargroup.add_player(player)
+                                --message_all(player.name .. " was moved to regulars.")
+                                --player.print( "(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!")
+                                --player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                             end
                         end
                     end
@@ -531,7 +526,7 @@ script.on_load(
             --Trust user
             commands.add_command(
                 "reset",
-                "/reset  <player> -- sets player active time to 0",
+                "<player> -- sets player active time to 0",
                 function(param)
                     local is_admin = true
                     local player = nil
@@ -567,7 +562,7 @@ script.on_load(
             --Trust user
             commands.add_command(
                 "trust",
-                "/trust <player> -- sets user to trusted",
+                "<player> -- sets user to trusted",
                 function(param)
                     local is_admin = true
                     local player = nil
@@ -607,7 +602,7 @@ script.on_load(
             --Set user to regular
             commands.add_command(
                 "regular",
-                "/regular <player> -- sets user to regular status",
+                "<player> -- sets user to regular status",
                 function(param)
                     local is_admin = true
                     local player = nil
@@ -648,7 +643,7 @@ script.on_load(
             --Change game mode
             commands.add_command(
                 "mode",
-                "mode: /mode <mode>, options: sandbox, coal.",
+                "<mode>, options: sandbox, coal.",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -690,7 +685,7 @@ script.on_load(
             --Change default spawn point
             commands.add_command(
                 "cspawn",
-                "/cspawn <x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
+                "<x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -753,7 +748,7 @@ script.on_load(
             --Reveal map
             commands.add_command(
                 "reveal",
-                "/reveal <size> -- <x> units of map. Default: 1024, max 4096",
+                "<size> -- <x> units of map. Default: 1024, max 4096",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -805,7 +800,7 @@ script.on_load(
             --Rechart map
             commands.add_command(
                 "rechart",
-                "/rechart -- resets fog of war",
+                "resets fog of war",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -835,7 +830,7 @@ script.on_load(
             --Online
             commands.add_command(
                 "online",
-                "/online -- See who is online!",
+                "See who is online!",
                 function(param)
                     local victim = nil
                     local is_admin = true
@@ -890,7 +885,7 @@ script.on_load(
             --Game speed
             commands.add_command(
                 "gspeed",
-                "/gspeed <x,x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
+                "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
                 function(param)
                     local player = nil
                     local isadmin = true
@@ -941,7 +936,7 @@ script.on_load(
             --Teleport to
             commands.add_command(
                 "tto",
-                "/tto <player> -- teleport to <player>",
+                "<player> -- teleport to <player>",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -972,7 +967,7 @@ script.on_load(
             --Teleport x,y
             commands.add_command(
                 "tp",
-                "/tp <x,y> -- teleport to <x,y>",
+                "<x,y> -- teleport to <x,y>",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -1012,7 +1007,7 @@ script.on_load(
             --Teleport player to me
             commands.add_command(
                 "tfrom",
-                "/tfrom <player> -- teleport <player> to me",
+                "<player> -- teleport <player> to me",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
