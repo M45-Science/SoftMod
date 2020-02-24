@@ -524,8 +524,8 @@ script.on_load(
                     if (victim and victim.valid) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] < (30 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
+                            if global.actual_playtime[victim.index] < (2 * 60 * 60 * 60) then
+                                global.actual_playtime[victim.index] = (2 * 60 * 60 * 60) + 1
                                 smart_print(player, "Player set to trusted.")
                                 return
                             end
