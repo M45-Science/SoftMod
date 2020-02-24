@@ -6,6 +6,10 @@
         "defines",
         "script",
         "rcon",
-        "commands"
+        "commands",
+        "settings"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-global"
     ]
 }

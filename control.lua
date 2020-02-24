@@ -1,4 +1,4 @@
---v040-1-17-2020
+--v041-2-23-2020
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -49,76 +49,156 @@ local coal_mode_techs = {
 }
 
 local regulars = {
+    "Azcrew_",
+    "Blitztexen",
+    "BloodWolfmann",
+    "Candorist",
+    "Castleboy2000",
+    "Dr.Cube",
+    "Fighterxx64",
+    "Fondofblack",
+    "FoxMayham",
+    "Fraanek",
+    "Hickory",
+    "JerAdams",
+    "Mazzeneko",
+    "Mr.Plips",
+    "R2Boyo25",
+    "RoninM3",
+    "Starrs",
+    "SuicideJunkie",
+    "VortexBerserker",
+    "Zewex",
+    "boeljoet",
+    "chrisgamer2902",
+    "cubun_2009",
+    "dr.robuttnik",
+    "enderwolfer",
+    "iansuarus",
+    "johann_loki",
+    "komikoze",
+    "luigil101",
+    "pakjce",
+    "sage307",
+    "snekcihc",
+    "stety",
+    "wampastompa09",
+    "zazer4",
     "A7fie",
     "Acid_wars",
-    "DIBBG4MER",
-    "Estabon",
-    "Gatis",
-    "GregorS",
-    "ItsAMeeeLuigi",
-    "Killy71",
-    "Merciless210",
-    "Moose1301",
-    "Nasphere",
-    "That_Dude",
-    "Thoren",
-    "antuan309",
-    "brftjx",
-    "haja112",
-    "jetboy57",
-    "john_zivanovik_f",
-    "mueppel",
-    "sosofly",
-    "sukram72",
-    "twist.mills",
-    "yanivger",
-    "A7fie",
     "Aidenkrz",
     "Andro",
     "ArmadaX",
     "AryanCoconut",
     "Avaren",
+    "Azcrew_",
     "BlackJaBus",
+    "Blitztexen",
+    "BloodWolfmann",
+    "ButterMeister",
     "Castleboy2000",
     "Corruptarc",
+    "DIBBG4MER",
     "DZCM",
     "D_Riv",
     "Daddyrilla",
     "Darsin",
+    "Decaliss",
+    "Dr.Cube",
     "Estabon",
+    "Fighterxx64",
+    "Flyrockmaster",
+    "Fondofblack",
     "Footy",
+    "ForsakenWiz",
+    "FoxMayham",
+    "Fraanek",
     "FuzzyOne",
+    "Gatis",
     "GregorS",
+    "Huelsensack",
+    "Impregneerspuit",
+    "ItsAMeeeLuigi",
+    "JerAdams",
+    "Jeremykyle",
     "Killy71",
+    "Mazzeneko",
     "Merciless210",
+    "Micahgee",
     "Mike-_-",
+    "Mikel3",
     "Moose1301",
     "Nasphere",
+    "Odinoki86",
+    "PEEK1995",
     "POI_780",
+    "Quinlan",
+    "R2Boyo25",
+    "Ratuz",
+    "Robbie06",
+    "RoninM3",
     "Rylabs",
     "SmokuNoPico",
     "SpacecatCybran",
+    "Starrs",
     "StevenMatthews",
+    "That_Dude",
+    "The-Player",
+    "Thoren",
     "Trent333",
+    "U_Wot",
     "VortexBerserker",
+    "Zewex",
+    "Zory",
+    "adamcode",
     "adee",
+    "antuan309",
     "bazus1",
+    "bobbythebob12",
+    "boeljoet",
     "brftjx",
+    "chickenspie",
     "chrisg23",
+    "chrisgamer2902",
     "chubbins",
+    "clonedlemmings",
+    "crystalspider37",
+    "cubun_2009",
+    "dangerarea",
+    "dbt0",
+    "dooces",
+    "enderwolfer",
+    "fluckinnuts",
+    "fufexan",
     "funork",
     "haja112",
+    "iansuarus",
+    "jetboy57",
     "john_zivanovik_f",
     "jslannon",
+    "julng",
+    "komikoze",
     "lipinkaixin",
     "literallyjustanegg",
     "luckcolors",
+    "luigil101",
+    "magichobo",
     "mehdi2344",
     "mojosa",
+    "mpsv7",
+    "mraadx",
     "mueppel",
     "nickoe",
+    "pakjce",
+    "ruetama",
+    "sage307",
     "skymory_24",
+    "sm2008",
+    "sosofly",
+    "sukram72",
+    "thanhatam7123",
     "twist.mills",
+    "wampastompa09",
     "yanivger",
     "ytremors",
     "zendesigner",
@@ -168,7 +248,7 @@ local function coal_mode()
     local pforce = game.forces["player"]
 
     if pforce ~= nil then
-        if global.coalmode ~= nil then
+        if global.coalmode == true then
             for _, gtech in pairs(pforce.technologies) do
                 for _, ctech in pairs(coal_mode_techs) do
                     if gtech.name == ctech then
@@ -199,7 +279,7 @@ local function coal_mode()
 end
 
 local function sandbox_mode(player)
-    if global.sandboxmode ~= nil and player ~= nil then
+    if global.sandboxmode == true and player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
@@ -225,11 +305,13 @@ local function set_perms()
     local dperms = game.permissions.get_group("Default")
 
     if dperms ~= nil then
+        dperms.set_allows_action(defines.input_action.wire_dragging, false)
         dperms.set_allows_action(defines.input_action.activate_cut, false)
         dperms.set_allows_action(defines.input_action.add_train_station, false)
         dperms.set_allows_action(defines.input_action.build_terrain, false)
         dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
         dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+        dperms.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
         dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
         dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
         dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
@@ -269,12 +351,29 @@ local function game_settings(player)
 end
 
 --Is player in regulars list--
-local function is_regular(pname)
+local function is_regular(victim)
+
+    --If in hard-coded list (legacy)
     for _, regular in pairs(regulars) do
-        if (regular == pname) then
+        if (regular == victim.name) then
             return true
         end
     end
+
+    --If in group
+    --Not needed for the moment
+    --if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
+        --if victim.permission_group.name == global.trustedgroup.name then
+            --return true
+        --end
+    --end
+
+    --If they have enough hours
+    --if (global.actual_playtime and global.actual_playtime[victim.index] and
+        --global.actual_playtime[victim.index] > (2 * 60 * 60 * 60)) then
+        --return true
+    --end
+
     return false
 end
 
@@ -363,6 +462,15 @@ local function get_permgroup()
                                 player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                             end
                         end
+                    elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (2 * 60 * 60 * 60)) then
+                            if (player.permission_group.name ~= global.regulargroup.name) then
+                                --global.regulargroup.add_player(player)
+                                --message_all(player.name .. " was moved to regulars.")
+                                --player.print( "(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!")
+                                --player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                            end
+                        end
                     end
                 end
             end
@@ -415,10 +523,127 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
+            --Trust user
+            commands.add_command(
+                "reset",
+                "<player> -- sets player active time to 0",
+                function(param)
+                    local is_admin = true
+                    local player = nil
+
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
+                    end
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local victim = game.players[param.parameter]
+
+                    if (victim and victim.valid) then
+                        --Lame, but works
+                        if global.actual_playtime[victim.index] then
+                            global.actual_playtime[victim.index] = 0
+                            smart_print(player, "Player set to untrusted.")
+                            return
+                        end
+                    end
+                    smart_print(player, "Error.")
+                end
+            )
+
+            --Trust user
+            commands.add_command(
+                "trust",
+                "<player> -- sets user to trusted",
+                function(param)
+                    local is_admin = true
+                    local player = nil
+
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
+                    end
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local victim = game.players[param.parameter]
+
+                    if (victim and victim.valid) then
+                        --Lame, but works
+                        if global.actual_playtime[victim.index] then
+                            if global.actual_playtime[victim.index] < (2 * 60 * 60 * 60) then
+                                global.actual_playtime[victim.index] = (2 * 60 * 60 * 60) + 1
+                                smart_print(player, "Player set to trusted.")
+                                return
+                            end
+                            smart_print(player, "Player was already trusted.")
+                            return
+                        end
+                    end
+                    smart_print(player, "Error.")
+                end
+            )
+
+            --Set user to regular
+            commands.add_command(
+                "regular",
+                "<player> -- sets user to regular status",
+                function(param)
+                    local is_admin = true
+                    local player = nil
+
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
+                    end
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local victim = game.players[param.parameter]
+
+                    if (victim and victim.valid) then
+                        --Lame, but works
+                        if global.actual_playtime[victim.index] then
+                            if global.actual_playtime[victim.index] < (2 * 60 * 60) then
+                                global.actual_playtime[victim.index] = (2 * 60 * 60) + 1
+                                smart_print(player, "Player set to regular.")
+                                return
+                            end
+                            smart_print(player, "Player was already a regular.")
+
+                            return
+                        end
+                    end
+                    smart_print(player, "Error.")
+                end
+            )
+
             --Change game mode
             commands.add_command(
                 "mode",
-                "mode: /mode <mode>, options: sandbox, coal.",
+                "<mode>, options: sandbox, coal.",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -460,7 +685,7 @@ script.on_load(
             --Change default spawn point
             commands.add_command(
                 "cspawn",
-                "/cspawn <x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
+                "<x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -523,7 +748,7 @@ script.on_load(
             --Reveal map
             commands.add_command(
                 "reveal",
-                "/reveal <size> -- <x> units of map. Default: 1024, max 4096",
+                "<size> -- <x> units of map. Default: 1024, max 4096",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -575,7 +800,7 @@ script.on_load(
             --Rechart map
             commands.add_command(
                 "rechart",
-                "/rechart -- resets fog of war",
+                "resets fog of war",
                 function(param)
                     local is_admin = true
                     local victim = nil
@@ -605,7 +830,7 @@ script.on_load(
             --Online
             commands.add_command(
                 "online",
-                "/online -- See who is online!",
+                "See who is online!",
                 function(param)
                     local victim = nil
                     local is_admin = true
@@ -660,7 +885,7 @@ script.on_load(
             --Game speed
             commands.add_command(
                 "gspeed",
-                "/gspeed <x,x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
+                "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
                 function(param)
                     local player = nil
                     local isadmin = true
@@ -711,7 +936,7 @@ script.on_load(
             --Teleport to
             commands.add_command(
                 "tto",
-                "/tto <player> -- teleport to <player>",
+                "<player> -- teleport to <player>",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -742,7 +967,7 @@ script.on_load(
             --Teleport x,y
             commands.add_command(
                 "tp",
-                "/tp <x,y> -- teleport to <x,y>",
+                "<x,y> -- teleport to <x,y>",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -782,7 +1007,7 @@ script.on_load(
             --Teleport player to me
             commands.add_command(
                 "tfrom",
-                "/tfrom <player> -- teleport <player> to me",
+                "<player> -- teleport <player> to me",
                 function(param)
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
@@ -814,6 +1039,29 @@ script.on_load(
 )
 
 --EVENTS--
+--Command logging
+script.on_event(
+    defines.events.on_console_command,
+    function(event)
+        local command = ""
+        local args = ""
+
+        if event.command then
+            command = event.command
+        end
+
+        if event.parameters then
+            args = event.parameters
+        end
+
+        if event.player_index then
+            local player = game.players[event.player_index]
+            print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
+        elseif command ~= "time" and command ~= "p" and command ~= "w" and command ~= "server-save" then --Ignore spammy console commands
+            print(string.format("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args))
+        end
+    end
+)
 
 --Player connected
 script.on_event(
@@ -831,7 +1079,7 @@ script.on_event(
                 player.permission_group.name == global.trustedgroup.name or
                     player.permission_group.name == global.defaultgroup.name
              then
-                if is_regular(player.name) then
+                if is_regular(player) then
                     if (player.permission_group.name ~= global.regulargroup.name) then
                         global.regulargroup.add_player(player)
                         message_all(player.name .. " moved to regulars...")
@@ -853,7 +1101,6 @@ script.on_event(
         create_groups()
         show_players(player)
         sandbox_mode(player)
-        coal_mode()
         game_settings(player)
     end
 )
@@ -871,7 +1118,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -946,6 +1193,7 @@ script.on_event(
     end
 )
 
+--Activity events
 --Mined item
 script.on_event(
     defines.events.on_pre_player_mined_item,
@@ -960,12 +1208,207 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
         else
             global.actual_playtime[player.index] = 0.0
         end
     end
 )
+
+--Craft item
+script.on_event(
+    defines.events.on_player_crafted_item,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Player inventory
+script.on_event(
+    defines.events.on_player_main_inventory_changed,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Mine tiles
+script.on_event(
+    defines.events.on_player_mined_tile,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Place equipment
+script.on_event(
+    defines.events.on_player_placed_equipment,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Remove equipment
+script.on_event(
+    defines.events.on_player_removed_equipment,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Repair entity
+script.on_event(
+    defines.events.on_player_repaired_entity,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Rotate entity
+script.on_event(
+    defines.events.on_player_rotated_entity,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Fast transfer
+script.on_event(
+    defines.events.on_player_fast_transferred,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Shooting
+script.on_event(
+    defines.input_action.change_shooting_state,
+    function(event)
+        local player = game.players[event.player_index]
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (global.actual_playtime and global.actual_playtime[player.index]) then
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        else
+            global.actual_playtime[player.index] = 0.0
+        end
+    end
+)
+
+--Chatting
+script.on_event(
+    defines.events.on_console_chat,
+    function(event)
+        --Can be triggered by console, so check for nil
+        if event.player_index ~= nil then
+            local player = game.players[event.player_index]
+
+            if (not global.actual_playtime) then
+                global.actual_playtime = {}
+                global.actual_playtime[0] = 0
+            end
+
+            if (global.actual_playtime and global.actual_playtime[player.index]) then
+                global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            else
+                global.actual_playtime[player.index] = 0.0
+            end
+        end
+    end
+)
+
+--End Activity
 
 --Walking/Driving
 script.on_event(
@@ -978,11 +1421,18 @@ script.on_event(
             global.actual_playtime[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            --Estimate...
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + (6.67)
-        else
-            global.actual_playtime[player.index] = 0.0
+        --Only count if actually walking...
+        if player and player.valid and player.walking_state ~= nil then
+            local walking_state = player.walking_state.walking
+
+            if walking_state == true then
+                if (global.actual_playtime and global.actual_playtime[player.index]) then
+                    --Estimate...
+                    global.actual_playtime[player.index] = global.actual_playtime[player.index] + 6
+                else
+                    global.actual_playtime[player.index] = 0.0
+                end
+            end
         end
     end
 )
@@ -1011,60 +1461,74 @@ script.on_event(
     end
 )
 
+--Research Finished
+script.on_event(
+    defines.events.on_research_finished,
+    function(event)
+        local tech = event.research
+
+        --Disable mining/rotating once we get far enough along
+        if tech.name == "chemical-science-pack" then
+            local dperms = game.permissions.get_group("Default")
+            if dperms ~= nil then
+                message_alld("Automatically disabling rotating and mining objects for new users.")
+                dperms.set_allows_action(defines.input_action.begin_mining, false)
+                dperms.set_allows_action(defines.input_action.rotate_entity, false)
+            end
+        end
+
+        --Log to discord
+        message_alld("Research " .. tech.name .. " completed.")
+    end
+)
+
 --Tick loop--
 --Keep to minimum--
-script.on_event(
-    defines.events.on_tick,
+script.on_nth_tick(
+    900, --15 seconds
     function(event)
-        if (not global.last_s_tick) then
-            global.last_s_tick = 0
-        end
+        local toremove
 
-        if (game.tick - global.last_s_tick >= 600) then
-            global.last_s_tick = game.tick --Reset timer
-            local toremove
-
-            --Remove old corpse tags
-            if (global.corpselist) then
-                for _, corpse in pairs(global.corpselist) do
-                    if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
-                        if (corpse.tag and corpse.tag.valid) then
-                            corpse.tag.destroy()
-                        end
-                        toremove = corpse
+        --Remove old corpse tags
+        if (global.corpselist) then
+            for _, corpse in pairs(global.corpselist) do
+                if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
+                    if (corpse.tag and corpse.tag.valid) then
+                        corpse.tag.destroy()
                     end
+                    toremove = corpse
                 end
             end
-            if (toremove) then
-                toremove.tag = nil
-                toremove.tick = nil
-                toremove = nil
-            end
-
-            --Server tag
-            if (global.servertag and not global.servertag.valid) then
-                global.servertag = nil
-            end
-            if (global.servertag and global.servertag.valid) then
-                global.servertag.destroy()
-                global.servertag = nil
-            end
-            if (not global.servertag) then
-                local label = "discord.gg/Ps2jnm7"
-                local chartTag = {
-                    position = {0, 0},
-                    icon = {type = "item", name = "programmable-speaker"},
-                    text = label
-                }
-                local pforce = game.forces["player"]
-                local psurface = game.surfaces["nauvis"]
-
-                if pforce ~= nil and psurface ~= nil then
-                    global.servertag = pforce.add_chart_tag(psurface, chartTag)
-                end
-            end
-
-            get_permgroup()
         end
+        if (toremove) then
+            toremove.tag = nil
+            toremove.tick = nil
+            toremove = nil
+        end
+
+        --Server tag
+        if (global.servertag and not global.servertag.valid) then
+            global.servertag = nil
+        end
+        if (global.servertag and global.servertag.valid) then
+            global.servertag.destroy()
+            global.servertag = nil
+        end
+        if (not global.servertag) then
+            local label = "discord.gg/Ps2jnm7"
+            local chartTag = {
+                position = {0, 0},
+                icon = {type = "item", name = "programmable-speaker"},
+                text = label
+            }
+            local pforce = game.forces["player"]
+            local psurface = game.surfaces["nauvis"]
+
+            if pforce ~= nil and psurface ~= nil then
+                global.servertag = pforce.add_chart_tag(psurface, chartTag)
+            end
+        end
+
+        get_permgroup()
     end
 )
