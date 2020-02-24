@@ -357,6 +357,12 @@ local function is_regular(pname)
             return true
         end
     end
+    if game.players[pname] ~= nil then
+        local player = game.players[ game.players[pname].player_index]
+        if player.permission_group.name == global.trustedgroup.name then
+            return true
+        end
+    end
     return false
 end
 
@@ -441,6 +447,20 @@ local function get_permgroup()
                                 message_all(player.name .. " was moved to trusted users.")
                                 player.print(
                                     "(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!"
+                                )
+                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                            end
+                        end
+                    elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
+                        if
+                            (global.actual_playtime and global.actual_playtime[player.index] and
+                                global.actual_playtime[player.index] > (2 * 60 * 60 * 60))
+                         then
+                            if (player.permission_group.name ~= global.regulargroup.name) then
+                                global.regulargroup.add_player(player)
+                                message_all(player.name .. " was moved to regulars.")
+                                player.print(
+                                    "(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!"
                                 )
                                 player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                             end
