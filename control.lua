@@ -1426,11 +1426,17 @@ script.on_event(
             global.actual_playtime[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            --Estimate...
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 7
-        else
-            global.actual_playtime[player.index] = 0.0
+        if player and player.valid and player.walking_state ~= nil then
+            local walking_state = player.walking_state.walking
+
+            if walking_state == true then
+                if (global.actual_playtime and global.actual_playtime[player.index]) then
+                    --Estimate...
+                    global.actual_playtime[player.index] = global.actual_playtime[player.index] + 6
+                else
+                    global.actual_playtime[player.index] = 0.0
+                end
+            end
         end
     end
 )
