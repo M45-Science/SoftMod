@@ -1227,7 +1227,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1246,7 +1246,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1341,7 +1341,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
