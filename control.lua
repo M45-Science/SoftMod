@@ -361,11 +361,12 @@ local function is_regular(victim)
     end
 
     --If in group
-    if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
-        if victim.permission_group.name == global.trustedgroup.name then
-            return true
-        end
-    end
+    --Not needed for the moment
+    --if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
+        --if victim.permission_group.name == global.trustedgroup.name then
+            --return true
+        --end
+    --end
 
     --If they have enough hours
     if (global.actual_playtime and global.actual_playtime[victim.index] and
