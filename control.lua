@@ -351,18 +351,28 @@ local function game_settings(player)
 end
 
 --Is player in regulars list--
-local function is_regular(pname)
+local function is_regular(victim)
+
+    --If in hard-coded list (legacy)
     for _, regular in pairs(regulars) do
-        if (regular == pname) then
+        if (regular == victim.name) then
             return true
         end
     end
-    if game.players[pname] ~= nil then
-        local player = game.players[ game.players[pname].player_index]
-        if player.permission_group.name == global.trustedgroup.name then
+
+    --If in group
+    if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
+        if victim.permission_group.name == global.trustedgroup.name then
             return true
         end
     end
+
+    --If they have enough hours
+    if (global.actual_playtime and global.actual_playtime[victim.index] and
+        global.actual_playtime[victim.index] > (2 * 60 * 60 * 60)) then
+        return true
+    end
+
     return false
 end
 
@@ -1073,7 +1083,7 @@ script.on_event(
                 player.permission_group.name == global.trustedgroup.name or
                     player.permission_group.name == global.defaultgroup.name
              then
-                if is_regular(player.name) then
+                if is_regular(player) then
                     if (player.permission_group.name ~= global.regulargroup.name) then
                         global.regulargroup.add_player(player)
                         message_all(player.name .. " moved to regulars...")
