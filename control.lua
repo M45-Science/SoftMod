@@ -1,4 +1,4 @@
---v042-2-26-2020_9-54-AM
+--v042-2-26-2020_10-07-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1049,7 +1049,7 @@ script.on_event(
         create_groups()
 
         --Moved here to reduce on_tick
-        if player.permission_group ~= nil and global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
+        if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
             --if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
             if player.admin then
                 global.admingroup.add_player(player)
@@ -1064,6 +1064,7 @@ script.on_event(
                 message_all(player.name .. " was moved to trusted users.")
                 player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
             end
+            --end
         end
     end
 )
