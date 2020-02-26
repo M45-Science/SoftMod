@@ -570,7 +570,7 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim and victim.valid) then
+                    if (victim) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             global.actual_playtime[victim.index] = 0
@@ -954,7 +954,7 @@ script.on_load(
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim and victim.valid) then
+                            if (victim) then
                                 player.teleport({victim.position.x + 1.0, victim.position.y + 1.0})
                                 player.print("Okay.")
                                 return
@@ -1025,7 +1025,7 @@ script.on_load(
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim and victim.valid) then
+                            if (victim) then
                                 victim.teleport({player.position.x + 1.0, player.position.y + 1.0})
                                 player.print("Okay.")
                                 return
