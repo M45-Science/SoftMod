@@ -1,4 +1,4 @@
---v042-2-26-2020_9-22-AM
+--v042-2-26-2020_9-49-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1051,27 +1051,23 @@ script.on_event(
         --Moved here to reduce on_tick
         if player.permission_group ~= nil and global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
             --if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
-            if is_regular(player) then
-                if (player.permission_group.name ~= global.regulargroup.name) then
-                    global.regulargroup.add_player(player)
-                    message_all(player.name .. " was moved to regulars...")
-                    player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
-                end
-            end
-
-            if is_trusted(player) then
-                if (player.permission_group.name ~= global.trustedgroup.name) then
-                    global.trustedgroup.add_player(player)
-                    message_all(player.name .. " was moved to trusted users.")
-                    player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
-                end
-            end
-
             if player.admin then
                 if (player.permission_group.name ~= global.admingroup.name) then
                     global.admingroup.add_player(player)
                     message_all(player.name .. " was moved to admins.")
                     player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
+                end
+            elseif is_regular(player) then
+                if (player.permission_group.name ~= global.regulargroup.name) then
+                    global.regulargroup.add_player(player)
+                    message_all(player.name .. " was moved to regulars...")
+                    player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
+                end
+            elseif is_trusted(player) then
+                if (player.permission_group.name ~= global.trustedgroup.name) then
+                    global.trustedgroup.add_player(player)
+                    message_all(player.name .. " was moved to trusted users.")
+                    player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
                 end
             end
         end
