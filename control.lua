@@ -1,4 +1,4 @@
---v042-2-26-2020_10-07-AM
+--v042-2-26-2020_12-58-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -253,7 +253,7 @@ local function coal_mode()
                 for _, ctech in pairs(coal_mode_techs) do
                     if gtech.name == ctech then
                         pforce.technologies[ctech].enabled = false
-                        print("Disabled tech: " .. ctech)
+                        --cprint("Disabled tech: " .. ctech)
                     end
                 end
             end
@@ -262,7 +262,7 @@ local function coal_mode()
                 for _, crep in pairs(coal_mode_recipes) do
                     if recipe.name == crep then
                         recipe.enabled = false
-                        print("Disabled recipe: " .. crep)
+                        --cprint("Disabled recipe: " .. crep)
                     end
                 end
             end
@@ -391,12 +391,17 @@ local function is_trusted(victim)
     return false
 end
 
---Smart Print--
+--cprint--
+local function cprint(message)
+    print("~"..message)
+end
+
+--Smart cprint--
 local function smart_print(player, message)
     if player then
         player.print(message)
     else
-        rcon.print(message)
+        rcon.print("~" .. message)
     end
 end
 
@@ -1150,7 +1155,7 @@ script.on_event(
                         message_all(message)
                     else
                         --Log it anyway
-                        print(message)
+                        cprint(message)
                     end
                 end
             end
@@ -1167,7 +1172,7 @@ script.on_event(
         local player = game.players[event.player_index]
         local obj = event.entity
 
-        print(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
+        cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
         if (not global.actual_playtime) then
             global.actual_playtime = {}
             global.actual_playtime[0] = 0
