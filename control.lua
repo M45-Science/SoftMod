@@ -463,7 +463,7 @@ local function get_permgroup()
                             end
                         end
                     elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
-                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (2 * 60 * 60 * 60)) then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60 * 60)) then
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
@@ -626,8 +626,8 @@ script.on_load(
                     if (victim and victim.valid) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] < (2 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (2 * 60 * 60) + 1
+                            if global.actual_playtime[victim.index] < (4 * 60 * 60) then
+                                global.actual_playtime[victim.index] = (4 * 60 * 60) + 1
                                 smart_print(player, "Player set to regular.")
                                 return
                             end
@@ -1208,25 +1208,6 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
-        else
-            global.actual_playtime[player.index] = 0.0
-        end
-    end
-)
-
---Craft item
-script.on_event(
-    defines.events.on_player_crafted_item,
-    function(event)
-        local player = game.players[event.player_index]
-
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
-        end
-
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
             global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
@@ -1265,7 +1246,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1284,7 +1265,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1303,7 +1284,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1360,7 +1341,7 @@ script.on_event(
         end
 
         if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
         else
             global.actual_playtime[player.index] = 0.0
         end
@@ -1428,7 +1409,7 @@ script.on_event(
             if walking_state == true then
                 if (global.actual_playtime and global.actual_playtime[player.index]) then
                     --Estimate...
-                    global.actual_playtime[player.index] = global.actual_playtime[player.index] + 6
+                    global.actual_playtime[player.index] = global.actual_playtime[player.index] + 5
                 else
                     global.actual_playtime[player.index] = 0.0
                 end
@@ -1485,7 +1466,7 @@ script.on_event(
 --Tick loop--
 --Keep to minimum--
 script.on_nth_tick(
-    900, --15 seconds
+    900, --about 15 seconds
     function(event)
         local toremove
 
