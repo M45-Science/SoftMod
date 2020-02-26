@@ -540,7 +540,7 @@ script.on_load(
                         return
                     end
 
-                    if param.parameter ~= nil and len(param.parameter) > 0 then
+                    if param.parameter ~= nil and param.parameter != "" then
                         message_allp(param.parameter)
                     end
                 end
