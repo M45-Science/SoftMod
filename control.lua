@@ -445,7 +445,7 @@ local function get_permgroup()
                     if (player.admin) then
                         if (player.permission_group.name ~= global.admingroup.name) then
                             global.admingroup.add_player(player)
-                            message_all(player.name .. " moved to admins...")
+                            message_all(player.name .. " was moved to admins.")
                             player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                         end
                     elseif player.permission_group.name == global.defaultgroup.name then
