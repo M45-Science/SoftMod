@@ -1447,6 +1447,7 @@ script.on_event(
     defines.events.on_research_finished,
     function(event)
         local tech = event.research
+        local wscript = event.by_script
 
         --Disable mining/rotating once we get far enough along
         if tech.name == "chemical-science-pack" then
@@ -1459,7 +1460,9 @@ script.on_event(
         end
 
         --Log to discord
-        message_alld("Research " .. tech.name .. " completed.")
+        if wscript == false then
+            message_alld("Research " .. tech.name .. " completed.")
+        end
     end
 )
 
