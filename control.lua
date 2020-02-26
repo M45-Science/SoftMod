@@ -535,7 +535,7 @@ script.on_load(
                 function(param)
 
                     if param.player_index then
-                        player = game.players[param.player_index]
+                        local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
                         return
                     end
