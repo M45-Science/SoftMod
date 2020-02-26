@@ -360,15 +360,31 @@ local function is_regular(victim)
     end
 
     --If in group
-    --Not needed for the moment
-    --if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
-    --if victim.permission_group.name == global.trustedgroup.name then
-    --return true
-    --end
-    --end
+    if victim ~= nil and victim.permission_group ~= nil and global.regulargroup ~= nil then
+        if victim.permission_group.name == global.regulargroup.name then
+            return true
+        end
+    end
 
     --If they have enough hours
     if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (2 * 60 * 60 * 60)) then
+        return true
+    end
+
+    return false
+end
+
+--Is player in trusted list--
+local function is_trusted(victim)
+    --If in group
+    if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
+        if victim.permission_group.name == global.trustedgroup.name then
+            return true
+        end
+    end
+
+    --If they have enough hours
+    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (30 * 60 * 60)) then
         return true
     end
 
@@ -435,13 +451,7 @@ local function get_permgroup()
                     (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or
                         player.permission_group.name == global.regulargroup.name)
                  then
-                    if (player.admin) then
-                        if (player.permission_group.name ~= global.admingroup.name) then
-                            global.admingroup.add_player(player)
-                            message_all(player.name .. " was moved to admins.")
-                            player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
-                        end
-                    elseif player.permission_group.name == global.defaultgroup.name then
+                    if player.permission_group.name == global.defaultgroup.name then
                         if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
@@ -1040,13 +1050,28 @@ script.on_event(
 
         --Moved here to reduce on_tick
         if player.permission_group ~= nil and global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
-            if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
-                if is_regular(player) then
-                    if (player.permission_group.name ~= global.regulargroup.name) then
-                        global.regulargroup.add_player(player)
-                        message_all(player.name .. " moved to regulars...")
-                        player.print("Welcome back, " .. player.name .. "! Moving you into regulars... Have fun!")
-                    end
+            --if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
+            if is_regular(player) then
+                if (player.permission_group.name ~= global.regulargroup.name) then
+                    global.regulargroup.add_player(player)
+                    message_all(player.name .. " was moved to regulars...")
+                    player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
+                end
+            end
+
+            if is_trusted(player) then
+                if (player.permission_group.name ~= global.trustedgroup.name) then
+                    global.trustedgroup.add_player(player)
+                    message_all(player.name .. " was moved to trusted users.")
+                    player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
+                end
+            end
+
+            if player.admin then
+                if (player.permission_group.name ~= global.admingroup.name) then
+                    global.admingroup.add_player(player)
+                    message_all(player.name .. " was moved to admins.")
+                    player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                 end
             end
         end
@@ -1117,7 +1142,7 @@ script.on_event(
         end
 
         --If they are active over this amount, probably don't need to alert.
-        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (120 * 60 * 60)) then
+        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60)) then
             prob_safe = true
         end
 
