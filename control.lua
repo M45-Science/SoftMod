@@ -1,4 +1,4 @@
---v042-2-26-2020_12-58-PM
+--v043-2-26-2020_2-53-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -528,7 +528,25 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
-            --Trust user
+            --server chat
+            commands.add_command(
+                "cchat",
+                "<message here>",
+                function(param)
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        smart_print(player, "This command is for console use only.")
+                        return
+                    end
+
+                    if param.parameter ~= nil and len(param.parameter) > 0 then
+                        message_allp(param.parameter)
+                    end
+                end
+            )
+
+            --Reset user
             commands.add_command(
                 "reset",
                 "<player> -- sets player active time to 0",
