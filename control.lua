@@ -1,4 +1,4 @@
---v042-2-26-2020_9-00-AM
+--v042-2-26-2020_9-22-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -573,7 +573,7 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim and victim.valid) then
+                    if (victim ~= nil) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             if global.actual_playtime[victim.index] < (30 * 60 * 60) then
@@ -613,7 +613,7 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim and victim.valid) then
+                    if (victim ~= nil) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             if global.actual_playtime[victim.index] < (4 * 60 * 60) then
