@@ -253,7 +253,7 @@ local function coal_mode()
                 for _, ctech in pairs(coal_mode_techs) do
                     if gtech.name == ctech then
                         pforce.technologies[ctech].enabled = false
-                        --cprint("Disabled tech: " .. ctech)
+                    --cprint("Disabled tech: " .. ctech)
                     end
                 end
             end
@@ -262,7 +262,7 @@ local function coal_mode()
                 for _, crep in pairs(coal_mode_recipes) do
                     if recipe.name == crep then
                         recipe.enabled = false
-                        --cprint("Disabled recipe: " .. crep)
+                    --cprint("Disabled recipe: " .. crep)
                     end
                 end
             end
@@ -393,7 +393,7 @@ end
 
 --cprint--
 local function cprint(message)
-    print("~"..message)
+    print("~" .. message)
 end
 
 --Smart cprint--
@@ -1069,7 +1069,7 @@ script.on_event(
                 message_all(player.name .. " was moved to trusted users.")
                 player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
             end
-            --end
+        --end
         end
     end
 )
@@ -1481,6 +1481,7 @@ script.on_nth_tick(
             end
         end
 
+        --Check permissions
         get_permgroup()
     end
 )
