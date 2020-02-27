@@ -1464,6 +1464,7 @@ script.on_event(
             global.last_deleted.clone()
             global.last_deleted.destroy()
             global.last_deleted = nil
+            print ("Object cloned")
         end
     end
 )
