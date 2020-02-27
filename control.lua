@@ -1188,12 +1188,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
-
-        if obj.last_user ~= player then
-            obj.clone(obj.position, obj.surface, obj.force)
-            print("Object stored")
-        end
-
+        
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
         if (not global.actual_playtime) then
             global.actual_playtime = {}
