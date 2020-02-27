@@ -1190,7 +1190,7 @@ script.on_event(
         local obj = event.entity
 
         if obj.last_user ~= player then
-            global.last_deleted = obj.position, obj.surface, obj.force)
+            global.last_deleted = obj.clone(obj.position, obj.surface, obj.force)
             print("Object stored")
         end
 
