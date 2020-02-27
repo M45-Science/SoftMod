@@ -1191,8 +1191,7 @@ script.on_event(
         local obj = event.entity
 
         if obj.last_user ~= player then
-            obj.clone()
-            global.last_deleted = obj
+            global.last_deleted = obj.clone()
         end
 
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
@@ -1458,6 +1457,14 @@ script.on_event(
 )
 
 --Tick loop--
+script.on_tick(
+    function (event)
+        if global.last_deleted ~= nil then
+            global.last_deleted.clone()
+            global.last_deleted = nil
+        end
+    end
+)
 --Keep to minimum--
 script.on_nth_tick(
     900, --about 15 seconds
