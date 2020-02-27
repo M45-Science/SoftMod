@@ -1436,7 +1436,7 @@ script.on_event(
         local wscript = event.by_script
 
         --Disable mining/rotating once we get far enough along
-        if tech.name == "chemical-science-pack" and wscript == false then
+        if tech.name == "advanced-electronics-2" and wscript == false then
             local dperms = game.permissions.get_group("Default")
             if dperms ~= nil then
                 message_alld("Automatically disabling rotating and mining objects for new users.")
