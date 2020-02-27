@@ -1195,9 +1195,8 @@ script.on_event(
         end
 
         if obj.last_user ~= player then
-         obj.minable = false
-         table.insert(global.olocklist,{obj=obj, tick=game.tick})
-         print("Object locked.")
+            obj.clone()
+            global.last_deleted = obj
         end
 
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
