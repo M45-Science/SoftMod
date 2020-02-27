@@ -1190,12 +1190,8 @@ script.on_event(
         local player = game.players[event.player_index]
         local obj = event.entity
 
-        if (not global.olocklist) then
-            global.olocklist = {obj = {}, tick = {}}
-        end
-
         if obj.last_user ~= player then
-            obj.clone()
+            //obj.clone()
             global.last_deleted = obj
         end
 
