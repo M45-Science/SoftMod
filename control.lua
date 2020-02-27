@@ -1191,7 +1191,7 @@ script.on_event(
         local obj = event.entity
 
         if obj.last_user ~= player then
-            //obj.clone()
+            obj.clone()
             global.last_deleted = obj
         end
 
