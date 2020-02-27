@@ -533,7 +533,6 @@ script.on_load(
                 "cchat",
                 "<message here>",
                 function(param)
-
                     if param.player_index then
                         local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
@@ -1457,14 +1456,16 @@ script.on_event(
 )
 
 --Tick loop--
-script.on_tick(
-    function (event)
+script.on_event(
+    defines.events.on_tick,
+    function(event)
         if global.last_deleted ~= nil then
             global.last_deleted.clone()
             global.last_deleted = nil
         end
     end
 )
+
 --Keep to minimum--
 script.on_nth_tick(
     900, --about 15 seconds
