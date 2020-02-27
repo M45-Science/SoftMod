@@ -1190,7 +1190,8 @@ script.on_event(
         local obj = event.entity
 
         if obj.last_user ~= player then
-            global.last_deleted = obj.clone()
+            global.last_deleted = obj
+            print("Object stored")
         end
 
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
@@ -1461,6 +1462,7 @@ script.on_event(
     function(event)
         if global.last_deleted ~= nil then
             global.last_deleted.clone()
+            global.last_deleted.destroy()
             global.last_deleted = nil
         end
     end
