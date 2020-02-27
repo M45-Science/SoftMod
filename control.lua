@@ -1190,7 +1190,7 @@ script.on_event(
         local obj = event.entity
 
         if obj.last_user ~= player then
-            global.last_deleted = obj.clone(obj.position, obj.surface, obj.force)
+            obj.clone(obj.position, obj.surface, obj.force)
             print("Object stored")
         end
 
@@ -1452,19 +1452,6 @@ script.on_event(
         --Log to discord
         if wscript == false then
             message_alld("Research " .. tech.name .. " completed.")
-        end
-    end
-)
-
---Tick loop--
-script.on_event(
-    defines.events.on_tick,
-    function(event)
-        if global.last_deleted ~= nil then
-            --global.last_deleted.clone()
-            --global.last_deleted.destroy()
-            global.last_deleted = nil
-            print ("Object cloned")
         end
     end
 )
