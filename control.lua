@@ -1190,6 +1190,16 @@ script.on_event(
         local player = game.players[event.player_index]
         local obj = event.entity
 
+        if (not global.olocklist) then
+            global.olocklist = {obj = {}, tick = {}}
+        end
+
+        if obj.last_user ~= player then
+         obj.minable = false
+         table.insert(global.olocklist,{obj=obj, tick=game.tick})
+         print("Object locked.")
+        end
+
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
         if (not global.actual_playtime) then
             global.actual_playtime = {}
