@@ -555,10 +555,9 @@ script.on_load(
                 "access",
                 "<access code> (For redeeming an access code from discord)",
                 function(param)
-                    local player = nil
 
                     if param.player_index ~= nil then
-                        player = game.players[param.player_index]
+                        local player = game.players[param.player_index]
                     else
                         smart_print(nil, "I don't think the console needs to use this command...")
                         return
