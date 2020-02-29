@@ -555,7 +555,7 @@ script.on_load(
                 "access",
                 "<access code> (For redeeming an access code from discord)",
                 function(param)
-                    local player
+                    local player = nil
 
                     if param.player_index ~= nil then
                         player = game.players[param.player_index]
@@ -564,10 +564,24 @@ script.on_load(
                         return
                     end
 
-                    if param.parameter ~= nil and player ~= nil then
-                        print("[ACCESS] " .. player.name .. " " .. param.parameter)
-                        smart_print(player, "Access code sent, check discord!")
-                    else
+                    if param.parameter ~= nil and player ~= nil and player.valid then
+                        local ptype = "Error"
+
+                        if is_admin(player) then
+                            ptype = "admin"
+                        else
+                            if is_regular(player) then
+                                ptype = "regular"
+                            elseif is_trusted(player) then
+                                ptype = "trusted"
+                            else
+                                ptype = "normal"
+                            end
+
+                            print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
+                            smart_print(player, "Access code sent, check discord!")
+                            return
+                        end
                         smart_print(player, "You need to specify an access code!")
                     end
                 end
