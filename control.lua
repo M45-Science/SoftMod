@@ -367,7 +367,10 @@ local function is_regular(victim)
     end
 
     --If they have enough hours
-    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (2 * 60 * 60 * 60)) then
+    if
+        (global.actual_playtime and global.actual_playtime[victim.index] and
+            global.actual_playtime[victim.index] > (2 * 60 * 60 * 60))
+     then
         return true
     end
 
@@ -384,7 +387,10 @@ local function is_trusted(victim)
     end
 
     --If they have enough hours
-    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (30 * 60 * 60)) then
+    if
+        (global.actual_playtime and global.actual_playtime[victim.index] and
+            global.actual_playtime[victim.index] > (30 * 60 * 60))
+     then
         return true
     end
 
@@ -450,14 +456,22 @@ local function get_permgroup()
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             --Handle nil permissions, for mod compatability
-            if (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and global.regulargroup ~= nil and global.admingroup ~= nil) then
+            if
+                (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and
+                    global.regulargroup ~= nil and
+                    global.admingroup ~= nil)
+             then
                 --Only move from default groups, for mod compatability
                 if
-                    (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or
+                    (player.permission_group.name == global.defaultgroup.name or
+                        player.permission_group.name == global.trustedgroup.name or
                         player.permission_group.name == global.regulargroup.name)
                  then
                     if player.permission_group.name == global.defaultgroup.name then
-                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
+                        if
+                            (global.actual_playtime and global.actual_playtime[player.index] and
+                                global.actual_playtime[player.index] > (30 * 60 * 60))
+                         then
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
                                 message_all(player.name .. " was moved to trusted users.")
@@ -467,12 +481,20 @@ local function get_permgroup()
                                 player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                             end
                         end
-                    elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
-                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60 * 60)) then
+                    elseif
+                        player.permission_group.name == global.defaultgroup.name or
+                            player.permission_group.name == global.trustedgroup.name
+                     then
+                        if
+                            (global.actual_playtime and global.actual_playtime[player.index] and
+                                global.actual_playtime[player.index] > (4 * 60 * 60 * 60))
+                         then
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
-                                player.print("(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!")
+                                player.print(
+                                    "(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!"
+                                )
                                 player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
                             end
                         end
@@ -533,18 +555,20 @@ script.on_load(
                 "access",
                 "<access code> (For redeeming an access code from discord)",
                 function(param)
-                    if param.player_index then
-                        local player = game.players[param.player_index]
+                    local player
+
+                    if param.player_index ~= nil then
+                        player = game.players[param.player_index]
                     else
-                        smart_print(nil,"I don't think the console needs to use this command...")
+                        smart_print(nil, "I don't think the console needs to use this command...")
                         return
                     end
 
-                    if param.parameter ~= nil then
+                    if param.parameter ~= nil and player ~= nil then
                         print("[ACCESS] " .. player.name .. " " .. param.parameter)
-                        smart_print(player,"Access code sent, check discord!")
+                        smart_print(player, "Access code sent, check discord!")
                     else
-                        smart_print(player,"You need to specify an access code!")
+                        smart_print(player, "You need to specify an access code!")
                     end
                 end
             )
@@ -770,7 +794,14 @@ script.on_load(
 
                         if pforce ~= nil and psurface ~= nil then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
+                            smart_print(
+                                victim,
+                                string.format(
+                                    "New spawn point set: %d,%d",
+                                    math.floor(new_pos_x),
+                                    math.floor(new_pos_y)
+                                )
+                            )
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                         else
                             smart_print(victim, "Couldn't find force or surface...")
@@ -818,7 +849,10 @@ script.on_load(
                         end
 
                         if psurface ~= nil and pforce ~= nil then
-                            pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
+                            pforce.chart(
+                                psurface,
+                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
+                            )
                             local sstr = string.format("%-4.0f", size)
                             smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                         else
@@ -894,7 +928,15 @@ script.on_load(
                                 if (time ~= nil) then
                                     if (time.time ~= nil) then
                                         if ipos > (plen - 20) then
-                                            smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
+                                            smart_print(
+                                                victim,
+                                                string.format(
+                                                    "%-4d: %-32s Active: %-4.2fm",
+                                                    ipos,
+                                                    time.name,
+                                                    time.time / 60.0 / 60.0
+                                                )
+                                            )
                                         end
                                     end
                                 end
@@ -943,7 +985,11 @@ script.on_load(
 
                         if pforce ~= nil then
                             game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                            smart_print(player, "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier)
+                            smart_print(
+                                player,
+                                "Game speed: " ..
+                                    value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
+                            )
                             message_all("Game speed set to %" .. (game.speed * 100.00))
                         else
                             smart_print(player, "Force: Player doesn't seem to exsist.")
@@ -1153,7 +1199,12 @@ script.on_event(
                 if player.permission_group ~= nil and global.regulargroup ~= nil then
                     if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
                         if created_entity.name == "programmable-speaker" then
-                            message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+                            message_all(
+                                player.name ..
+                                    " placed speaker: " ..
+                                        math.floor(created_entity.position.x) ..
+                                            "," .. math.floor(created_entity.position.y)
+                            )
                             global.last_speaker_warning = game.tick
                         end
                     end
@@ -1176,7 +1227,10 @@ script.on_event(
         end
 
         --If they are active over this amount, probably don't need to alert.
-        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60)) then
+        if
+            (global.actual_playtime and global.actual_playtime[player.index] and
+                global.actual_playtime[player.index] > (4 * 60 * 60))
+         then
             prob_safe = true
         end
 
@@ -1186,7 +1240,11 @@ script.on_event(
                     local message =
                         player.name ..
                         " is using the deconstruction planner: " ..
-                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+                            math.floor(area.left_top.x) ..
+                                "," ..
+                                    math.floor(area.left_top.y) ..
+                                        " to " ..
+                                            math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
 
                     if prob_safe == false then
                         --Warn everyone
@@ -1209,7 +1267,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
-        
+
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -1437,14 +1495,17 @@ script.on_event(
 
         local player = game.players[event.player_index]
         local centerPosition = player.position
-        local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+        local label =
+            "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
         local chartTag = {position = centerPosition, icon = nil, text = label}
         local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
         table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
         --Log to discord
-        message_alld(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
+        message_alld(
+            player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+        )
     end
 )
 
