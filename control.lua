@@ -563,7 +563,7 @@ script.on_load(
                         return
                     end
 
-                    if param.parameter ~= nil and player ~= nil and player.valid then
+                    if param.parameter ~= nil then
                         local ptype = "Error"
 
                         if is_admin(player) then
