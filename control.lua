@@ -564,8 +564,7 @@ script.on_load(
 
                             if player.admin then
                                 ptype = "admin"
-                            else
-                                if is_regular(player) then
+                            else if is_regular(player) then
                                     ptype = "regular"
                                 elseif is_trusted(player) then
                                     ptype = "trusted"
@@ -575,9 +574,10 @@ script.on_load(
 
                                 print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
                                 smart_print(player, "Access code sent, check discord!")
-                                return
                             end
+                        else
                             smart_print(player, "You need to specify an access code!")
+                            return
                         end
                     else
                         smart_print(nil, "I don't think the console needs to use this command...")
