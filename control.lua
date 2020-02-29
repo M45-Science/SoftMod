@@ -553,7 +553,7 @@ script.on_load(
             --access command
             commands.add_command(
                 "access",
-                "<access code> (For redeeming an access code from discord)",
+                "<access code>",
                 function(param)
 
                     if param.player_index then
@@ -566,7 +566,7 @@ script.on_load(
                     if param.parameter ~= nil then
                         local ptype = "Error"
 
-                        if is_admin(player) then
+                        if player.admin then
                             ptype = "admin"
                         else
                             if is_regular(player) then
