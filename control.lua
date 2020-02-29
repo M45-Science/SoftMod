@@ -528,6 +528,27 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
+            --access command
+            commands.add_command(
+                "access",
+                "<access code> (For redeeming an access code from discord)",
+                function(param)
+                    if param.player_index then
+                        local player = game.players[param.player_index]
+                    else
+                        smart_print(nil,"I don't think the console needs to use this command...")
+                        return
+                    end
+
+                    if param.parameter ~= nil then
+                        print("[ACCESS] " .. player.name .. " " .. param.parameter)
+                        smart_print(player,"Access code sent, check discord!")
+                    else
+                        smart_print(player,"You need to specify an access code!")
+                    end
+                end
+            )
+
             --server chat
             commands.add_command(
                 "cchat",
