@@ -555,33 +555,33 @@ script.on_load(
                 "access",
                 "<access code>",
                 function(param)
-
+                    local player
                     if param.player_index then
                         local player = game.players[param.player_index]
+
+                        if param.parameter ~= nil then
+                            local ptype = "Error"
+
+                            if player.admin then
+                                ptype = "admin"
+                            else
+                                if is_regular(player) then
+                                    ptype = "regular"
+                                elseif is_trusted(player) then
+                                    ptype = "trusted"
+                                else
+                                    ptype = "normal"
+                                end
+
+                                print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
+                                smart_print(player, "Access code sent, check discord!")
+                                return
+                            end
+                            smart_print(player, "You need to specify an access code!")
+                        end
                     else
                         smart_print(nil, "I don't think the console needs to use this command...")
                         return
-                    end
-
-                    if param.parameter ~= nil then
-                        local ptype = "Error"
-
-                        if player.admin then
-                            ptype = "admin"
-                        else
-                            if is_regular(player) then
-                                ptype = "regular"
-                            elseif is_trusted(player) then
-                                ptype = "trusted"
-                            else
-                                ptype = "normal"
-                            end
-
-                            print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
-                            smart_print(player, "Access code sent, check discord!")
-                            return
-                        end
-                        smart_print(player, "You need to specify an access code!")
                     end
                 end
             )
