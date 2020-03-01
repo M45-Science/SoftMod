@@ -1183,6 +1183,8 @@ script.on_event(
         local area = event.area
         local prob_safe = false
 
+        print("enter")
+
         if (not global.actual_playtime) then
             global.actual_playtime = {}
             global.actual_playtime[0] = 0
@@ -1198,7 +1200,7 @@ script.on_event(
         end
 
         if (game.tick - global.last_decon_warning >= 600) then
-            print("pong")
+            print("game.tick okay")
             if player.permission_group ~= nil and global.regulargroup ~= nil then
                 if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
                     local message =
