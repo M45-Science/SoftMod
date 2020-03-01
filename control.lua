@@ -1232,6 +1232,11 @@ script.on_event(
         local area = event.area
         local prob_safe = false
 
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+        
         if (not global.last_decon_warning) then
             global.last_decon_warning = 0
         end
