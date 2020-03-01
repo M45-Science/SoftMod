@@ -4,6 +4,7 @@ local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
 
+
 local coal_mode_recipes = {
     "accumulator",
     "beacon",
@@ -1096,6 +1097,51 @@ script.on_event(
     end
 )
 
+--Deconstuction planner warning
+script.on_event(
+    defines.events.on_player_deconstructed_area,
+    function(event)
+        local player = game.players[event.player_index]
+        local area = event.area
+        local prob_safe = false
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (not global.last_decon_warning) then
+            global.last_decon_warning = 0
+        end
+
+        --If they are active over this amount, probably don't need to alert.
+        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60)) then
+            prob_safe = true
+        end
+
+        if (game.tick - global.last_decon_warning >= 600) then
+            if player.permission_group ~= nil and global.regulargroup ~= nil then
+                if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
+                    local message =
+                        player.name ..
+                        " is using the deconstruction planner: " ..
+                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+
+                    if prob_safe == false then
+                        --Warn everyone
+                        message_all(message)
+                    else
+                        --Log it anyway
+                        cprint(message)
+                    end
+                end
+            end
+            global.last_decon_warning = game.tick
+        end
+    end
+)
+
+
 --Player connected
 script.on_event(
     defines.events.on_player_joined_game,
@@ -1171,53 +1217,6 @@ script.on_event(
                     end
                 end
             end
-        end
-    end
-)
-
---Deconstuction planner warning
-script.on_event(
-    defines.events.on_player_deconstructed_area,
-    function(event)
-        local player = game.players[event.player_index]
-        local area = event.area
-        local prob_safe = false
-
-        print("enter")
-
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
-        end
-
-        if (not global.last_decon_warning) then
-            global.last_decon_warning = 0
-        end
-
-        --If they are active over this amount, probably don't need to alert.
-        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60)) then
-            prob_safe = true
-        end
-
-        if (game.tick - global.last_decon_warning >= 600) then
-            print("game.tick okay")
-            if player.permission_group ~= nil and global.regulargroup ~= nil then
-                if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
-                    local message =
-                        player.name ..
-                        " is using the deconstruction planner: " ..
-                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
-
-                    if prob_safe == false then
-                        --Warn everyone
-                        message_all(message)
-                    else
-                        --Log it anyway
-                        cprint(message)
-                    end
-                end
-            end
-            global.last_decon_warning = game.tick
         end
     end
 )
