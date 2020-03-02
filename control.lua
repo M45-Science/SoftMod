@@ -529,10 +529,10 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
-            --access command
+            --register command
             commands.add_command(
-                "access",
-                "<access code>",
+                "register",
+                "<code>",
                 function(param)
                     local player
                     if param.player_index then
