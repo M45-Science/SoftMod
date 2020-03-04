@@ -474,7 +474,7 @@ local function get_permgroup()
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
                                 player.print("(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!")
-                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7 you now have access to our members-only servers and a special discord role!")
                             end
                         end
                     end
