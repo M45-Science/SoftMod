@@ -584,6 +584,48 @@ script.on_load(
                 end
             )
 
+            --Set player color
+            commands.add_command(
+                "pcolor",
+                "<player> <color>",
+                function(param)
+                    local is_admin = true
+                    local player = nil
+
+                    if (not global.actual_playtime) then
+                        global.actual_playtime = {}
+                        global.actual_playtime[0] = 0
+                    end
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local victim = game.players[param.parameter]
+
+                    if (victim ~= nil) then
+                        if param.parameter then
+                            local xytable = mysplit(param.parameter, ",")
+                            if xytable ~= nil then
+                                local argr = xytable[1]
+                                local argg = xytable[2]
+                                local argb = xytable[3]
+                                victim.color = { argr, argg, argb }
+                            else
+                                smart_print(victim, "Invalid argument.")
+                                return
+                            end
+                        end
+                    end
+                    smart_print(player, "Error.")
+                end
+            )
+
             --Reset user
             commands.add_command(
                 "reset",
