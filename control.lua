@@ -602,10 +602,10 @@ script.on_load(
                     if param.parameter then
                         local args = mysplit(param.parameter, " ")
 
-                        if args[0] ~= nil then
+                        if args[0] ~= nil and args[1] ~= nil and xytable[0] ~= nil and xytable[1] ~= nil and xytable[2] ~= nil then
                             local victim = game.players[args[0]]
 
-                            if (victim ~= nil and xytable[2] ~= nil and args[1] ~= nil) then
+                            if (victim ~= nil ) then
                                 local xytable = mysplit(args[1], ",")
                                 if xytable ~= nil then
                                     local argr = xytable[0]
