@@ -1242,6 +1242,7 @@ script.on_event(
         show_players(player)
         sandbox_mode(player)
         game_settings(player)
+        smart_print(player, "To see online players, chat /online")
     end
 )
 
