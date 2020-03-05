@@ -591,11 +591,6 @@ script.on_load(
                 function(param)
                     local player = nil
 
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
-                    end
-
                     if param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
@@ -607,14 +602,14 @@ script.on_load(
                     if param.parameter then
                         local args = mysplit(param.parameter, " ")
                         if len(args == 2) then
-                            local victim = game.players[args[1]]
+                            local victim = game.players[args[0]]
 
                             if (victim ~= nil) then
-                                local xytable = mysplit(args[2], ",")
+                                local xytable = mysplit(args[1], ",")
                                 if xytable ~= nil then
-                                    local argr = xytable[1]
-                                    local argg = xytable[2]
-                                    local argb = xytable[3]
+                                    local argr = xytable[0]
+                                    local argg = xytable[1]
+                                    local argb = xytable[2]
                                     victim.color = {argr, argg, argb, 1.0}
                                     victim.chat_color = {argr, argg, argb, 1.0}
                                     smart_print(player, "Color set.")
