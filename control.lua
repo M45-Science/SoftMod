@@ -462,10 +462,8 @@ local function get_permgroup()
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
                                 message_all(player.name .. " was moved to trusted users.")
-                                player.print(
-                                    "(SERVER) You have been actively playing long enough, that the restrictions on your character have been lifted. Have fun, and be nice!"
-                                )
-                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7")
+                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]")
+                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Discord: Members role!")
                             end
                         end
                     elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
@@ -473,8 +471,8 @@ local function get_permgroup()
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
-                                player.print("(SERVER) You have been actively playing long enough, that you have been promoted to the regulars group!")
-                                player.print("(SERVER) Discord server: https://discord.gg/Ps2jnm7 you now have access to our members-only servers and a special discord role!")
+                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group!")
+                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Regulars-Only Factorio servers, and a special Discord role, and channels!")
                             end
                         end
                     end
@@ -988,7 +986,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim) then
-                                player.teleport({victim.position.x + 1.0, victim.position.y + 1.0})
+                                player.teleport({victim.position.x + 1.0, victim.position.y + 1.0}, victim.surface)
                                 player.print("Okay.")
                                 return
                             end
@@ -1059,7 +1057,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim) then
-                                victim.teleport({player.position.x + 1.0, player.position.y + 1.0})
+                                victim.teleport({player.position.x + 1.0, player.position.y + 1.0}, victim.surface)
                                 player.print("Okay.")
                                 return
                             end
@@ -1155,15 +1153,15 @@ script.on_event(
             if player.admin then
                 global.admingroup.add_player(player)
                 message_all(player.name .. " was moved to admins.")
-                player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
+                --player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
             elseif is_regular(player) then
                 global.regulargroup.add_player(player)
                 message_all(player.name .. " was moved to regulars...")
-                player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
+                --player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
             elseif is_trusted(player) then
                 global.trustedgroup.add_player(player)
                 message_all(player.name .. " was moved to trusted users.")
-                player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
+                --player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
             end
         --end
         end
