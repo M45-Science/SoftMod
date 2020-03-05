@@ -601,7 +601,7 @@ script.on_load(
 
                     if param.parameter then
                         local args = mysplit(param.parameter, " ")
-                        if len(args == 2) then
+                        if table.getn(args) == 2 then
                             local victim = game.players[args[0]]
 
                             if (victim ~= nil) then
