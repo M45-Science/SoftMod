@@ -604,26 +604,27 @@ script.on_load(
                         end
                     end
 
-                    local victim = game.players[param.parameter]
+                    if param.parameter then
+                        local xytable = mysplit(param.parameter, ",")
+                        if xytable ~= nil then
+                            local victim = game.players[xytable[1]]
+                            local argr = xytable[2]
+                            local argg = xytable[3]
+                            local argb = xytable[4]
 
-                    if (victim ~= nil) then
-                        if param.parameter then
-                            local xytable = mysplit(param.parameter, ",")
-                            if xytable ~= nil then
-                                local argr = xytable[1]
-                                local argg = xytable[2]
-                                local argb = xytable[3]
-                                victim.color = { argr, argg, argb, 1.0 }
-                                victim.chat_color = { argr, argg, argb, 1.0 }
+                            if (victim ~= nil) then
+                                victim.color = {argr, argg, argb, 1.0}
+                                victim.chat_color = {argr, argg, argb, 1.0}
                                 smart_print(player, "Color set.")
                                 return
                             else
-                                smart_print(player, "Invalid argument, systax pcolor <player> <r,g,b>")
+                                smart_print(player, "Player not found.")
                                 return
                             end
                         end
                     end
-                    smart_print(player, "Player not found.")
+
+                    smart_print(player, "Syntax: <player> <r,g,b>.")
                 end
             )
 
