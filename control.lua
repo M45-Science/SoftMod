@@ -833,6 +833,7 @@ script.on_load(
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
                             smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
+                            global.cspawnpos = {new_pos_x, new_pos_y}
                         else
                             smart_print(victim, "Couldn't find force or surface...")
                         end
@@ -1586,8 +1587,16 @@ script.on_nth_tick(
         end
         if (not global.servertag) then
             local label = "discord.gg/Ps2jnm7"
+            local xpos = 0
+            local ypos = 0
+
+            if global.cspawnpos then
+                xpos = global.cspawnpos[1]
+                ypos = global.cspawnpos[2]
+            end
+
             local chartTag = {
-                position = {0, 0},
+                 position = {xpos, ypos},
                 icon = {type = "item", name = "programmable-speaker"},
                 text = label
             }
