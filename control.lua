@@ -589,7 +589,6 @@ script.on_load(
                 "pcolor",
                 "<player> <color>",
                 function(param)
-                    local is_admin = true
                     local player = nil
 
                     if (not global.actual_playtime) then
@@ -600,7 +599,6 @@ script.on_load(
                     if param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
-                            is_admin = false
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -616,13 +614,15 @@ script.on_load(
                                 local argg = xytable[2]
                                 local argb = xytable[3]
                                 victim.color = { argr, argg, argb }
+                                smart_print(player, "Color set.")
+                                return
                             else
-                                smart_print(victim, "Invalid argument.")
+                                smart_print(player, "Invalid argument, systax pcolor <player> <r,g,b>")
                                 return
                             end
                         end
                     end
-                    smart_print(player, "Error.")
+                    smart_print(player, "Player not found.")
                 end
             )
 
