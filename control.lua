@@ -607,10 +607,10 @@ script.on_load(
                     if param.parameter then
                         local xytable = mysplit(param.parameter, ",")
                         if xytable ~= nil then
-                            local victim = game.players[xytable[1]]
-                            local argr = xytable[2]
-                            local argg = xytable[3]
-                            local argb = xytable[4]
+                            local victim = game.players[xytable[0]]
+                            local argr = xytable[1]
+                            local argg = xytable[2]
+                            local argb = xytable[3]
 
                             if (victim ~= nil) then
                                 victim.color = {argr, argg, argb, 1.0}
