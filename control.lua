@@ -601,10 +601,10 @@ script.on_load(
 
                     if param.parameter then
                         local args = mysplit(param.parameter, " ")
-                        if table.getn(args) == 2 then
+
                             local victim = game.players[args[0]]
 
-                            if (victim ~= nil) then
+                            if (victim ~= nil and xytable[2] ~= nil and args[1] ~= nil) then
                                 local xytable = mysplit(args[1], ",")
                                 if xytable ~= nil then
                                     local argr = xytable[0]
@@ -619,7 +619,6 @@ script.on_load(
                                 smart_print(player, "Player not found.")
                                 return
                             end
-                        end
                     end
                     smart_print(player, "Invalid argument, systax pcolor <player> <r,g,b>")
                 end
