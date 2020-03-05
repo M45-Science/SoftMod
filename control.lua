@@ -1237,7 +1237,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        message_allp(player.name .. " is a new character!")
+        message_all(player.name .. " is a new character!")
         create_groups()
         show_players(player)
         sandbox_mode(player)
