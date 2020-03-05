@@ -613,7 +613,8 @@ script.on_load(
                                 local argr = xytable[1]
                                 local argg = xytable[2]
                                 local argb = xytable[3]
-                                victim.color = { argr, argg, argb }
+                                victim.color = { argr, argg, argb, 1.0 }
+                                victim.chat_color = { argr, argg, argb, 1.0 }
                                 smart_print(player, "Color set.")
                                 return
                             else
