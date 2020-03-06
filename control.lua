@@ -445,11 +445,11 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim ~= nil) then
+                    if (victim) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             if global.actual_playtime[victim.index] < (30 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
+                                global.actual_playtime[victim.index] = (30 * 60 * 60)
                                 smart_print(player, "Player set to trusted.")
                                 return
                             end
@@ -485,11 +485,11 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim ~= nil) then
+                    if (victim) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             if global.actual_playtime[victim.index] < (4 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (4 * 60 * 60) + 1
+                                global.actual_playtime[victim.index] = (4 * 60 * 60)
                                 smart_print(player, "Player set to regular.")
                                 return
                             end
