@@ -1,4 +1,4 @@
---v045-3-5-2020_12-31-PM
+--v0451-3-6-2020_2-49-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1537,11 +1537,11 @@ script.on_event(
         local tech = event.research
         local wscript = event.by_script
 
-        --Disable mining/rotating once we get far enough along
-        if tech.name == "advanced-electronics-99" and wscript == false then
+        --Disable mining/rotating once we get far enough along.. do this fairly late
+        if tech.name == "logistics-3" and wscript == false then
             local dperms = game.permissions.get_group("Default")
             if dperms ~= nil then
-                message_alld("Automatically disabling rotating and mining objects for new users.")
+                message_all("Automatically disabling: rotating and mining/deleting objects for new users... due to advanced technology level.")
                 dperms.set_allows_action(defines.input_action.begin_mining, false)
                 dperms.set_allows_action(defines.input_action.rotate_entity, false)
             end
