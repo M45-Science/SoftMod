@@ -367,7 +367,7 @@ local function is_regular(victim)
     end
 
     --If they have enough hours
-    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (2 * 60 * 60 * 60)) then
+    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (4 * 60 * 60 * 60)) then
         return true
     end
 
