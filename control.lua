@@ -223,7 +223,7 @@ local function get_permgroup()
                                     "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]"
                                 )
                                 player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Discord: Members role!"
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Discord: Members role![/color]"
                                 )
                             end
                         end
@@ -233,10 +233,10 @@ local function get_permgroup()
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
                                 player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group!"
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]"
                                 )
                                 player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Regulars-Only Factorio servers, and a special Discord role, and channels!"
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Regulars-Only Factorio servers, and a special Discord role, and channels![/color]"
                                 )
                             end
                         end
