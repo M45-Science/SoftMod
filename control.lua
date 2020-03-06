@@ -125,7 +125,7 @@ local function is_regular(victim)
     end
 
     --If they have enough hours
-    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (4 * 60 * 60 * 60)) then
+    if (global.activity and global.activity[victim.index] and global.activity[victim.index] > (4 * 60 * 60 * 60)) then
         return true
     end
 
@@ -142,7 +142,7 @@ local function is_trusted(victim)
     end
 
     --If they have enough hours
-    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (30 * 60 * 60)) then
+    if (global.activity and global.activity[victim.index] and global.activity[victim.index] > (30 * 60 * 60)) then
         return true
     end
 
@@ -215,7 +215,7 @@ local function get_permgroup()
                         player.permission_group.name == global.regulargroup.name)
                  then
                     if player.permission_group.name == global.defaultgroup.name then
-                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
+                        if (global.activity and global.activity[player.index] and global.activity[player.index] > (30 * 60 * 60)) then
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
                                 message_all(player.name .. " was moved to trusted users.")
@@ -228,7 +228,7 @@ local function get_permgroup()
                             end
                         end
                     elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
-                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60 * 60)) then
+                        if (global.activity and global.activity[player.index] and global.activity[player.index] > (4 * 60 * 60 * 60)) then
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
@@ -267,14 +267,14 @@ local function show_players(victim)
                 utag = "(none)"
             end
 
-            if (global.actual_playtime and global.actual_playtime[player.index]) then
+            if (global.activity and global.activity[player.index]) then
                 smart_print(
                     victim,
                     string.format(
                         "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)",
                         numpeople,
                         player.name,
-                        (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0),
+                        (global.activity[player.index] / 60.0 / 60.0 / 60.0),
                         (player.online_time / 60.0 / 60.0 / 60.0),
                         utag
                     )
@@ -393,9 +393,9 @@ script.on_load(
                     local is_admin = true
                     local player = nil
 
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
+                    if (not global.activity) then
+                        global.activity = {}
+                        global.activity[0] = 0
                     end
 
                     if param.player_index then
@@ -411,8 +411,8 @@ script.on_load(
 
                     if (victim) then
                         --Lame, but works
-                        if global.actual_playtime[victim.index] then
-                            global.actual_playtime[victim.index] = 0
+                        if global.activity[victim.index] then
+                            global.activity[victim.index] = 0
                             smart_print(player, "Player set to untrusted.")
                             return
                         end
@@ -429,9 +429,9 @@ script.on_load(
                     local is_admin = true
                     local player = nil
 
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
+                    if (not global.activity) then
+                        global.activity = {}
+                        global.activity[0] = 0
                     end
 
                     if param.player_index then
@@ -447,9 +447,9 @@ script.on_load(
 
                     if (victim) then
                         --Lame, but works
-                        if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] < (30 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (30 * 60 * 60)
+                        if global.activity[victim.index] then
+                            if global.activity[victim.index] < (30 * 60 * 60) then
+                                global.activity[victim.index] = (30 * 60 * 60)
                                 smart_print(player, "Player set to trusted.")
                                 return
                             end
@@ -469,9 +469,9 @@ script.on_load(
                     local is_admin = true
                     local player = nil
 
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
+                    if (not global.activity) then
+                        global.activity = {}
+                        global.activity[0] = 0
                     end
 
                     if param.player_index then
@@ -487,9 +487,9 @@ script.on_load(
 
                     if (victim) then
                         --Lame, but works
-                        if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] < (4 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (4 * 60 * 60)
+                        if global.activity[victim.index] then
+                            if global.activity[victim.index] < (4 * 60 * 60) then
+                                global.activity[victim.index] = (4 * 60 * 60)
                                 smart_print(player, "Player set to regular.")
                                 return
                             end
@@ -687,12 +687,12 @@ script.on_load(
                     end
 
                     if (param.parameter == "active" and is_admin) then
-                        if (global.actual_playtime) then
+                        if (global.activity) then
                             local plen = 0
                             local playtime = {}
                             for pos, player in pairs(game.players) do
                                 playtime[pos] = {
-                                    time = global.actual_playtime[player.index],
+                                    time = global.activity[player.index],
                                     name = game.players[player.index].name
                                 }
                                 plen = plen + 1
@@ -917,9 +917,9 @@ script.on_event(
         local area = event.area
         local prob_safe = false
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
         if (not global.last_decon_warning) then
@@ -927,7 +927,7 @@ script.on_event(
         end
 
         --If they are active over this amount, probably don't need to alert.
-        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60)) then
+        if (global.activity and global.activity[player.index] and global.activity[player.index] > (4 * 60 * 60)) then
             prob_safe = true
         end
 
@@ -1003,15 +1003,15 @@ script.on_event(
         local player = game.players[event.player_index]
         local created_entity = event.created_entity
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 60
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
 
         if (not global.last_speaker_warning) then
@@ -1042,15 +1042,15 @@ script.on_event(
         local obj = event.entity
 
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1061,15 +1061,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1080,15 +1080,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1099,15 +1099,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1118,15 +1118,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1137,15 +1137,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 60
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1156,15 +1156,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1175,15 +1175,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1194,15 +1194,15 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
+        if (global.activity and global.activity[player.index]) then
+            global.activity[player.index] = global.activity[player.index] + 30
         else
-            global.actual_playtime[player.index] = 0.0
+            global.activity[player.index] = 0.0
         end
     end
 )
@@ -1215,15 +1215,15 @@ script.on_event(
         if event.player_index ~= nil then
             local player = game.players[event.player_index]
 
-            if (not global.actual_playtime) then
-                global.actual_playtime = {}
-                global.actual_playtime[0] = 0
+            if (not global.activity) then
+                global.activity = {}
+                global.activity[0] = 0
             end
 
-            if (global.actual_playtime and global.actual_playtime[player.index]) then
-                global.actual_playtime[player.index] = global.actual_playtime[player.index] + 60
+            if (global.activity and global.activity[player.index]) then
+                global.activity[player.index] = global.activity[player.index] + 60
             else
-                global.actual_playtime[player.index] = 0.0
+                global.activity[player.index] = 0.0
             end
         end
     end
@@ -1237,9 +1237,9 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
 
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
+        if (not global.activity) then
+            global.activity = {}
+            global.activity[0] = 0
         end
 
         --Only count if actually walking...
@@ -1247,11 +1247,11 @@ script.on_event(
             local walking_state = player.walking_state.walking
 
             if walking_state == true then
-                if (global.actual_playtime and global.actual_playtime[player.index]) then
+                if (global.activity and global.activity[player.index]) then
                     --Estimate...
-                    global.actual_playtime[player.index] = global.actual_playtime[player.index] + 5
+                    global.activity[player.index] = global.activity[player.index] + 5
                 else
-                    global.actual_playtime[player.index] = 0.0
+                    global.activity[player.index] = 0.0
                 end
             end
         end
