@@ -1,8 +1,209 @@
---v0452-3-6-2020_10-52-AM
+--v0453-3-6-2020_10-63-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
+
+local coal_mode_recipes = {
+    "accumulator",
+    "beacon",
+    "belt-immunity-equipment",
+    "defender-capsule",
+    "destroyer-capsule",
+    "discharge-defense-equipment",
+    "discharge-defense-remote",
+    "distractor-capsule",
+    "effectivity-module",
+    "effectivity-module-2",
+    "effectivity-module-3",
+    "exoskeleton-equipment",
+    "flying-robot-frame",
+    "fusion-reactor-equipment",
+    "laser-turret",
+    "night-vision-equipment",
+    "personal-laser-defense-equipment",
+    "personal-roboport-equipment",
+    "personal-roboport-mk2-equipment",
+    "poison-capsule",
+    "power-armor",
+    "power-armor-mk2",
+    "processing-unit",
+    "railgun",
+    "roboport",
+    "rocket-control-unit",
+    "rocket-silo",
+    "satellite",
+    "slowdown-capsule",
+    "solar-panel",
+    "speed-module",
+    "speed-module-2",
+    "speed-module-3"
+}
+
+local coal_mode_techs = {
+    "solar-energy",
+    "logistic-robotics",
+    "robotics",
+    "laser",
+    "logistic-system"
+}
+
+local regulars = {
+    "Azcrew_",
+    "Blitztexen",
+    "BloodWolfmann",
+    "Candorist",
+    "Castleboy2000",
+    "Dr.Cube",
+    "Fighterxx64",
+    "Fondofblack",
+    "FoxMayham",
+    "Fraanek",
+    "Hickory",
+    "JerAdams",
+    "Mazzeneko",
+    "Mr.Plips",
+    "R2Boyo25",
+    "RoninM3",
+    "Starrs",
+    "SuicideJunkie",
+    "VortexBerserker",
+    "Zewex",
+    "boeljoet",
+    "chrisgamer2902",
+    "cubun_2009",
+    "dr.robuttnik",
+    "enderwolfer",
+    "iansuarus",
+    "johann_loki",
+    "komikoze",
+    "luigil101",
+    "pakjce",
+    "sage307",
+    "snekcihc",
+    "stety",
+    "wampastompa09",
+    "zazer4",
+    "A7fie",
+    "Acid_wars",
+    "Aidenkrz",
+    "Andro",
+    "ArmadaX",
+    "AryanCoconut",
+    "Avaren",
+    "Azcrew_",
+    "BlackJaBus",
+    "Blitztexen",
+    "BloodWolfmann",
+    "ButterMeister",
+    "Castleboy2000",
+    "Corruptarc",
+    "DIBBG4MER",
+    "DZCM",
+    "D_Riv",
+    "Daddyrilla",
+    "Darsin",
+    "Decaliss",
+    "Dr.Cube",
+    "Estabon",
+    "Fighterxx64",
+    "Flyrockmaster",
+    "Fondofblack",
+    "Footy",
+    "ForsakenWiz",
+    "FoxMayham",
+    "Fraanek",
+    "FuzzyOne",
+    "Gatis",
+    "GregorS",
+    "Huelsensack",
+    "Impregneerspuit",
+    "ItsAMeeeLuigi",
+    "JerAdams",
+    "Jeremykyle",
+    "Killy71",
+    "Mazzeneko",
+    "Merciless210",
+    "Micahgee",
+    "Mike-_-",
+    "Mikel3",
+    "Moose1301",
+    "Nasphere",
+    "Odinoki86",
+    "PEEK1995",
+    "POI_780",
+    "Quinlan",
+    "R2Boyo25",
+    "Ratuz",
+    "Robbie06",
+    "RoninM3",
+    "Rylabs",
+    "SmokuNoPico",
+    "SpacecatCybran",
+    "Starrs",
+    "StevenMatthews",
+    "That_Dude",
+    "The-Player",
+    "Thoren",
+    "Trent333",
+    "U_Wot",
+    "VortexBerserker",
+    "Zewex",
+    "Zory",
+    "adamcode",
+    "adee",
+    "antuan309",
+    "bazus1",
+    "bobbythebob12",
+    "boeljoet",
+    "brftjx",
+    "chickenspie",
+    "chrisg23",
+    "chrisgamer2902",
+    "chubbins",
+    "clonedlemmings",
+    "crystalspider37",
+    "cubun_2009",
+    "dangerarea",
+    "dbt0",
+    "dooces",
+    "enderwolfer",
+    "fluckinnuts",
+    "fufexan",
+    "funork",
+    "haja112",
+    "iansuarus",
+    "jetboy57",
+    "john_zivanovik_f",
+    "jslannon",
+    "julng",
+    "komikoze",
+    "lipinkaixin",
+    "literallyjustanegg",
+    "luckcolors",
+    "luigil101",
+    "magichobo",
+    "mehdi2344",
+    "mojosa",
+    "mpsv7",
+    "mraadx",
+    "mueppel",
+    "nickoe",
+    "pakjce",
+    "ruetama",
+    "sage307",
+    "skymory_24",
+    "sm2008",
+    "sosofly",
+    "sukram72",
+    "thanhatam7123",
+    "twist.mills",
+    "wampastompa09",
+    "yanivger",
+    "ytremors",
+    "zendesigner",
+    "zlema01"
+}
 
 local function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
@@ -41,6 +242,40 @@ local function mysplit(inputstr, sep)
         table.insert(t, str)
     end
     return t
+end
+
+local function coal_mode()
+    local pforce = game.forces["player"]
+
+    if pforce ~= nil then
+        if global.coalmode == true then
+            for _, gtech in pairs(pforce.technologies) do
+                for _, ctech in pairs(coal_mode_techs) do
+                    if gtech.name == ctech then
+                        pforce.technologies[ctech].enabled = false
+                    --cprint("Disabled tech: " .. ctech)
+                    end
+                end
+            end
+
+            for _, recipe in pairs(pforce.recipes) do
+                for _, crep in pairs(coal_mode_recipes) do
+                    if recipe.name == crep then
+                        recipe.enabled = false
+                    --cprint("Disabled recipe: " .. crep)
+                    end
+                end
+            end
+        else
+            for _, gtech in pairs(pforce.technologies) do
+                gtech.enabled = true
+            end
+
+            for _, recipe in pairs(pforce.recipes) do
+                recipe.enabled = true
+            end
+        end
+    end
 end
 
 local function sandbox_mode(player)
@@ -117,6 +352,13 @@ end
 
 --Is player in regulars list--
 local function is_regular(victim)
+    --If in hard-coded list (legacy)
+    for _, regular in pairs(regulars) do
+        if (regular == victim.name) then
+            return true
+        end
+    end
+
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.regulargroup ~= nil then
         if victim.permission_group.name == global.regulargroup.name then
@@ -445,11 +687,11 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim) then
+                    if (victim ~= nil) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             if global.actual_playtime[victim.index] < (30 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (30 * 60 * 60)
+                                global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
                                 smart_print(player, "Player set to trusted.")
                                 return
                             end
@@ -460,10 +702,11 @@ script.on_load(
                     smart_print(player, "Error.")
                 end
             )
-            --Trust user
+
+            --Set user to regular
             commands.add_command(
                 "regular",
-                "<player> -- sets user to regular",
+                "<player> -- sets user to regular status",
                 function(param)
                     local is_admin = true
                     local player = nil
@@ -484,15 +727,16 @@ script.on_load(
 
                     local victim = game.players[param.parameter]
 
-                    if (victim) then
+                    if (victim ~= nil) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
                             if global.actual_playtime[victim.index] < (4 * 60 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (4 * 60 * 60 * 60)
+                                global.actual_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
                                 smart_print(player, "Player set to regular.")
                                 return
                             end
-                            smart_print(player, "Player was already regular.")
+                            smart_print(player, "Player was already a regular.")
+
                             return
                         end
                     end
@@ -525,8 +769,17 @@ script.on_load(
                                 sandbox_mode(victim)
                                 smart_print(victim, "Sandbox mode enabled.")
                             end
+                        elseif param.parameter == "coal" then
+                            if global.coalmode == true then
+                                global.coalmode = nil
+                                smart_print(victim, "Coal mode disabled.")
+                            else
+                                global.coalmode = true
+                                coal_mode()
+                                smart_print(victim, "Coal mode enabled.")
+                            end
                         else
-                            smart_print(victim, "Valid modes: sandbox")
+                            smart_print(victim, "Valid modes: sandbox, coal")
                         end
                     else
                         smart_print(victim, "Admins only.")
@@ -925,21 +1178,13 @@ script.on_event(
         end
 
         if (game.tick - global.last_decon_warning >= 600) then
-            if player.permission_group ~= nil and global.regulargroup ~= nil then
-                if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
-                    local message =
-                        player.name ..
-                        " is using the deconstruction planner: " ..
-                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                local message =
+                    player.name ..
+                    " is using the deconstruction planner: " ..
+                        math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
 
-                    if prob_safe == false then
-                        --Warn everyone
-                        message_all(message)
-                    else
-                        --Log it anyway
-                        cprint(message)
-                    end
-                end
+                message_all(message)
             end
             global.last_decon_warning = game.tick
         end
@@ -954,19 +1199,19 @@ script.on_event(
         create_groups()
 
         --Moved here to reduce on_tick
-        if global.regulargroup ~= nil and global.trustedgroup ~= nil and global.admingroup ~= nil then
+        if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
             --if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
             if player.admin then
                 --player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                 global.admingroup.add_player(player)
-                message_alld(player.name .. " was moved to admins.")
+                --message_all(player.name .. " was moved to admins.")
             elseif is_regular(player) then
                 --player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
                 global.regulargroup.add_player(player)
-                message_alld(player.name .. " was moved to regulars...")
+                --message_all(player.name .. " was moved to regulars...")
             elseif is_trusted(player) then
                 global.trustedgroup.add_player(player)
-                message_alld(player.name .. " was moved to trusted users.")
+                --message_all(player.name .. " was moved to trusted users.")
             --player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
             end
         --end
@@ -982,10 +1227,10 @@ script.on_event(
 
         message_all(player.name .. " is a new character!")
         create_groups()
-        show_players(player)
         sandbox_mode(player)
         game_settings(player)
         smart_print(player, "To see online players, chat /online")
+        show_players(player)
     end
 )
 
@@ -1012,13 +1257,11 @@ script.on_event(
         end
 
         if (game.tick - global.last_speaker_warning >= 300) then
-            if player and created_entity then
-                if player.permission_group ~= nil and global.regulargroup ~= nil then
-                    if player.permission_group.name ~= global.regulargroup.name and player.admin == false then --Dont bother with regulars/admins
-                        if created_entity.name == "programmable-speaker" then
-                            message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
-                            global.last_speaker_warning = game.tick
-                        end
+            if player ~= nil and created_entity ~= nil then
+                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                    if created_entity.name == "programmable-speaker" then
+                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+                        global.last_speaker_warning = game.tick
                     end
                 end
             end
