@@ -722,7 +722,7 @@ script.on_load(
                         end
                     end
 
-                    if param.parameter ~= "" then
+                    if param.parameter then
                     local victim = game.players[param.parameter]
 
                     if (victim ~= nil) then
@@ -764,7 +764,7 @@ script.on_load(
                         end
                     end
 
-                    if param.parameter ~= "" then
+                    if param.parameter then
                     local victim = game.players[param.parameter]
 
                     if (victim ~= nil) then
@@ -857,7 +857,7 @@ script.on_load(
                             psurface = victim.surface
                         end
 
-                        if param.parameter ~= "" then
+                        if param.parameter then
                             local xytable = mysplit(param.parameter, ",")
                             if xytable ~= nil then
                                 local argx = xytable[1]
@@ -1096,7 +1096,7 @@ script.on_load(
                             return
                         end
 
-                        if param.parameter ~= "" then
+                        if param.parameter then
                             local victim = game.players[param.parameter]
 
                             if (victim) then
@@ -1139,7 +1139,7 @@ script.on_load(
                             return
                         end
 
-                        if param.parameter ~= "" then
+                        if param.parameter then
                             local str = param.parameter
                             local xpos = "0.0"
                             local ypos = "0.0"
@@ -1191,7 +1191,7 @@ script.on_load(
                             return
                         end
 
-                        if param.parameter ~= "" then
+                        if param.parameter then
                             local victim = game.players[param.parameter]
 
                             if (victim) then
