@@ -1,4 +1,4 @@
---v0453-3-6-2020_10-63-AM
+--v0453-3-7-2020_3-16-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -630,7 +630,7 @@ script.on_load(
                         end
                     end
 
-                    if param.parameter then
+                    if param.parameter ~= nil then
                         local args = mysplit(param.parameter, " ")
 
                         if args[1] ~= nil and args[2] ~= nil then
@@ -680,6 +680,7 @@ script.on_load(
                         end
                     end
 
+                    if param.parameter ~= nil then
                     local victim = game.players[param.parameter]
 
                     if (victim ~= nil) then
@@ -694,6 +695,7 @@ script.on_load(
                             return
                         end
                     end
+                end
                     smart_print(player, "Error.")
                 end
             )
@@ -720,6 +722,7 @@ script.on_load(
                         end
                     end
 
+                    if param.parameter ~= nil then
                     local victim = game.players[param.parameter]
 
                     if (victim ~= nil) then
@@ -734,6 +737,7 @@ script.on_load(
                             return
                         end
                     end
+                end
                     smart_print(player, "Error.")
                 end
             )
@@ -760,6 +764,7 @@ script.on_load(
                         end
                     end
 
+                    if param.parameter ~= nil then
                     local victim = game.players[param.parameter]
 
                     if (victim ~= nil) then
@@ -775,6 +780,7 @@ script.on_load(
                             return
                         end
                     end
+                end
                     smart_print(player, "Error.")
                 end
             )
@@ -851,7 +857,7 @@ script.on_load(
                             psurface = victim.surface
                         end
 
-                        if param.parameter then
+                        if param.parameter ~= nil then
                             local xytable = mysplit(param.parameter, ",")
                             if xytable ~= nil then
                                 local argx = xytable[1]
@@ -905,7 +911,7 @@ script.on_load(
                         local pforce = game.forces["player"]
                         local size = 1024
 
-                        if param.parameter then
+                        if param.parameter ~= nil then
                             local rsize = tonumber(param.parameter)
 
                             --limits
@@ -1090,7 +1096,7 @@ script.on_load(
                             return
                         end
 
-                        if param.parameter then
+                        if param.parameter ~= nil then
                             local victim = game.players[param.parameter]
 
                             if (victim) then
@@ -1133,7 +1139,7 @@ script.on_load(
                             return
                         end
 
-                        if param.parameter then
+                        if param.parameter ~= nil then
                             local str = param.parameter
                             local xpos = "0.0"
                             local ypos = "0.0"
@@ -1185,7 +1191,7 @@ script.on_load(
                             return
                         end
 
-                        if param.parameter then
+                        if param.parameter ~= nil then
                             local victim = game.players[param.parameter]
 
                             if (victim) then
