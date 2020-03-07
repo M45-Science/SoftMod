@@ -1330,44 +1330,6 @@ script.on_event(
     end
 )
 
---Place equipment
-script.on_event(
-    defines.events.on_player_placed_equipment,
-    function(event)
-        local player = game.players[event.player_index]
-
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
-        end
-
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
-        else
-            global.actual_playtime[player.index] = 0.0
-        end
-    end
-)
-
---Remove equipment
-script.on_event(
-    defines.events.on_player_removed_equipment,
-    function(event)
-        local player = game.players[event.player_index]
-
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
-        end
-
-        if (global.actual_playtime and global.actual_playtime[player.index]) then
-            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 30
-        else
-            global.actual_playtime[player.index] = 0.0
-        end
-    end
-)
-
 --Repair entity
 script.on_event(
     defines.events.on_player_repaired_entity,
