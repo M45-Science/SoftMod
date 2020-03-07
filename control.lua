@@ -210,6 +210,8 @@ local function set_active(player)
         if (not global.active) then
             global.active = {}
         end
+
+        print("active")
         global.active[player.index] = 1
     end
 end
@@ -463,7 +465,7 @@ end
 local function get_permgroup()
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
-        if (player and player.valid and player.connected) then
+        if (player and player.valid) then
             --Handle nil permissions, for mod compatability
             if
                 (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and
@@ -659,7 +661,7 @@ script.on_load(
             --Reset user
             commands.add_command(
                 "reset",
-                "<player> -- sets player active time to 0",
+                "<player> -- sets user to 0",
                 function(param)
                     local is_admin = true
                     local player = nil
@@ -683,8 +685,12 @@ script.on_load(
                     if (victim ~= nil) then
                         --Lame, but works
                         if global.actual_playtime[victim.index] then
-                            global.actual_playtime[victim.index] = 0
-                            smart_print(player, "Player set to untrusted.")
+                            if global.actual_playtime[victim.index] > 0 then
+                                global.actual_playtime[victim.index] = 0
+                                smart_print(player, "Player set to 0.")
+                                return
+                            end
+                            smart_print(player, "Player was already reset.")
                             return
                         end
                     end
@@ -1340,7 +1346,7 @@ script.on_event(
         local obj = event.entity
 
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
-        
+
         set_active(player)
     end
 )
