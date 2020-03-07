@@ -1197,6 +1197,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         create_groups()
+        sandbox_mode(player)
 
         --Moved here to reduce on_tick
         if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
