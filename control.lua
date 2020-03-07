@@ -680,7 +680,7 @@ script.on_load(
                         end
                     end
 
-                    if param.parameter ~= "" then
+                    if param.parameter then
                     local victim = game.players[param.parameter]
 
                     if (victim ~= nil) then
