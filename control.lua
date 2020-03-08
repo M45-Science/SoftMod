@@ -667,11 +667,6 @@ script.on_load(
                     local is_admin = true
                     local player = nil
 
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
-                    end
-
                     if param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
@@ -709,11 +704,6 @@ script.on_load(
                     local is_admin = true
                     local player = nil
 
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
-                    end
-
                     if param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
@@ -750,11 +740,6 @@ script.on_load(
                 function(param)
                     local is_admin = true
                     local player = nil
-
-                    if (not global.actual_playtime) then
-                        global.actual_playtime = {}
-                        global.actual_playtime[0] = 0
-                    end
 
                     if param.player_index then
                         player = game.players[param.player_index]
@@ -1515,12 +1500,21 @@ script.on_nth_tick(
         end
 
         for _, player in pairs(game.connected_players) do
-            if (player and player.valid and player.connected and player.character and player.character.valid) then
-            if global.active[player.index] == 1 then
-                global.active[player.index] = 0 --Turn back off
-                global.actual_playtime[player.index] = global.actual_playtime[player.index] + 900
+            if global.active[player.index] then
+                if global.active[player.index] == 1 then
+                    global.active[player.index] = 0 --Turn back off
+
+                    if global.actual_playtime[player.index] then
+                        global.actual_playtime[player.index] = global.actual_playtime[player.index] + 900
+                    else
+                        --INIT
+                        global.actual_playtime[player.index] = 0
+                    end
+                end
+            else
+                --INIT
+                global.active[player.index] = 0
             end
-        end
         end
 
         --Remove old corpse tags
