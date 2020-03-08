@@ -209,6 +209,7 @@ local function set_active(player)
     if player ~= nil and player.valid then
         if (not global.active) then
             global.active = {}
+            global.active[0] = 0
         end
 
         print("active")
@@ -681,21 +682,21 @@ script.on_load(
                     end
 
                     if param.parameter then
-                    local victim = game.players[param.parameter]
+                        local victim = game.players[param.parameter]
 
-                    if (victim ~= nil) then
-                        --Lame, but works
-                        if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] > 0 then
-                                global.actual_playtime[victim.index] = 0
-                                smart_print(player, "Player set to 0.")
+                        if (victim ~= nil) then
+                            --Lame, but works
+                            if global.actual_playtime[victim.index] then
+                                if global.actual_playtime[victim.index] > 0 then
+                                    global.actual_playtime[victim.index] = 0
+                                    smart_print(player, "Player set to 0.")
+                                    return
+                                end
+                                smart_print(player, "Player was already reset.")
                                 return
                             end
-                            smart_print(player, "Player was already reset.")
-                            return
                         end
                     end
-                end
                     smart_print(player, "Error.")
                 end
             )
@@ -723,21 +724,21 @@ script.on_load(
                     end
 
                     if param.parameter then
-                    local victim = game.players[param.parameter]
+                        local victim = game.players[param.parameter]
 
-                    if (victim ~= nil) then
-                        --Lame, but works
-                        if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] < (30 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
-                                smart_print(player, "Player set to trusted.")
+                        if (victim ~= nil) then
+                            --Lame, but works
+                            if global.actual_playtime[victim.index] then
+                                if global.actual_playtime[victim.index] < (30 * 60 * 60) then
+                                    global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
+                                    smart_print(player, "Player set to trusted.")
+                                    return
+                                end
+                                smart_print(player, "Player was already trusted.")
                                 return
                             end
-                            smart_print(player, "Player was already trusted.")
-                            return
                         end
                     end
-                end
                     smart_print(player, "Error.")
                 end
             )
@@ -765,22 +766,22 @@ script.on_load(
                     end
 
                     if param.parameter then
-                    local victim = game.players[param.parameter]
+                        local victim = game.players[param.parameter]
 
-                    if (victim ~= nil) then
-                        --Lame, but works
-                        if global.actual_playtime[victim.index] then
-                            if global.actual_playtime[victim.index] < (4 * 60 * 60 * 60) then
-                                global.actual_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
-                                smart_print(player, "Player set to regular.")
+                        if (victim ~= nil) then
+                            --Lame, but works
+                            if global.actual_playtime[victim.index] then
+                                if global.actual_playtime[victim.index] < (4 * 60 * 60 * 60) then
+                                    global.actual_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
+                                    smart_print(player, "Player set to regular.")
+                                    return
+                                end
+                                smart_print(player, "Player was already a regular.")
+
                                 return
                             end
-                            smart_print(player, "Player was already a regular.")
-
-                            return
                         end
                     end
-                end
                     smart_print(player, "Error.")
                 end
             )
@@ -1503,12 +1504,20 @@ script.on_nth_tick(
     function(event)
         local toremove
 
-        if global.active then
-            for _, player in pairs(game.connected_players) do
-                if global.active[player.index] == 1 then
-                    global.active[player.index] = 0 --Turn back off
-                    global.actual_playtime[player.index] = global.actual_playtime[player.index] + 900
-                end
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (not global.active) then
+            global.active = {}
+            global.active[0] = 0
+        end
+
+        for _, player in pairs(game.connected_players) do
+            if global.active[player.index] == 1 then
+                global.active[player.index] = 0 --Turn back off
+                global.actual_playtime[player.index] = global.actual_playtime[player.index] + 900
             end
         end
 
