@@ -1,4 +1,4 @@
---v0454-3-7-2020_8-40-PM
+--v0454-3-7-2020_9-02-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1485,7 +1485,7 @@ script.on_event(
 
 --Keep to minimum--
 script.on_nth_tick(
-    900, --about 15 seconds
+    1800, --about 30 seconds
     function(event)
         local toremove
 
