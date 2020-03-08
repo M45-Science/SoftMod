@@ -206,7 +206,7 @@ local regulars = {
 }
 
 local function set_active(player)
-    if player ~= nil and player.valid then
+    if (player and player.valid and player.connected and player.character and player.character.valid) then
         if (not global.active) then
             global.active = {}
             global.active[0] = 0
@@ -1515,10 +1515,12 @@ script.on_nth_tick(
         end
 
         for _, player in pairs(game.connected_players) do
+            if (player and player.valid and player.connected and player.character and player.character.valid) then
             if global.active[player.index] == 1 then
                 global.active[player.index] = 0 --Turn back off
                 global.actual_playtime[player.index] = global.actual_playtime[player.index] + 900
             end
+        end
         end
 
         --Remove old corpse tags
