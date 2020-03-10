@@ -1445,7 +1445,7 @@ script.on_nth_tick(
                     global.active[player.index] = 0 --Turn back off
 
                     if global.actual_playtime[player.index] then
-                        global.actual_playtime[player.index] = global.actual_playtime[player.index] + 900
+                        global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1800
                     else
                         --INIT
                         global.actual_playtime[player.index] = 0
