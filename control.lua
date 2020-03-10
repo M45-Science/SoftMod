@@ -1,4 +1,4 @@
---v0454-3-9-2020_11-18-PM
+--v0455-3-10-2020_12-09-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -383,10 +383,7 @@ local function is_regular(victim)
     end
 
     --If they have enough hours
-    if
-        (global.actual_playtime and global.actual_playtime[victim.index] and
-            global.actual_playtime[victim.index] > (4 * 60 * 60 * 60))
-     then
+    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (4 * 60 * 60 * 60)) then
         return true
     end
 
@@ -403,10 +400,7 @@ local function is_trusted(victim)
     end
 
     --If they have enough hours
-    if
-        (global.actual_playtime and global.actual_playtime[victim.index] and
-            global.actual_playtime[victim.index] > (30 * 60 * 60))
-     then
+    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (30 * 60 * 60)) then
         return true
     end
 
@@ -472,22 +466,14 @@ local function get_permgroup()
     for _, player in pairs(game.connected_players) do
         if (player and player.valid) then
             --Handle nil permissions, for mod compatability
-            if
-                (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and
-                    global.regulargroup ~= nil and
-                    global.admingroup ~= nil)
-             then
+            if (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and global.regulargroup ~= nil and global.admingroup ~= nil) then
                 --Only move from default groups, for mod compatability
                 if
-                    (player.permission_group.name == global.defaultgroup.name or
-                        player.permission_group.name == global.trustedgroup.name or
+                    (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or
                         player.permission_group.name == global.regulargroup.name)
                  then
                     if player.permission_group.name == global.defaultgroup.name then
-                        if
-                            (global.actual_playtime and global.actual_playtime[player.index] and
-                                global.actual_playtime[player.index] > (30 * 60 * 60))
-                         then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
                                 message_all(player.name .. " was moved to trusted users.")
@@ -499,14 +485,8 @@ local function get_permgroup()
                                 )
                             end
                         end
-                    elseif
-                        player.permission_group.name == global.defaultgroup.name or
-                            player.permission_group.name == global.trustedgroup.name
-                     then
-                        if
-                            (global.actual_playtime and global.actual_playtime[player.index] and
-                                global.actual_playtime[player.index] > (4 * 60 * 60 * 60))
-                         then
+                    elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60 * 60)) then
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
@@ -862,14 +842,7 @@ script.on_load(
 
                         if pforce ~= nil and psurface ~= nil then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(
-                                victim,
-                                string.format(
-                                    "New spawn point set: %d,%d",
-                                    math.floor(new_pos_x),
-                                    math.floor(new_pos_y)
-                                )
-                            )
+                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                             global.cspawnpos = {new_pos_x, new_pos_y}
                         else
@@ -918,10 +891,7 @@ script.on_load(
                         end
 
                         if psurface ~= nil and pforce ~= nil then
-                            pforce.chart(
-                                psurface,
-                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
-                            )
+                            pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
                             local sstr = string.format("%-4.0f", size)
                             smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                         else
@@ -997,15 +967,7 @@ script.on_load(
                                 if (time ~= nil) then
                                     if (time.time ~= nil) then
                                         if ipos > (plen - 20) then
-                                            smart_print(
-                                                victim,
-                                                string.format(
-                                                    "%-4d: %-32s Active: %-4.2fm",
-                                                    ipos,
-                                                    time.name,
-                                                    time.time / 60.0 / 60.0
-                                                )
-                                            )
+                                            smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
                                         end
                                     end
                                 end
@@ -1054,11 +1016,7 @@ script.on_load(
 
                         if pforce ~= nil then
                             game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                            smart_print(
-                                player,
-                                "Game speed: " ..
-                                    value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
-                            )
+                            smart_print(player, "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier)
                             message_all("Game speed set to %" .. (game.speed * 100.00))
                         else
                             smart_print(player, "Force: Player doesn't seem to exsist.")
@@ -1090,14 +1048,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim) then
-                                local newpos =
-                                    victim.surface.find_non_colliding_position(
-                                    "character",
-                                    victim.position,
-                                    15,
-                                    0.01,
-                                    false
-                                )
+                                local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
                                 if (newpos ~= nil) then
                                     player.teleport(newpos, victim.surface)
                                     player.print("Okay.")
@@ -1139,14 +1090,7 @@ script.on_load(
 
                             if position then
                                 if position.x and position.y then
-                                    local newpos =
-                                        player.surface.find_non_colliding_position(
-                                        "character",
-                                        position,
-                                        15,
-                                        0.01,
-                                        false
-                                    )
+                                    local newpos = player.surface.find_non_colliding_position("character", position, 15, 0.01, false)
                                     if (newpos ~= nil) then
                                         player.teleport(newpos, player.surface)
                                         player.print("Okay.")
@@ -1185,14 +1129,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim) then
-                                local newpos =
-                                    player.surface.find_non_colliding_position(
-                                    "character",
-                                    player.position,
-                                    15,
-                                    0.01,
-                                    false
-                                )
+                                local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
                                 if (newpos ~= nil) then
                                     victim.teleport(newpos, player.surface)
                                     player.print("Okay.")
@@ -1250,10 +1187,7 @@ script.on_event(
                 local message =
                     player.name ..
                     " is using the deconstruction planner: " ..
-                        math.floor(area.left_top.x) ..
-                            "," ..
-                                math.floor(area.left_top.y) ..
-                                    " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+                        math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
 
                 message_all(message)
             end
@@ -1269,6 +1203,17 @@ script.on_event(
         local player = game.players[event.player_index]
         create_groups()
         sandbox_mode(player)
+
+        --Discord Info--
+        if player.gui.top.discord == nil then
+            player.gui.top.add {type = "textfield", name = "discord"}
+            player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+            player.gui.top.discord.tooltip = "select with mouse, and control-c to copy!"
+        end
+
+        if player.gui.top.clockGUI == nil then
+            player.gui.top.add {type = "button", name = "clockGUI"}
+        end
 
         --Moved here to reduce on_tick
         if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
@@ -1313,12 +1258,7 @@ script.on_event(
             if player ~= nil and created_entity ~= nil then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
-                        message_all(
-                            player.name ..
-                                " placed speaker: " ..
-                                    math.floor(created_entity.position.x) ..
-                                        "," .. math.floor(created_entity.position.y)
-                        )
+                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
                         global.last_speaker_warning = game.tick
                     end
                 end
@@ -1432,7 +1372,6 @@ script.on_event(
     end
 )
 
-
 --OTHER EVENTS
 --Corpse Marker
 script.on_event(
@@ -1444,8 +1383,7 @@ script.on_event(
 
         local player = game.players[event.player_index]
         local centerPosition = player.position
-        local label =
-            "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+        local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
         local chartTag = {position = centerPosition, icon = nil, text = label}
         local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
@@ -1467,9 +1405,7 @@ script.on_event(
         if tech.name == "logistics-3" and wscript == false then
             local dperms = game.permissions.get_group("Default")
             if dperms ~= nil then
-                message_all(
-                    "Automatically disabling rotating and mining/deleting objects for new users... due to technology level."
-                )
+                message_all("Automatically disabling rotating and mining/deleting objects for new users... due to technology level.")
                 dperms.set_allows_action(defines.input_action.begin_mining, false)
                 dperms.set_allows_action(defines.input_action.rotate_entity, false)
             end
@@ -1478,6 +1414,27 @@ script.on_event(
         --Log to discord
         if wscript == false then
             message_alld("Research " .. tech.name .. " completed.")
+        end
+    end
+)
+
+--Clock--
+script.on_nth_tick(
+    60,
+    function(event)
+        local seconds = math.floor(game.tick / 60)
+        local play_time_seconds = math.floor(seconds) % 60
+        local play_time_minutes = math.floor(play_time_seconds / 60) % 60
+        local play_time_hours = math.floor(play_time_seconds / 3600)
+
+        for i, player in pairs(game.connected_players) do
+            if player.gui.top.clockGUI then
+                if play_time_hours > 0 then
+                    player.gui.top.clockGUI.caption = string.format("Game: %d:%02d:%02d", play_time_hours, play_time_minutes, play_time_seconds)
+                else
+                    player.gui.top.clockGUI.caption = string.format("Game: %02d:%02d", play_time_minutes, play_time_seconds)
+                end
+            end
         end
     end
 )
@@ -1499,6 +1456,11 @@ script.on_nth_tick(
         end
 
         for _, player in pairs(game.connected_players) do
+            --Repair discord info
+            if player.gui.top.discord then
+                player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+            end
+
             if global.active[player.index] then
                 if global.active[player.index] == 1 then
                     global.active[player.index] = 0 --Turn back off
