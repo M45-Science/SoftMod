@@ -480,8 +480,9 @@ local function get_permgroup()
                                 player.print(
                                     "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]"
                                 )
+                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Members- role![/color]")
                                 player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Discord: Members role![/color]"
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]"
                                 )
                             end
                         end
@@ -494,7 +495,10 @@ local function get_permgroup()
                                     "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]"
                                 )
                                 player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Regulars-Only Factorio servers, a special Discord role and channels![/color]"
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]"
+                                )
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]"
                                 )
                             end
                         end
@@ -1479,7 +1483,7 @@ script.on_nth_tick(
             global.servertag = nil
         end
         if (not global.servertag) then
-            local label = "discord.gg/Ps2jnm7"
+            local label = "Spawn Area"
             local xpos = 0
             local ypos = 0
 
@@ -1490,7 +1494,7 @@ script.on_nth_tick(
 
             local chartTag = {
                 position = {xpos, ypos},
-                icon = {type = "item", name = "programmable-speaker"},
+                icon = {type = "item", name = "heavy-armor"},
                 text = label
             }
             local pforce = game.forces["player"]
