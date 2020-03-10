@@ -1,4 +1,4 @@
---v0454-3-7-2020_9-02-PM
+--v0454-3-9-2020_11-18-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -205,6 +205,7 @@ local regulars = {
     "zlema01"
 }
 
+--Flag player as currently active
 local function set_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid) then
         if (not global.active) then
@@ -212,11 +213,11 @@ local function set_active(player)
             global.active[0] = 0
         end
 
-        print("active")
         global.active[player.index] = 1
     end
 end
 
+--Create user groups if they don't exsist, and create global links to them
 local function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.trustedgroup = game.permissions.get_group("Trusted")
@@ -245,6 +246,7 @@ local function create_groups()
     global.admingroup = game.permissions.get_group("Admin")
 end
 
+--Split strings
 local function mysplit(inputstr, sep)
     if sep == nil then
         sep = "%s"
@@ -256,6 +258,7 @@ local function mysplit(inputstr, sep)
     return t
 end
 
+--Coal mode
 local function coal_mode()
     local pforce = game.forces["player"]
 
@@ -265,7 +268,6 @@ local function coal_mode()
                 for _, ctech in pairs(coal_mode_techs) do
                     if gtech.name == ctech then
                         pforce.technologies[ctech].enabled = false
-                    --cprint("Disabled tech: " .. ctech)
                     end
                 end
             end
@@ -274,7 +276,6 @@ local function coal_mode()
                 for _, crep in pairs(coal_mode_recipes) do
                     if recipe.name == crep then
                         recipe.enabled = false
-                    --cprint("Disabled recipe: " .. crep)
                     end
                 end
             end
@@ -290,6 +291,7 @@ local function coal_mode()
     end
 end
 
+--Sandbox mode
 local function sandbox_mode(player)
     if global.sandboxmode == true and player ~= nil then
         player.cheat_mode = true
@@ -312,6 +314,7 @@ local function sandbox_mode(player)
     end
 end
 
+--Disable some permissions for new users
 local function set_perms()
     --Auto set default group permissions
     local dperms = game.permissions.get_group("Default")
@@ -351,6 +354,7 @@ local function set_perms()
     end
 end
 
+--Set our default settings
 local function game_settings(player)
     if game ~= nil then
         if player ~= nil then
@@ -362,7 +366,7 @@ local function game_settings(player)
     end
 end
 
---Is player in regulars list--
+--Check if player should be considered a regular
 local function is_regular(victim)
     --If in hard-coded list (legacy)
     for _, regular in pairs(regulars) do
@@ -389,7 +393,7 @@ local function is_regular(victim)
     return false
 end
 
---Is player in trusted list--
+--Check if player should be considered trusted
 local function is_trusted(victim)
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.trustedgroup ~= nil then
@@ -510,7 +514,7 @@ local function get_permgroup()
                                     "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]"
                                 )
                                 player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Regulars-Only Factorio servers, and a special Discord role, and channels![/color]"
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Discord server: https://discord.gg/Ps2jnm7 you now have access to our Regulars-Only Factorio servers, a special Discord role and channels![/color]"
                                 )
                             end
                         end
@@ -561,7 +565,7 @@ local function show_players(victim)
     end
 end
 
---On load, add commands--
+--Custom commands
 script.on_load(
     function()
         --Only add if no commands yet
@@ -1268,19 +1272,12 @@ script.on_event(
 
         --Moved here to reduce on_tick
         if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
-            --if player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.defaultgroup.name then
             if player.admin then
-                --message_all(player.name .. " was moved to admins.")
-                --player.print("Welcome back, " .. player.name .. "! Moving you to admins group... Have fun!")
                 global.admingroup.add_player(player)
             elseif is_regular(player) then
-                --message_all(player.name .. " was moved to regulars...")
-                --player.print("Welcome back, " .. player.name .. "! Moving you to regulars group... Have fun!")
                 global.regulargroup.add_player(player)
             elseif is_trusted(player) then
                 global.trustedgroup.add_player(player)
-            --message_all(player.name .. " was moved to trusted users.")
-            --player.print("Welcome back, " .. player.name .. "! Moving you to trusted group... Have fun!")
             end
         --end
         end
@@ -1302,6 +1299,7 @@ script.on_event(
     end
 )
 
+--ACTIVITY EVENTS
 --Build stuff
 script.on_event(
     defines.events.on_built_entity,
@@ -1329,7 +1327,6 @@ script.on_event(
     end
 )
 
---Activity events
 --Mined item
 script.on_event(
     defines.events.on_pre_player_mined_item,
@@ -1435,6 +1432,8 @@ script.on_event(
     end
 )
 
+
+--OTHER EVENTS
 --Corpse Marker
 script.on_event(
     defines.events.on_pre_player_died,
