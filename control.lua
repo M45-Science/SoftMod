@@ -1211,10 +1211,6 @@ script.on_event(
             player.gui.top.discord.tooltip = "select with mouse, and control-c to copy!"
         end
 
-        if player.gui.top.clockGUI == nil then
-            player.gui.top.add {type = "button", name = "clockGUI"}
-        end
-
         --Moved here to reduce on_tick
         if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
             if player.admin then
@@ -1414,27 +1410,6 @@ script.on_event(
         --Log to discord
         if wscript == false then
             message_alld("Research " .. tech.name .. " completed.")
-        end
-    end
-)
-
---Clock--
-script.on_nth_tick(
-    60,
-    function(event)
-        local seconds = math.floor(game.tick / 60)
-        local play_time_seconds = math.floor(seconds) % 60
-        local play_time_minutes = math.floor(play_time_seconds / 60) % 60
-        local play_time_hours = math.floor(play_time_seconds / 3600)
-
-        for i, player in pairs(game.connected_players) do
-            if player.gui.top.clockGUI then
-                if play_time_hours > 0 then
-                    player.gui.top.clockGUI.caption = string.format("Game: %d:%02d:%02d", play_time_hours, play_time_minutes, play_time_seconds)
-                else
-                    player.gui.top.clockGUI.caption = string.format("Game: %02d:%02d", play_time_minutes, play_time_seconds)
-                end
-            end
         end
     end
 )
