@@ -1186,7 +1186,7 @@ script.on_event(
             global.last_decon_warning = 0
         end
 
-        if (game.tick - global.last_decon_warning >= 600) then
+        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
             if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                 local message =
                     player.name ..
@@ -1254,7 +1254,7 @@ script.on_event(
 
         set_active(player)
 
-        if (game.tick - global.last_speaker_warning >= 300) then
+        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
             if player ~= nil and created_entity ~= nil then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
