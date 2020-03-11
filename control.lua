@@ -1254,6 +1254,11 @@ script.on_event(
 
         set_active(player)
 
+        if not global.last_speaker_warning then 
+            global.last_speaker_warning = 0
+        end
+
+
         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
             if player ~= nil and created_entity ~= nil then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
