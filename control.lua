@@ -1352,28 +1352,20 @@ script.on_event(
         local obj = event.entity
 
         if event.entity.name == "character-corpse" then
-            message_all("ping")
             --Remove old corpse tags
             if (global.corpselist) then
-                local toremove
-                for _, corpse in pairs(global.corpselist) do
+                for x, corpse in pairs(global.corpselist) do
                     if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y ) then
                             if corpse.name == player.name then
-                                message_all ( player.name + " recovered their corpse.")
+                                message_all ( player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
                             else
-                                message_all ( player.name + " picked up " + corpse.name + "'s corpse...")
+                                message_all ( player.name.. " picked up " .. corpse.name .. "'s corpse at: ".. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
                             end
-                            toremove = corpse
                             corpse.tag.destroy()
+                            table.remove(global.corpselist, x)
+                            cprint("Tag removed: Tick: " .. corpse.tick)
                             break
                     end
-                end
-                if ( toremove ) then
-                    toremove.tag = nil
-                    toremove.tick = nil
-                    toremove.pos = nil
-                    toremove.name = nil
-                    toremove = nil
                 end
             end
         end
@@ -1568,23 +1560,16 @@ script.on_nth_tick(
 
         --Remove old corpse tags
         if (global.corpselist) then
-            local toremove
-            for _, corpse in pairs(global.corpselist) do
+            for x, corpse in pairs(global.corpselist) do
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
-                        message_all(corpse.name + "'s corpse has decomposed (items lost)...")
-                        toremove = corpse
                         corpse.tag.destroy()
-                        break
                     end
+                    message_all(corpse.name + "'s corpse has decomposed (items lost)...")
+                    table.remove(global.corpselist, x)
+                    cprint("Tag removed: Tick: " .. corpse.tick)
+                    break
                 end
-            end
-            if ( toremove ) then
-                toremove.tag = nil
-                toremove.tick = nil
-                toremove.pos = nil
-                toremove.name = nil
-                toremove = nil
             end
         end
 
