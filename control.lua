@@ -1158,9 +1158,9 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local area = event.area
-        
+
         if global.last_decon_warning == nil then
-            global.last_decon_warning = 1
+            global.last_decon_warning = game.tick
         else
             if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
