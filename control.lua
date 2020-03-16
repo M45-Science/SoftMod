@@ -1355,7 +1355,7 @@ script.on_event(
             --Remove old corpse tags
             if (global.corpselist) then
                 local markers = global.corpselist
-                for x, corpse in pairs(markers) do
+                for x, corpse in ipairs(markers) do
                     if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y ) then
                             if corpse.name == player.name then
                                 message_all ( player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
@@ -1562,7 +1562,7 @@ script.on_nth_tick(
         --Remove old corpse tags
         if (global.corpselist) then
             local markers = global.corpselist
-            for x, corpse in pairs(markers) do
+            for x, corpse in ipairs(markers) do
                 cprint ("Ping: " .. x )
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
