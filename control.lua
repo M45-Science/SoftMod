@@ -1160,7 +1160,7 @@ script.on_event(
         local area = event.area
 
         if not global.last_decon then
-            global.last_decon = game.tick
+            global.last_decon = 1
         end
 
         if ( game.tick - global.last_decon >= 600) then
@@ -1227,7 +1227,7 @@ script.on_event(
         set_active(player)
 
         if not global.last_speaker_warning then
-            global.last_speaker_warning = game.tick
+            global.last_speaker_warning = 1
         end
 
         if (game.tick - global.last_speaker_warning >= 300) then
