@@ -1451,11 +1451,11 @@ script.on_nth_tick(
     function(event)
 
         --Globals--
-        if not global.last_decon then
-            global.last_decon = 0
+        if global.last_decon <= 0 then
+            global.last_decon = game.tick
         end
-        if not global.last_speaker_warning then
-            global.last_speaker_warning = 0
+        if global.last_speaker_warning <= 0 then
+            global.last_speaker_warning = game.tick
         end
 
         --Spawn marker--
