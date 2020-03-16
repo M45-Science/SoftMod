@@ -1352,11 +1352,12 @@ script.on_event(
         local obj = event.entity
 
         if event.entity.name == "character-corpse" then
+            message_all("ping")
             --Remove old corpse tags
             if (global.corpselist) then
                 local toremove
                 for _, corpse in pairs(global.corpselist) do
-                    if (corpse.pos == obj.position) then
+                    if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y ) then
                             if corpse.name == player.name then
                                 message_all ( player.name + " recovered their corpse.")
                             else
