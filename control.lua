@@ -1159,6 +1159,8 @@ script.on_event(
         local player = game.players[event.player_index]
         local area = event.area
 
+        cprint ("PING DECON")
+
         if not global.last_decon then
             global.last_decon = 1
         end
