@@ -1159,7 +1159,6 @@ script.on_event(
         local player = game.players[event.player_index]
         create_groups()
         sandbox_mode(player)
-        get_permgroup()
 
         --Discord Info--
         if player.gui.top.discord == nil then
@@ -1194,7 +1193,6 @@ script.on_event(
         game_settings(player)
         smart_print(player, "To see online players, chat /online")
         show_players(player)
-        get_permgroup()
     end
 )
 
@@ -1450,11 +1448,12 @@ script.on_nth_tick(
         end
 
         --Spawn marker--
-        if (global.servertag and not global.servertag.valid) then
-            global.servertag = nil
-        end
         if (global.servertag and global.servertag.valid) then
             global.servertag.destroy()
+            global.servertag = nil
+        end
+        if (global.servertag and not global.servertag.valid) then
+            global.servertag = nil
         end
         if (not global.servertag) then
             local label = "Spawn Area"
