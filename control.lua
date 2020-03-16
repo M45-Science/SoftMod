@@ -1156,7 +1156,7 @@ script.on_event(
 script.on_event(
     defines.events.on_player_deconstructed_area,
     function(event)
-        cprint ("DECON")
+        print ("DECON")
 
         local player = game.players[event.player_index]
         local area = event.area
