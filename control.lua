@@ -1369,11 +1369,13 @@ script.on_event(
                         end
                     end
                 end
-                toremove.tag = nil
-                toremove.tick = nil
-                toremove.pos = nil
-                toremove.name = nil
-                toremove = nil
+                if ( toremove ) then
+                    toremove.tag = nil
+                    toremove.tick = nil
+                    toremove.pos = nil
+                    toremove.name = nil
+                    toremove = nil
+                end
             end
         end
 
@@ -1579,11 +1581,13 @@ script.on_nth_tick(
                     end
                 end
             end
-            toremove.tag = nil
-            toremove.tick = nil
-            toremove.pos = nil
-            toremove.name = nil
-            toremove = nil
+            if ( toremove ) then
+                toremove.tag = nil
+                toremove.tick = nil
+                toremove.pos = nil
+                toremove.name = nil
+                toremove = nil
+            end
         end
 
         --Check permissions
