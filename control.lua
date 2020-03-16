@@ -1159,6 +1159,7 @@ script.on_event(
         local player = game.players[event.player_index]
         create_groups()
         sandbox_mode(player)
+        get_permgroup()
 
         --Discord Info--
         if player.gui.top.discord == nil then
@@ -1193,6 +1194,7 @@ script.on_event(
         game_settings(player)
         smart_print(player, "To see online players, chat /online")
         show_players(player)
+        get_permgroup()
     end
 )
 
