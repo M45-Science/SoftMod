@@ -1158,7 +1158,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local area = event.area
-
+        
         if global.last_decon_warning == nil then
             global.last_decon_warning = 1
         else
