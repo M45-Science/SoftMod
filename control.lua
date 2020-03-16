@@ -1,4 +1,4 @@
---v0458-3-15-2020_10-38-P
+--v0458-3-16-2020_11-39-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -361,10 +361,9 @@ local function game_settings(player)
     if game ~= nil then
         if player ~= nil then
             set_perms()
+            player.force.friendly_fire = false --friendly fire
+            player.force.research_queue_enabled = true --nice to have
         end
-
-        player.force.friendly_fire = false --friendly fire
-        player.force.research_queue_enabled = true --nice to have
     end
 end
 
@@ -1261,7 +1260,7 @@ script.on_event(
             if (global.corpselist) then
                 local markers = global.corpselist
                 for x, corpse in ipairs(markers) do
-                    if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y) then
+                    if (corpse.pos and corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y) then
                         if corpse.name == player.name then
                             message_all(player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
                         else
@@ -1383,15 +1382,17 @@ script.on_event(
         end
 
         local player = game.players[event.player_index]
-        local centerPosition = player.position
-        local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
-        local chartTag = {position = centerPosition, icon = nil, text = label}
-        local qtag = player.force.add_chart_tag(player.surface, chartTag)
+        if player and player.valid and player.position then
+            local ppos = player.position
+            local label = "Corpse of: " .. player.name .. " " .. math.floor(ppos.x) .. "," .. math.floor(ppos.y)
+            local chartTag = {position = ppos, icon = nil, text = label}
+            local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-        table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = centerPosition, name = player.name})
+            table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = ppos, name = player.name})
 
-        --Log to discord
-        message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
+            --Log to discord
+            message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
+        end
     end
 )
 
@@ -1439,10 +1440,10 @@ script.on_nth_tick(
                         corpse.tag.destroy()
                     end
                     if corpse.name then
-                        message_all(corpse.name .. "'s corpse has decomposed (items lost)...")
+                        message_all(corpse.name .. "'s corpse has decomposed...")
                     end
                     table.remove(markers, x)
-                    cprint("Tag removed: Tick: " .. corpse.tick)
+                    --cprint("Tag removed: Tick: " .. corpse.tick)
                     break
                 end
             end
