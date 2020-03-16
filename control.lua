@@ -1159,17 +1159,15 @@ script.on_event(
         local player = game.players[event.player_index]
         local area = event.area
 
-        
-        if global.lastdecon > 0 then
+        if not global.last_decon then
+            global.last_decon = 0
+        end
 
-            if (global.lastdecon and game.tick - global.lastdecon >= 600) then
-                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                    message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
-                end
-                global.lastdecon = game.tick
+        if (global.last_decon and game.tick - global.last_decon >= 600) then
+            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
             end
-        else
-            global.lastdecon = game.tick
+            global.last_decon = game.tick
         end
     end
 )
@@ -1451,6 +1449,15 @@ script.on_nth_tick(
 script.on_nth_tick(
     7200, --2 minutes
     function(event)
+
+        --Globals--
+        if not global.last_decon then
+            global.last_decon = 0
+        end
+        if not global.last_speaker_warning then
+            global.last_speaker_warning = 0
+        end
+
         --Spawn marker--
         if (global.servertag and not global.servertag.valid) then
             global.servertag = nil
