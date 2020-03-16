@@ -509,7 +509,7 @@ local function get_permgroup()
                                 message_all(player.name .. " was moved to regulars.")
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]")
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]")
+                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
                             end
                         end
                     end
