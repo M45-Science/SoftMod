@@ -48,6 +48,8 @@ local coal_mode_techs = {
     "logistic-system"
 }
 
+
+--Legacy--
 local regulars = {
     "Azcrew_",
     "Blitztexen",
@@ -1417,7 +1419,6 @@ script.on_event(
     end
 )
 
---Discord Info--
 script.on_nth_tick(
     300, --5 seconds--
     function(event)
@@ -1480,7 +1481,15 @@ script.on_nth_tick(
 
         --Check permissions
         get_permgroup()
+    end
+)
 
+--Idle Detection--
+script.on_nth_tick(
+    7200, --2 minutes
+    function(event)
+
+        
         --Init global.actual_playtime
         if (not global.actual_playtime) then
             global.actual_playtime = {}
@@ -1492,13 +1501,6 @@ script.on_nth_tick(
             global.active = {}
             global.active[0] = 0
         end
-    end
-)
-
---Idle Detection--
-script.on_nth_tick(
-    7200, --2 minutes
-    function(event)
 
         --Cycle all connected players, increment active play time.
         for _, player in pairs(game.connected_players) do
