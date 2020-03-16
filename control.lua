@@ -1163,7 +1163,7 @@ script.on_event(
             global.last_decon = game.tick
         end
 
-        if (global.last_decon and game.tick - global.last_decon >= 600) then
+        if ( game.tick - global.last_decon >= 600) then
             if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                 message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
             end
@@ -1230,8 +1230,8 @@ script.on_event(
             global.last_speaker_warning = game.tick
         end
 
-        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
-            if player ~= nil and created_entity ~= nil then
+        if (game.tick - global.last_speaker_warning >= 300) then
+            if player and created_entity then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
                         message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
