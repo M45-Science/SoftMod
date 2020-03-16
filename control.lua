@@ -1159,6 +1159,7 @@ script.on_event(
         local player = game.players[event.player_index]
         local area = event.area
 
+        
         if global.lastdecon > 0 then
 
             if (global.lastdecon and game.tick - global.lastdecon >= 600) then
