@@ -1,5 +1,28 @@
 --v0458-3-15-2020_10-38-PM
 
+
+--Deconstuction planner warning
+script.on_event(
+    defines.events.on_player_deconstructed_area,
+    function(event)
+        print ("DECON")
+
+        local player = game.players[event.player_index]
+        local area = event.area
+
+        if not global.last_decon then
+            global.last_decon = 1
+        end
+
+        if ( game.tick - global.last_decon >= 600) then
+            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
+            end
+            global.last_decon = game.tick
+        end
+    end
+)
+
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
@@ -1148,28 +1171,6 @@ script.on_event(
             print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
         elseif command ~= "time" and command ~= "p" and command ~= "w" and command ~= "server-save" then --Ignore spammy console commands
             print(string.format("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args))
-        end
-    end
-)
-
---Deconstuction planner warning
-script.on_event(
-    defines.events.on_player_deconstructed_area,
-    function(event)
-        print ("DECON")
-
-        local player = game.players[event.player_index]
-        local area = event.area
-
-        if not global.last_decon then
-            global.last_decon = 1
-        end
-
-        if ( game.tick - global.last_decon >= 600) then
-            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
-            end
-            global.last_decon = game.tick
         end
     end
 )
