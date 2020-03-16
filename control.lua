@@ -1356,16 +1356,26 @@ script.on_event(
             if (global.corpselist) then
                 local markers = global.corpselist
                 for x, corpse in ipairs(markers) do
-                    if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y ) then
-                            if corpse.name == player.name then
-                                message_all ( player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
-                            else
-                                message_all ( player.name.. " picked up " .. corpse.name .. "'s corpse at: ".. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
-                            end
-                            corpse.tag.destroy()
-                            table.remove(markers, x)
-                            cprint("Tag removed: Tick: " .. corpse.tick)
-                            break
+                    if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y) then
+                        if corpse.name == player.name then
+                            message_all(
+                                player.name ..
+                                    " recovered their corpse at: " ..
+                                        math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y)
+                            )
+                        else
+                            message_all(
+                                player.name ..
+                                    " picked up " ..
+                                        corpse.name ..
+                                            "'s corpse at: " ..
+                                                math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y)
+                            )
+                        end
+                        corpse.tag.destroy()
+                        table.remove(markers, x)
+                        cprint("Tag removed: Tick: " .. corpse.tick)
+                        break
                     end
                 end
             end
@@ -1527,6 +1537,25 @@ script.on_nth_tick(
                 player.gui.top.discord.text = "discord.gg/Ps2jnm7"
             end
         end
+
+        --Remove old corpse tags
+        if (global.corpselist) then
+            local markers = global.corpselist
+            for x, corpse in ipairs(markers) do
+                cprint("Ping: " .. x)
+                if (corpse.tick and (corpse.tick + (15 * 60 * 60 * 60)) < game.tick) then
+                    if (corpse.tag and corpse.tag.valid) then
+                        corpse.tag.destroy()
+                    end
+                    if corpse.name then
+                        message_all(corpse.name .. "'s corpse has decomposed (items lost)...")
+                    end
+                    table.remove(markers, x)
+                    cprint("Tag removed: Tick: " .. corpse.tick)
+                    break
+                end
+            end
+        end
     end
 )
 
@@ -1534,7 +1563,6 @@ script.on_nth_tick(
 script.on_nth_tick(
     7200, --2 minutes
     function(event)
-
         --Spawn marker--
         if (not global.servertag) then
             local label = "Spawn Area"
@@ -1556,23 +1584,6 @@ script.on_nth_tick(
 
             if pforce ~= nil and psurface ~= nil then
                 global.servertag = pforce.add_chart_tag(psurface, chartTag)
-            end
-        end
-
-        --Remove old corpse tags
-        if (global.corpselist) then
-            local markers = global.corpselist
-            for x, corpse in ipairs(markers) do
-                cprint ("Ping: " .. x )
-                if (corpse.tick and (corpse.tick + (15 * 60 * 60 * 60)) < game.tick) then
-                    if (corpse.tag and corpse.tag.valid) then
-                        corpse.tag.destroy()
-                    end
-                    message_all(corpse.name .. "'s corpse has decomposed (items lost)...")
-                    table.remove(markers, x)
-                    cprint("Tag removed: Tick: " .. corpse.tick)
-                    break
-                end
             end
         end
 
