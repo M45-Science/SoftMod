@@ -1160,7 +1160,7 @@ script.on_event(
         local area = event.area
 
         if not global.last_decon then
-            global.last_decon = 0
+            global.last_decon = game.tick
         end
 
         if (global.last_decon and game.tick - global.last_decon >= 600) then
@@ -1227,7 +1227,7 @@ script.on_event(
         set_active(player)
 
         if not global.last_speaker_warning then
-            global.last_speaker_warning = 0
+            global.last_speaker_warning = game.tick
         end
 
         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
@@ -1449,14 +1449,6 @@ script.on_nth_tick(
 script.on_nth_tick(
     7200, --2 minutes
     function(event)
-
-        --Globals--
-        if global.last_decon <= 0 then
-            global.last_decon = game.tick
-        end
-        if global.last_speaker_warning <= 0 then
-            global.last_speaker_warning = game.tick
-        end
 
         --Spawn marker--
         if (global.servertag and not global.servertag.valid) then
