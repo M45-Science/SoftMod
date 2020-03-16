@@ -1357,7 +1357,6 @@ script.on_event(
                 local toremove
                 for _, corpse in pairs(global.corpselist) do
                     if (corpse.pos == obj.position) then
-                        if (corpse.name) then
                             if corpse.name == player.name then
                                 message_all ( player.name + " recovered their corpse.")
                             else
@@ -1366,7 +1365,6 @@ script.on_event(
                             toremove = corpse
                             corpse.tag.destroy()
                             break
-                        end
                     end
                 end
                 if ( toremove ) then
@@ -1380,7 +1378,6 @@ script.on_event(
         end
 
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
-
         set_active(player)
     end
 )
@@ -1493,7 +1490,7 @@ script.on_event(
         local chartTag = {position = centerPosition, icon = nil, text = label}
         local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-        table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = player.position, name = player.name})
+        table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = centerPosition, name = player.name})
 
         --Log to discord
         message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
