@@ -1159,14 +1159,14 @@ script.on_event(
         local player = game.players[event.player_index]
         local area = event.area
 
-        if global.last_decon_warning == nil then
-            global.last_decon_warning = game.tick
+        if not global.lastdecon then
+            global.lastdecon = game.tick
         else
-            if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
+            if (global.lastdecon and game.tick - global.lastdecon >= 600) then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
                 end
-                global.last_decon_warning = game.tick
+                global.lastdecon = game.tick
             end
         end
     end
