@@ -1448,13 +1448,6 @@ script.on_nth_tick(
                 end
             end
         end
-    end
-)
-
---Spawn marker / Corpse Tags / Permissions check / Idle Detection--
-script.on_nth_tick(
-    7200, --2 minutes
-    function(event)
 
         --Spawn marker--
         if (global.servertag and not global.servertag.valid) then
@@ -1500,6 +1493,13 @@ script.on_nth_tick(
             global.active = {}
             global.active[0] = 0
         end
+    end
+)
+
+--Idle Detection--
+script.on_nth_tick(
+    7200, --2 minutes
+    function(event)
 
         --Cycle all connected players, increment active play time.
         for _, player in pairs(game.connected_players) do
