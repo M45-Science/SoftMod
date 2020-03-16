@@ -1159,15 +1159,16 @@ script.on_event(
         local player = game.players[event.player_index]
         local area = event.area
 
-        if not global.lastdecon then
-            global.lastdecon = game.tick
-        else
+        if global.lastdecon > 0 then
+
             if (global.lastdecon and game.tick - global.lastdecon >= 600) then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
                 end
                 global.lastdecon = game.tick
             end
+        else
+            global.lastdecon = game.tick
         end
     end
 )
@@ -1450,6 +1451,12 @@ script.on_nth_tick(
     7200, --2 minutes
     function(event)
         --Spawn marker--
+        if (global.servertag and not global.servertag.valid) then
+            global.servertag = nil
+        end
+        if (global.servertag and global.servertag.valid) then
+            global.servertag.destroy()
+        end
         if (not global.servertag) then
             local label = "Spawn Area"
             local xpos = 0
