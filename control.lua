@@ -1354,7 +1354,8 @@ script.on_event(
         if event.entity.name == "character-corpse" then
             --Remove old corpse tags
             if (global.corpselist) then
-                for x, corpse in pairs(global.corpselist) do
+                local markers = global.corpselist
+                for x, corpse in pairs(markers) do
                     if (corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y ) then
                             if corpse.name == player.name then
                                 message_all ( player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
@@ -1362,7 +1363,7 @@ script.on_event(
                                 message_all ( player.name.. " picked up " .. corpse.name .. "'s corpse at: ".. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
                             end
                             corpse.tag.destroy()
-                            table.remove(global.corpselist, x)
+                            table.remove(markers, x)
                             cprint("Tag removed: Tick: " .. corpse.tick)
                             break
                     end
@@ -1560,13 +1561,14 @@ script.on_nth_tick(
 
         --Remove old corpse tags
         if (global.corpselist) then
-            for x, corpse in pairs(global.corpselist) do
-                if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
+            local markers = global.corpselist
+            for x, corpse in pairs(markers) do
+                if (corpse.tick and (corpse.tick + (15 * 60 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
                         corpse.tag.destroy()
                     end
                     message_all(corpse.name .. "'s corpse has decomposed (items lost)...")
-                    table.remove(global.corpselist, x)
+                    table.remove(markers, x)
                     cprint("Tag removed: Tick: " .. corpse.tick)
                     break
                 end
