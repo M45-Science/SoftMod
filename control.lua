@@ -1,8 +1,8 @@
 --v0458-3-15-2020_10-38-PM
 
-local handler = require("event_handler")
-handler.add_lib(require("freeplay"))
-handler.add_lib(require("silo-script"))
+--local handler = require("event_handler")
+--handler.add_lib(require("freeplay"))
+--handler.add_lib(require("silo-script"))
 
 local coal_mode_recipes = {
     "accumulator",
@@ -1159,8 +1159,6 @@ script.on_event(
         local player = game.players[event.player_index]
         local area = event.area
 
-        cprint ("PING DECON")
-
         if not global.last_decon then
             global.last_decon = 1
         end
@@ -1226,8 +1224,6 @@ script.on_event(
         local player = game.players[event.player_index]
         local created_entity = event.created_entity
 
-        set_active(player)
-
         if not global.last_speaker_warning then
             global.last_speaker_warning = 1
         end
@@ -1242,6 +1238,8 @@ script.on_event(
                 end
             end
         end
+        set_active(player)
+
     end
 )
 
