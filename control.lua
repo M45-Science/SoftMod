@@ -1,4 +1,4 @@
---v0458-3-16-2020_11-39-AM
+--v0456-3-11-2020_11-49-AM-REVERTED
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -48,8 +48,6 @@ local coal_mode_techs = {
     "logistic-system"
 }
 
-
---Legacy--
 local regulars = {
     "Azcrew_",
     "Blitztexen",
@@ -361,9 +359,10 @@ local function game_settings(player)
     if game ~= nil then
         if player ~= nil then
             set_perms()
-            player.force.friendly_fire = false --friendly fire
-            player.force.research_queue_enabled = true --nice to have
         end
+
+        player.force.friendly_fire = false --friendly fire
+        player.force.research_queue_enabled = true --nice to have
     end
 end
 
@@ -469,15 +468,22 @@ local function get_permgroup()
             --Handle nil permissions, for mod compatability
             if (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and global.regulargroup ~= nil and global.admingroup ~= nil) then
                 --Only move from default groups, for mod compatability
-                if (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.regulargroup.name) then
+                if
+                    (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or
+                        player.permission_group.name == global.regulargroup.name)
+                 then
                     if player.permission_group.name == global.defaultgroup.name then
                         if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
                                 message_all(player.name .. " was moved to trusted users.")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]")
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]"
+                                )
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Members- role![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]")
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]"
+                                )
                             end
                         end
                     elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
@@ -485,9 +491,15 @@ local function get_permgroup()
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]"
+                                )
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]"
+                                )
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]"
+                                )
                             end
                         end
                     end
@@ -518,7 +530,17 @@ local function show_players(victim)
             end
 
             if (global.actual_playtime and global.actual_playtime[player.index]) then
-                smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)", numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
+                smart_print(
+                    victim,
+                    string.format(
+                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)",
+                        numpeople,
+                        player.name,
+                        (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0),
+                        (player.online_time / 60.0 / 60.0 / 60.0),
+                        utag
+                    )
+                )
             end
         end
     end
@@ -1153,6 +1175,31 @@ script.on_event(
     end
 )
 
+--Deconstuction planner warning
+script.on_event(
+    defines.events.on_player_deconstructed_area,
+    function(event)
+        local player = game.players[event.player_index]
+        local area = event.area
+
+        if (not global.last_decon_warning) then
+            global.last_decon_warning = 0
+        end
+
+        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
+            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                local message =
+                    player.name ..
+                    " is using the deconstruction planner: " ..
+                        math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+
+                message_all(message)
+            end
+            global.last_decon_warning = game.tick
+        end
+    end
+)
+
 --Player connected
 script.on_event(
     defines.events.on_player_joined_game,
@@ -1205,12 +1252,15 @@ script.on_event(
         local player = game.players[event.player_index]
         local created_entity = event.created_entity
 
-        if not global.last_speaker_warning then
-            global.last_speaker_warning = 1
+        set_active(player)
+
+        if not global.last_speaker_warning then 
+            global.last_speaker_warning = 0
         end
 
-        if (game.tick - global.last_speaker_warning >= 300) then
-            if player and created_entity then
+
+        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
+            if player ~= nil and created_entity ~= nil then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
                         message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
@@ -1219,63 +1269,18 @@ script.on_event(
                 end
             end
         end
-        set_active(player)
-
     end
 )
 
-
---Deconstuction planner warning
-script.on_event(
-    defines.events.on_player_deconstructed_area,
-    function(event)
-        set_active(player)
-
-        local player = game.players[event.player_index]
-        local area = event.area
-
-        if not global.last_decon then
-            global.last_decon = 1
-        end
-
-        if ( game.tick - global.last_decon >= 600) then
-            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
-            end
-            global.last_decon = game.tick
-        end
-    end
-)
-
-
---Mined item or corpse
+--Mined item
 script.on_event(
     defines.events.on_pre_player_mined_item,
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
 
-        if event.entity.name == "character-corpse" then
-            --Remove old corpse tags
-            if (global.corpselist) then
-                local markers = global.corpselist
-                for x, corpse in ipairs(markers) do
-                    if (corpse.pos and corpse.pos.x == obj.position.x and corpse.pos.y == obj.position.y) then
-                        if corpse.name == player.name then
-                            message_all(player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
-                        else
-                            message_all(player.name .. " picked up " .. corpse.name .. "'s corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
-                        end
-                        corpse.tag.destroy()
-                        table.remove(markers, x)
-                        cprint("Tag removed: Tick: " .. corpse.tick)
-                        break
-                    end
-                end
-            end
-        end
-
         cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
+
         set_active(player)
     end
 )
@@ -1378,21 +1383,19 @@ script.on_event(
     defines.events.on_pre_player_died,
     function(event)
         if (not global.corpselist) then
-            global.corpselist = {tag = {}, tick = {}, pos = {}, name = {}}
+            global.corpselist = {tag = {}, tick = {}}
         end
 
         local player = game.players[event.player_index]
-        if player and player.valid and player.position then
-            local ppos = player.position
-            local label = "Corpse of: " .. player.name .. " " .. math.floor(ppos.x) .. "," .. math.floor(ppos.y)
-            local chartTag = {position = ppos, icon = nil, text = label}
-            local qtag = player.force.add_chart_tag(player.surface, chartTag)
+        local centerPosition = player.position
+        local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+        local chartTag = {position = centerPosition, icon = nil, text = label}
+        local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-            table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = ppos, name = player.name})
+        table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
-            --Log to discord
-            message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
-        end
+        --Log to discord
+        message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
     end
 )
 
@@ -1420,41 +1423,68 @@ script.on_event(
     end
 )
 
+--Keep to minimum--
 script.on_nth_tick(
-    300, --5 seconds--
+    1800, --about 30 seconds
     function(event)
+        local toremove
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (not global.active) then
+            global.active = {}
+            global.active[0] = 0
+        end
+
         for _, player in pairs(game.connected_players) do
             --Repair discord info
             if player.gui.top.discord then
                 player.gui.top.discord.text = "discord.gg/Ps2jnm7"
             end
+
+            if global.active[player.index] then
+                if global.active[player.index] == 1 then
+                    global.active[player.index] = 0 --Turn back off
+
+                    if global.actual_playtime[player.index] then
+                        global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1800
+                    else
+                        --INIT
+                        global.actual_playtime[player.index] = 0
+                    end
+                end
+            else
+                --INIT
+                global.active[player.index] = 0
+            end
         end
 
         --Remove old corpse tags
         if (global.corpselist) then
-            local markers = global.corpselist
-            for x, corpse in ipairs(markers) do
-                --cprint("Ping: " .. x)
+            for _, corpse in pairs(global.corpselist) do
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
                         corpse.tag.destroy()
                     end
-                    if corpse.name then
-                        message_all(corpse.name .. "'s corpse has decomposed...")
-                    end
-                    table.remove(markers, x)
-                    --cprint("Tag removed: Tick: " .. corpse.tick)
-                    break
+                    toremove = corpse
                 end
             end
         end
+        if (toremove) then
+            toremove.tag = nil
+            toremove.tick = nil
+            toremove = nil
+        end
 
-        --Spawn marker--
-        if (global.servertag and global.servertag.valid) then
-            global.servertag.destroy()
+        --Server tag
+        if (global.servertag and not global.servertag.valid) then
             global.servertag = nil
         end
-        if (global.servertag and not global.servertag.valid) then
+        if (global.servertag and global.servertag.valid) then
+            global.servertag.destroy()
             global.servertag = nil
         end
         if (not global.servertag) then
@@ -1482,45 +1512,5 @@ script.on_nth_tick(
 
         --Check permissions
         get_permgroup()
-    end
-)
-
---Idle Detection--
-script.on_nth_tick(
-    7200, --2 minutes
-    function(event)
-
-        
-        --Init global.actual_playtime
-        if (not global.actual_playtime) then
-            global.actual_playtime = {}
-            global.actual_playtime[0] = 0
-        end
-
-        --Init global.active
-        if (not global.active) then
-            global.active = {}
-            global.active[0] = 0
-        end
-
-        --Cycle all connected players, increment active play time.
-        for _, player in pairs(game.connected_players) do
-            if global.active[player.index] then
-                if global.active[player.index] == 1 then
-                    global.active[player.index] = 0 --Turn back off
-
-                    if global.actual_playtime[player.index] then
-                        --Must be same as interval
-                        global.actual_playtime[player.index] = global.actual_playtime[player.index] + 7200
-                    else
-                        --INIT
-                        global.actual_playtime[player.index] = 0
-                    end
-                end
-            else
-                --INIT
-                global.active[player.index] = 0
-            end
-        end
     end
 )
