@@ -1565,7 +1565,7 @@ script.on_nth_tick(
                     if (corpse.tag and corpse.tag.valid) then
                         corpse.tag.destroy()
                     end
-                    message_all(corpse.name + "'s corpse has decomposed (items lost)...")
+                    message_all(corpse.name .. "'s corpse has decomposed (items lost)...")
                     table.remove(global.corpselist, x)
                     cprint("Tag removed: Tick: " .. corpse.tick)
                     break
