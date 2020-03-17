@@ -1,4 +1,4 @@
---v0460-3-17-2020_2-44-AM
+--v0458-3-17-2020_1-01-PM-REVERT2
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -48,7 +48,6 @@ local coal_mode_techs = {
     "logistic-system"
 }
 
---Legacy--
 local regulars = {
     "Azcrew_",
     "Blitztexen",
@@ -208,9 +207,10 @@ local regulars = {
 
 --Flag player as currently active
 local function set_active(player)
-    if (player ~= nil and player.valid and player.connected and player.character and player.character.valid) then
-        if (global.active == nil) then
+    if (player and player.valid and player.connected and player.character and player.character.valid) then
+        if (not global.active) then
             global.active = {}
+            global.active[0] = 0
         end
 
         global.active[player.index] = 1
@@ -293,7 +293,7 @@ end
 
 --Sandbox mode
 local function sandbox_mode(player)
-    if global.sandboxmode == true and player ~= nil and player.valid then
+    if global.sandboxmode == true and player ~= nil then
         player.cheat_mode = true
         player.surface.always_day = true
         player.force.laboratory_speed_modifier = 1
@@ -357,35 +357,34 @@ end
 --Set our default settings
 local function game_settings(player)
     if game ~= nil then
-        if player ~= nil and player.valid and player.force then
+        if player ~= nil then
             set_perms()
-            player.force.friendly_fire = false --friendly fire
-            player.force.research_queue_enabled = true --nice to have
         end
+
+        player.force.friendly_fire = false --friendly fire
+        player.force.research_queue_enabled = true --nice to have
     end
 end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
-    if victim ~= nil and victim.valid then
-        --If in hard-coded list (legacy)
-        for _, regular in pairs(regulars) do
-            if (regular == victim.name) then
-                return true
-            end
-        end
-
-        --If in group
-        if victim ~= nil and victim.permission_group ~= nil and global.regulargroup ~= nil then
-            if victim.permission_group.name == global.regulargroup.name then
-                return true
-            end
-        end
-
-        --If they have enough hours
-        if (global.actual_playtime ~= nil and global.actual_playtime[victim.index] ~= nil and global.actual_playtime[victim.index] > (4 * 60 * 60 * 60)) then
+    --If in hard-coded list (legacy)
+    for _, regular in pairs(regulars) do
+        if (regular == victim.name) then
             return true
         end
+    end
+
+    --If in group
+    if victim ~= nil and victim.permission_group ~= nil and global.regulargroup ~= nil then
+        if victim.permission_group.name == global.regulargroup.name then
+            return true
+        end
+    end
+
+    --If they have enough hours
+    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (4 * 60 * 60 * 60)) then
+        return true
     end
 
     return false
@@ -401,7 +400,7 @@ local function is_trusted(victim)
     end
 
     --If they have enough hours
-    if (global.actual_playtime ~= nil and global.actual_playtime[victim.index] ~= nil and global.actual_playtime[victim.index] > (30 * 60 * 60)) then
+    if (global.actual_playtime and global.actual_playtime[victim.index] and global.actual_playtime[victim.index] > (30 * 60 * 60)) then
         return true
     end
 
@@ -415,7 +414,7 @@ end
 
 --Smart cprint--
 local function smart_print(player, message)
-    if player ~= nil and player.valid then
+    if player then
         player.print(message)
     else
         rcon.print("~" .. message)
@@ -465,29 +464,42 @@ end
 local function get_permgroup()
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
-        if (player ~= nil and player.valid) then
+        if (player and player.valid) then
             --Handle nil permissions, for mod compatability
             if (player.permission_group ~= nil and global.defaultgroup ~= nil and global.trustedgroup ~= nil and global.regulargroup ~= nil and global.admingroup ~= nil) then
                 --Only move from default groups, for mod compatability
-                if (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or player.permission_group.name == global.regulargroup.name) then
+                if
+                    (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name or
+                        player.permission_group.name == global.regulargroup.name)
+                 then
                     if player.permission_group.name == global.defaultgroup.name then
-                        if (global.actual_playtime ~= nil and player.index ~= nil and global.actual_playtime[player.index] ~= nil and global.actual_playtime[player.index] > (30 * 60 * 60)) then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (30 * 60 * 60)) then
                             if (player.permission_group.name ~= global.trustedgroup.name) then
                                 global.trustedgroup.add_player(player)
                                 message_all(player.name .. " was moved to trusted users.")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]")
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]"
+                                )
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Members- role![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]"
+                                )
                             end
                         end
                     elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.trustedgroup.name then
-                        if (global.actual_playtime ~= nil and global.actual_playtime[player.index] ~= nil and global.actual_playtime[player.index] > (4 * 60 * 60 * 60)) then
+                        if (global.actual_playtime and global.actual_playtime[player.index] and global.actual_playtime[player.index] > (4 * 60 * 60 * 60)) then
                             if (player.permission_group.name ~= global.regulargroup.name) then
                                 global.regulargroup.add_player(player)
                                 message_all(player.name .. " was moved to regulars.")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to The Regulars group![/color]"
+                                )
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]"
+                                )
+                                player.print(
+                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c)./color]"
+                                )
                             end
                         end
                     end
@@ -502,7 +514,7 @@ local function show_players(victim)
 
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
-        if (player ~= nil and player.valid) then
+        if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
             local utag = "(error)"
 
@@ -517,8 +529,18 @@ local function show_players(victim)
                 utag = "(none)"
             end
 
-            if (global.actual_playtime ~= nil and player.index ~= nil and global.actual_playtime[player.index] ~= nil) then
-                smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)", numpeople, player.name, (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
+            if (global.actual_playtime and global.actual_playtime[player.index]) then
+                smart_print(
+                    victim,
+                    string.format(
+                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)",
+                        numpeople,
+                        player.name,
+                        (global.actual_playtime[player.index] / 60.0 / 60.0 / 60.0),
+                        (player.online_time / 60.0 / 60.0 / 60.0),
+                        utag
+                    )
+                )
             end
         end
     end
@@ -541,7 +563,7 @@ script.on_load(
                     if param.player_index then
                         local player = game.players[param.player_index]
 
-                        if param.parameter ~= nil and player ~= nil and player.valid then
+                        if param.parameter ~= nil then
                             local ptype = "Error"
 
                             if player.admin then
@@ -570,7 +592,7 @@ script.on_load(
                 "cchat",
                 "<message here>",
                 function(param)
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
                         return
@@ -587,11 +609,11 @@ script.on_load(
                 "pcolor",
                 "<player> <color>",
                 function(param)
-                    local player
+                    local player = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         player = game.players[param.player_index]
-                        if player ~= nil and player.valid and player.admin == false then
+                        if player.admin == false then
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -600,25 +622,23 @@ script.on_load(
                     if param.parameter ~= nil then
                         local args = mysplit(param.parameter, " ")
 
-                        if args[1] and args[2] then
+                        if args[1] ~= nil and args[2] ~= nil then
                             local victim = game.players[args[1]]
                             local xytable = mysplit(args[2], ",")
-                            if victim ~= nil and victim.valid then
-                                if xytable[1] ~= nil and xytable[2] ~= nil and xytable[3] ~= nil then
-                                    if (victim ~= nil and victim.valid) then
-                                        if xytable ~= nil then
-                                            local argr = xytable[1]
-                                            local argg = xytable[2]
-                                            local argb = xytable[3]
-                                            victim.color = {argr, argg, argb, 1.0}
-                                            victim.chat_color = {argr, argg, argb, 1.0}
-                                            smart_print(player, "Color set.")
-                                            return
-                                        end
-                                    else
-                                        smart_print(player, "Player not found.")
+                            if xytable[1] ~= nil and xytable[2] ~= nil and xytable[3] ~= nil then
+                                if (victim ~= nil) then
+                                    if xytable ~= nil then
+                                        local argr = xytable[1]
+                                        local argg = xytable[2]
+                                        local argb = xytable[3]
+                                        victim.color = {argr, argg, argb, 1.0}
+                                        victim.chat_color = {argr, argg, argb, 1.0}
+                                        smart_print(player, "Color set.")
                                         return
                                     end
+                                else
+                                    smart_print(player, "Player not found.")
+                                    return
                                 end
                             end
                         end
@@ -633,11 +653,11 @@ script.on_load(
                 "<player> -- sets user to 0",
                 function(param)
                     local is_admin = true
-                    local player
+                    local player = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         player = game.players[param.player_index]
-                        if player ~= nil and player.valid and player.admin == false then
+                        if player.admin == false then
                             is_admin = false
                             smart_print(player, "Admins only.")
                             return
@@ -647,12 +667,9 @@ script.on_load(
                     if param.parameter then
                         local victim = game.players[param.parameter]
 
-                        if (victim ~= nil and victim.valid) then
+                        if (victim ~= nil) then
                             --Lame, but works
-                            if global.actual_playtime ~= nil then
-                                if global.actual_playtime[victim.index] == nil then
-                                    global.actual_playtime[victim.index] = 1
-                                end
+                            if global.actual_playtime[victim.index] then
                                 if global.actual_playtime[victim.index] > 0 then
                                     global.actual_playtime[victim.index] = 0
                                     smart_print(player, "Player set to 0.")
@@ -673,26 +690,23 @@ script.on_load(
                 "<player> -- sets user to trusted",
                 function(param)
                     local is_admin = true
-                    local player
+                    local player = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         player = game.players[param.player_index]
-                        if player ~= nil and player.valid and player.admin == false then
+                        if player.admin == false then
                             is_admin = false
                             smart_print(player, "Admins only.")
                             return
                         end
                     end
 
-                    if param.parameter ~= nil then
+                    if param.parameter then
                         local victim = game.players[param.parameter]
 
-                        if (victim ~= nil and victim.valid) then
+                        if (victim ~= nil) then
                             --Lame, but works
-                            if global.actual_playtime ~= nil then
-                                if global.actual_playtime[victim.index] == nil then
-                                    global.actual_playtime[victim.index] = 1
-                                end
+                            if global.actual_playtime[victim.index] then
                                 if global.actual_playtime[victim.index] < (30 * 60 * 60) then
                                     global.actual_playtime[victim.index] = (30 * 60 * 60) + 1
                                     smart_print(player, "Player set to trusted.")
@@ -713,11 +727,11 @@ script.on_load(
                 "<player> -- sets user to regular status",
                 function(param)
                     local is_admin = true
-                    local player
+                    local player = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         player = game.players[param.player_index]
-                        if player ~= nil and player.valid and player.admin == false then
+                        if player.admin == false then
                             is_admin = false
                             smart_print(player, "Admins only.")
                             return
@@ -727,12 +741,9 @@ script.on_load(
                     if param.parameter then
                         local victim = game.players[param.parameter]
 
-                        if (victim ~= nil and victim.valid) then
+                        if (victim ~= nil) then
                             --Lame, but works
-                            if global.actual_playtime ~= nil then
-                                if global.actual_playtime[victim.index] == nil then
-                                    global.actual_playtime[victim.index] = 1
-                                end
+                            if global.actual_playtime[victim.index] then
                                 if global.actual_playtime[victim.index] < (4 * 60 * 60 * 60) then
                                     global.actual_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
                                     smart_print(player, "Player set to regular.")
@@ -754,11 +765,11 @@ script.on_load(
                 "<mode>, options: sandbox, coal.",
                 function(param)
                     local is_admin = true
-                    local victim
+                    local victim = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim ~= nil and victim.valid and victim.admin == false then
+                        if victim.admin == false then
                             is_admin = false
                         end
                     end
@@ -796,14 +807,14 @@ script.on_load(
                 "<x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
                 function(param)
                     local is_admin = true
-                    local victim
+                    local victim = nil
                     local new_pos_x = 0.0
                     local new_pos_y = 0.0
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         victim = game.players[param.player_index]
 
-                        if victim ~= nil and victim.valid and victim.admin == false then
+                        if victim.admin == false then
                             is_admin = false
                         else
                             new_pos_x = victim.position.x
@@ -815,14 +826,14 @@ script.on_load(
                         local psurface = game.surfaces["nauvis"]
                         local pforce = game.forces["player"]
 
-                        if victim ~= nil and victim.valid then
+                        if victim ~= nil then
                             pforce = victim.force
                             psurface = victim.surface
                         end
 
-                        if param.parameter ~= nil then
+                        if param.parameter then
                             local xytable = mysplit(param.parameter, ",")
-                            if xytable then
+                            if xytable ~= nil then
                                 local argx = xytable[1]
                                 local argy = xytable[2]
                                 new_pos_x = argx
@@ -853,11 +864,11 @@ script.on_load(
                 "<size> -- <x> units of map. Default: 1024, max 4096",
                 function(param)
                     local is_admin = true
-                    local victim
+                    local victim = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim ~= nil and victim.valid and victim.admin == false then
+                        if victim.admin == false then
                             is_admin = false
                         end
                     end
@@ -902,11 +913,11 @@ script.on_load(
                 "resets fog of war",
                 function(param)
                     local is_admin = true
-                    local victim
+                    local victim = nil
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim ~= nil and victim.valid and victim.admin == false then
+                        if victim.admin == false then
                             is_admin = false
                         end
                     end
@@ -931,30 +942,26 @@ script.on_load(
                 "online",
                 "See who is online!",
                 function(param)
-                    local victim
+                    local victim = nil
                     local is_admin = true
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim ~= nil and victim.valid and victim.admin == false then
+                        if victim.admin == false then
                             is_admin = false
                         end
                     end
 
                     if (param.parameter == "active" and is_admin) then
-                        if (global.actual_playtime ~= nil) then
+                        if (global.actual_playtime) then
                             local plen = 0
                             local playtime = {}
                             for pos, player in pairs(game.players) do
-                                if player ~= nil and player.valid then
-                                    if global.actual_playtime[player.index] ~= nil then
-                                        playtime[pos] = {
-                                            time = global.actual_playtime[player.index],
-                                            name = player.name
-                                        }
-                                        plen = plen + 1
-                                    end
-                                end
+                                playtime[pos] = {
+                                    time = global.actual_playtime[player.index],
+                                    name = game.players[player.index].name
+                                }
+                                plen = plen + 1
                             end
 
                             table.sort(playtime, sortTime)
@@ -982,14 +989,14 @@ script.on_load(
                 "gspeed",
                 "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
                 function(param)
-                    local player
+                    local player = nil
                     local isadmin = true
 
-                    if param.player_index ~= nil then
+                    if param.player_index then
                         player = game.players[param.player_index]
                     end
 
-                    if (player ~= nil and player.valid) then
+                    if (player ~= nil) then
                         if (player.admin == false) then
                             isadmin = false
                         end
@@ -1029,22 +1036,22 @@ script.on_load(
                 "tto",
                 "<player> -- teleport to <player>",
                 function(param)
-                    if param.player_index == nil then
+                    if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
 
-                    if (player ~= nil and player.valid and player.connected and player.character and player.character.valid) then
+                    if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
                             player.print("Admins only.")
                             return
                         end
 
-                        if param.parameter ~= nil then
+                        if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim ~= nil and victim.valid) then
+                            if (victim) then
                                 local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
                                 if (newpos ~= nil) then
                                     player.teleport(newpos, victim.surface)
@@ -1065,19 +1072,19 @@ script.on_load(
                 "tp",
                 "<x,y> -- teleport to <x,y>",
                 function(param)
-                    if param.player_index == nil then
+                    if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
 
-                    if (player ~= nil and player.valid and player.connected and player.character and player.character.valid) then
+                    if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
                             player.print("Admins only.")
                             return
                         end
 
-                        if param.parameter ~= nil then
+                        if param.parameter then
                             local str = param.parameter
                             local xpos = "0.0"
                             local ypos = "0.0"
@@ -1085,8 +1092,8 @@ script.on_load(
                             xpos, ypos = str:match("([^,]+),([^,]+)")
                             local position = {x = xpos, y = ypos}
 
-                            if position ~= nil then
-                                if position.x ~= nil and position.y ~= nil then
+                            if position then
+                                if position.x and position.y then
                                     local newpos = player.surface.find_non_colliding_position("character", position, 15, 0.01, false)
                                     if (newpos ~= nil) then
                                         player.teleport(newpos, player.surface)
@@ -1116,16 +1123,16 @@ script.on_load(
                     end
                     local player = game.players[param.player_index]
 
-                    if (player ~= nil and player.valid and player.connected and player.character and player.character.valid) then
+                    if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
                             player.print("Admins only.")
                             return
                         end
 
-                        if param.parameter ~= nil then
+                        if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim ~= nil and victim.valid) then
+                            if (victim) then
                                 local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
                                 if (newpos ~= nil) then
                                     victim.teleport(newpos, player.surface)
@@ -1151,101 +1158,19 @@ script.on_event(
         local command = ""
         local args = ""
 
-        if event.command ~= nil then
+        if event.command then
             command = event.command
         end
 
-        if event.parameters ~= nil then
+        if event.parameters then
             args = event.parameters
         end
 
-        if event.player_index ~= nil then
+        if event.player_index then
             local player = game.players[event.player_index]
-            if player ~= nil and player.valid then
-                print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
-            end
+            print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
         elseif command ~= "time" and command ~= "p" and command ~= "w" and command ~= "server-save" then --Ignore spammy console commands
             print(string.format("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args))
-        end
-    end
-)
-
---Player connected
-script.on_event(
-    defines.events.on_player_joined_game,
-    function(event)
-        if event ~= nil and event.player_index then
-            local player = game.players[event.player_index]
-
-            if player ~= nil and player.valid then
-                create_groups()
-                sandbox_mode(player)
-
-                --Discord Info--
-                if player.gui.top.discord == nil then
-                    player.gui.top.add {type = "textfield", name = "discord"}
-                    player.gui.top.discord.text = "discord.gg/Ps2jnm7"
-                    player.gui.top.discord.tooltip = "select with mouse, and control-c to copy!"
-                end
-
-                --Moved here to reduce on_tick
-                if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
-                    if player.admin then
-                        global.admingroup.add_player(player)
-                    elseif is_regular(player) then
-                        global.regulargroup.add_player(player)
-                    elseif is_trusted(player) then
-                        global.trustedgroup.add_player(player)
-                    end
-                end
-            end
-        end
-    end
-)
-
---New player created
-script.on_event(
-    defines.events.on_player_created,
-    function(event)
-        if event ~= nil and event.player_index then
-            local player = game.players[event.player_index]
-
-            if player ~= nil and player.valid then
-                message_all(player.name .. " is a new character!")
-                create_groups()
-                sandbox_mode(player)
-                game_settings(player)
-                smart_print(player, "To see online players, chat /online")
-                show_players(player)
-            end
-        end
-    end
-)
-
---ACTIVITY EVENTS
---Build stuff
-script.on_event(
-    defines.events.on_built_entity,
-    function(event)
-        if event ~= nil and event.player_index and event.created_entity then
-            local player = game.players[event.player_index]
-            local created_entity = event.created_entity
-
-            if player ~= nil and player.valid and created_entity and created_entity.valid then
-                if global.last_speaker_warning == nil then
-                    global.last_speaker_warning = 1
-                end
-
-                if (game.tick - global.last_speaker_warning >= 300) then
-                    if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                        if created_entity.name == "programmable-speaker" then
-                            message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
-                            global.last_speaker_warning = game.tick
-                        end
-                    end
-                end
-                set_active(player)
-            end
         end
     end
 )
@@ -1278,46 +1203,89 @@ script.on_event(
     end
 )
 
---Mined item or corpse
+
+--Player connected
 script.on_event(
-    defines.events.on_pre_player_mined_item,
+    defines.events.on_player_joined_game,
     function(event)
-        if (global.corpselist == nil) then
-            global.corpselist = {tag = {}, tick = {}, pos = {}, name = {}}
+        local player = game.players[event.player_index]
+        create_groups()
+        sandbox_mode(player)
+
+        --Discord Info--
+        if player.gui.top.discord == nil then
+            player.gui.top.add {type = "textfield", name = "discord"}
+            player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+            player.gui.top.discord.tooltip = "select with mouse, and control-c to copy!"
         end
 
-        if event ~= nil and event.entity and event.player_index then
-            local player = game.players[event.player_index]
-            local obj = event.entity
+        --Moved here to reduce on_tick
+        if global.defaultgroup ~= nil and global.regulargroup ~= nil and global.trustedgroup ~= nil then
+            if player.admin then
+                global.admingroup.add_player(player)
+            elseif is_regular(player) then
+                global.regulargroup.add_player(player)
+            elseif is_trusted(player) then
+                global.trustedgroup.add_player(player)
+            end
+        --end
+        end
+    end
+)
 
-            if player ~= nil and player.valid and obj and obj.valid and obj.name and obj.position then
-                cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
-                set_active(player)
+--New player created
+script.on_event(
+    defines.events.on_player_created,
+    function(event)
+        local player = game.players[event.player_index]
 
-                if obj.name == "character-corpse" then
-                    --Remove old corpse tags
-                    if (global.corpselist ~= nil) then
-                        for x, corpse in pairs(global.corpselist) do
-                            if (corpse ~= nil and corpse.pos ~= nil and corpse.pos.x ~= nil and corpse.pos.x ~= nil == obj.position.x ~= nil and corpse.pos.y ~= nil == obj.position.y ~= nil) then
-                                if corpse.name ~= nil and player.name ~= nil and corpse.name == player.name then
-                                    message_all(player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
-                                else
-                                    message_all(player.name .. " picked up " .. corpse.name .. "'s corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
-                                end
-                                if corpse.tag ~= nil and corpse.tag.valid then
-                                    corpse.tag.destroy()
-                                end
-                                if corpse.tick ~= nil then
-                                    cprint("Tag removed: Tick: " .. corpse.tick)
-                                end
-                                table.remove(global.corpselist, x)
-                                break
-                            end
-                        end
+        message_all(player.name .. " is a new character!")
+        create_groups()
+        sandbox_mode(player)
+        game_settings(player)
+        smart_print(player, "To see online players, chat /online")
+        show_players(player)
+    end
+)
+
+--ACTIVITY EVENTS
+--Build stuff
+script.on_event(
+    defines.events.on_built_entity,
+    function(event)
+        local player = game.players[event.player_index]
+        local created_entity = event.created_entity
+
+        set_active(player)
+
+        if not global.last_speaker_warning then 
+            global.last_speaker_warning = 0
+        end
+
+
+        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
+            if player ~= nil and created_entity ~= nil then
+                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                    if created_entity.name == "programmable-speaker" then
+                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+                        global.last_speaker_warning = game.tick
                     end
                 end
             end
         end
+    end
+)
+
+--Mined item
+script.on_event(
+    defines.events.on_pre_player_mined_item,
+    function(event)
+        local player = game.players[event.player_index]
+        local obj = event.entity
+
+        cprint(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
+
+        set_active(player)
     end
 )
 
@@ -1326,6 +1294,7 @@ script.on_event(
     defines.events.on_player_main_inventory_changed,
     function(event)
         local player = game.players[event.player_index]
+
         set_active(player)
     end
 )
@@ -1385,7 +1354,7 @@ script.on_event(
     defines.events.on_console_chat,
     function(event)
         --Can be triggered by console, so check for nil
-        if event.player_index then
+        if event.player_index ~= nil then
             local player = game.players[event.player_index]
 
             set_active(player)
@@ -1399,16 +1368,14 @@ script.on_event(
 script.on_event(
     defines.events.on_player_changed_position,
     function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
+        local player = game.players[event.player_index]
 
-            --Only count if actually walking...
-            if player ~= nil and player.valid and player.walking_state then
-                local walking_state = player.walking_state.walking
+        --Only count if actually walking...
+        if player and player.valid and player.walking_state ~= nil then
+            local walking_state = player.walking_state.walking
 
-                if walking_state == true then
-                    set_active(player)
-                end
+            if walking_state == true then
+                set_active(player)
             end
         end
     end
@@ -1419,25 +1386,20 @@ script.on_event(
 script.on_event(
     defines.events.on_pre_player_died,
     function(event)
-        if (global.corpselist == nil) then
-            global.corpselist = {tag = {}, tick = {}, pos = {}, name = {}}
+        if (not global.corpselist) then
+            global.corpselist = {tag = {}, tick = {}}
         end
 
-        if event ~= nil and event.player_index ~= nil then
-            local player = game.players[event.player_index]
+        local player = game.players[event.player_index]
+        local centerPosition = player.position
+        local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+        local chartTag = {position = centerPosition, icon = nil, text = label}
+        local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-            if player ~= nil and player.valid and player.character and player.position and player.surface then
-                local ppos = player.position
-                local label = "Corpse of: " .. player.name .. " " .. math.floor(ppos.x) .. "," .. math.floor(ppos.y)
-                local chartTag = {position = ppos, icon = nil, text = label}
-                local qtag = player.force.add_chart_tag(player.surface, chartTag)
+        table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
-                table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = ppos, name = player.name})
-
-                --Log to discord
-                message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
-            end
-        end
+        --Log to discord
+        message_all(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
     end
 )
 
@@ -1445,68 +1407,96 @@ script.on_event(
 script.on_event(
     defines.events.on_research_finished,
     function(event)
-        if event and event.reseatch then
-            local tech = event.research
-            local wscript = event.by_script
+        local tech = event.research
+        local wscript = event.by_script
 
-            --Disable mining/rotating once we get far enough along.. do this fairly late
-            if tech ~= nil and tech.name and tech.name == "logistics-3" and wscript == false then
-                local dperms = game.permissions.get_group("Default")
-                if dperms then
-                    message_all("Automatically disabling rotating and mining/deleting objects for new users... due to technology level.")
-                    dperms.set_allows_action(defines.input_action.begin_mining, false)
-                    dperms.set_allows_action(defines.input_action.rotate_entity, false)
-                end
+        --Disable mining/rotating once we get far enough along.. do this fairly late
+        if tech.name == "logistics-3" and wscript == false then
+            local dperms = game.permissions.get_group("Default")
+            if dperms ~= nil then
+                message_all("Automatically disabling rotating and mining/deleting objects for new users... due to technology level.")
+                dperms.set_allows_action(defines.input_action.begin_mining, false)
+                dperms.set_allows_action(defines.input_action.rotate_entity, false)
             end
+        end
 
-            --Log to discord
-            if wscript == false then
-                message_alld("Research " .. tech.name .. " completed.")
-            end
+        --Log to discord
+        if wscript == false then
+            message_alld("Research " .. tech.name .. " completed.")
         end
     end
 )
 
+--Keep to minimum--
 script.on_nth_tick(
-    300, --5 seconds--
+    1800, --about 30 seconds
     function(event)
-        --Repair discord info--
+        local toremove
+
+        if (not global.actual_playtime) then
+            global.actual_playtime = {}
+            global.actual_playtime[0] = 0
+        end
+
+        if (not global.active) then
+            global.active = {}
+            global.active[0] = 0
+        end
+
         for _, player in pairs(game.connected_players) do
-            if player ~= nil and player.valid and player.gui and player.gui.top and player.gui.top.discord then
+            --Repair discord info
+            if player.gui.top.discord then
                 player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+            end
+
+            if global.active[player.index] then
+                if global.active[player.index] == 1 then
+                    global.active[player.index] = 0 --Turn back off
+
+                    if global.actual_playtime[player.index] then
+                        global.actual_playtime[player.index] = global.actual_playtime[player.index] + 1800
+                    else
+                        --INIT
+                        global.actual_playtime[player.index] = 0
+                    end
+                end
+            else
+                --INIT
+                global.active[player.index] = 0
             end
         end
 
-        --Remove old corpse tags--
-        if (global.corpselist ~= nil) then
-            for x, corpse in pairs(global.corpselist) do
-                if corpse ~= nil and corpse.tick ~= nil and corpse.name ~= nil then
-                    if (corpse.tick ~= nil and (corpse.tick + (15 * 60 * 60)) < game.tick) then
-                        if (corpse.tag ~= nil and corpse.tag.valid) then
-                            corpse.tag.destroy()
-                        end
-                        message_all(corpse.name .. "'s corpse has decomposed...")
-                        table.remove(global.corpselist, x)
-                        break
+        --Remove old corpse tags
+        if (global.corpselist) then
+            for _, corpse in pairs(global.corpselist) do
+                if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
+                    if (corpse.tag and corpse.tag.valid) then
+                        corpse.tag.destroy()
                     end
+                    toremove = corpse
                 end
             end
         end
+        if (toremove) then
+            toremove.tag = nil
+            toremove.tick = nil
+            toremove = nil
+        end
 
-        --Spawn marker--
-        if (global.servertag ~= nil and global.servertag.valid) then
+        --Server tag
+        if (global.servertag and not global.servertag.valid) then
+            global.servertag = nil
+        end
+        if (global.servertag and global.servertag.valid) then
             global.servertag.destroy()
             global.servertag = nil
         end
-        if (global.servertag ~= nil and not global.servertag.valid) then
-            global.servertag = nil
-        end
-        if (global.servertag == nil) then
+        if (not global.servertag) then
             local label = "Spawn Area"
             local xpos = 0
             local ypos = 0
 
-            if global.cspawnpos ~= nil then
+            if global.cspawnpos then
                 xpos = global.cspawnpos[1]
                 ypos = global.cspawnpos[2]
             end
@@ -1519,50 +1509,12 @@ script.on_nth_tick(
             local pforce = game.forces["player"]
             local psurface = game.surfaces["nauvis"]
 
-            if pforce ~= nil and psurface ~= nil and chartTag ~= nil then
+            if pforce ~= nil and psurface ~= nil then
                 global.servertag = pforce.add_chart_tag(psurface, chartTag)
             end
         end
 
         --Check permissions
         get_permgroup()
-    end
-)
-
---Idle Detection--
-script.on_nth_tick(
-    7200, --2 minutes
-    function(event)
-        --Init global.actual_playtime
-        if (global.actual_playtime == nil) then
-            global.actual_playtime = {}
-        end
-
-        --Init global.active
-        if (global.active == nil) then
-            global.active = {}
-        end
-
-        --Cycle all connected players, increment active play time.
-        for _, player in pairs(game.connected_players) do
-            if global.active ~= nil and player ~= nil and player.valid and player.index ~= nil then
-                if global.active[player.index] ~= nil then
-                    if global.active[player.index] == 1 then
-                        global.active[player.index] = 0 --Turn back off
-
-                        if global.actual_playtime ~= nil and global.actual_playtime[player.index] ~= nil then
-                            --Must be same as interval
-                            global.actual_playtime[player.index] = global.actual_playtime[player.index] + 7200
-                        else
-                            --INIT
-                            global.actual_playtime[player.index] = 0
-                        end
-                    end
-                else
-                    --INIT
-                    global.active[player.index] = 0
-                end
-            end
-        end
     end
 )
