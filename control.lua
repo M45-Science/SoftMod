@@ -1258,17 +1258,19 @@ script.on_event(
             local player = game.players[event.player_index]
             local area = event.area
 
-            if player ~= nil and player.valid and area and area.left_top and area.right_bottom then
+            if player ~= nil and player.valid and area ~= nil then
                 set_active(player)
 
                 if global.last_decon == nil then
                     global.last_decon = 1
                 end
 
-                if (game.tick - global.last_decon >= 600 and area.left_top.x ~= nil and area.left_top.y ~= nil and area.right_bottom.x ~= nil and area.right_bottom.y ~= nil) then
+                if (game.tick - global.last_decon >= 600) then
+                    local msg = player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
                     if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                        message_all(player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y))
+                        message_all(msg)
                     end
+                    cprint(msg)
                     global.last_decon = game.tick
                 end
             end
@@ -1427,7 +1429,7 @@ script.on_event(
             if player ~= nil and player.valid and player.character and player.position and player.surface then
                 local ppos = player.position
                 local label = "Corpse of: " .. player.name .. " " .. math.floor(ppos.x) .. "," .. math.floor(ppos.y)
-                local chartTag = {position = ppos, icon = "", text = label}
+                local chartTag = {position = ppos, icon = nil, text = label}
                 local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
                 table.insert(global.corpselist, {tag = qtag, tick = game.tick, pos = ppos, name = player.name})
