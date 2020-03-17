@@ -1295,7 +1295,7 @@ script.on_event(
                 if obj.name == "character-corpse" then
                     --Remove old corpse tags
                     if (global.corpselist ~= nil) then
-                        for x, corpse in ipairs(global.corpselist) do
+                        for x, corpse in pairs(global.corpselist) do
                             if (corpse ~= nil and corpse.pos ~= nil and orpse.pos.x ~= nil and corpse.pos.x ~= nil == obj.position.x ~= nil and corpse.pos.y ~= nil == obj.position.y ~= nil) then
                                 if corpse.name ~= nil and player.name ~= nil and corpse.name == player.name then
                                     message_all(player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
@@ -1477,7 +1477,7 @@ script.on_nth_tick(
 
         --Remove old corpse tags--
         if (global.corpselist ~= nil) then
-            for x, corpse in ipairs(global.corpselist) do
+            for x, corpse in pairs(global.corpselist) do
                 if corpse ~= nil and coprse.tick ~= nil and corpse.name ~= nil then
                     if (corpse.tick ~= nil and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                         if (corpse.tag ~= nil and corpse.tag.valid) then
