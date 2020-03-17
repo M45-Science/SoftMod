@@ -1478,7 +1478,7 @@ script.on_nth_tick(
         --Remove old corpse tags--
         if (global.corpselist ~= nil) then
             for x, corpse in pairs(global.corpselist) do
-                if corpse ~= nil and coprse.tick ~= nil and corpse.name ~= nil then
+                if corpse ~= nil and corpse.tick ~= nil and corpse.name ~= nil then
                     if (corpse.tick ~= nil and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                         if (corpse.tag ~= nil and corpse.tag.valid) then
                             corpse.tag.destroy()
