@@ -1478,7 +1478,7 @@ script.on_nth_tick(
         if (global.corpselist) then
             local markers = global.corpselist
             for x, corpse in ipairs(markers) do
-                if corpse and coprse.tick and corpse.name then
+                if corpse and coprse.tick ~= nil and corpse.name ~= nil then
                     if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                         if (corpse.tag and corpse.tag.valid) then
                             corpse.tag.destroy()
