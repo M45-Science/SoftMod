@@ -1296,7 +1296,7 @@ script.on_event(
                     --Remove old corpse tags
                     if (global.corpselist ~= nil) then
                         for x, corpse in pairs(global.corpselist) do
-                            if (corpse ~= nil and corpse.pos ~= nil and orpse.pos.x ~= nil and corpse.pos.x ~= nil == obj.position.x ~= nil and corpse.pos.y ~= nil == obj.position.y ~= nil) then
+                            if (corpse ~= nil and corpse.pos ~= nil and corpse.pos.x ~= nil and corpse.pos.x ~= nil == obj.position.x ~= nil and corpse.pos.y ~= nil == obj.position.y ~= nil) then
                                 if corpse.name ~= nil and player.name ~= nil and corpse.name == player.name then
                                     message_all(player.name .. " recovered their corpse at: " .. math.floor(corpse.pos.x) .. "," .. math.floor(corpse.pos.y))
                                 else
