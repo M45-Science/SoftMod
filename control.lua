@@ -7,6 +7,7 @@ handler.add_lib(require("silo-script"))
 --Flag player as currently active
 local function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid) then
+        init_myvars()
         global.playeractive[player.index] = true
     end
 end
@@ -194,6 +195,9 @@ end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
+    init_myvars()
+    create_groups()
+
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.regularsgroup ~= nil then
         if victim.permission_group.name == global.regularsgroup.name then
@@ -211,6 +215,7 @@ end
 
 --Check if player should be considered trusted
 local function is_trusted(victim)
+    init_myvars()
     create_groups()
 
     --If in group
@@ -283,6 +288,7 @@ end
 
 --Auto permisisons--
 local function get_permgroup()
+    init_myvars()
     create_groups()
 
     --Cleaned up 1-2020
@@ -320,6 +326,9 @@ local function get_permgroup()
 end
 
 local function show_players(victim)
+    init_myvars()
+    create_groups()
+
     local numpeople = 0
 
     --Cleaned up 1-2020
@@ -468,6 +477,8 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
+                            init_myvars()
+                            create_groups()
                             --Lame, but works with mods that change user permissions group
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] > 0 then
@@ -505,6 +516,9 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
+                            init_myvars()
+                            create_groups()
+
                             --Lame, but works
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] < (30 * 60 * 60) then
@@ -542,6 +556,9 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
+                            init_myvars()
+                            create_groups()
+
                             --Lame, but works
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] < (4 * 60 * 60 * 60) then
@@ -745,6 +762,8 @@ script.on_load(
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.active_playtime) then
+                            init_myvars()
+
                             local plen = 0
                             local playtime = {}
                             for pos, player in pairs(game.players) do
@@ -1001,7 +1020,6 @@ script.on_event(
         sandbox_mode(player)
         game_settings(player)
 
-
         --Discord Info--
         if player.gui.top.discord == nil then
             player.gui.top.add {type = "textfield", name = "discord"}
@@ -1215,7 +1233,8 @@ script.on_nth_tick(
         local toremove
 
         init_myvars()
-        
+        create_groups()
+
         --Check permissions / player time
         get_permgroup()
 
