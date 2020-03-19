@@ -87,6 +87,18 @@ local function create_myglobals()
     end
 end
 
+local function create_player_globals(player)
+    if player and player.index then
+        if not global.playeractive[player.index] then
+            global.playeractive[player.index] = 0
+        end
+
+        if not global.active_playtime[player.index] then
+            global.active_playtime[player.index] = 0
+        end
+    end
+end
+
 script.on_init(
     function()
         create_myglobals()
@@ -308,7 +320,7 @@ local function get_permgroup()
     for _, player in pairs(game.connected_players) do
         if (player and player.valid) then
             --Handle nil permissions, for mod compatability
-            if (player.permission_group and global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup ) then
+            if (player.permission_group and global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                 --Only move from default groups, for mod compatability
                 if (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.membersgroup.name or player.permission_group.name == global.regularsgroup.name) then
                     if player.permission_group.name == global.defaultgroup.name then
@@ -768,28 +780,28 @@ script.on_load(
 
                     if (param.parameter == "active" and is_admin) then
                         create_myglobals()
-                            local plen = 0
-                            local playtime = {}
-                            for pos, player in pairs(game.players) do
-                                playtime[pos] = {
-                                    time = global.active_playtime[player.index],
-                                    name = game.players[player.index].name
-                                }
-                                plen = plen + 1
-                            end
+                        local plen = 0
+                        local playtime = {}
+                        for pos, player in pairs(game.players) do
+                            playtime[pos] = {
+                                time = global.active_playtime[player.index],
+                                name = game.players[player.index].name
+                            }
+                            plen = plen + 1
+                        end
 
-                            table.sort(playtime, sorttime)
+                        table.sort(playtime, sorttime)
 
-                            --Lets limit number of results
-                            for ipos, time in pairs(playtime) do
-                                if (time) then
-                                    if (time.time) then
-                                        if ipos > (plen - 20) then
-                                            smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
-                                        end
+                        --Lets limit number of results
+                        for ipos, time in pairs(playtime) do
+                            if (time) then
+                                if (time.time) then
+                                    if ipos > (plen - 20) then
+                                        smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
                                     end
                                 end
                             end
+                        end
                         return
                     end
 
@@ -1018,6 +1030,7 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
+        create_player_globals(player)
         create_groups()
         sandbox_mode(player)
         game_settings(player)
@@ -1048,6 +1061,7 @@ script.on_event(
     defines.events.on_player_created,
     function(event)
         local player = game.players[event.player_index]
+        create_player_globals(player)
         sandbox_mode(player)
         show_players(player)
         smart_print(player, "To see online players, chat /online")
@@ -1289,7 +1303,7 @@ script.on_nth_tick(
         --Add time to connected players
         create_myglobals()
         if global.active_playtime then
-        for _, player in pairs(game.connected_players) do
+            for _, player in pairs(game.connected_players) do
                 if global.playeractive[player.index] then
                     if global.playeractive[player.index] == true then
                         global.playeractive[player.index] = false --Turn back off
@@ -1305,8 +1319,8 @@ script.on_nth_tick(
                     --INIT
                     global.playeractive[player.index] = true
                 end
+            end
         end
-    end
     end
 )
 
