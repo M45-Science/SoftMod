@@ -53,9 +53,6 @@ local function init_myvars()
     if not global.last_decon_warning then
         global.last_decon_warning = 0
     end
-    create_groups()
-    set_perms()
-    game_settings(player)
 end
 
 --Split strings
@@ -1001,6 +998,9 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         sandbox_mode(player)
+        game_settings(player)
+        create_groups()
+        set_perms()
 
         --Discord Info--
         if player.gui.top.discord == nil then
