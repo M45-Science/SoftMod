@@ -202,7 +202,7 @@ end
 
 --Set our default settings
 local function game_settings(player)
-    if not game then
+    if game then
         player.force.friendly_fire = false --friendly fire
         player.force.research_queue_enabled = true --nice to have
     end
