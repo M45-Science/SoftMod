@@ -352,8 +352,6 @@ end
 --Custom commands
 script.on_load(
     function()
-        init_myvars()
-
         --Only add if no commands yet
         if (commands.commands.server_interface == nil) then
             --register command
@@ -997,10 +995,12 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
-        sandbox_mode(player)
-        game_settings(player)
+        init_myvars()
         create_groups()
         set_perms()
+        sandbox_mode(player)
+        game_settings(player)
+
 
         --Discord Info--
         if player.gui.top.discord == nil then
@@ -1214,6 +1214,8 @@ script.on_nth_tick(
     function(event)
         local toremove
 
+        init_myvars()
+        
         --Check permissions / player time
         get_permgroup()
 
