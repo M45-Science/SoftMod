@@ -7,7 +7,7 @@ handler.add_lib(require("silo-script"))
 --Flag player as currently active
 local function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid) then
-        init_myvars()
+        initmyvars()
         global.playeractive[player.index] = true
     end
 end
@@ -41,7 +41,7 @@ local function create_groups()
     global.adminsgroup = game.permissions.get_group("Admins")
 end
 
-local function init_myvars()
+local function initmyvars()
     if not global.playeractive then
         global.playeractive = {}
     end
@@ -54,6 +54,7 @@ local function init_myvars()
     if not global.last_decon_warning then
         global.last_decon_warning = 0
     end
+    create_groups()
 end
 
 --Split strings
@@ -195,8 +196,7 @@ end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
-    init_myvars()
-    create_groups()
+    initmyvars()
 
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.regularsgroup ~= nil then
@@ -215,8 +215,7 @@ end
 
 --Check if player should be considered trusted
 local function is_trusted(victim)
-    init_myvars()
-    create_groups()
+    initmyvars()
 
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.membersgroup ~= nil then
@@ -288,8 +287,7 @@ end
 
 --Auto permisisons--
 local function get_permgroup()
-    init_myvars()
-    create_groups()
+    initmyvars()
 
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
@@ -326,8 +324,7 @@ local function get_permgroup()
 end
 
 local function show_players(victim)
-    init_myvars()
-    create_groups()
+    initmyvars()
 
     local numpeople = 0
 
@@ -477,8 +474,7 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            init_myvars()
-                            create_groups()
+                            initmyvars()
                             --Lame, but works with mods that change user permissions group
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] > 0 then
@@ -516,8 +512,7 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            init_myvars()
-                            create_groups()
+                            initmyvars()
 
                             --Lame, but works
                             if global.active_playtime[victim.index] then
@@ -556,8 +551,7 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            init_myvars()
-                            create_groups()
+                            initmyvars()
 
                             --Lame, but works
                             if global.active_playtime[victim.index] then
@@ -762,7 +756,7 @@ script.on_load(
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.active_playtime) then
-                            init_myvars()
+                            initmyvars()
 
                             local plen = 0
                             local playtime = {}
@@ -1014,8 +1008,7 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
-        init_myvars()
-        create_groups()
+        initmyvars()
         set_perms()
         sandbox_mode(player)
         game_settings(player)
@@ -1028,7 +1021,6 @@ script.on_event(
         end
 
         --Moved here to reduce on_tick
-        create_groups()
         if global.defaultgroup ~= nil and global.regularsgroup ~= nil and global.membersgroup ~= nil then
             if player.admin then
                 global.adminsgroup.add_player(player)
@@ -1232,8 +1224,7 @@ script.on_nth_tick(
     function(event)
         local toremove
 
-        init_myvars()
-        create_groups()
+        initmyvars()
 
         --Check permissions / player time
         get_permgroup()
