@@ -33,6 +33,45 @@ local function create_groups()
     global.adminsgroup = game.permissions.get_group("Admins")
 end
 
+--Disable some permissions for new users
+local function set_perms()
+    --Auto set default group permissions
+
+    if global.defaultgroup ~= nil then
+        global.defaultgroup.set_allows_action(defines.input_action.wire_dragging, false)
+        global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
+        global.defaultgroup.set_allows_action(defines.input_action.add_train_station, false)
+        global.defaultgroup.set_allows_action(defines.input_action.build_terrain, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
+        global.defaultgroup.set_allows_action(defines.input_action.connect_rolling_stock, false)
+        global.defaultgroup.set_allows_action(defines.input_action.deconstruct, false)
+        global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, false)
+        global.defaultgroup.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
+        global.defaultgroup.set_allows_action(defines.input_action.drag_train_schedule, false)
+        global.defaultgroup.set_allows_action(defines.input_action.drag_train_wait_condition, false)
+        global.defaultgroup.set_allows_action(defines.input_action.launch_rocket, false)
+        global.defaultgroup.set_allows_action(defines.input_action.remove_cables, false)
+        global.defaultgroup.set_allows_action(defines.input_action.remove_train_station, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_condition, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_signal, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
+    end
+end
+
 local function create_myglobals()
     if not global.playeractive then
         global.playeractive = {}
@@ -48,10 +87,17 @@ local function create_myglobals()
     end
 end
 
+script.on_init(
+    function()
+        create_myglobals()
+        create_groups()
+        set_perms()
+    end
+)
+
 --Flag player as currently active
 local function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid) then
-        create_myglobals()
         global.playeractive[player.index] = true
     end
 end
@@ -145,45 +191,6 @@ local function sandbox_mode(player)
     end
 end
 
---Disable some permissions for new users
-local function set_perms()
-    --Auto set default group permissions
-
-    if global.defaultgroup~= nil then
-        global.defaultgroup.set_allows_action(defines.input_action.wire_dragging, false)
-        global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
-        global.defaultgroup.set_allows_action(defines.input_action.add_train_station, false)
-        global.defaultgroup.set_allows_action(defines.input_action.build_terrain, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
-        global.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, false)
-        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
-        global.defaultgroup.set_allows_action(defines.input_action.connect_rolling_stock, false)
-        global.defaultgroup.set_allows_action(defines.input_action.deconstruct, false)
-        global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, false)
-        global.defaultgroup.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
-        global.defaultgroup.set_allows_action(defines.input_action.drag_train_schedule, false)
-        global.defaultgroup.set_allows_action(defines.input_action.drag_train_wait_condition, false)
-        global.defaultgroup.set_allows_action(defines.input_action.launch_rocket, false)
-        global.defaultgroup.set_allows_action(defines.input_action.remove_cables, false)
-        global.defaultgroup.set_allows_action(defines.input_action.remove_train_station, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_condition, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_item, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_signal, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
-    end
-end
-
 --Set our default settings
 local function game_settings(player)
     if game ~= nil then
@@ -194,8 +201,6 @@ end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
-    create_myglobals()
-
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.regularsgroup ~= nil then
         if victim.permission_group.name == global.regularsgroup.name then
@@ -213,7 +218,6 @@ end
 
 --Check if player should be considered trusted
 local function is_trusted(victim)
-    create_myglobals()
     create_groups()
 
     --If in group
@@ -286,7 +290,6 @@ end
 
 --Auto permisisons--
 local function get_permgroup()
-    create_myglobals()
     create_groups()
 
     --Cleaned up 1-2020
@@ -324,8 +327,6 @@ local function get_permgroup()
 end
 
 local function show_players(victim)
-    create_myglobals()
-
     local numpeople = 0
 
     --Cleaned up 1-2020
@@ -474,7 +475,6 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            create_myglobals()
                             --Lame, but works with mods that change user permissions group
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] > 0 then
@@ -512,8 +512,6 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            create_myglobals()
-
                             --Lame, but works
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] < (30 * 60 * 60) then
@@ -551,8 +549,6 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            create_myglobals()
-
                             --Lame, but works
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] < (4 * 60 * 60 * 60) then
@@ -756,8 +752,6 @@ script.on_load(
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.active_playtime) then
-                            create_myglobals()
-
                             local plen = 0
                             local playtime = {}
                             for pos, player in pairs(game.players) do
@@ -1008,9 +1002,7 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
-        create_myglobals()
         create_groups()
-        set_perms()
         sandbox_mode(player)
         game_settings(player)
 
@@ -1225,8 +1217,6 @@ script.on_nth_tick(
     7200,
     function(event)
         local toremove
-
-        create_myglobals()
 
         --Check permissions / player time
         get_permgroup()
