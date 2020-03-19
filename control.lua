@@ -88,7 +88,9 @@ local function create_myglobals()
 end
 
 local function create_player_globals(player)
-    if player and player.index then
+    create_myglobals()
+
+    if global.playeractive and player and player.index then
         if not global.playeractive[player.index] then
             global.playeractive[player.index] = 0
         end
