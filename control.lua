@@ -4,14 +4,6 @@ local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
 
---Flag player as currently active
-local function set_player_active(player)
-    if (player and player.valid and player.connected and player.character and player.character.valid) then
-        initmyvars()
-        global.playeractive[player.index] = true
-    end
-end
-
 --Create user groups if they don't exsist, and create global links to them
 local function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
@@ -41,7 +33,7 @@ local function create_groups()
     global.adminsgroup = game.permissions.get_group("Admins")
 end
 
-local function initmyvars()
+local function create_myglobals()
     if not global.playeractive then
         global.playeractive = {}
     end
@@ -54,7 +46,14 @@ local function initmyvars()
     if not global.last_decon_warning then
         global.last_decon_warning = 0
     end
-    create_groups()
+end
+
+--Flag player as currently active
+local function set_player_active(player)
+    if (player and player.valid and player.connected and player.character and player.character.valid) then
+        create_myglobals()
+        global.playeractive[player.index] = true
+    end
 end
 
 --Split strings
@@ -149,40 +148,39 @@ end
 --Disable some permissions for new users
 local function set_perms()
     --Auto set default group permissions
-    local dperms = game.permissions.get_group("Default")
 
-    if dperms ~= nil then
-        dperms.set_allows_action(defines.input_action.wire_dragging, false)
-        dperms.set_allows_action(defines.input_action.activate_cut, false)
-        dperms.set_allows_action(defines.input_action.add_train_station, false)
-        dperms.set_allows_action(defines.input_action.build_terrain, false)
-        dperms.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
-        dperms.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
-        dperms.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
-        dperms.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-        dperms.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
-        dperms.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
-        dperms.set_allows_action(defines.input_action.change_train_stop_station, false)
-        dperms.set_allows_action(defines.input_action.change_train_wait_condition, false)
-        dperms.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
-        dperms.set_allows_action(defines.input_action.connect_rolling_stock, false)
-        dperms.set_allows_action(defines.input_action.deconstruct, false)
-        dperms.set_allows_action(defines.input_action.delete_blueprint_library, false)
-        dperms.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
-        dperms.set_allows_action(defines.input_action.drag_train_schedule, false)
-        dperms.set_allows_action(defines.input_action.drag_train_wait_condition, false)
-        dperms.set_allows_action(defines.input_action.launch_rocket, false)
-        dperms.set_allows_action(defines.input_action.remove_cables, false)
-        dperms.set_allows_action(defines.input_action.remove_train_station, false)
-        dperms.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
-        dperms.set_allows_action(defines.input_action.set_circuit_condition, false)
-        dperms.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
-        dperms.set_allows_action(defines.input_action.set_logistic_filter_item, false)
-        dperms.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
-        dperms.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
-        dperms.set_allows_action(defines.input_action.set_request_from_buffers, false)
-        dperms.set_allows_action(defines.input_action.set_signal, false)
-        dperms.set_allows_action(defines.input_action.set_train_stopped, false)
+    if global.defaultgroup~= nil then
+        global.defaultgroup.set_allows_action(defines.input_action.wire_dragging, false)
+        global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
+        global.defaultgroup.set_allows_action(defines.input_action.add_train_station, false)
+        global.defaultgroup.set_allows_action(defines.input_action.build_terrain, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, false)
+        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
+        global.defaultgroup.set_allows_action(defines.input_action.connect_rolling_stock, false)
+        global.defaultgroup.set_allows_action(defines.input_action.deconstruct, false)
+        global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, false)
+        global.defaultgroup.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
+        global.defaultgroup.set_allows_action(defines.input_action.drag_train_schedule, false)
+        global.defaultgroup.set_allows_action(defines.input_action.drag_train_wait_condition, false)
+        global.defaultgroup.set_allows_action(defines.input_action.launch_rocket, false)
+        global.defaultgroup.set_allows_action(defines.input_action.remove_cables, false)
+        global.defaultgroup.set_allows_action(defines.input_action.remove_train_station, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_condition, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_signal, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
     end
 end
 
@@ -196,7 +194,7 @@ end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
-    initmyvars()
+    create_myglobals()
 
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.regularsgroup ~= nil then
@@ -215,7 +213,8 @@ end
 
 --Check if player should be considered trusted
 local function is_trusted(victim)
-    initmyvars()
+    create_myglobals()
+    create_groups()
 
     --If in group
     if victim ~= nil and victim.permission_group ~= nil and global.membersgroup ~= nil then
@@ -287,7 +286,8 @@ end
 
 --Auto permisisons--
 local function get_permgroup()
-    initmyvars()
+    create_myglobals()
+    create_groups()
 
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
@@ -324,7 +324,7 @@ local function get_permgroup()
 end
 
 local function show_players(victim)
-    initmyvars()
+    create_myglobals()
 
     local numpeople = 0
 
@@ -474,7 +474,7 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            initmyvars()
+                            create_myglobals()
                             --Lame, but works with mods that change user permissions group
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] > 0 then
@@ -512,7 +512,7 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            initmyvars()
+                            create_myglobals()
 
                             --Lame, but works
                             if global.active_playtime[victim.index] then
@@ -551,7 +551,7 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim ~= nil) then
-                            initmyvars()
+                            create_myglobals()
 
                             --Lame, but works
                             if global.active_playtime[victim.index] then
@@ -756,7 +756,7 @@ script.on_load(
 
                     if (param.parameter == "active" and is_admin) then
                         if (global.active_playtime) then
-                            initmyvars()
+                            create_myglobals()
 
                             local plen = 0
                             local playtime = {}
@@ -1008,7 +1008,8 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         local player = game.players[event.player_index]
-        initmyvars()
+        create_myglobals()
+        create_groups()
         set_perms()
         sandbox_mode(player)
         game_settings(player)
@@ -1201,6 +1202,7 @@ script.on_event(
     function(event)
         local tech = event.research
         local wscript = event.by_script
+        create_groups()
 
         --Disable mining/rotating once we get far enough along.. do this fairly late
         if tech.name == "logistics-3" and wscript == false then
@@ -1224,7 +1226,7 @@ script.on_nth_tick(
     function(event)
         local toremove
 
-        initmyvars()
+        create_myglobals()
 
         --Check permissions / player time
         get_permgroup()
