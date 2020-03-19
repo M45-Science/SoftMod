@@ -95,6 +95,14 @@ script.on_init(
     end
 )
 
+script.on_configuration_changed(
+    function()
+        create_myglobals()
+        create_groups()
+        set_perms()
+    end
+)
+
 --Flag player as currently active
 local function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid) then
