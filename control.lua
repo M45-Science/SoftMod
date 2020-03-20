@@ -1,4 +1,4 @@
---v0460-3-19-2020_3-32-PM
+--v0461-3-20-2020_9-20-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -326,7 +326,18 @@ local function get_permgroup()
                 --Only move from default groups, for mod compatability
                 if (player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.membersgroup.name or player.permission_group.name == global.regularsgroup.name) then
                     if player.permission_group.name == global.defaultgroup.name then
-                        if (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60)) then
+                        if player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.membersgroup.name then
+
+                            if (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60)) then
+                                if (player.permission_group.name ~= global.regularsgroup.name) then
+                                    global.regularsgroup.add_player(player)
+                                    message_all(player.name .. " is now a regular!")
+                                    player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to our regulars group![/color]")
+                                    player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
+                                    player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                                end
+                            end
+                        elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60)) then
                             if (player.permission_group.name ~= global.membersgroup.name) then
                                 global.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
@@ -335,16 +346,7 @@ local function get_permgroup()
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
                             end
                         end
-                    elseif player.permission_group.name == global.defaultgroup.name or player.permission_group.name == global.membersgroup.name then
-                        if (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60)) then
-                            if (player.permission_group.name ~= global.regularsgroup.name) then
-                                global.regularsgroup.add_player(player)
-                                message_all(player.name .. " is now a regular!")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to our regulars group![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
-                            end
-                        end
+                        
                     end
                 end
             end
