@@ -1,4 +1,4 @@
---v0462-3-21-2020_2-26-AM
+--v0462-3-21-2020_2-2-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -420,8 +420,8 @@ script.on_load(
                         if (victim) then
                             if global.active_playtime and global.active_playtime[victim.index] then
                                 global.active_playtime[victim.index] = 0
-                                if player and player.valid and global.defaultgroup then
-                                    global.defaultgroup.add_player(player)
+                                if victim and victim.valid and global.defaultgroup then
+                                    global.defaultgroup.add_player(victim)
                                 end
                                 smart_print(player, "Player set to 0.")
                                 return
@@ -453,9 +453,9 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            if player and player.valid and global.membersgroup then
+                            if victim and victim.valid and global.membersgroup then
                                 smart_print(player, "Player given members status.")
-                                global.membersgroup.add_player(player)
+                                global.membersgroup.add_player(victim)
                                 return
                             end
                         end
@@ -485,9 +485,9 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            if player and player.valid and global.regularsgroup then
+                            if victim and victim.valid and global.regularsgroup then
                                 smart_print(player, "Player given regulars status.")
-                                global.regularsgroup.add_player(player)
+                                global.regularsgroup.add_player(victim)
                                 return
                             end
                         end
