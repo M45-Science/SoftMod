@@ -1,4 +1,4 @@
---v0461-3-20-2020_9-20-AM
+--v0462-3-20-2020_10-01-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -101,22 +101,6 @@ local function create_player_globals(player)
     end
 end
 
-script.on_init(
-    function()
-        create_myglobals()
-        create_groups()
-        set_perms()
-    end
-)
-
-script.on_configuration_changed(
-    function()
-        create_myglobals()
-        create_groups()
-        set_perms()
-    end
-)
-
 --Flag player as currently active
 local function set_player_active(player)
     create_myglobals()
@@ -127,91 +111,23 @@ end
 
 --Split strings
 local function mysplit(inputstr, sep)
-    if not sep then
-        sep = "%s"
-    end
     local t = {}
+    local x = 0
+
+    if not sep or not inputstr then
+        return t
+    end
+
     for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
+
+        x = x + 1
+        if x > 10 then
+            break
+        end
+
         table.insert(t, str)
     end
     return t
-end
-
---Sandbox mode
-local function sandbox_mode(player)
-    if global.sandboxmode == true then
-        if (not player) then --Set mode
-            for _, victim in pairs(game.players) do
-                if victim.valid then
-                    victim.cheat_mode = true
-                    victim.surface.always_day = true
-                    victim.force.laboratory_speed_modifier = 1
-                    victim.force.manual_mining_speed_modifier = 1000
-                    victim.force.manual_crafting_speed_modifier = 1000
-                    victim.force.research_all_technologies()
-
-                    for name, recipe in pairs(victim.force.recipes) do
-                        recipe.enabled = true
-                    end
-
-                    --Remove character, for godmode
-                    if (victim.character) then
-                        local temp = victim.character
-                        victim.character = nil
-                        victim.destroy()
-                    end
-                end
-            end
-        else --set player sandbox on
-            if player.valid then
-                player.cheat_mode = true
-                player.surface.always_day = true
-                player.force.laboratory_speed_modifier = 1
-                player.force.manual_mining_speed_modifier = 1000
-                player.force.manual_crafting_speed_modifier = 1000
-                player.force.research_all_technologies()
-
-                for name, recipe in pairs(player.force.recipes) do
-                    recipe.enabled = true
-                end
-
-                --Remove character, for godmode
-                if (player.character) then
-                    local temp = victim.character
-                    player.character = nil
-                    player.destroy()
-                end
-            end
-        end
-    else -- Sandbox off
-        if (not player) then --Set sandbox OFF
-            for _, victim in pairs(game.players) do
-                if victim.valid then
-                    victim.cheat_mode = false
-                    victim.surface.always_day = false
-                    victim.force.laboratory_speed_modifier = 0
-                    victim.force.manual_mining_speed_modifier = 0
-                    victim.force.manual_crafting_speed_modifier = 0
-                    victim.force.reset()
-                end
-            end
-            --Add character, remove godmode
-            for _, victim in pairs(game.connected_players) do
-                if victim.valid then
-                    victim.create_character()
-                end
-            end
-        else --Set player sandbox off
-            if player.valid then
-                player.cheat_mode = false
-
-                --Add character, remove godmode
-                if (not player.character) then
-                    player.create_character()
-                end
-            end
-        end
-    end
 end
 
 --Set our default settings
@@ -598,39 +514,6 @@ script.on_load(
                 end
             )
 
-            --Change game mode
-            commands.add_command(
-                "mode",
-                "<mode>, options: sandbox",
-                function(param)
-                    local is_admin = true
-                    local victim
-
-                    if param.player_index then
-                        victim = game.players[param.player_index]
-                        if victim.admin == false then
-                            is_admin = false
-                        end
-                    end
-
-                    if is_admin then
-                        if param.parameter == "sandbox" then
-                            if global.sandboxmode == true then
-                                global.sandboxmode = nil
-                                smart_print(victim, "Sandbox mode disabled.")
-                            else
-                                global.sandboxmode = true
-                                sandbox_mode(nil) --Nil means set all players
-                                smart_print(victim, "Sandbox mode enabled.")
-                            end
-                        else
-                            smart_print(victim, "Valid modes: sandbox")
-                        end
-                    else
-                        smart_print(victim, "Admins only.")
-                    end
-                end
-            )
             --Change default spawn point
             commands.add_command(
                 "cspawn",
@@ -792,6 +675,9 @@ script.on_load(
                                 name = game.players[player.index].name
                             }
                             plen = plen + 1
+                            if plen > 1000 then
+                                break
+                            end
                         end
 
                         table.sort(playtime, sorttime)
@@ -1036,7 +922,6 @@ script.on_event(
         local player = game.players[event.player_index]
         create_player_globals(player)
         create_groups()
-        sandbox_mode(player)
         game_settings(player)
 
         --Discord Info--
@@ -1066,7 +951,6 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         create_player_globals(player)
-        sandbox_mode(player)
         show_players(player)
         smart_print(player, "To see online players, chat /online")
     end
@@ -1257,8 +1141,13 @@ script.on_nth_tick(
         get_permgroup()
 
         --Remove old corpse tags
+        local max = 0
         if (global.corpselist) then
             for _, corpse in pairs(global.corpselist) do
+                max = max + 1
+                if max > 100 then
+                    break
+                end
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
                         corpse.tag.destroy()
