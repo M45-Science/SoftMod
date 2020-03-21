@@ -238,7 +238,7 @@ local function get_permgroup()
                 if player.permission_group then
                     if (player.admin and player.permission_group.name ~= global.adminsgroup.name) then
                         global.adminsgroup.add_player(player)
-                        player.print("[color=red]You have been moved to the Admins group.[/color]")
+                        message_all(player.name .. " moved to Admins group.")
                     elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60)) then
                         if (player.permission_group.name ~= global.regularsgroup.name) then
                             global.regularsgroup.add_player(player)
@@ -954,6 +954,7 @@ script.on_event(
         set_perms()
         show_players(player)
         smart_print(player, "To see online players, chat /online")
+        message_all( "Welcome " .. player.name .. " to the map!")
     end
 )
 
