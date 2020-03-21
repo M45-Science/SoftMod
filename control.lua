@@ -1,4 +1,4 @@
---v0462-3-21-2020_2-21-AM
+--v0462-3-21-2020_2-26-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -453,15 +453,10 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            if global.active_playtime and global.active_playtime[victim.index] then
-                                if global.active_playtime[victim.index] < (30 * 60 * 60) then
-                                    --global.active_playtime[victim.index] = (30 * 60 * 60) + 1
-                                    if player and player.valid and global.membersgroup then
-                                        global.membersgroup.add_player(player)
-                                    end
-                                    smart_print(player, "Player given members status.")
-                                    return
-                                end
+                            if player and player.valid and global.membersgroup then
+                                smart_print(player, "Player given members status.")
+                                global.membersgroup.add_player(player)
+                                return
                             end
                         end
                     end
@@ -490,14 +485,10 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            if global.active_playtime[victim.index] then
-                                if global.active_playtime[victim.index] < (4 * 60 * 60 * 60) then
-                                    --global.active_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
-                                    if player and player.valid and global.regularsgroup then
-                                        global.regularsgroup.add_player(player)
-                                        smart_print(player, "Player given regulars status.")
-                                    end
-                                end
+                            if player and player.valid and global.regularsgroup then
+                                smart_print(player, "Player given regulars status.")
+                                global.regularsgroup.add_player(player)
+                                return
                             end
                         end
                     end
@@ -954,7 +945,7 @@ script.on_event(
         set_perms()
         show_players(player)
         smart_print(player, "To see online players, chat /online")
-        message_all( "Welcome " .. player.name .. " to the map!")
+        message_all("Welcome " .. player.name .. " to the map!")
     end
 )
 
@@ -1179,7 +1170,7 @@ script.on_nth_tick(
             local xpos = 0
             local ypos = 0
 
-            if global.cspawnpos and global.cspawnpos[1] and global.cspawnpos[2] and tonumber(global.cspawnpos[1]) and tonumber(global.cspawnpos[2])  then
+            if global.cspawnpos and global.cspawnpos[1] and global.cspawnpos[2] and tonumber(global.cspawnpos[1]) and tonumber(global.cspawnpos[2]) then
                 xpos = global.cspawnpos[1]
                 ypos = global.cspawnpos[2]
             end
