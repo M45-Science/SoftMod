@@ -1,4 +1,4 @@
---v0462-3-20-2020_10-01-PM
+--v0462-3-21-2020_12-49-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -46,10 +46,7 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
         global.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-        global.defaultgroup.set_allows_action(
-            defines.input_action.change_programmable_speaker_circuit_parameters,
-            false
-        )
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, false)
@@ -88,6 +85,9 @@ local function create_myglobals()
     if not global.last_decon_warning then
         global.last_decon_warning = 0
     end
+    if (not global.corpselist) then
+        global.corpselist = {tag = {}, tick = {}}
+    end
 end
 
 local function create_player_globals(player)
@@ -104,10 +104,7 @@ end
 
 --Flag player as currently active
 local function set_player_active(player)
-    if
-        (player and player.valid and player.connected and player.character and player.character.valid and
-            global.playeractive)
-     then
+    if (player and player.valid and player.connected and player.character and player.character.valid and global.playeractive) then
         global.playeractive[player.index] = true
     end
 end
@@ -117,13 +114,17 @@ local function mysplit(inputstr, sep)
     local t = {}
     local x = 0
 
+    --Handle nil/empty strings
     if not sep or not inputstr then
+        return t
+    end
+    if sep == "" or inputstr == "" then
         return t
     end
 
     for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
         x = x + 1
-        if x > 10 then
+        if x > 10 then --Max 10 args
             break
         end
 
@@ -142,7 +143,6 @@ end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
-
     --If in group
     if victim and victim.permission_group and global.regularsgroup then
         if victim.permission_group.name == global.regularsgroup.name then
@@ -151,10 +151,7 @@ local function is_regular(victim)
     end
 
     --If they have enough hours
-    if
-        (global.active_playtime and global.active_playtime[victim.index] and
-            global.active_playtime[victim.index] > (4 * 60 * 60 * 60))
-     then
+    if (global.active_playtime and global.active_playtime[victim.index] and global.active_playtime[victim.index] > (4 * 60 * 60 * 60)) then
         return true
     end
 
@@ -171,10 +168,7 @@ local function is_trusted(victim)
     end
 
     --If they have enough hours
-    if
-        (global.active_playtime and global.active_playtime[victim.index] and
-            global.active_playtime[victim.index] > (30 * 60 * 60))
-     then
+    if (global.active_playtime and global.active_playtime[victim.index] and global.active_playtime[victim.index] > (30 * 60 * 60)) then
         return true
     end
 
@@ -240,58 +234,31 @@ local function get_permgroup()
     for _, player in pairs(game.connected_players) do
         if (player and player.valid) then
             --Handle nil permissions, for mod compatability
-            if
-                (player.permission_group and global.defaultgroup and global.membersgroup and global.regularsgroup and
-                    global.adminsgroup)
-             then
-                --Only move from default groups, for mod compatability
-                if
-                    (player.permission_group.name == global.defaultgroup.name or
-                        player.permission_group.name == global.membersgroup.name or
-                        player.permission_group.name == global.regularsgroup.name)
-                 then
-                    if player.permission_group.name == global.defaultgroup.name then
-                        if
-                            player.permission_group.name == global.defaultgroup.name or
-                                player.permission_group.name == global.membersgroup.name
-                         then
-                            if
-                                (global.active_playtime and global.active_playtime[player.index] and
-                                    global.active_playtime[player.index] > (4 * 60 * 60 * 60))
-                             then
-                                if (player.permission_group.name ~= global.regularsgroup.name) then
-                                    global.regularsgroup.add_player(player)
-                                    message_all(player.name .. " is now a regular!")
-                                    player.print(
-                                        "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to our regulars group![/color]"
-                                    )
-                                    player.print(
-                                        "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]"
-                                    )
-                                    player.print(
-                                        "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]"
-                                    )
-                                end
-                            end
-                        elseif
-                            (global.active_playtime and global.active_playtime[player.index] and
-                                global.active_playtime[player.index] > (30 * 60 * 60))
-                         then
-                            if (player.permission_group.name ~= global.membersgroup.name) then
-                                global.membersgroup.add_player(player)
-                                message_all(player.name .. " is now a member!")
-                                player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]"
-                                )
-                                player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Members- role![/color]"
-                                )
-                                player.print(
-                                    "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]"
-                                )
-                            end
+            if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
+                if player.permission_group then
+                    if (player.admin and player.permission_group.name ~= global.adminsgroup.name) then
+                        global.adminsgroup.add_player(player)
+                        player.print("[color=red]You have been moved to the Admins group.[/color]")
+                    elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60)) then
+                        if (player.permission_group.name ~= global.regularsgroup.name) then
+                            global.regularsgroup.add_player(player)
+                            message_all(player.name .. " is now a regular!")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to our regulars group![/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                        end
+                    elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60)) then
+                        if (player.permission_group.name ~= global.membersgroup.name) then
+                            global.membersgroup.add_player(player)
+                            message_all(player.name .. " is now a member!")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Members- role![/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
                         end
                     end
+                else
+                    --Fix nil group (bugged mods)
+                    global.defaultgroup.add_player(player)
                 end
             end
         end
@@ -319,17 +286,7 @@ local function show_players(victim)
             end
 
             if (global.active_playtime and global.active_playtime[player.index]) then
-                smart_print(
-                    victim,
-                    string.format(
-                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)",
-                        numpeople,
-                        player.name,
-                        (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0),
-                        (player.online_time / 60.0 / 60.0 / 60.0),
-                        utag
-                    )
-                )
+                smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)", numpeople, player.name, (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
             end
         end
     end
@@ -402,7 +359,7 @@ script.on_load(
 
                     if param.player_index then
                         player = game.players[param.player_index]
-                        if player.admin == false then
+                        if player and player.admin == false then
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -411,18 +368,22 @@ script.on_load(
                     if param.parameter then
                         local args = mysplit(param.parameter, " ")
 
-                        if args[1] and args[2] then
+                        if args ~= {} and args[1] and args[2] then
                             local victim = game.players[args[1]]
                             local xytable = mysplit(args[2], ",")
-                            if xytable[1] and xytable[2] and xytable[3] then
-                                if (victim) then
+                            if xytable ~= {} and xytable[1] and xytable[2] and xytable[3] then
+                                if (victim and victim.valid) then
                                     if xytable then
                                         local argr = xytable[1]
                                         local argg = xytable[2]
                                         local argb = xytable[3]
-                                        victim.color = {argr, argg, argb, 1.0}
-                                        victim.chat_color = {argr, argg, argb, 1.0}
-                                        smart_print(player, "Color set.")
+                                        if tonumber(xytable[1]) and tonumber(xytable[2]) and tonumber(xytable[3]) then
+                                            victim.color = {argr, argg, argb, 1.0}
+                                            victim.chat_color = {argr, argg, argb, 1.0}
+                                            smart_print(player, "Color set.")
+                                        else
+                                            smart_print(player, "Numbers only.")
+                                        end
                                         return
                                     end
                                 else
@@ -446,7 +407,7 @@ script.on_load(
 
                     if param.player_index then
                         player = game.players[param.player_index]
-                        if player.admin == false then
+                        if player and player.admin == false then
                             is_admin = false
                             smart_print(player, "Admins only.")
                             return
@@ -457,15 +418,12 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            --Lame, but works with mods that change user permissions group
-
-                            if global.active_playtime[victim.index] then
-                                if global.active_playtime[victim.index] > 0 then
-                                    global.active_playtime[victim.index] = 0
-                                    smart_print(player, "Player set to 0.")
-                                    return
+                            if global.active_playtime and global.active_playtime[victim.index] then
+                                global.active_playtime[victim.index] = 0
+                                if player and player.valid and global.defaultgroup then
+                                    global.defaultgroup.add_player(player)
                                 end
-                                smart_print(player, "Player was already reset.")
+                                smart_print(player, "Player set to 0.")
                                 return
                             end
                         end
@@ -495,15 +453,15 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            --Lame, but works
-                            if global.active_playtime[victim.index] then
+                            if global.active_playtime and global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] < (30 * 60 * 60) then
-                                    global.active_playtime[victim.index] = (30 * 60 * 60) + 1
+                                    --global.active_playtime[victim.index] = (30 * 60 * 60) + 1
+                                    if player and player.valid and global.membersgroup then
+                                        global.membersgroup.add_player(player)
+                                    end
                                     smart_print(player, "Player given members status.")
                                     return
                                 end
-                                smart_print(player, "Player already has members status.")
-                                return
                             end
                         end
                     end
@@ -521,7 +479,7 @@ script.on_load(
 
                     if param.player_index then
                         player = game.players[param.player_index]
-                        if player.admin == false then
+                        if player and player.admin == false then
                             is_admin = false
                             smart_print(player, "Admins only.")
                             return
@@ -532,16 +490,14 @@ script.on_load(
                         local victim = game.players[param.parameter]
 
                         if (victim) then
-                            --Lame, but works
                             if global.active_playtime[victim.index] then
                                 if global.active_playtime[victim.index] < (4 * 60 * 60 * 60) then
-                                    global.active_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
-                                    smart_print(player, "Player given regulars status.")
-                                    return
+                                    --global.active_playtime[victim.index] = (4 * 60 * 60 * 60) + 1
+                                    if player and player.valid and global.regularsgroup then
+                                        global.regularsgroup.add_player(player)
+                                        smart_print(player, "Player given regulars status.")
+                                    end
                                 end
-                                smart_print(player, "Player already has regulars status.")
-
-                                return
                             end
                         end
                     end
@@ -562,7 +518,7 @@ script.on_load(
                     if param.player_index then
                         victim = game.players[param.player_index]
 
-                        if victim.admin == false then
+                        if victim and victim.admin == false then
                             is_admin = false
                         else
                             new_pos_x = victim.position.x
@@ -581,7 +537,7 @@ script.on_load(
 
                         if param.parameter then
                             local xytable = mysplit(param.parameter, ",")
-                            if xytable then
+                            if xytable ~= {} and tonumber(xytable[1]) and tonumber(xytable[2]) then
                                 local argx = xytable[1]
                                 local argy = xytable[2]
                                 new_pos_x = argx
@@ -592,16 +548,9 @@ script.on_load(
                             end
                         end
 
-                        if pforce and psurface then
+                        if pforce and psurface and new_pos_x and new_pos_y then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(
-                                victim,
-                                string.format(
-                                    "New spawn point set: %d,%d",
-                                    math.floor(new_pos_x),
-                                    math.floor(new_pos_y)
-                                )
-                            )
+                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                             global.cspawnpos = {new_pos_x, new_pos_y}
                         else
@@ -623,7 +572,7 @@ script.on_load(
 
                     if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim.admin == false then
+                        if victim and victim.admin == false then
                             is_admin = false
                         end
                     end
@@ -634,26 +583,28 @@ script.on_load(
                         local size = 1024
 
                         if param.parameter then
-                            local rsize = tonumber(param.parameter)
+                            if tonumber(param.parameter) then
+                                local rsize = tonumber(param.parameter)
 
-                            --limits
-                            if rsize > 0 then
-                                if rsize < 128 then
-                                    rsize = 128
-                                else
-                                    if rsize > 4096 then
-                                        rsize = 4096
+                                --limits
+                                if rsize > 0 then
+                                    if rsize < 128 then
+                                        rsize = 128
+                                    else
+                                        if rsize > 4096 then
+                                            rsize = 4096
+                                        end
+                                        size = rsize
                                     end
-                                    size = rsize
                                 end
+                            else
+                                smart_print(victim, "Numbers only.")
+                                return
                             end
                         end
 
-                        if psurface and pforce then
-                            pforce.chart(
-                                psurface,
-                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
-                            )
+                        if psurface and pforce and size then
+                            pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
                             local sstr = string.format("%-4.0f", size)
                             smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                         else
@@ -675,7 +626,7 @@ script.on_load(
 
                     if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim.admin == false then
+                        if victim and victim.admin == false then
                             is_admin = false
                         end
                     end
@@ -705,7 +656,7 @@ script.on_load(
 
                     if param.player_index then
                         victim = game.players[param.player_index]
-                        if victim.admin == false then
+                        if victim and victim.admin == false then
                             is_admin = false
                         end
                     end
@@ -719,27 +670,19 @@ script.on_load(
                                 name = game.players[player.index].name
                             }
                             plen = plen + 1
-                            if plen > 1000 then
+                            if plen > 3000 then --Max size
                                 break
                             end
                         end
 
                         table.sort(playtime, sorttime)
 
-                        --Lets limit number of results
+                        --Lets limit number of results shown
                         for ipos, time in pairs(playtime) do
                             if (time) then
                                 if (time.time) then
                                     if ipos > (plen - 20) then
-                                        smart_print(
-                                            victim,
-                                            string.format(
-                                                "%-4d: %-32s Active: %-4.2fm",
-                                                ipos,
-                                                time.name,
-                                                time.time / 60.0 / 60.0
-                                            )
-                                        )
+                                        smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
                                     end
                                 end
                             end
@@ -764,7 +707,7 @@ script.on_load(
                     end
 
                     if (player) then
-                        if (player.admin == false) then
+                        if (player and player.admin == false) then
                             is_admin = false
                         end
                     end
@@ -779,25 +722,25 @@ script.on_load(
                         return
                     end
 
-                    local value = tonumber(param.parameter)
-                    if (value >= 0.1 and value <= 10.0) then
-                        game.speed = value
+                    if tonumber(param.parameter) then
+                        local value = tonumber(param.parameter)
+                        if (value >= 0.1 and value <= 10.0) then
+                            game.speed = value
 
-                        local pforce = game.forces["player"]
+                            local pforce = game.forces["player"]
 
-                        if pforce then
-                            game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                            smart_print(
-                                player,
-                                "Game speed: " ..
-                                    value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
-                            )
-                            message_all("Game speed set to %" .. (game.speed * 100.00))
+                            if pforce then
+                                game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
+                                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier)
+                                message_all("Game speed set to %" .. (game.speed * 100.00))
+                            else
+                                smart_print(player, "Force: Player doesn't seem to exsist.")
+                            end
                         else
-                            smart_print(player, "Force: Player doesn't seem to exsist.")
+                            smart_print(player, "That doesn't seem like a good idea...")
                         end
                     else
-                        smart_print(player, "That doesn't seem like a good idea...")
+                        smart_print(player, "Numbers only.")
                     end
                 end
             )
@@ -822,15 +765,8 @@ script.on_load(
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim) then
-                                local newpos =
-                                    victim.surface.find_non_colliding_position(
-                                    "character",
-                                    victim.position,
-                                    15,
-                                    0.01,
-                                    false
-                                )
+                            if (victim and victim.valid) then
+                                local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
                                 if (newpos) then
                                     player.teleport(newpos, victim.surface)
                                     player.print("Okay.")
@@ -868,29 +804,26 @@ script.on_load(
                             local ypos = "0.0"
 
                             xpos, ypos = str:match("([^,]+),([^,]+)")
-                            local position = {x = xpos, y = ypos}
+                            if tonumber(xpos) and tonumber(ypos) then
+                                local position = {x = xpos, y = ypos}
 
-                            if position then
-                                if position.x and position.y then
-                                    local newpos =
-                                        player.surface.find_non_colliding_position(
-                                        "character",
-                                        position,
-                                        15,
-                                        0.01,
-                                        false
-                                    )
-                                    if (newpos) then
-                                        player.teleport(newpos, player.surface)
-                                        player.print("Okay.")
+                                if position then
+                                    if position.x and position.y then
+                                        local newpos = player.surface.find_non_colliding_position("character", position, 15, 0.01, false)
+                                        if (newpos) then
+                                            player.teleport(newpos, player.surface)
+                                            player.print("Okay.")
+                                        else
+                                            player.print("Area full.")
+                                        end
                                     else
-                                        player.print("Area full.")
+                                        player.print("invalid x/y.")
                                     end
-                                else
-                                    player.print("invalid x/y.")
                                 end
+                                return
+                            else
+                                player.print("Numbers only.")
                             end
-                            return
                         end
                         player.print("Error...")
                     end
@@ -917,15 +850,8 @@ script.on_load(
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim) then
-                                local newpos =
-                                    player.surface.find_non_colliding_position(
-                                    "character",
-                                    player.position,
-                                    15,
-                                    0.01,
-                                    false
-                                )
+                            if (victim and victim.valid) then
+                                local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
                                 if (newpos) then
                                     victim.teleport(newpos, player.surface)
                                     player.print("Okay.")
@@ -978,14 +904,7 @@ script.on_event(
             if player and player.valid and area then
                 set_player_active(player)
                 if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
-                    local msg =
-                        player.name ..
-                        " is using the deconstruction planner: " ..
-                            math.floor(area.left_top.x) ..
-                                "," ..
-                                    math.floor(area.left_top.y) ..
-                                        " to " ..
-                                            math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+                    local msg = player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
                     if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                         message_all(msg)
                     end
@@ -1023,7 +942,6 @@ script.on_event(
             elseif is_trusted(player) then
                 global.membersgroup.add_player(player)
             end
-        --end
         end
     end
 )
@@ -1047,19 +965,11 @@ script.on_event(
         local player = game.players[event.player_index]
         local created_entity = event.created_entity
 
-        if
-            (global.last_speaker_warning and
-                game.tick - global.last_speaker_warning >= 300)
-         then
+        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
-                        message_all(
-                            player.name ..
-                                " placed speaker: " ..
-                                    math.floor(created_entity.position.x) ..
-                                        "," .. math.floor(created_entity.position.y)
-                        )
+                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
                         global.last_speaker_warning = game.tick
                     end
                 end
@@ -1178,23 +1088,21 @@ script.on_event(
 script.on_event(
     defines.events.on_pre_player_died,
     function(event)
-        if (not global.corpselist) then
-            global.corpselist = {tag = {}, tick = {}}
-        end
-
         local player = game.players[event.player_index]
-        local centerPosition = player.position
-        local label =
-            "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
-        local chartTag = {position = centerPosition, icon = nil, text = label}
-        local qtag = player.force.add_chart_tag(player.surface, chartTag)
+        if player and player.valid and player.character then
+            local centerPosition = player.position
+            local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+            local chartTag = {position = centerPosition, icon = nil, text = label}
+            local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-        table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+            create_myglobals()
+            create_player_globals(player)
 
-        --Log to discord
-        message_alld(
-            player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
-        )
+            table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+
+            --Log to discord
+            message_alld(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
+        end
     end
 )
 
@@ -1205,20 +1113,20 @@ script.on_event(
         local tech = event.research
         local wscript = event.by_script
 
-        --Disable mining/rotating once we get far enough along.. do this fairly late
-        if tech.name == "logistics-3" and wscript == false then
-            if global.defaultgroup then
-                message_all(
-                    "Automatically disabling rotating and mining/deleting objects for new users... due to technology level."
-                )
-                global.defaultgroup.set_allows_action(defines.input_action.begin_mining, false)
-                global.defaultgroup.set_allows_action(defines.input_action.rotate_entity, false)
+        if tech then
+            --Disable mining/rotating once we get far enough along.. do this fairly late
+            if tech.name == "logistics-3" and wscript == false then
+                if global.defaultgroup then
+                    message_all("Automatically disabling rotating and mining/deleting objects for new users... due to technology level.")
+                    global.defaultgroup.set_allows_action(defines.input_action.begin_mining, false)
+                    global.defaultgroup.set_allows_action(defines.input_action.rotate_entity, false)
+                end
             end
-        end
 
-        --Log to discord
-        if wscript == false then
-            message_alld("Research " .. tech.name .. " completed.")
+            --Log to discord
+            if wscript == false then
+                message_alld("Research " .. tech.name .. " completed.")
+            end
         end
     end
 )
@@ -1245,8 +1153,11 @@ script.on_nth_tick(
                         corpse.tag.destroy()
                     end
                     toremove = corpse
+                    break
                 end
             end
+        else
+            create_myglobals()
         end
         if (toremove) then
             toremove.tag = nil
@@ -1267,7 +1178,7 @@ script.on_nth_tick(
             local xpos = 0
             local ypos = 0
 
-            if global.cspawnpos then
+            if global.cspawnpos and global.cspawnpos[1] and global.cspawnpos[2] and tonumber(global.cspawnpos[1]) and tonumber(global.cspawnpos[2])  then
                 xpos = global.cspawnpos[1]
                 ypos = global.cspawnpos[2]
             end
@@ -1296,7 +1207,7 @@ script.on_nth_tick(
                             global.active_playtime[player.index] = global.active_playtime[player.index] + 7200 --Same as loop time
                         else
                             --INIT
-                            global.active_playtime[player.index] = 7200 --Same as loop time
+                            global.active_playtime[player.index] = 0
                         end
                     end
                 else
@@ -1315,7 +1226,7 @@ script.on_nth_tick(
         --Repair discord info
         for _, player in pairs(game.connected_players) do
             --Repair discord info
-            if player.gui.top.discord then
+            if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
                 player.gui.top.discord.text = "discord.gg/Ps2jnm7"
             end
         end
