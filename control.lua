@@ -1,4 +1,4 @@
---v0462-3-21-2020_2-2-AM
+--v0462-3-21-2020_6-56-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -259,6 +259,7 @@ local function get_permgroup()
                 else
                     --Fix nil group (bugged mods)
                     global.defaultgroup.add_player(player)
+                    message_alld ( player.name .. " has nil permissions.")
                 end
             end
         end
