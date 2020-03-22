@@ -1130,7 +1130,7 @@ script.on_nth_tick(
     function(event)
         --Check permissions / player time
         get_permgroup()
-    }
+    end
 )
 
 --Looping timer, 2 minutes
