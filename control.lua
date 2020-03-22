@@ -1,4 +1,4 @@
---v0462-3-21-2020_6-56-PM
+--v0462-3-22-2020_2-55-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -236,10 +236,11 @@ local function get_permgroup()
             --Handle nil permissions, for mod compatability
             if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                 if player.permission_group then
+
                     if (player.admin and player.permission_group.name ~= global.adminsgroup.name) then
                         global.adminsgroup.add_player(player)
                         message_all(player.name .. " moved to Admins group.")
-                    elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60)) then
+                    elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
                         if (player.permission_group.name ~= global.regularsgroup.name) then
                             global.regularsgroup.add_player(player)
                             message_all(player.name .. " is now a regular!")
@@ -247,7 +248,7 @@ local function get_permgroup()
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
                         end
-                    elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60)) then
+                    elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
                         if (player.permission_group.name ~= global.membersgroup.name) then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
@@ -256,6 +257,7 @@ local function get_permgroup()
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
                         end
                     end
+
                 else
                     --Fix nil group (bugged mods)
                     global.defaultgroup.add_player(player)
