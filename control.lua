@@ -1124,14 +1124,20 @@ script.on_event(
     end
 )
 
+--Looping timer, 15 seconds
+script.on_nth_tick(
+    900,
+    function(event)
+        --Check permissions / player time
+        get_permgroup()
+    }
+)
+
 --Looping timer, 2 minutes
 script.on_nth_tick(
     7200,
     function(event)
         local toremove
-
-        --Check permissions / player time
-        get_permgroup()
 
         --Remove old corpse tags
         local max = 0
