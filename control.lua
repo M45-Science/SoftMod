@@ -1,4 +1,4 @@
---v0462-3-22-2020_2-55-AM
+--v0463-3-23-2020_8-33-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -244,17 +244,19 @@ local function get_permgroup()
                         if (player.permission_group.name ~= global.regularsgroup.name) then
                             global.regularsgroup.add_player(player)
                             message_all(player.name .. " is now a regular!")
-                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that you have been promoted to our regulars group![/color]")
-                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Regulars- role, and can get access to regulars-only Factorio servers and channels.[/color]")
-                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]")
                         end
                     elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
                         if (player.permission_group.name ~= global.membersgroup.name) then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
-                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been actively playing enough, that the restrictions on your character have been lifted.[/color]")
-                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our -Discord: Members- role![/color]")
-                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Check out our Discord server, the link can be copied from the text in the top-left of your screen (select with mouse, control-c).[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our 'Members' Discord role![/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                            player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]")
                         end
                     end
 
@@ -326,10 +328,10 @@ script.on_load(
                             end
 
                             print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
-                            smart_print(player, "Access code sent, check discord!")
+                            smart_print(player, "Sending registration code...")
                             return
                         end
-                        smart_print(player, "You need to specify an access code!")
+                        smart_print(player, "You need to specify an registration code!")
                         return
                     end
                     smart_print(nil, "I don't think the console needs to use this command...")
@@ -765,7 +767,7 @@ script.on_load(
                                     player.teleport(newpos, victim.surface)
                                     player.print("Okay.")
                                 else
-                                    player.print("Area full.")
+                                    player.print("Area appears to be full.")
                                 end
                                 return
                             end
@@ -808,7 +810,7 @@ script.on_load(
                                             player.teleport(newpos, player.surface)
                                             player.print("Okay.")
                                         else
-                                            player.print("Area full.")
+                                            player.print("Area appears to be full.")
                                         end
                                     else
                                         player.print("invalid x/y.")
@@ -898,7 +900,7 @@ script.on_event(
             if player and player.valid and area then
                 set_player_active(player)
                 if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
-                    local msg = player.name .. " is using the deconstruction planner: " .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. " to " .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y)
+                    local msg = player.name .. " is using the deconstruction planner from [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                     if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                         message_all(msg)
                     end
@@ -924,7 +926,7 @@ script.on_event(
         if not player.gui.top.discord then
             player.gui.top.add {type = "textfield", name = "discord"}
             player.gui.top.discord.text = "discord.gg/Ps2jnm7"
-            player.gui.top.discord.tooltip = "select with mouse, and control-c to copy!"
+            player.gui.top.discord.tooltip = "Select with mouse and press control-c to copy!"
         end
 
         --Moved here to reduce on_tick
@@ -964,7 +966,7 @@ script.on_event(
             if player and created_entity then
                 if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                     if created_entity.name == "programmable-speaker" then
-                        message_all(player.name .. " placed speaker: " .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y))
+                        message_all(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                         global.last_speaker_warning = game.tick
                     end
                 end
@@ -980,7 +982,7 @@ script.on_event(
         local player = game.players[event.player_index]
         local obj = event.entity
 
-        console_print(player.name .. " mined " .. obj.name .. " at " .. obj.position.x .. "," .. obj.position.y)
+        console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
         set_player_active(player)
     end
@@ -1086,7 +1088,7 @@ script.on_event(
         local player = game.players[event.player_index]
         if player and player.valid and player.character then
             local centerPosition = player.position
-            local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y)
+            local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
             local chartTag = {position = centerPosition, icon = nil, text = label}
             local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
@@ -1096,7 +1098,7 @@ script.on_event(
             table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
             --Log to discord
-            message_alld(player.name .. " died at " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y))
+            message_all(player.name .. " died at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
         end
     end
 )
@@ -1112,7 +1114,7 @@ script.on_event(
             --Disable mining/rotating once we get far enough along.. do this fairly late
             if tech.name == "logistics-3" and wscript == false then
                 if global.defaultgroup then
-                    message_all("Automatically disabling rotating and mining/deleting objects for new users... due to technology level.")
+                    message_all("[color=cyan]Automatically disabling rotating and mining/deleting objects for new users... due to current technology level.[/color]")
                     global.defaultgroup.set_allows_action(defines.input_action.begin_mining, false)
                     global.defaultgroup.set_allows_action(defines.input_action.rotate_entity, false)
                 end
