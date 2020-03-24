@@ -1,4 +1,4 @@
---v0465-3-24-2020_11-25-AM
+--v0465-3-24-2020_11-58-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -389,13 +389,17 @@ local function deleteChunks(surface, coordinates, radius)
             count_keep = count_keep + 1
         end
     end
+    if count_keep == 0 then
+        surface.clear(true)
+    end
+
     return {adjacent = count_adjacent, deleted = count_deleted, kept = count_keep}
 end
 
 local function clean_surfaces()
     message_all("Cleaning map, game will freeze for some time...")
 
-    local radius = 2
+    local radius = 70
     local keep_paving = true
 
     -- Get list of possible paving
@@ -441,6 +445,7 @@ local function clean_surfaces()
                     list.coordinates[position.x][position.y] = 1
                 end
                 -- Second Pass
+
                 local result = deleteChunks(surface, list.coordinates, radius)
                 -- Report results to all players
                 log({"DeleteEmptyChunks_text_starting", list.total, surface.name, list.total - list.uncharted})
