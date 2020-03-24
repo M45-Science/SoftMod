@@ -399,7 +399,7 @@ end
 local function clean_surfaces()
     message_all("Cleaning map, game will freeze for some time...")
 
-    local radius = 512
+    local radius = 1024
     local keep_paving = true
 
     -- Get list of possible paving
