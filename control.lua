@@ -397,7 +397,7 @@ local function deleteChunks(surface, coordinates, radius)
 end
 
 local function clean_surfaces()
-    message_all("Cleaning map, game will freeze for some time...")
+    --message_all("Cleaning map...")
 
     local radius = 20
     local keep_paving = true
@@ -448,31 +448,31 @@ local function clean_surfaces()
 
                 local result = deleteChunks(surface, list.coordinates, radius)
                 -- Report results to all players
-                log({"DeleteEmptyChunks_text_starting", list.total, surface.name, list.total - list.uncharted})
+                --log({"DeleteEmptyChunks_text_starting", list.total, surface.name, list.total - list.uncharted})
                 if result.kept > 0 then
                     if list.occupied > 0 then
                         if list.paved > 0 then
                             if result.adjacent > 0 then
-                                log({"DeleteEmptyChunks_text_keep_epa", result.kept, list.occupied, list.paved, result.adjacent})
+                                --log({"DeleteEmptyChunks_text_keep_epa", result.kept, list.occupied, list.paved, result.adjacent})
                             else
-                                log({"DeleteEmptyChunks_text_keep_ep", result.kept, list.occupied, list.paved})
+                                --log({"DeleteEmptyChunks_text_keep_ep", result.kept, list.occupied, list.paved})
                             end
                         else
                             if result.adjacent > 0 then
-                                log({"DeleteEmptyChunks_text_keep_ea", result.kept, list.occupied, result.adjacent})
+                                --log({"DeleteEmptyChunks_text_keep_ea", result.kept, list.occupied, result.adjacent})
                             else
-                                log({"DeleteEmptyChunks_text_keep_e", result.kept, list.occupied})
+                                --log({"DeleteEmptyChunks_text_keep_e", result.kept, list.occupied})
                             end
                         end
                     elseif list.paved > 0 then
                         if result.adjacent > 0 then
-                            log({"DeleteEmptyChunks_text_keep_pa", result.kept, list.paved, result.adjacent})
+                            --log({"DeleteEmptyChunks_text_keep_pa", result.kept, list.paved, result.adjacent})
                         else
-                            log({"DeleteEmptyChunks_text_keep_p", result.kept, list.paved})
+                            --log({"DeleteEmptyChunks_text_keep_p", result.kept, list.paved})
                         end
                     end
                 end
-                log({"DeleteEmptyChunks_text_delete", result.deleted})
+                --log({"DeleteEmptyChunks_text_delete", result.deleted})
                 if game.active_mods["rso-mod"] then
                     remote.call("RSO", "disableStartingArea")
                     remote.call("RSO", "resetGeneration", surface)
@@ -481,7 +481,7 @@ local function clean_surfaces()
         end
     end
 
-    message_all("Cleaning complete, game will take time to recover.")
+    message_all("Map cleaned.")
 end
 
 --Create user groups if they don't exsist, and create global links to them
