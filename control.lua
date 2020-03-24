@@ -399,7 +399,7 @@ end
 local function clean_surfaces()
     message_all("Cleaning map, game will freeze for some time...")
 
-    local radius = 1024
+    local radius = 50
     local keep_paving = true
 
     -- Get list of possible paving
@@ -434,7 +434,7 @@ local function clean_surfaces()
             --log({'DeleteEmptyChunks_text_mod_nosurface', target_surface, table_to_csv(surface_list)})
         else
             -- Perform chunk deletion on specified surface
-            if surface ~= nil then
+            if surface ~= nil and surface.name ~= "nauvis" then
                 -- First Pass
                 local list = getKeepList(surface, playerForceNames, radius == 0 and 1 or 0, paving)
                 -- Save players from the void
