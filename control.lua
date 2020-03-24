@@ -1,8 +1,483 @@
---v0463-3-23-2020_8-33-AM
+--v0464-3-24-2020_10-41-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
+
+--safe console print--
+local function console_print(message)
+    print("~" .. message)
+end
+
+--smart console print--
+local function smart_print(player, message)
+    if player then
+        player.print(message)
+    else
+        rcon.print("~" .. message)
+    end
+end
+
+--Global messages--
+local function message_all(message)
+    for _, player in pairs(game.connected_players) do
+        player.print(message)
+    end
+    print("[MSG] " .. message)
+end
+
+--Global messages (players only)--
+local function message_allp(message)
+    for _, player in pairs(game.connected_players) do
+        player.print(message)
+    end
+end
+
+--Global messages-- (discord only)
+local function message_alld(message)
+    print("[MSG] " .. message)
+end
+
+--Sort players--
+local function sorttime(a, b)
+    if (not a or not b) then
+        return false
+    end
+
+    if (not a.time or not b.time) then
+        return false
+    end
+
+    if (a.time < b.time) then
+        return true
+    elseif (a.time > b.time) then
+        return false
+    else
+        return nil
+    end
+end
+
+local function getKeepList(surface, playerForceNames, overlap, pavers)
+    local count_entities = surface.count_entities_filtered
+    local count_tiles = surface.count_tiles_filtered
+    local count_total_chunks = 0
+    local count_uncharted = 0
+    local count_with_entities = 0
+    local count_with_paving = 0
+    local keepcords = {}
+    local chunks = surface.get_chunks()
+    for chunk in (chunks) do
+        local chunk_occupied = false
+        local chunk_charted = false
+        local chunk_paved = false
+        local chunkArea = {{chunk.x * 32 - overlap, chunk.y * 32 - overlap}, {chunk.x * 32 + 32 + overlap, chunk.y * 32 + 32 + overlap}}
+        for _, forceName in pairs(playerForceNames) do
+            if game.forces[forceName].is_chunk_charted(surface, chunk) then
+                chunk_charted = true
+                break
+            end
+        end
+        if chunk_charted then
+            for _, forceName in pairs(playerForceNames) do
+                if count_entities {area = chunkArea, force = forceName, limit = 1} ~= 0 then
+                    chunk_occupied = true
+                    break
+                end
+            end
+            if not chunk_occupied and #pavers > 0 then
+                local pavedArea = {{chunk.x * 32, chunk.y * 32}, {chunk.x * 32 + 32, chunk.y * 32 + 32}}
+                if count_tiles {area = pavedArea, name = pavers, limit = 1} ~= 0 then
+                    chunk_paved = true
+                end
+            end
+            if chunk_occupied or chunk_paved then
+                if keepcords[chunk.x] == nil then
+                    keepcords[chunk.x] = {}
+                end
+                keepcords[chunk.x][chunk.y] = 1
+                if chunk_occupied then
+                    count_with_entities = count_with_entities + 1
+                elseif chunk_paved then
+                    count_with_paving = count_with_paving + 1
+                end
+            end
+        else
+            count_uncharted = count_uncharted + 1
+        end
+        count_total_chunks = count_total_chunks + 1
+    end
+    -- Compatibility with Mining Drones, Mining_Drones_0.3.2/script/mining_drone.lua:24
+    -- Of course it just has to be right on a chunk boundry.
+    if game.active_mods["Mining_Drones"] and surface.name == "nauvis" then
+        local x = 1000000 / 32
+        local y = 1000000 / 32
+        if keepcords[x - 1] == nil then
+            keepcords[x - 1] = {}
+        end
+        keepcords[x - 1][y - 1] = 1
+        keepcords[x - 1][y] = 1
+        if keepcords[x] == nil then
+            keepcords[x] = {}
+        end
+        keepcords[x][y - 1] = 1
+        keepcords[x][y] = 1
+    end
+    return {total = count_total_chunks, occupied = count_with_entities, paved = count_with_paving, coordinates = keepcords, uncharted = count_uncharted}
+end
+
+local function getPavingTiles()
+    local paving = {}
+    local ground = {}
+    -- Ignored tileset for "Base mod" as of 0.17.66
+    -- Paving: {"concrete", "hazard-concrete-left", "hazard-concrete-right", "refined-concrete", "refined-hazard-concrete-left", "refined-hazard-concrete-right", "stone-path"}
+    local Base_tiles = {
+        "deepwater",
+        "deepwater-green",
+        "dirt-1",
+        "dirt-2",
+        "dirt-3",
+        "dirt-4",
+        "dirt-5",
+        "dirt-6",
+        "dirt-7",
+        "dry-dirt",
+        "grass-1",
+        "grass-2",
+        "grass-3",
+        "grass-4",
+        "lab-dark-1",
+        "lab-dark-2",
+        "lab-white",
+        "out-of-map",
+        "red-desert-0",
+        "red-desert-1",
+        "red-desert-2",
+        "red-desert-3",
+        "sand-1",
+        "sand-2",
+        "sand-3",
+        "tutorial-grid",
+        "water",
+        "water-green",
+        "landfill",
+        "water-mud",
+        "water-shallow"
+    }
+    for _, v in ipairs(Base_tiles) do
+        table.insert(ground, v)
+    end
+
+    -- Ignored tileset for "Alien Biome" exported from 0.4.15
+    -- Paving: none
+    local AlienBiomes_tiles = {
+        "frozen-snow-0",
+        "frozen-snow-1",
+        "frozen-snow-2",
+        "frozen-snow-3",
+        "frozen-snow-4",
+        "frozen-snow-5",
+        "frozen-snow-6",
+        "frozen-snow-7",
+        "frozen-snow-8",
+        "frozen-snow-9",
+        "mineral-aubergine-dirt-1",
+        "mineral-aubergine-dirt-2",
+        "mineral-aubergine-dirt-3",
+        "mineral-aubergine-dirt-4",
+        "mineral-aubergine-dirt-5",
+        "mineral-aubergine-dirt-6",
+        "mineral-aubergine-sand-1",
+        "mineral-aubergine-sand-2",
+        "mineral-aubergine-sand-3",
+        "mineral-beige-dirt-1",
+        "mineral-beige-dirt-2",
+        "mineral-beige-dirt-3",
+        "mineral-beige-dirt-4",
+        "mineral-beige-dirt-5",
+        "mineral-beige-dirt-6",
+        "mineral-beige-sand-1",
+        "mineral-beige-sand-2",
+        "mineral-beige-sand-3",
+        "mineral-black-dirt-1",
+        "mineral-black-dirt-2",
+        "mineral-black-dirt-3",
+        "mineral-black-dirt-4",
+        "mineral-black-dirt-5",
+        "mineral-black-dirt-6",
+        "mineral-black-sand-1",
+        "mineral-black-sand-2",
+        "mineral-black-sand-3",
+        "mineral-brown-dirt-1",
+        "mineral-brown-dirt-2",
+        "mineral-brown-dirt-3",
+        "mineral-brown-dirt-4",
+        "mineral-brown-dirt-5",
+        "mineral-brown-dirt-6",
+        "mineral-brown-sand-1",
+        "mineral-brown-sand-2",
+        "mineral-brown-sand-3",
+        "mineral-cream-dirt-1",
+        "mineral-cream-dirt-2",
+        "mineral-cream-dirt-3",
+        "mineral-cream-dirt-4",
+        "mineral-cream-dirt-5",
+        "mineral-cream-dirt-6",
+        "mineral-cream-sand-1",
+        "mineral-cream-sand-2",
+        "mineral-cream-sand-3",
+        "mineral-dustyrose-dirt-1",
+        "mineral-dustyrose-dirt-2",
+        "mineral-dustyrose-dirt-3",
+        "mineral-dustyrose-dirt-4",
+        "mineral-dustyrose-dirt-5",
+        "mineral-dustyrose-dirt-6",
+        "mineral-dustyrose-sand-1",
+        "mineral-dustyrose-sand-2",
+        "mineral-dustyrose-sand-3",
+        "mineral-grey-dirt-1",
+        "mineral-grey-dirt-2",
+        "mineral-grey-dirt-3",
+        "mineral-grey-dirt-4",
+        "mineral-grey-dirt-5",
+        "mineral-grey-dirt-6",
+        "mineral-grey-sand-1",
+        "mineral-grey-sand-2",
+        "mineral-grey-sand-3",
+        "mineral-purple-dirt-1",
+        "mineral-purple-dirt-2",
+        "mineral-purple-dirt-3",
+        "mineral-purple-dirt-4",
+        "mineral-purple-dirt-5",
+        "mineral-purple-dirt-6",
+        "mineral-purple-sand-1",
+        "mineral-purple-sand-2",
+        "mineral-purple-sand-3",
+        "mineral-red-dirt-1",
+        "mineral-red-dirt-2",
+        "mineral-red-dirt-3",
+        "mineral-red-dirt-4",
+        "mineral-red-dirt-5",
+        "mineral-red-dirt-6",
+        "mineral-red-sand-1",
+        "mineral-red-sand-2",
+        "mineral-red-sand-3",
+        "mineral-tan-dirt-1",
+        "mineral-tan-dirt-2",
+        "mineral-tan-dirt-3",
+        "mineral-tan-dirt-4",
+        "mineral-tan-dirt-5",
+        "mineral-tan-dirt-6",
+        "mineral-tan-sand-1",
+        "mineral-tan-sand-2",
+        "mineral-tan-sand-3",
+        "mineral-violet-dirt-1",
+        "mineral-violet-dirt-2",
+        "mineral-violet-dirt-3",
+        "mineral-violet-dirt-4",
+        "mineral-violet-dirt-5",
+        "mineral-violet-dirt-6",
+        "mineral-violet-sand-1",
+        "mineral-violet-sand-2",
+        "mineral-violet-sand-3",
+        "mineral-white-dirt-1",
+        "mineral-white-dirt-2",
+        "mineral-white-dirt-3",
+        "mineral-white-dirt-4",
+        "mineral-white-dirt-5",
+        "mineral-white-dirt-6",
+        "mineral-white-sand-1",
+        "mineral-white-sand-2",
+        "mineral-white-sand-3",
+        "vegetation-blue-grass-1",
+        "vegetation-blue-grass-2",
+        "vegetation-green-grass-1",
+        "vegetation-green-grass-2",
+        "vegetation-green-grass-3",
+        "vegetation-green-grass-4",
+        "vegetation-mauve-grass-1",
+        "vegetation-mauve-grass-2",
+        "vegetation-olive-grass-1",
+        "vegetation-olive-grass-2",
+        "vegetation-orange-grass-1",
+        "vegetation-orange-grass-2",
+        "vegetation-purple-grass-1",
+        "vegetation-purple-grass-2",
+        "vegetation-red-grass-1",
+        "vegetation-red-grass-2",
+        "vegetation-turquoise-grass-1",
+        "vegetation-turquoise-grass-2",
+        "vegetation-violet-grass-1",
+        "vegetation-violet-grass-2",
+        "vegetation-yellow-grass-1",
+        "vegetation-yellow-grass-2",
+        "volcanic-blue-heat-1",
+        "volcanic-blue-heat-2",
+        "volcanic-blue-heat-3",
+        "volcanic-blue-heat-4",
+        "volcanic-green-heat-1",
+        "volcanic-green-heat-2",
+        "volcanic-green-heat-3",
+        "volcanic-green-heat-4",
+        "volcanic-orange-heat-1",
+        "volcanic-orange-heat-2",
+        "volcanic-orange-heat-3",
+        "volcanic-orange-heat-4",
+        "volcanic-purple-heat-1",
+        "volcanic-purple-heat-2",
+        "volcanic-purple-heat-3",
+        "volcanic-purple-heat-4"
+    }
+    if game.active_mods["alien-biomes"] then
+        for _, v in ipairs(AlienBiomes_tiles) do
+            table.insert(ground, v)
+        end
+    end
+
+    -- Ignored tileset for "Space Exploration" exported from 0.1.137
+    -- Paving:  {"se-space-platform-plating", "se-space-platform-scaffold", "se-spaceship-floor"}
+    local SpaceExploration_tiles = {"se-asteroid", "se-regolith", "se-space"}
+    if game.active_mods["space-exploration"] then
+        for _, v in ipairs(SpaceExploration_tiles) do
+            table.insert(ground, v)
+        end
+    end
+
+    for _, t in pairs(game.tile_prototypes) do
+        local found = false
+        for _, s in pairs(ground) do
+            if t.name == s then
+                found = true
+                break
+            end
+        end
+        if not found then
+            table.insert(paving, t.name)
+        end
+    end
+    return paving
+end
+
+local function deleteChunks(surface, coordinates, radius)
+    local count_adjacent = 0
+    local count_keep = 0
+    local count_deleted = 0
+    local chunks = surface.get_chunks()
+    for chunk in (chunks) do
+        local mustClean = true
+        if coordinates[chunk.x] ~= nil and coordinates[chunk.x][chunk.y] ~= nil then
+            mustClean = false
+        elseif radius > 0 then
+            for i, x in pairs(coordinates) do
+                if chunk.x <= i + radius and chunk.x >= i - radius then
+                    for j, y in pairs(x) do
+                        if chunk.y <= j + radius and chunk.y >= j - radius then
+                            mustClean = false
+                            count_adjacent = count_adjacent + 1
+                            break
+                        end
+                    end
+                    if not mustClean then
+                        break
+                    end
+                end
+            end
+        end
+        if mustClean then
+            surface.delete_chunk({chunk.x, chunk.y})
+            count_deleted = count_deleted + 1
+        else
+            count_keep = count_keep + 1
+        end
+    end
+    return {adjacent = count_adjacent, deleted = count_deleted, kept = count_keep}
+end
+
+local function clean_surfaces()
+    message_all("Cleaning map, game will freeze for some time...")
+    
+    local radius = 2
+    local keep_paving = true
+
+    -- Get list of possible paving
+    local paving = {}
+    local paving_base = {
+        "concrete",
+        "hazard-concrete-left",
+        "hazard-concrete-right",
+        "refined-concrete",
+        "refined-hazard-concrete-left",
+        "refined-hazard-concrete-right",
+        "stone-path"
+    }
+    if keep_paving then
+        paving = getPavingTiles()
+    end
+
+    -- Get list of all player positions and forces
+    local playerForceNames = {}
+    local playerPositions = {}
+    for _, player in pairs(game.players) do
+        table.insert(playerForceNames, player.force.name)
+        table.insert(playerPositions, {x = math.floor(player.position.x / 32), y = math.floor(player.position.y / 32)})
+    end
+
+    -- Verify surface exists
+    for _, candidate in pairs(game.surfaces) do
+        local surface = candidate
+
+        -- Let the players know what is happening
+        if surface == nil then
+            --log({'DeleteEmptyChunks_text_mod_nosurface', target_surface, table_to_csv(surface_list)})
+        else
+            -- Perform chunk deletion on specified surface
+            if surface ~= nil then
+                -- First Pass
+                local list = getKeepList(surface, playerForceNames, radius == 0 and 1 or 0, paving)
+                -- Save players from the void
+                for _, position in pairs(playerPositions) do
+                    if list.coordinates[position.x] == nil then
+                        list.coordinates[position.x] = {}
+                    end
+                    list.coordinates[position.x][position.y] = 1
+                end
+                -- Second Pass
+                local result = deleteChunks(surface, list.coordinates, radius)
+                -- Report results to all players
+                log({"DeleteEmptyChunks_text_starting", list.total, surface.name, list.total - list.uncharted})
+                if result.kept > 0 then
+                    if list.occupied > 0 then
+                        if list.paved > 0 then
+                            if result.adjacent > 0 then
+                                log({"DeleteEmptyChunks_text_keep_epa", result.kept, list.occupied, list.paved, result.adjacent})
+                            else
+                                log({"DeleteEmptyChunks_text_keep_ep", result.kept, list.occupied, list.paved})
+                            end
+                        else
+                            if result.adjacent > 0 then
+                                log({"DeleteEmptyChunks_text_keep_ea", result.kept, list.occupied, result.adjacent})
+                            else
+                                log({"DeleteEmptyChunks_text_keep_e", result.kept, list.occupied})
+                            end
+                        end
+                    elseif list.paved > 0 then
+                        if result.adjacent > 0 then
+                            log({"DeleteEmptyChunks_text_keep_pa", result.kept, list.paved, result.adjacent})
+                        else
+                            log({"DeleteEmptyChunks_text_keep_p", result.kept, list.paved})
+                        end
+                    end
+                end
+                log({"DeleteEmptyChunks_text_delete", result.deleted})
+                if game.active_mods["rso-mod"] then
+                    remote.call("RSO", "disableStartingArea")
+                    remote.call("RSO", "resetGeneration", surface)
+                end
+            end
+        end
+    end
+
+    message_all("Cleaning complete, game will take time to recover.")
+end
 
 --Create user groups if they don't exsist, and create global links to them
 local function create_groups()
@@ -175,59 +650,6 @@ local function is_trusted(victim)
     return false
 end
 
---safe console print--
-local function console_print(message)
-    print("~" .. message)
-end
-
---smart console print--
-local function smart_print(player, message)
-    if player then
-        player.print(message)
-    else
-        rcon.print("~" .. message)
-    end
-end
-
---Global messages--
-local function message_all(message)
-    for _, player in pairs(game.connected_players) do
-        player.print(message)
-    end
-    print("[MSG] " .. message)
-end
-
---Global messages (players only)--
-local function message_allp(message)
-    for _, player in pairs(game.connected_players) do
-        player.print(message)
-    end
-end
-
---Global messages-- (discord only)
-local function message_alld(message)
-    print("[MSG] " .. message)
-end
-
---Sort players--
-local function sorttime(a, b)
-    if (not a or not b) then
-        return false
-    end
-
-    if (not a.time or not b.time) then
-        return false
-    end
-
-    if (a.time < b.time) then
-        return true
-    elseif (a.time > b.time) then
-        return false
-    else
-        return nil
-    end
-end
-
 --Auto permisisons--
 local function get_permgroup()
     --Cleaned up 1-2020
@@ -236,7 +658,6 @@ local function get_permgroup()
             --Handle nil permissions, for mod compatability
             if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                 if player.permission_group then
-
                     if (player.admin and player.permission_group.name ~= global.adminsgroup.name) then
                         global.adminsgroup.add_player(player)
                         message_all(player.name .. " moved to Admins group.")
@@ -259,11 +680,10 @@ local function get_permgroup()
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]")
                         end
                     end
-
                 else
                     --Fix nil group (bugged mods)
                     global.defaultgroup.add_player(player)
-                    message_alld ( player.name .. " has nil permissions.")
+                    message_alld(player.name .. " has nil permissions.")
                 end
             end
         end
@@ -305,6 +725,25 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            --Clean Surfaces--from Delete Empty Chunks
+            commands.add_command(
+                "clean",
+                "<n/a>",
+                function(param)
+                    local player
+
+                    if param.player_index then
+                        player = game.players[param.player_index]
+                        if player and player.admin == false then
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    clean_surfaces()
+                end
+            )
+
             --register command
             commands.add_command(
                 "register",
