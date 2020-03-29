@@ -1,4 +1,4 @@
---v0465-3-24-2020_11-58-AM
+--v0465-3-29-2020_3-39-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -396,10 +396,9 @@ local function deleteChunks(surface, coordinates, radius)
     return {adjacent = count_adjacent, deleted = count_deleted, kept = count_keep}
 end
 
-local function clean_surfaces()
+local function clean_surfaces(radius)
     --message_all("Cleaning map...")
 
-    local radius = 20
     local keep_paving = true
 
     -- Get list of possible paving
@@ -733,7 +732,7 @@ script.on_load(
             --Clean Surfaces--from Delete Empty Chunks
             commands.add_command(
                 "clean",
-                "<n/a>",
+                "<except radius>",
                 function(param)
                     local player
 
@@ -745,8 +744,12 @@ script.on_load(
                         end
                     end
 
-                    if (param.parameter and param.parameter == "confirm") then
-                        clean_surfaces()
+                    if (param.parameter and tonumber(param.parameter) ) then
+                        local radi = tonumber(param.parameter)
+
+                        if ( radi > 0 and radi < 1024 ) then
+                            clean_surfaces(radi)
+                        end
                     end
                 end
             )
