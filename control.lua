@@ -433,7 +433,7 @@ local function clean_surfaces(radius)
             --log({'DeleteEmptyChunks_text_mod_nosurface', target_surface, table_to_csv(surface_list)})
         else
             -- Perform chunk deletion on specified surface
-            if surface ~= nil and surface.name ~= "nauvis" then
+            if surface ~= nil then
                 -- First Pass
                 local list = getKeepList(surface, playerForceNames, radius == 0 and 1 or 0, paving)
                 -- Save players from the void
