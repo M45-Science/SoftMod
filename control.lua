@@ -1,4 +1,4 @@
---v0465-3-29-2020_3-39-AM
+--v0466-4-14-2020_11-26-AM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -675,7 +675,7 @@ local function get_permgroup()
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]")
                         end
                     elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
-                        if (player.permission_group.name ~= global.membersgroup.name) then
+                        if (player.permission_group.name ~= global.membersgroup.name and player.permission_group.name ~= global.regularsgroup.name ) then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
