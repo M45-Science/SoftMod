@@ -675,7 +675,7 @@ local function get_permgroup()
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]")
                         end
                     elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
-                        if (player.permission_group.name ~= global.membersgroup.name and player.permission_group.name ~= global.regularsgroup.name ) then
+                        if (player.permission_group.name ~= global.membersgroup.name and player.permission_group.name ~= global.regularsgroup.name) then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
                             player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
@@ -744,10 +744,10 @@ script.on_load(
                         end
                     end
 
-                    if (param.parameter and tonumber(param.parameter) ) then
+                    if (param.parameter and tonumber(param.parameter)) then
                         local radi = tonumber(param.parameter)
 
-                        if ( radi > 0 and radi < 1024 ) then
+                        if (radi > 0 and radi < 1024) then
                             clean_surfaces(radi)
                         end
                     end
@@ -1378,16 +1378,16 @@ script.on_event(
             player.gui.top.discord.tooltip = "Select with mouse and press control-c to copy!"
         end
 
-        --Moved here to reduce on_tick
-        if global.defaultgroup and global.regularsgroup and global.membersgroup then
-            if player.admin then
-                global.adminsgroup.add_player(player)
-            elseif is_regular(player) then
-                global.regularsgroup.add_player(player)
-            elseif is_trusted(player) then
-                global.membersgroup.add_player(player)
-            end
+        --Send info to bot--
+        if (player.admin) then
+            message_alld(player.name .. " moved to Admins group.")
+        elseif (player.permission_group and player.permission_group.name == global.regularsgroup.name) then
+            message_alld(player.name .. " is now a regular!")
+        elseif (player.permission_group and player.permission_group.name == global.membersgroup.name) then
+            message_alld(player.name .. " is now a member!")
         end
+        
+        get_permgroup()
     end
 )
 
