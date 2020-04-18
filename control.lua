@@ -1691,7 +1691,7 @@ script.on_event(
             if tech.name == "logistics-3" and wscript == false then
                 if global.defaultgroup then
                     message_all(
-                        "[color=cyan]Automatically disabling rotating and mining/deleting objects for new users... due to current technology level.[/color]"
+                        "Automatically disabling rotating and mining/deleting objects for new users... due to current technology level."
                     )
                     global.defaultgroup.set_allows_action(defines.input_action.begin_mining, false)
                     global.defaultgroup.set_allows_action(defines.input_action.rotate_entity, false)
