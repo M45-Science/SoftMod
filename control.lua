@@ -1573,7 +1573,7 @@ script.on_event(
             local stack = player.cursor_stack
 
             if stack and stack.valid_for_read and stack.is_blueprint then
-                if stack.count and stack.count > 10 then
+                if stack.get_blueprint_entity_count() > 100 then
                     stack.clear()
                     message_all("WARNING:" + player.name + " tried to use a very large blueprint. Item count: " + stack.count)
                 end
