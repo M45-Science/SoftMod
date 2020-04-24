@@ -663,6 +663,18 @@ local function is_trusted(victim)
     return false
 end
 
+--Check if player should be considered trusted
+local function is_new(victim)
+    --If in group
+    if victim and victim.permission_group and global.defaultgroupgroup then
+        if victim.permission_group.name == global.defaultgroupgroup.name then
+            return true
+        end
+    end
+
+    return false
+end
+
 --Auto permisisons--
 local function get_permgroup()
     --Cleaned up 1-2020
@@ -1425,8 +1437,12 @@ script.on_event(
         if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
             local count = stack.get_blueprint_entity_count()
 
-            if stack and count > 1000 then
-                message_all(player.name .. " tried to use a blueprint with " .. count .. " items in it!")
+            if is_new(player) and count > 1000 then
+                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
+                stack.clear_blueprint()
+                return
+            elseif count > 15000 then
+                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
                 stack.clear_blueprint()
                 return
             end
@@ -1457,7 +1473,11 @@ script.on_event(
                 if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                     local count = stack.get_blueprint_entity_count()
 
-                    if stack and count > 1000 then
+                    if is_new(player) and count > 1000 then
+                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
+                        stack.clear_blueprint()
+                        return
+                    elseif count > 15000 then
                         message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
                         stack.clear_blueprint()
                         return
