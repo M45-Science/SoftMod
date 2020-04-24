@@ -1421,7 +1421,7 @@ script.on_event(
         local created_entity = event.created_entity
         local stack = event.stack
 
-        if stack and stack.valid and stack.is_blueprint then
+        if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
             local count = stack.get_blueprint_entity_count()
 
             if stack and count > 100 then
