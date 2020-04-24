@@ -1564,26 +1564,22 @@ script.on_event(
     end
 )
 
---Blueprint
+--Blueprint test
 script.on_event(
     defines.events.on_player_configured_blueprint,
     function(event)
-        message_all ("Blueprint config event")
-
-        local player = game.players[event.player_index]
-        if player and player.valid and player.character then
-            local stack = player.blueprint_to_setup
-
-            if stack and stack.valid_for_read and stack.is_blueprint then
-                message_all ("Blueprint event: " + stack.get_blueprint_entity_count() )
-                if stack.get_blueprint_entity_count() > 0 then
-                    stack.clear()
-                    message_all("WARNING:" + player.name + " tried to use a very large blueprint. Item count: " + stack.count)
-                end
-            end
-        end
+        message_all ("on_player_configured_blueprint")
     end
 )
+
+--Blueprint test
+script.on_event(
+    defines.events.on_player_setup_blueprint,
+    function(event)
+        message_all ("on_player_setup_blueprint")
+    end
+)
+
 
 --Research Finished
 script.on_event(
