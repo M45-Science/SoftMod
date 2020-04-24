@@ -1685,7 +1685,7 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         if player and player.valid and player.character then
-            local stack = game.players[event.player_index].cursor_stack
+            local stack = player.cursor_stack
 
             if not(stack and stack.valid_for_read) then
                 return
