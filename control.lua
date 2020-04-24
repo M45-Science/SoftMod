@@ -1438,11 +1438,11 @@ script.on_event(
             local count = stack.get_blueprint_entity_count()
 
             if is_new(player) and count > 1000 then
-                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
+                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                 stack.clear_blueprint()
                 return
             elseif count > 15000 then
-                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
+                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                 stack.clear_blueprint()
                 return
             end
@@ -1474,11 +1474,11 @@ script.on_event(
                     local count = stack.get_blueprint_entity_count()
 
                     if is_new(player) and count > 1000 then
-                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
+                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                         stack.clear_blueprint()
                         return
                     elseif count > 15000 then
-                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it!")
+                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                         stack.clear_blueprint()
                         return
                     end
