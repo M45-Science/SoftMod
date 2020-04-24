@@ -666,8 +666,8 @@ end
 --Check if player should be considered trusted
 local function is_new(victim)
     --If in group
-    if victim and victim.permission_group and global.defaultgroupgroup then
-        if victim.permission_group.name == global.defaultgroupgroup.name then
+    if victim and victim.permission_group and global.defaultgroup then
+        if victim.permission_group.name == global.defaultgroup.name then
             return true
         end
     end
