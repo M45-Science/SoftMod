@@ -1425,7 +1425,7 @@ script.on_event(
             local count = stack.get_blueprint_entity_count()
 
             if stack and count > 100 then
-                message_all(player.name + "tried to use a blueprint with " + count + " items in it!")
+                message_all(player.name .. "tried to use a blueprint with " .. count .. " items in it!")
                 stack.clear()
                 return
             end
