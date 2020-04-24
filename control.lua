@@ -1572,7 +1572,7 @@ script.on_event(
 
         local player = game.players[event.player_index]
         if player and player.valid and player.character then
-            local stack = player.cursor_stack
+            local stack = player.blueprint_to_setup
 
             if stack and stack.valid_for_read and stack.is_blueprint then
                 message_all ("Blueprint event: " + stack.get_blueprint_entity_count() )
