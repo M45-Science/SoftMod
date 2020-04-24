@@ -1,4 +1,4 @@
---v0466-4-14-2020_11-26-AM
+--v0467-4-24-2020_01-39-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1678,6 +1678,30 @@ script.on_event(
         end
     end
 )
+
+--Blueprint
+script.on_event(
+    defines.events.on_player_configured_blueprint,
+    function(event)
+        local player = game.players[event.player_index]
+        if player and player.valid and player.character then
+            local stack = game.players[e.player_index].cursor_stack
+
+            if not(stack and stack.valid_for_read and stack.is_blueprint) then
+                return
+            end
+
+            if stack.count and stack.count > 1000 then
+                if global.defaultgroup and player.permission_group and player.permission_group.name == global.defaultgroup.name then
+                    stack.clear()
+                    message_all ( "WARNING:" + player.name + " tried to use a very large blueprint. Item count: " + stack.count )
+                end
+            end
+        end
+    end
+)
+
+
 
 --Research Finished
 script.on_event(
