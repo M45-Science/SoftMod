@@ -1426,7 +1426,6 @@ script.on_event(
 
             if stack and count > 100 then
                 message_all(player.name .. " tried to use a blueprint with " .. count .. " items in it!")
-                stack.clear()
                 stack.clear_blueprint()
                 return
             end
