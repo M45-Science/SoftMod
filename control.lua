@@ -1419,6 +1419,16 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local created_entity = event.created_entity
+        local stack = event.stack
+        local count = stack.get_blueprint_entity_count()
+
+        if stack and count > 100 then
+            message_all (player.name + "tried to use a blueprint with " + count + " items in it!")
+            stack.clear()
+            return
+        end
+        
+
 
         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
@@ -1563,23 +1573,6 @@ script.on_event(
         end
     end
 )
-
---Blueprint test
-script.on_event(
-    defines.events.on_player_configured_blueprint,
-    function(event)
-        message_all ("on_player_configured_blueprint")
-    end
-)
-
---Blueprint test
-script.on_event(
-    defines.events.on_player_setup_blueprint,
-    function(event)
-        message_all ("on_player_setup_blueprint")
-    end
-)
-
 
 --Research Finished
 script.on_event(
