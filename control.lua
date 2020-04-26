@@ -1478,13 +1478,13 @@ script.on_event(
                         stack.clear_blueprint()
                         return
                     elseif count > 15000 then
-                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                        stack.clear_blueprint()
+                        --message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                        --stack.clear_blueprint()
                         return
                     end
 
                     --Debug
-                   --smart_print(player, count .. " items in blueprint.")
+                   smart_print(player, count .. " items in blueprint.")
                 end
             end
         end
