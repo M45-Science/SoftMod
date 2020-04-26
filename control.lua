@@ -1,4 +1,4 @@
---v0467-4-24-2020_01-39-PM
+--v0468-4-26-2020_01-36-PM
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1438,11 +1438,13 @@ script.on_event(
             local count = stack.get_blueprint_entity_count()
 
             if is_new(player) and count > 1000 then
-                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (blueprint deleted)")
+                smart_print(player, "You can't use blueprints that large yet.")
                 stack.clear_blueprint()
                 return
             elseif count > 15000 then
-                message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (blueprint deleted)")
+                smart_print(player, "That blueprint is too large.")
                 stack.clear_blueprint()
                 return
             end
@@ -1478,7 +1480,7 @@ script.on_event(
                         stack.clear_blueprint()
                         return
                     elseif count > 15000 then
-                        --message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                        message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                         --stack.clear_blueprint()
                         return
                     end
