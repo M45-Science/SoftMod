@@ -1482,6 +1482,9 @@ script.on_event(
                         stack.clear_blueprint()
                         return
                     end
+
+                    --Debug
+                   smart_print(player, count .. " items in blueprint.")
                 end
             end
         end
