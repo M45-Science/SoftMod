@@ -1484,7 +1484,7 @@ script.on_event(
                     end
 
                     --Debug
-                   smart_print(player, count .. " items in blueprint.")
+                   --smart_print(player, count .. " items in blueprint.")
                 end
             end
         end
