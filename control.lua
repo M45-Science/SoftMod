@@ -1,4 +1,7 @@
 --v0468-4-26-2020_01-36-PM
+--Most of this code is written by:
+--Carl Frank Otto III (aka Distortions864)
+--carlotto81@gmail.com
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
