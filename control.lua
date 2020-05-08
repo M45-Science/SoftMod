@@ -1,4 +1,4 @@
---v0468-4-26-2020_01-36-PM
+--v0469-5-268-2020_02-26-AM
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
@@ -1489,7 +1489,7 @@ script.on_event(
                     end
 
                     --Debug
-                   smart_print(player, count .. " items in blueprint.")
+                   --smart_print(player, count .. " items in blueprint.")
                 end
             end
         end
