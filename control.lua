@@ -1478,11 +1478,11 @@ script.on_event(
                 if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                     local count = stack.get_blueprint_entity_count()
 
-                    if is_new(player) and count > 1000 then
+                    if is_new(player) and count > 5000 then
                         message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                         stack.clear_blueprint()
                         return
-                    elseif count > 15000 then
+                    elseif count > 20000 then
                         message_all(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                         --stack.clear_blueprint()
                         return
