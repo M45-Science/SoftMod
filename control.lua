@@ -6,7 +6,7 @@
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
-
+discordtexttoggle = {}
 --safe console print--
 local function console_print(message)
     print("~" .. message)
@@ -777,7 +777,33 @@ script.on_load(
                     end
                 end
             )
+            --toggle discord text command
+            commands.add_command(
+                "discordtext",
+                "Toggle the Discord Invite text box",
+                function(param)
+                    local player
 
+                    if param.player_index then
+                        local player = game.players[param.player_index]
+                        if(discordtexttoggle[player.name] == "false") then
+                            toggle = player.name
+                            discordtexttoggle[toggle] = "true"
+                            smart_print(player, "Showing Discord Invite Box")
+                            player.gui.top.discord.visible = true
+                            return
+                        end
+                        if(discordtexttoggle[player.name] == "true") then
+                            toggle = player.name
+                            discordtexttoggle[toggle] = "false"
+                            smart_print(player, "No longer Showing Discord Invite Box")
+							player.gui.top.discord.visible = false
+                            return
+                        end
+                    end
+                    smart_print(nil, "I don't think the console needs to use this command...")
+                 end
+            )
             --register command
             commands.add_command(
                 "register",
@@ -1394,7 +1420,8 @@ script.on_event(
         create_player_globals(player)
         create_groups()
         game_settings(player)
-
+        toggle = player.name
+        discordtexttoggle[toggle] = "false"
         --Discord Info--
         if not player.gui.top.discord then
             player.gui.top.add {type = "textfield", name = "discord"}
@@ -1445,13 +1472,16 @@ script.on_event(
                 smart_print(player, "You can't use blueprints that large yet.")
                 stack.clear_blueprint()
                 return
+            end
+            if is_admin(player) then
+                smart_print(player, "Bypassing the size limit for blueprints")
+            end
             elseif count > 20000 then
                 message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (blueprint deleted)")
                 smart_print(player, "That blueprint is too large.")
                 stack.clear_blueprint()
                 return
             end
-        end
 
         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
             if player and created_entity then
