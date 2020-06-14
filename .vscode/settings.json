@@ -1,0 +1,15 @@
+{
+    "Lua.diagnostics.globals": [
+        "data",
+        "global",
+        "game",
+        "defines",
+        "script",
+        "rcon",
+        "commands",
+        "settings"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-global"
+    ]
+}
