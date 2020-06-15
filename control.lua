@@ -1,4 +1,4 @@
---v0472-6-14-2020_12-36-PM
+--v0473-6-14-2020_06-20-PM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -622,7 +622,7 @@ local function mysplit(inputstr, sep)
 
     for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
         x = x + 1
-        if x > 10 then --Max 10 args
+        if x > 100 then --Max 100 args
             break
         end
 
@@ -920,6 +920,32 @@ script.on_load(
 
                     if param.parameter then
                         message_allp(param.parameter)
+                    end
+                end
+            )
+
+            --server whisper
+            commands.add_command(
+                "cwhisper",
+                "<message here>",
+                function(param)
+                    if param.player_index then
+                        local player = game.players[param.player_index]
+                        smart_print(player, "This command is for console use only.")
+                        return
+                    end
+
+                    if param.parameter then
+                        local args = mysplit(param.parameter, " ")
+                        if args ~= {} and args[1] and args[2] then
+                            for _, player in pairs(game.connected_players) do
+                                if player.name == args[1] then
+                                    args[1] = ""
+                                    player.print(table.concat(args," "))
+                                    break
+                                end
+                            end
+                        end
                     end
                 end
             )
