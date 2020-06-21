@@ -1,4 +1,4 @@
---v0475-6-21-2020_12-11-AM
+--v0476-6-21-2020_01-31-AM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -696,7 +696,6 @@ end
 
 --Check if player should be considered new
 local function is_new(victim)
-    
     if is_trusted(victim) == false and is_regular(victim) == false and victim.admin == false then
         return true
     end
@@ -1708,7 +1707,7 @@ script.on_event(
             player.teleport({0, 0}, game.surfaces["limbo"])
             player.teleport(oldpos, oldsurf)
 
-            player.print("You are still a new user, and are not allowed to mine other people's objects yet!")
+            player.print("You are a new user, and are not allowed to mine other people's objects yet!")
         else
             console_print(
                 player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
@@ -1725,11 +1724,22 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
+        local rot = event.previous_direction
 
-        console_print(
-            player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-        )
+        --Don't let new players rotate other players items... dirty dirty hack.
+        if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+            obj.rotate()
+            obj.rotate()
+            obj.rotate()
 
+            global.fixme = obj
+            global.last = obj.last_user
+            player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
+        else
+            console_print(
+                player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
+            )
+        end
         set_player_active(player)
     end
 )
@@ -1961,9 +1971,28 @@ script.on_nth_tick(
 script.on_nth_tick(
     300, --about 5 seconds
     function(event)
-            --Repair discord info
-            if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
-                player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+        --Repair discord info
+        if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
+            player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+        end
+    end
+)
+
+--Cheap hack to fix last user
+script.on_nth_tick(
+    1,
+    function(event)
+
+        if global.fixme and global.fixme.valid then
+            if global.last then
+                global.fixme.last_user = global.last
+                global.last = nil
+            else
+                --just in case
+                global.fixme.last_user = game.players[1]
             end
+
+            global.fixme = nil
+        end
     end
 )
