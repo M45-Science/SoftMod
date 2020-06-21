@@ -1,4 +1,4 @@
---v0477-6-21-2020_11-59-AM
+--v0478-6-21-2020_01-11-PM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -1629,12 +1629,12 @@ script.on_event(
         local player = game.players[event.player_index]
         local obj = event.entity
 
-        --Don't let new players mine other players items... dirty dirty hack.
+        --Don't let new players mine other players items... dirty hack.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
 
             --Create limbo if needed
             if game.surfaces["limbo"] == nil then
-                game.create_surface("limbo", {width = 1, height = 1})
+                game.create_surface("limbo", {width = 1, height = 1}) --1x1
             end
             --Record old position and surface
             local oldpos = player.character.position
@@ -1662,17 +1662,22 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
+        local last_user = obj.last_user
         local prev_dir = event.previous_direction
 
         --Don't let new players rotate other players items, unrotate and untouch the item.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+
+            --Unrotate
             obj.direction = prev_dir
 
-            if not global.untouch_obj then
-                global.untouch_obj = {obj = {}, prev_user = {}}
+            --Create untouch list if needed
+            if not global.untouchobj then
+                global.untouchobj = {object = {}, prev = {}}
             end
 
-            table.insert(global.untouch_obj, {obj = obj, prev_user = obj.last_user})
+            --Add to list
+            table.insert(global.untouchobj, {object = obj, prev = last_user})
             player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
         else
             console_print(player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
@@ -1906,13 +1911,13 @@ script.on_nth_tick(
 script.on_nth_tick(
     1,
     function(event)
-        if (global.untouch_obj) then
-            for _, item in pairs(global.untouch_obj) do
-                if item.obj and item.obj.valid then
-                    item.obj.last_user = item.prev_user
+        if (global.untouchobj) then
+            for _, item in pairs(global.untouchobj) do
+                if item.object then
+                    item.object.last_user = item.prev
+                    toremove = item
+                    break
                 end
-                toremove = item
-                break
             end
             if (toremove) then
                 toremove.obj = nil
