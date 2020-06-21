@@ -1998,7 +1998,7 @@ script.on_nth_tick(
             end
             if (toremove) then
                 toremove.object = nil
-                toremove.last_user = nil
+                toremove.prev = nil
                 toremove = nil
             end
         end
