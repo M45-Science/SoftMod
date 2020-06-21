@@ -1,4 +1,4 @@
---v0476-6-21-2020_01-31-AM
+--v0477-6-21-2020_11-59-AM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -553,10 +553,7 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, false)
         global.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, false)
-        global.defaultgroup.set_allows_action(
-            defines.input_action.change_programmable_speaker_circuit_parameters,
-            false
-        )
+        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, false)
         global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, false)
@@ -614,10 +611,7 @@ end
 
 --Flag player as currently active
 local function set_player_active(player)
-    if
-        (player and player.valid and player.connected and player.character and player.character.valid and
-            global.playeractive)
-     then
+    if (player and player.valid and player.connected and player.character and player.character.valid and global.playeractive) then
         global.playeractive[player.index] = true
     end
 end
@@ -664,10 +658,7 @@ local function is_regular(victim)
     end
 
     --If they have enough hours
-    if
-        (global.active_playtime and global.active_playtime[victim.index] and
-            global.active_playtime[victim.index] > (4 * 60 * 60 * 60))
-     then
+    if (global.active_playtime and global.active_playtime[victim.index] and global.active_playtime[victim.index] > (4 * 60 * 60 * 60)) then
         return true
     end
 
@@ -684,10 +675,7 @@ local function is_trusted(victim)
     end
 
     --If they have enough hours
-    if
-        (global.active_playtime and global.active_playtime[victim.index] and
-            global.active_playtime[victim.index] > (30 * 60 * 60))
-     then
+    if (global.active_playtime and global.active_playtime[victim.index] and global.active_playtime[victim.index] > (30 * 60 * 60)) then
         return true
     end
 
@@ -715,8 +703,7 @@ local function get_permgroup()
                         global.adminsgroup.add_player(player)
                         message_all(player.name .. " moved to Admins group.")
                     elseif
-                        (global.active_playtime and global.active_playtime[player.index] and
-                            global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
+                        (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
                             not player.admin)
                      then
                         if (player.permission_group.name ~= global.regularsgroup.name) then
@@ -736,14 +723,10 @@ local function get_permgroup()
                             )
                         end
                     elseif
-                        (global.active_playtime and global.active_playtime[player.index] and
-                            global.active_playtime[player.index] > (30 * 60 * 60) and
+                        (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and
                             not player.admin)
                      then
-                        if
-                            (player.permission_group.name ~= global.membersgroup.name and
-                                player.permission_group.name ~= global.regularsgroup.name)
-                         then
+                        if (player.permission_group.name ~= global.membersgroup.name and player.permission_group.name ~= global.regularsgroup.name) then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
                             player.print(
@@ -843,16 +826,10 @@ script.on_load(
                         local player = game.players[param.player_index]
                         if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
                             if player.gui.top.discord.visible == true then
-                                smart_print(
-                                    player,
-                                    "Discord link is now hidden. Using the command again will turn it back on."
-                                )
+                                smart_print(player, "Discord link is now hidden. Using the command again will turn it back on.")
                                 player.gui.top.discord.visible = false
                             else
-                                smart_print(
-                                    player,
-                                    "Discord link now shown. Using the command again will turn it back off."
-                                )
+                                smart_print(player, "Discord link now shown. Using the command again will turn it back off.")
                                 player.gui.top.discord.visible = true
                             end
                         end
@@ -1153,14 +1130,7 @@ script.on_load(
 
                         if pforce and psurface and new_pos_x and new_pos_y then
                             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(
-                                victim,
-                                string.format(
-                                    "New spawn point set: %d,%d",
-                                    math.floor(new_pos_x),
-                                    math.floor(new_pos_y)
-                                )
-                            )
+                            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
                             smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                             global.cspawnpos = {new_pos_x, new_pos_y}
                         else
@@ -1214,10 +1184,7 @@ script.on_load(
                         end
 
                         if psurface and pforce and size then
-                            pforce.chart(
-                                psurface,
-                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
-                            )
+                            pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
                             local sstr = string.format("%-4.0f", size)
                             smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                         else
@@ -1295,15 +1262,7 @@ script.on_load(
                             if (time) then
                                 if (time.time) then
                                     if ipos > (plen - 20) then
-                                        smart_print(
-                                            victim,
-                                            string.format(
-                                                "%-4d: %-32s Active: %-4.2fm",
-                                                ipos,
-                                                time.name,
-                                                time.time / 60.0 / 60.0
-                                            )
-                                        )
+                                        smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
                                     end
                                 end
                             end
@@ -1354,9 +1313,7 @@ script.on_load(
                                 game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
                                 smart_print(
                                     player,
-                                    "Game speed: " ..
-                                        value ..
-                                            " Walk speed: " .. game.forces["player"].character_running_speed_modifier
+                                    "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier
                                 )
                                 message_all("Game speed set to %" .. (game.speed * 100.00))
                             else
@@ -1392,14 +1349,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim and victim.valid) then
-                                local newpos =
-                                    victim.surface.find_non_colliding_position(
-                                    "character",
-                                    victim.position,
-                                    15,
-                                    0.01,
-                                    false
-                                )
+                                local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
                                 if (newpos) then
                                     player.teleport(newpos, victim.surface)
                                     player.print("Okay.")
@@ -1442,14 +1392,7 @@ script.on_load(
 
                                 if position then
                                     if position.x and position.y then
-                                        local newpos =
-                                            player.surface.find_non_colliding_position(
-                                            "character",
-                                            position,
-                                            15,
-                                            0.01,
-                                            false
-                                        )
+                                        local newpos = player.surface.find_non_colliding_position("character", position, 15, 0.01, false)
                                         if (newpos) then
                                             player.teleport(newpos, player.surface)
                                             player.print("Okay.")
@@ -1491,14 +1434,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim and victim.valid) then
-                                local newpos =
-                                    player.surface.find_non_colliding_position(
-                                    "character",
-                                    player.position,
-                                    15,
-                                    0.01,
-                                    false
-                                )
+                                local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
                                 if (newpos) then
                                     victim.teleport(newpos, player.surface)
                                     player.print("Okay.")
@@ -1557,9 +1493,7 @@ script.on_event(
                             math.floor(area.left_top.x) ..
                                 "," ..
                                     math.floor(area.left_top.y) ..
-                                        "] to [gps=" ..
-                                            math.floor(area.right_bottom.x) ..
-                                                "," .. math.floor(area.right_bottom.y) .. "]"
+                                        "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                     if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
                         message_all(msg)
                     end
@@ -1648,8 +1582,7 @@ script.on_event(
                         message_all(
                             player.name ..
                                 " placed a speaker at [gps=" ..
-                                    math.floor(created_entity.position.x) ..
-                                        "," .. math.floor(created_entity.position.y) .. "]"
+                                    math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
                         )
                         global.last_speaker_warning = game.tick
                     end
@@ -1699,7 +1632,7 @@ script.on_event(
         --Don't let new players mine other players items... dirty dirty hack.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
             if game.surfaces["limbo"] == nil then
-                game.create_surface("limbo", {width = 1, height=1})
+                game.create_surface("limbo", {width = 1, height = 1})
             end
             local oldpos = player.character.position
             local oldsurf = player.character.surface
@@ -1709,9 +1642,7 @@ script.on_event(
 
             player.print("You are a new user, and are not allowed to mine other people's objects yet!")
         else
-            console_print(
-                player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-            )
+            console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
         end
 
         set_player_active(player)
@@ -1730,13 +1661,14 @@ script.on_event(
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
             obj.direction = prev_dir
 
-            global.fixme = obj
-            global.last = obj.last_user
+            if not global.untouch_obj then
+                global.untouch_obj = {obj = {}, prev_user = {}}
+            end
+
+            table.insert(global.untouch_obj, {obj = obj, prev_user = obj.last_user})
             player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
         else
-            console_print(
-                player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-            )
+            console_print(player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
         end
         set_player_active(player)
     end
@@ -1832,9 +1764,7 @@ script.on_event(
         local player = game.players[event.player_index]
         if player and player.valid and player.character then
             local centerPosition = player.position
-            local label =
-                "Corpse of: " ..
-                player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
+            local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
             local chartTag = {position = centerPosition, icon = nil, text = label}
             local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
@@ -1844,10 +1774,7 @@ script.on_event(
             table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
             --Log to discord
-            message_all(
-                player.name ..
-                    " died at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
-            )
+            message_all(player.name .. " died at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
         end
     end
 )
@@ -1884,13 +1811,8 @@ script.on_nth_tick(
         local toremove
 
         --Remove old corpse tags
-        local max = 0
         if (global.corpselist) then
             for _, corpse in pairs(global.corpselist) do
-                max = max + 1
-                if max > 100 then
-                    break
-                end
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
                         corpse.tag.destroy()
@@ -1899,13 +1821,13 @@ script.on_nth_tick(
                     break
                 end
             end
+            if (toremove) then
+                toremove.tag = nil
+                toremove.tick = nil
+                toremove = nil
+            end
         else
             create_myglobals()
-        end
-        if (toremove) then
-            toremove.tag = nil
-            toremove.tick = nil
-            toremove = nil
         end
 
         --Server tag
@@ -1921,10 +1843,7 @@ script.on_nth_tick(
             local xpos = 0
             local ypos = 0
 
-            if
-                global.cspawnpos and global.cspawnpos[1] and global.cspawnpos[2] and tonumber(global.cspawnpos[1]) and
-                    tonumber(global.cspawnpos[2])
-             then
+            if global.cspawnpos and global.cspawnpos[1] and global.cspawnpos[2] and tonumber(global.cspawnpos[1]) and tonumber(global.cspawnpos[2]) then
                 xpos = global.cspawnpos[1]
                 ypos = global.cspawnpos[2]
             end
@@ -1976,21 +1895,23 @@ script.on_nth_tick(
     end
 )
 
---Cheap hack to fix last user
+--Reset last_user (untouch) objects, one per tick
 script.on_nth_tick(
     1,
     function(event)
-
-        if global.fixme and global.fixme.valid then
-            if global.last then
-                global.fixme.last_user = global.last
-                global.last = nil
-            else
-                --just in case
-                global.fixme.last_user = game.players[1]
+        if (global.untouch_obj) then
+            for _, item in pairs(global.untouch_obj) do
+                if item.obj and item.obj.valid then
+                    item.obj.last_user = item.prev_user
+                end
+                toremove = item
+                break
             end
-
-            global.fixme = nil
+            if (toremove) then
+                toremove.obj = nil
+                toremove.last_user = nil
+                toremove = nil
+            end
         end
     end
 )
