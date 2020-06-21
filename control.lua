@@ -1699,7 +1699,7 @@ script.on_event(
         --Don't let new players mine other players items... dirty dirty hack.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
             if game.surfaces["limbo"] == nil then
-                game.create_surface("limbo")
+                game.create_surface("limbo", {width = 1, height=1})
             end
             local oldpos = player.character.position
             local oldsurf = player.character.surface
@@ -1724,13 +1724,11 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
-        local rot = event.previous_direction
+        local prev_dir = event.previous_direction
 
         --Don't let new players rotate other players items... dirty dirty hack.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-            obj.rotate()
-            obj.rotate()
-            obj.rotate()
+            obj.direction = prev_dir
 
             global.fixme = obj
             global.last = obj.last_user
