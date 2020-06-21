@@ -798,6 +798,78 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            --Banish command
+            commands.add_command(
+                "banish",
+                "banish <player> <reason for banishment>",
+                function(param)
+                    if param and param.player_index and 1 == 2 then
+                        local player = game.players[param.player_index]
+                        if player and param.parameter then
+                            --regulars/admin players only
+                            if is_regular(player) or player.admin then
+                                --get arguments
+                                local args = mysplit(param.parameter, " ")
+
+                                --Must have two arguments
+                                if args ~= {} and args[1] and args[2] then
+                                    local victim = game.players[args[1]]
+                                    local reason = args[2]
+
+                                    --Must have valid victim
+                                    if victim and victim.valid and victim.name then
+                                        --Victim must be new or member
+                                        if is_new(victim) or is_trusted(victim) then
+                                            --Check if we already voted against them
+                                            if global.banishvotes and banishvotes ~= {} then
+                                                for _, vote in pairs(global.banishvotes) do
+                                                    if vote and vote.voter and vote.victim then
+                                                        if vote.voter == player and vote.victim == victim then
+                                                            smart_print(
+                                                                player,
+                                                                "You already voted to banish them, /unbanish <player> to remove your vote."
+                                                            )
+                                                            return
+                                                        end
+                                                    end
+                                                end
+                                            end
+
+                                            --Send report to discord and add to vote list
+                                            local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
+                                            message_all(message)
+                                            print("[REPORT] " .. message)
+                                            smart_print(player, "Your vote has been added, and posted on Discord.")
+                                            smart_print(player, "/unbanish <user> to remove your vote.")
+                                        else
+                                            smart_print(player, "You can only vote against new users, or members!")
+                                        end
+                                        if not global.banishvotes or global.banishvotes == {} then
+                                            global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}}
+                                        end
+                                        table.insert(global.banishvotes, {voter = player, victim = victim, reason = reason, tick = game.tick})
+                                    else
+                                        smart_print(
+                                            player,
+                                            "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help."
+                                        )
+                                    end
+                                else
+                                    smart_print(player, "Usage: /banish <player> <reason for banishment>")
+                                end
+                            else
+                                smart_print(player, "This command is for regulars-status players only!")
+                                return
+                            end
+                        else
+                            smart_print(player, "Usage: /banish <player> <reason for banishment>")
+                        end
+                    else
+                        smart_print(nil, "The console can't banish.")
+                    end
+                end
+            )
+
             --User report command
             commands.add_command(
                 "report",
@@ -1661,7 +1733,6 @@ script.on_event(
     function(event)
         local player = game.players[event.player_index]
         local obj = event.entity
-        local last_user = obj.last_user
         local prev_dir = event.previous_direction
 
         --Don't let new players rotate other players items, unrotate and untouch the item.
@@ -1675,7 +1746,7 @@ script.on_event(
             end
 
             --Add to list
-            table.insert(global.untouchobj, {object = obj, prev = last_user})
+            table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
             player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
         else
             console_print(player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
