@@ -1981,6 +1981,8 @@ script.on_nth_tick(
     1,
     function(event)
         if (global.untouchobj) then
+            local toremove
+            
             for _, item in pairs(global.untouchobj) do
                 if item.object then
                     if item.object.valid then
@@ -1995,7 +1997,7 @@ script.on_nth_tick(
                 end
             end
             if (toremove) then
-                toremove.obj = nil
+                toremove.object = nil
                 toremove.last_user = nil
                 toremove = nil
             end
