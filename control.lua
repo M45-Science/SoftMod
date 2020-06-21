@@ -1631,11 +1631,18 @@ script.on_event(
 
         --Don't let new players mine other players items... dirty dirty hack.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+
+            --Create limbo if needed
             if game.surfaces["limbo"] == nil then
                 game.create_surface("limbo", {width = 1, height = 1})
             end
+            --Record old position and surface
             local oldpos = player.character.position
             local oldsurf = player.character.surface
+
+            --Teleport to limbo, and back... this interrupts mining.
+            --I haven't found any other way to interrupt mining this late
+            --Only other way is to remove object and perfectly clone it, i'd rather not...
 
             player.teleport({0, 0}, game.surfaces["limbo"])
             player.teleport(oldpos, oldsurf)
@@ -1657,7 +1664,7 @@ script.on_event(
         local obj = event.entity
         local prev_dir = event.previous_direction
 
-        --Don't let new players rotate other players items... dirty dirty hack.
+        --Don't let new players rotate other players items, unrotate and untouch the item.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
             obj.direction = prev_dir
 
