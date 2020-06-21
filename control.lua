@@ -1632,6 +1632,9 @@ script.on_event(
         local player = game.players[event.player_index]
         local obj = event.entity
 
+        local clone = obj.clone({position = obj.position})
+        player.character.surface.create_entity({name=obj.name,position=obj.position})
+
         console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
         set_player_active(player)
