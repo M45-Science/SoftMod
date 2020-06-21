@@ -1631,7 +1631,6 @@ script.on_event(
 
         --Don't let new players mine other players items... dirty hack.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-
             --Create limbo if needed
             if game.surfaces["limbo"] == nil then
                 game.create_surface("limbo", {width = 1, height = 1}) --1x1
@@ -1667,7 +1666,6 @@ script.on_event(
 
         --Don't let new players rotate other players items, unrotate and untouch the item.
         if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-
             --Unrotate
             obj.direction = prev_dir
 
@@ -1914,7 +1912,13 @@ script.on_nth_tick(
         if (global.untouchobj) then
             for _, item in pairs(global.untouchobj) do
                 if item.object then
-                    item.object.last_user = item.prev
+                    if item.object.valid then
+                        if item.prev and item.prev.valid then
+                            item.object.last_user = item.prev
+                        else --just in case
+                            item.object.last_user = game.players[1]
+                        end
+                    end
                     toremove = item
                     break
                 end
