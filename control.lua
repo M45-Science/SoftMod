@@ -1,4 +1,4 @@
---v0478-6-21-2020_04-56-PM
+--v0478-6-21-2020_08-12-PM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -57,7 +57,6 @@ local function message_alld(message)
     print("[MSG] " .. message)
 end
 
-
 --Check if player should be considered a regular
 local function is_regular(victim)
     --If in group
@@ -77,7 +76,6 @@ end
 
 --Check if player should be considered trusted
 local function is_trusted(victim)
-
     --If in group
     if victim and victim.permission_group and global.membersgroup then
         if victim.permission_group.name == global.membersgroup.name then
@@ -95,7 +93,6 @@ end
 
 --Check if player should be considered new
 local function is_new(victim)
-
     if is_trusted(victim) == false and is_regular(victim) == false and victim.admin == false then
         return true
     end
@@ -106,7 +103,7 @@ end
 local function is_banished(victim)
     if victim and victim.valid then
         if global.thebanished and global.thebanished[victim.index] then
-            if (is_new(victim) and global.thebanished[victim.index] >= 2) or (is_member(victim) and global.thebanished[victim.index] >= 3) then
+            if (is_new(victim) and global.thebanished[victim.index] >= 2) or (is_trusted(victim) and global.thebanished[victim.index] >= 3) then
                 return true
             end
         end
@@ -132,7 +129,7 @@ local function update_banished_votes()
         --only if everything seems to exist
         if vote and vote.voter and vote.victim then
             --only if everything seems valid
-            if vote.voter.valid and vote.victim.valid then
+            if vote.voter.valid and vote.victim.valid and vote.withdrawn == false and vote.overruled == false then
                 if banished[vote.victim.index] then
                     banished[vote.victim.index] = banished[vote.victim.index] + 1 --Add vote against them
                 else
@@ -144,7 +141,6 @@ local function update_banished_votes()
     end
 
     for _, victim in pairs(game.players) do
-
         --Check global list for items to remove
         if global.thebanished[victim.index] then
             local prevstate = is_banished(victim)
@@ -157,7 +153,7 @@ local function update_banished_votes()
 
                 local surf = game.surfaces["nauvis"]
                 if surf and surf.name then
-                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 15, 0.01, false)
+                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
                     if newpos then
                         victim.teleport(newpos, surf)
                     else
@@ -199,7 +195,7 @@ local function update_banished_votes()
 
                 local surf = game.surfaces["hell"]
                 if surf and surf.name then
-                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 15, 0.01, false)
+                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
                     if newpos then
                         victim.teleport(newpos, surf)
                     else
@@ -919,31 +915,107 @@ script.on_load(
                 function(param)
                     local player = game.players[param.player_index]
 
-                    if player.admin or not player then
-                        if global.banishvotes then
-                            for _, vote in pairs(global.banishvotes) do
-                                if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
-                                    smart_print(
-                                        player,
-                                        "voter: " .. vote.voter.name .. ", reason: " .. vote.reason .. ", victim: " .. vote.victim.name
-                                    )
+                    if global.banishvotes then
+                        for _, vote in pairs(global.banishvotes) do
+                            if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
+                                local notes = ""
+                                if vote.withdraw then
+                                    notes = "(WITHDRAWN) "
+                                end
+                                if vote.overruled then
+                                    notes = "(OVERRULED) "
+                                end
+                                smart_print(
+                                    player,
+                                    notes ..
+                                        "plaintiff: " .. vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason
+                                )
+                            end
+                        end
+                        update_banished_votes()
+                        if global.thebanished then
+                            for _, victim in pairs(game.players) do
+                                if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
+                                    smart_print(player,victim.name .. " has had " .. global.thebanished[victim.index] .. " complaints agianst them.")
                                 end
                             end
-                            smart_print(player, "Updating banished list.")
-                            update_banished_votes()
-
-                            smart_print(player, "list:")
-                            for i, count in pairs(global.thebanished) do
-                                smart_print(player, "player: " .. i .. " votes: " .. count)
+                        end
+                        if global.banishvotes then
+                            for _, victim in pairs(game.players) do
+                                local votecount = 0
+                                for _, vote in pairs(global.banishvotes) do
+                                    if victim == vote.voter then
+                                        votecount = votecount + 1
+                                    end
+                                end
+                                if votecount > 2 then
+                                    smart_print(player,victim.name .. " has voted against " .. votecount .. " players.")
+                                end
                             end
-                            return
+                        end
+                        return
+                    else
+                        smart_print("No votes, currently.")
+                        return
+                    end
+                end
+            )
+
+            --Banish command
+            commands.add_command(
+                "unbanish",
+                "unbanish <player>",
+                function(param)
+                    if param and param.player_index then
+                        local player = game.players[param.player_index]
+                        if player and param.parameter then
+                            --regulars/admin players only
+                            if is_regular(player) or player.admin then
+                                --get arguments
+                                local args = mysplit(param.parameter, " ")
+
+                                --Must have two arguments
+                                if args ~= {} and args[1] then
+                                    local victim = game.players[args[1]]
+
+                                    --Must have valid victim
+                                    if victim and victim.valid and victim.name then
+                                        --Check if we voted against them
+                                        if global.banishvotes and banishvotes ~= {} then
+                                            for _, vote in pairs(global.banishvotes) do
+                                                if vote and vote.voter and vote.victim then
+                                                    if vote.voter == player and vote.victim == victim then
+                                                        --Send report to discord and withdraw vote
+                                                        local message = player.name .. " WITHDREW their vote to banish: " .. victim.name
+                                                        message_all(message)
+                                                        --print("[REPORT] " .. message)
+                                                        smart_print(player, "Your vote has been withdrawn, and posted on Discord.")
+                                                        vote.withdrawn = true
+                                                        update_banished_votes() --Must do this to delete to tally
+                                                        return
+                                                    end
+                                                end
+                                            end
+                                            smart_print("I don't see a vote from you, against that player, to withdraw.")
+                                        end
+                                    else
+                                        smart_print(
+                                            player,
+                                            "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help."
+                                        )
+                                    end
+                                else
+                                    smart_print(player, "Usage: /unbanish <player>")
+                                end
+                            else
+                                smart_print(player, "Only regulars/admin status players can vote.")
+                                return
+                            end
                         else
-                            smart_print("No votes, currently.")
-                            return
+                            smart_print(player, "Usage: /unbanish <player>")
                         end
                     else
-                        smart_print("Admins only.")
-                        return
+                        smart_print(nil, "The console can't vote.")
                     end
                 end
             )
@@ -964,46 +1036,78 @@ script.on_load(
                                 --Must have two arguments
                                 if args ~= {} and args[1] and args[2] then
                                     local victim = game.players[args[1]]
-                                    local reason = args[2]
 
-                                    --Must have valid victim
-                                    if victim and victim.valid and victim.name then
-                                        --Victim must be new or member
-                                        if is_new(victim) or is_trusted(victim) then
-                                            --Check if we already voted against them
-                                            if global.banishvotes and banishvotes ~= {} then
-                                                for _, vote in pairs(global.banishvotes) do
-                                                    if vote and vote.voter and vote.victim then
-                                                        if vote.voter == player and vote.victim == victim then
-                                                            smart_print(
-                                                                player,
-                                                                "You already voted to banish them, /unbanish <player> to remove your vote."
-                                                            )
-                                                            return
+                                    --Quick arg combine
+                                    local reason = args[2]
+                                    for n, arg in pairs(args) do
+                                        if n > 2 and n < 100 then
+                                            reason = reason .. " " .. args[n]
+                                        end
+                                    end
+
+                                    if string.len(reason) < 8 then
+                                        smart_print(player, "You must supply a more descriptive complaint.")
+                                    else
+                                        --Must have valid victim
+                                        if victim and victim.valid and victim.name then
+                                            --Victim must be new or member
+                                            if is_new(victim) or is_trusted(victim) then
+                                                --Check if we already voted against them
+                                                if global.banishvotes and banishvotes ~= {} then
+                                                    local votecount = 0
+                                                    for _, vote in pairs(global.banishvotes) do
+                                                        if vote and vote.voter and vote.victim then
+                                                            --Count player's total votes, cap them
+                                                            if vote.voter == player then
+                                                                votecount = votecount + 1
+                                                            end
+                                                            if votecount >= 10 then
+                                                                smart_print(player, "You have exhausted your voting privlege for this map.")
+                                                                return
+                                                            end
+
+                                                            if vote.voter == player and vote.victim == victim then
+                                                                smart_print(
+                                                                    player,
+                                                                    "You already voted, /unbanish <player> to withdraw your complaint.\nIf you already withdrew a vote aginst them, you can not reintroduce it. "
+                                                                )
+                                                                return
+                                                            end
                                                         end
                                                     end
                                                 end
-                                            end
 
-                                            --Send report to discord and add to vote list
-                                            local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
-                                            message_all(message)
-                                            --print("[REPORT] " .. message)
-                                            smart_print(player, "Your vote has been added, and posted on Discord.")
-                                            smart_print(player, "/unbanish <user> to remove your vote.")
-                                            update_banished_votes() --Must do this to add to tally
+                                                --Send report to discord and add to vote list
+                                                local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
+                                                message_all(message)
+                                                --print("[REPORT] " .. message)
+                                                smart_print(player, "Your vote has been added, and posted on Discord.")
+                                                smart_print(player, "/unbanish <user> to withdraw your vote.")
+
+                                                if not global.banishvotes or global.banishvotes == {} then
+                                                    global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}, withdrawn = {}, overruled = {}}
+                                                end
+                                                table.insert(
+                                                    global.banishvotes,
+                                                    {
+                                                        voter = player,
+                                                        victim = victim,
+                                                        reason = reason,
+                                                        tick = game.tick,
+                                                        withdrawn = false,
+                                                        overruled = false
+                                                    }
+                                                )
+                                                update_banished_votes() --Must do this to add to tally
+                                            else
+                                                smart_print(player, "You can only vote against new users, or members!")
+                                            end
                                         else
-                                            smart_print(player, "You can only vote against new users, or members!")
+                                            smart_print(
+                                                player,
+                                                "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help."
+                                            )
                                         end
-                                        if not global.banishvotes or global.banishvotes == {} then
-                                            global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}}
-                                        end
-                                        table.insert(global.banishvotes, {voter = player, victim = victim, reason = reason, tick = game.tick})
-                                    else
-                                        smart_print(
-                                            player,
-                                            "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help."
-                                        )
                                     end
                                 else
                                     smart_print(player, "Usage: /banish <player> <reason for banishment>")
@@ -1016,7 +1120,7 @@ script.on_load(
                             smart_print(player, "Usage: /banish <player> <reason for banishment>")
                         end
                     else
-                        smart_print(nil, "The console can't banish.")
+                        smart_print(nil, "The console can't vote.")
                     end
                 end
             )
@@ -1029,8 +1133,25 @@ script.on_load(
                     if param and param.player_index then
                         local player = game.players[param.player_index]
                         if player and param.parameter then
-                            print("[REPORT] " .. player.name .. " " .. param.parameter)
-                            smart_print(player, "Report sent.")
+                            --Init limit list if needed
+                            if not global.reportlimit then
+                                global.reportlimit = {}
+                            end
+
+                            --Add or init player's limit
+                            if global.reportlimit[player.index] then
+                                global.reportlimit[player.index] = global.reportlimit[player.index] + 1
+                            else
+                                global.reportlimit[player.index] = 1
+                            end
+
+                            --Limit and list number of reports
+                            if global.reportlimit[player.index] < 10 then
+                                print("[REPORT] " .. player.name .. " " .. param.parameter)
+                                smart_print(player, "Report sent." .. " (" .. global.reportlimit[player.index] .. "/" .. "10)")
+                            else
+                                smart_print("You are not allowed to send any more reports.")
+                            end
                         else
                             smart_print(player, "Usage: /report (your message to moderators here)")
                         end
