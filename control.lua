@@ -118,7 +118,7 @@ local function update_banished_votes()
 
     --just in case
     if not global.banishvotes then
-        global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}}
+        global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}, withdrawn = {}, overruled = {}}
     end
 
     if not global.thebanished then
@@ -141,9 +141,10 @@ local function update_banished_votes()
     end
 
     for _, victim in pairs(game.players) do
+        local prevstate = is_banished(victim)
+
         --Check global list for items to remove
-        if global.thebanished[victim.index] then
-            local prevstate = is_banished(victim)
+        if banished[victim.index] then
             global.thebanished[victim.index] = banished[victim.index]
 
             --Was banished, but not anymore
@@ -167,7 +168,6 @@ local function update_banished_votes()
 
         --Check local list for items to add
         if banished[victim.index] then
-            local prevstate = is_banished(victim)
             global.thebanished[victim.index] = banished[victim.index]
 
             --Was not banished, but is now.
@@ -870,7 +870,7 @@ local function show_players(victim)
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
-            local utag = "(error)"
+            local utag = "error"
 
             if player.permission_group then
                 local gname = player.permission_group.name
@@ -880,7 +880,11 @@ local function show_players(victim)
 
                 utag = gname
             else
-                utag = "(none)"
+                utag = "none"
+            end
+
+            if is_banished(player) then
+                utag = "BANISHED"
             end
 
             if (global.active_playtime and global.active_playtime[player.index]) then
@@ -955,7 +959,8 @@ script.on_load(
                         end
                         return
                     else
-                        smart_print("No votes, currently.")
+                        smart_print(player,"No votes, currently.")
+                        update_banished_votes()
                         return
                     end
                 end
@@ -1084,7 +1089,7 @@ script.on_load(
                                                 smart_print(player, "Your vote has been added, and posted on Discord.")
                                                 smart_print(player, "/unbanish <user> to withdraw your vote.")
 
-                                                if not global.banishvotes or global.banishvotes == {} then
+                                                if not global.banishvotes then
                                                     global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}, withdrawn = {}, overruled = {}}
                                                 end
                                                 table.insert(
