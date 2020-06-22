@@ -150,6 +150,7 @@ local function update_banished_votes()
             --Was banished, but not anymore
             if is_banished(victim) == false and prevstate == true then
                 local msg = victim.name .. " is no longer banished."
+                print("[REPORT] " .. msg)
                 message_all(msg)
 
                 local surf = game.surfaces["nauvis"]
@@ -174,6 +175,7 @@ local function update_banished_votes()
             if is_banished(victim) == true and prevstate == false then
                 local msg = victim.name .. " has been banished."
                 message_all(msg)
+                print("[REPORT] " .. msg)
 
                 if game.surfaces["hell"] == nil then
                     local my_map_gen_settings = {
@@ -923,7 +925,7 @@ script.on_load(
                         for _, vote in pairs(global.banishvotes) do
                             if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
                                 local notes = ""
-                                if vote.withdraw then
+                                if vote.withdrawn then
                                     notes = "(WITHDRAWN) "
                                 end
                                 if vote.overruled then
@@ -993,7 +995,7 @@ script.on_load(
                                                         --Send report to discord and withdraw vote
                                                         local message = player.name .. " WITHDREW their vote to banish: " .. victim.name
                                                         message_all(message)
-                                                        --print("[REPORT] " .. message)
+                                                        print("[REPORT] " .. message)
                                                         smart_print(player, "Your vote has been withdrawn, and posted on Discord.")
                                                         vote.withdrawn = true
                                                         update_banished_votes() --Must do this to delete to tally
@@ -1085,7 +1087,7 @@ script.on_load(
                                                 --Send report to discord and add to vote list
                                                 local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
                                                 message_all(message)
-                                                --print("[REPORT] " .. message)
+                                                print("[REPORT] " .. message)
                                                 smart_print(player, "Your vote has been added, and posted on Discord.")
                                                 smart_print(player, "/unbanish <user> to withdraw your vote.")
 
