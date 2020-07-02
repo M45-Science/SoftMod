@@ -2040,6 +2040,9 @@ script.on_event(
             player.gui.top.add {type = "textfield", name = "discord"}
             player.gui.top.discord.text = "discord.gg/Ps2jnm7"
             player.gui.top.discord.tooltip = "Select with mouse and press control-c to copy!"
+            player.gui.top.discord.text.read_only = true
+            player.gui.top.discord.text.selectable = true
+
         end
 
         --Send info to bot--
@@ -2444,7 +2447,8 @@ script.on_nth_tick(
             --Repair discord info
             if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
                 player.gui.top.discord.text = "discord.gg/Ps2jnm7"
-                player.gui.top.discord.read_only = true
+                player.gui.top.discord.text.read_only = true
+                player.gui.top.discord.text.selectable = true
             end
         end
     end
