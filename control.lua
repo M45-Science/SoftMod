@@ -1,4 +1,4 @@
---v0481-7-02-2020_4-35-AM
+--v0482-7-02-2020_5-28-AM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -1295,19 +1295,19 @@ script.on_load(
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
-                        if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
-                            if player.gui.top.discord.visible == true then
+                        if player and player.valid and player.gui and player.gui.top and player.gui.top.discordurl then
+                            if player.gui.top.discordurl.visible == true then
                                 smart_print(
                                     player,
                                     "Discord link is now hidden. Using the command again will turn it back on."
                                 )
-                                player.gui.top.discord.visible = false
+                                player.gui.top.discordurl.visible = false
                             else
                                 smart_print(
                                     player,
                                     "Discord link now shown. Using the command again will turn it back off."
                                 )
-                                player.gui.top.discord.visible = true
+                                player.gui.top.discordurl.visible = true
                             end
                         end
                     else
@@ -2040,12 +2040,12 @@ script.on_event(
         end
 
         --Discord Info--
-        if not player.gui.top.discord then
+        if not player.gui.top.discordurl then
             player.gui.top.add {type = "text-box", name = "discord"}
-            player.gui.top.discord.text = "https://discord.gg/Ps2jnm7"
-            player.gui.top.discord.tooltip = "Select with mouse and press control-c to copy!"
-            player.gui.top.discord.read_only = true
-            player.gui.top.discord.selectable = true
+            player.gui.top.discordurl.text = "https://discord.gg/Ps2jnm7"
+            player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
+            player.gui.top.discordurl.read_only = true
+            player.gui.top.discordurl.selectable = true
         end
 
         --Send info to bot--
