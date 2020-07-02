@@ -1,4 +1,4 @@
---v0480-6-22-2020_2-26-PM
+--v0481-7-02-2020_4-35-AM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -2440,9 +2440,12 @@ script.on_nth_tick(
 script.on_nth_tick(
     300, --about 5 seconds
     function(event)
-        --Repair discord info
-        if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
-            player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+        for _, player in pairs(game.connected_players) do
+            --Repair discord info
+            if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
+                player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+                player.gui.top.discord.read_only = true
+            end
         end
     end
 )
