@@ -2035,7 +2035,9 @@ script.on_event(
         create_groups()
         game_settings(player)
 
-        player.gui.top.discord.destroy()
+        if player.gui.top.discord then
+            player.gui.top.discord.destroy()
+        end
 
         --Discord Info--
         if not player.gui.top.discord then
