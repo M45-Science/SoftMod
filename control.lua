@@ -2037,9 +2037,10 @@ script.on_event(
 
         --Discord Info--
         if not player.gui.top.discord then
-            player.gui.top.add {type = "textfield", name = "discord"}
+            player.gui.top.add {type = "text-box", name = "discord"}
             player.gui.top.discord.text = "discord.gg/Ps2jnm7"
             player.gui.top.discord.tooltip = "Select with mouse and press control-c to copy!"
+            player.gui.top.discord.read_only = true
 
         end
 
@@ -2432,21 +2433,6 @@ script.on_nth_tick(
                     --INIT
                     global.playeractive[player.index] = true
                 end
-            end
-        end
-    end
-)
-
---Keep to minimum--
-script.on_nth_tick(
-    300, --about 5 seconds
-    function(event)
-        for _, player in pairs(game.connected_players) do
-            --Repair discord info
-            if player and player.valid and player.gui and player.gui.top and player.gui.top.discord then
-                player.gui.top.discord.text = "discord.gg/Ps2jnm7"
-                player.gui.top.discord.read_only = true
-                player.gui.top.discord.selectable = true
             end
         end
     end
