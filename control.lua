@@ -2040,11 +2040,10 @@ script.on_event(
         --Discord Info--
         if not player.gui.top.discord then
             player.gui.top.add {type = "text-box", name = "discord"}
-            player.gui.top.discord.text = "discord.gg/Ps2jnm7"
+            player.gui.top.discord.text = "https://discord.gg/Ps2jnm7"
             player.gui.top.discord.tooltip = "Select with mouse and press control-c to copy!"
             player.gui.top.discord.read_only = true
-            player.gui.top.discord.select_all()
-
+            player.gui.top.discord.selectable = true
         end
 
         --Send info to bot--
