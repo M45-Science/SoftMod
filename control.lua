@@ -2041,7 +2041,7 @@ script.on_event(
 
         --Discord Info--
         if not player.gui.top.discordurl then
-            player.gui.top.add {type = "text-box", name = "discord"}
+            player.gui.top.add {type = "text-box", name = "discordurl"}
             player.gui.top.discordurl.text = "https://discord.gg/Ps2jnm7"
             player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
             player.gui.top.discordurl.read_only = true
