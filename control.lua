@@ -1,4 +1,4 @@
---v0482-7-02-2020_5-28-AM
+--v0483-7-29-2020_7-44-PM
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -1974,22 +1974,24 @@ script.on_load(
 script.on_event(
     defines.events.on_console_command,
     function(event)
-        local command = ""
-        local args = ""
+        if event and event.command and event.parameters then
+            local command = ""
+            local args = ""
 
-        if event.command then
-            command = event.command
-        end
+            if event.command then
+                command = event.command
+            end
 
-        if event.parameters then
-            args = event.parameters
-        end
+            if event.parameters then
+                args = event.parameters
+            end
 
-        if event.player_index then
-            local player = game.players[event.player_index]
-            print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
-        elseif command ~= "time" and command ~= "p" and command ~= "w" and command ~= "server-save" then --Ignore spammy console commands
-            print(string.format("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args))
+            if event.player_index then
+                local player = game.players[event.player_index]
+                print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
+            elseif command ~= "time" and command ~= "p" and command ~= "w" and command ~= "server-save" then --Ignore spammy console commands
+                print(string.format("[CMD] NAME: NONE, COMMAND: %s, ARGS: %s", command, args))
+            end
         end
     end
 )
@@ -2029,35 +2031,37 @@ script.on_event(
 script.on_event(
     defines.events.on_player_joined_game,
     function(event)
-        local player = game.players[event.player_index]
-        create_myglobals()
-        create_player_globals(player)
-        create_groups()
-        game_settings(player)
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+            create_myglobals()
+            create_player_globals(player)
+            create_groups()
+            game_settings(player)
 
-        if player.gui.top.discord then
-            player.gui.top.discord.destroy()
+            if player.gui.top.discord then
+                player.gui.top.discord.destroy()
+            end
+
+            --Discord Info--
+            if not player.gui.top.discordurl then
+                player.gui.top.add {type = "text-box", name = "discordurl"}
+                player.gui.top.discordurl.text = "https://discord.gg/Ps2jnm7"
+                player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
+                player.gui.top.discordurl.read_only = true
+                player.gui.top.discordurl.selectable = true
+            end
+
+            --Send info to bot--
+            if (player.admin) then
+                message_alld(player.name .. " moved to Admins group.")
+            elseif (player.permission_group and player.permission_group.name == global.regularsgroup.name) then
+                message_alld(player.name .. " is now a regular!")
+            elseif (player.permission_group and player.permission_group.name == global.membersgroup.name) then
+                message_alld(player.name .. " is now a member!")
+            end
+
+            get_permgroup()
         end
-
-        --Discord Info--
-        if not player.gui.top.discordurl then
-            player.gui.top.add {type = "text-box", name = "discordurl"}
-            player.gui.top.discordurl.text = "https://discord.gg/Ps2jnm7"
-            player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
-            player.gui.top.discordurl.read_only = true
-            player.gui.top.discordurl.selectable = true
-        end
-
-        --Send info to bot--
-        if (player.admin) then
-            message_alld(player.name .. " moved to Admins group.")
-        elseif (player.permission_group and player.permission_group.name == global.regularsgroup.name) then
-            message_alld(player.name .. " is now a regular!")
-        elseif (player.permission_group and player.permission_group.name == global.membersgroup.name) then
-            message_alld(player.name .. " is now a member!")
-        end
-
-        get_permgroup()
     end
 )
 
@@ -2065,11 +2069,13 @@ script.on_event(
 script.on_event(
     defines.events.on_player_created,
     function(event)
-        local player = game.players[event.player_index]
-        set_perms()
-        show_players(player)
-        smart_print(player, "To see online players, chat /online")
-        message_all("Welcome " .. player.name .. " to the map!")
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+            set_perms()
+            show_players(player)
+            smart_print(player, "To see online players, chat /online")
+            message_all("Welcome " .. player.name .. " to the map!")
+        end
     end
 )
 
@@ -2078,40 +2084,42 @@ script.on_event(
 script.on_event(
     defines.events.on_built_entity,
     function(event)
-        local player = game.players[event.player_index]
-        local created_entity = event.created_entity
-        local stack = event.stack
+        if event and event.player_index and event.created_entity and event.stack then
+            local player = game.players[event.player_index]
+            local created_entity = event.created_entity
+            local stack = event.stack
 
-        --Blueprint safety
-        if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
-            local count = stack.get_blueprint_entity_count()
+            --Blueprint safety
+            if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+                local count = stack.get_blueprint_entity_count()
 
-            if player.admin then
-                return
-            elseif is_new(player) and count > 5000 then
-                --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                smart_print(player, "You aren't allowed to use blueprints that large yet.")
-                stack.clear_blueprint()
-                return
-            elseif count > 20000 then
-                --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                smart_print(player, "That blueprint is too large.")
-                stack.clear_blueprint()
-                return
+                if player.admin then
+                    return
+                elseif is_new(player) and count > 5000 then
+                    --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                    smart_print(player, "You aren't allowed to use blueprints that large yet.")
+                    stack.clear_blueprint()
+                    return
+                elseif count > 20000 then
+                    --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                    smart_print(player, "That blueprint is too large.")
+                    stack.clear_blueprint()
+                    return
+                end
             end
-        end
 
-        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
-            if player and created_entity then
-                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                    if created_entity.name == "programmable-speaker" then
-                        message_all(
-                            player.name ..
-                                " placed a speaker at [gps=" ..
-                                    math.floor(created_entity.position.x) ..
-                                        "," .. math.floor(created_entity.position.y) .. "]"
-                        )
-                        global.last_speaker_warning = game.tick
+            if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 300) then
+                if player and created_entity then
+                    if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                        if created_entity.name == "programmable-speaker" then
+                            message_all(
+                                player.name ..
+                                    " placed a speaker at [gps=" ..
+                                        math.floor(created_entity.position.x) ..
+                                            "," .. math.floor(created_entity.position.y) .. "]"
+                            )
+                            global.last_speaker_warning = game.tick
+                        end
                     end
                 end
             end
@@ -2122,26 +2130,28 @@ script.on_event(
 script.on_event(
     defines.events.on_player_cursor_stack_changed,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        if player and player.valid then
-            if player.cursor_stack then
-                local stack = player.cursor_stack
-                if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
-                    local count = stack.get_blueprint_entity_count()
+            if player and player.valid then
+                if player.cursor_stack then
+                    local stack = player.cursor_stack
+                    if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+                        local count = stack.get_blueprint_entity_count()
 
-                    if player.admin then
-                        return
-                    elseif is_new(player) and count > 5000 then
-                        --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                        smart_print(player, "You aren't allowed to use blueprints that large yet.")
-                        stack.clear_blueprint()
-                        return
-                    elseif count > 20000 then
-                        --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                        smart_print(player, "That blueprint is too large!")
-                        stack.clear_blueprint()
-                        return
+                        if player.admin then
+                            return
+                        elseif is_new(player) and count > 5000 then
+                            --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                            smart_print(player, "You aren't allowed to use blueprints that large yet.")
+                            stack.clear_blueprint()
+                            return
+                        elseif count > 20000 then
+                            --message_alld(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                            smart_print(player, "That blueprint is too large!")
+                            stack.clear_blueprint()
+                            return
+                        end
                     end
                 end
             end
@@ -2153,44 +2163,49 @@ script.on_event(
 script.on_event(
     defines.events.on_pre_player_mined_item,
     function(event)
-        local player = game.players[event.player_index]
-        local obj = event.entity
+        if event and event.player_index and event.entity then
+            local player = game.players[event.player_index]
+            local obj = event.entity
 
-        --Don't let new players mine other players items... dirty hack.
-        if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-            --Create limbo if needed
-            if game.surfaces["limbo"] == nil then
-                local my_map_gen_settings = {
-                    width = 1,
-                    height = 1,
-                    default_enable_all_autoplace_controls = false,
-                    property_expression_names = {cliffiness = 0},
-                    autoplace_settings = {
-                        tile = {settings = {["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}}}
-                    },
-                    starting_area = "none"
-                }
-                game.create_surface("limbo", my_map_gen_settings)
+            --Don't let new players mine other players items... dirty hack.
+            if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+                --Create limbo if needed
+                if game.surfaces["limbo"] == nil then
+                    local my_map_gen_settings = {
+                        width = 1,
+                        height = 1,
+                        default_enable_all_autoplace_controls = false,
+                        property_expression_names = {cliffiness = 0},
+                        autoplace_settings = {
+                            tile = {
+                                settings = {["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}}
+                            }
+                        },
+                        starting_area = "none"
+                    }
+                    game.create_surface("limbo", my_map_gen_settings)
+                end
+                --Record old position and surface
+                local oldpos = player.character.position
+                local oldsurf = player.character.surface
+
+                --Teleport to limbo, and back... this interrupts mining.
+                --I haven't found any other way to interrupt mining this late
+                --Only other way is to remove object and perfectly clone it, i'd rather not...
+
+                player.teleport({0, 0}, game.surfaces["limbo"])
+                player.teleport(oldpos, oldsurf)
+
+                player.print("You are a new user, and are not allowed to mine other people's objects yet!")
+            else
+                console_print(
+                    player.name ..
+                        " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
+                )
             end
-            --Record old position and surface
-            local oldpos = player.character.position
-            local oldsurf = player.character.surface
 
-            --Teleport to limbo, and back... this interrupts mining.
-            --I haven't found any other way to interrupt mining this late
-            --Only other way is to remove object and perfectly clone it, i'd rather not...
-
-            player.teleport({0, 0}, game.surfaces["limbo"])
-            player.teleport(oldpos, oldsurf)
-
-            player.print("You are a new user, and are not allowed to mine other people's objects yet!")
-        else
-            console_print(
-                player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-            )
+            set_player_active(player)
         end
-
-        set_player_active(player)
     end
 )
 
@@ -2198,29 +2213,32 @@ script.on_event(
 script.on_event(
     defines.events.on_player_rotated_entity,
     function(event)
-        local player = game.players[event.player_index]
-        local obj = event.entity
-        local prev_dir = event.previous_direction
+        if event and event.player_index and event.previous_direction then
+            local player = game.players[event.player_index]
+            local obj = event.entity
+            local prev_dir = event.previous_direction
 
-        --Don't let new players rotate other players items, unrotate and untouch the item.
-        if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-            --Unrotate
-            obj.direction = prev_dir
+            --Don't let new players rotate other players items, unrotate and untouch the item.
+            if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+                --Unrotate
+                obj.direction = prev_dir
 
-            --Create untouch list if needed
-            if not global.untouchobj then
-                global.untouchobj = {object = {}, prev = {}}
+                --Create untouch list if needed
+                if not global.untouchobj then
+                    global.untouchobj = {object = {}, prev = {}}
+                end
+
+                --Add to list
+                table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
+                player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
+            else
+                console_print(
+                    player.name ..
+                        " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
+                )
             end
-
-            --Add to list
-            table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-            player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
-        else
-            console_print(
-                player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-            )
+            set_player_active(player)
         end
-        set_player_active(player)
     end
 )
 
@@ -2228,9 +2246,11 @@ script.on_event(
 script.on_event(
     defines.events.on_player_main_inventory_changed,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        set_player_active(player)
+            set_player_active(player)
+        end
     end
 )
 
@@ -2238,9 +2258,11 @@ script.on_event(
 script.on_event(
     defines.events.on_player_mined_tile,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        set_player_active(player)
+            set_player_active(player)
+        end
     end
 )
 
@@ -2248,9 +2270,11 @@ script.on_event(
 script.on_event(
     defines.events.on_player_repaired_entity,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        set_player_active(player)
+            set_player_active(player)
+        end
     end
 )
 
@@ -2258,9 +2282,11 @@ script.on_event(
 script.on_event(
     defines.events.on_player_fast_transferred,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        set_player_active(player)
+            set_player_active(player)
+        end
     end
 )
 
@@ -2268,9 +2294,11 @@ script.on_event(
 script.on_event(
     defines.input_action.change_shooting_state,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        set_player_active(player)
+            set_player_active(player)
+        end
     end
 )
 
@@ -2278,11 +2306,13 @@ script.on_event(
 script.on_event(
     defines.events.on_console_chat,
     function(event)
-        --Can be triggered by console, so check for nil
-        if event.player_index then
-            local player = game.players[event.player_index]
+        if event and event.player_index then
+            --Can be triggered by console, so check for nil
+            if event and event.player_index then
+                local player = game.players[event.player_index]
 
-            set_player_active(player)
+                set_player_active(player)
+            end
         end
     end
 )
@@ -2293,14 +2323,16 @@ script.on_event(
 script.on_event(
     defines.events.on_player_changed_position,
     function(event)
-        local player = game.players[event.player_index]
+        if event and event.player_index then
+            local player = game.players[event.player_index]
 
-        --Only count if actually walking...
-        if player and player.valid and player.walking_state then
-            local walking_state = player.walking_state.walking
+            --Only count if actually walking...
+            if player and player.valid and player.walking_state then
+                local walking_state = player.walking_state.walking
 
-            if walking_state == true then
-                set_player_active(player)
+                if walking_state == true then
+                    set_player_active(player)
+                end
             end
         end
     end
@@ -2311,25 +2343,27 @@ script.on_event(
 script.on_event(
     defines.events.on_pre_player_died,
     function(event)
-        local player = game.players[event.player_index]
-        if player and player.valid and player.character then
-            local centerPosition = player.position
-            local label =
-                "Corpse of: " ..
-                player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
-            local chartTag = {position = centerPosition, icon = nil, text = label}
-            local qtag = player.force.add_chart_tag(player.surface, chartTag)
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+            if player and player.valid and player.character then
+                local centerPosition = player.position
+                local label =
+                    "Corpse of: " ..
+                    player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
+                local chartTag = {position = centerPosition, icon = nil, text = label}
+                local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-            create_myglobals()
-            create_player_globals(player)
+                create_myglobals()
+                create_player_globals(player)
 
-            table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+                table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
-            --Log to discord
-            message_all(
-                player.name ..
-                    " died at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
-            )
+                --Log to discord
+                message_all(
+                    player.name ..
+                        " died at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+                )
+            end
         end
     end
 )
@@ -2338,13 +2372,15 @@ script.on_event(
 script.on_event(
     defines.events.on_research_finished,
     function(event)
-        local tech = event.research
-        local wscript = event.by_script
+        if event and event.research and event.by_script then
+            local tech = event.research
+            local wscript = event.by_script
 
-        if tech then
-            --Log to discord
-            if wscript == false then
-                message_alld("Research " .. tech.name .. " completed.")
+            if tech then
+                --Log to discord
+                if wscript == false then
+                    message_alld("Research " .. tech.name .. " completed.")
+                end
             end
         end
     end
