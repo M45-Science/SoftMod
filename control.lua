@@ -940,47 +940,52 @@ script.on_load(
                 "damn",
                 "damn <player> sends player to hell, tfrom <player> to teleport them back out.",
                 function(param)
-                    if game.surfaces["hell"] == nil then
-                        local my_map_gen_settings = {
-                            width = 100,
-                            height = 100,
-                            default_enable_all_autoplace_controls = false,
-                            property_expression_names = {cliffiness = 0},
-                            autoplace_settings = {
-                                tile = {
-                                    settings = {
-                                        ["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}
+                    local player = game.players[param.player_index]
+                    if (player and player.admin) or (not player) then
+                        if game.surfaces["hell"] == nil then
+                            local my_map_gen_settings = {
+                                width = 100,
+                                height = 100,
+                                default_enable_all_autoplace_controls = false,
+                                property_expression_names = {cliffiness = 0},
+                                autoplace_settings = {
+                                    tile = {
+                                        settings = {
+                                            ["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}
+                                        }
                                     }
-                                }
-                            },
-                            starting_area = "none"
-                        }
-                        game.create_surface("hell", my_map_gen_settings)
-                    end
+                                },
+                                starting_area = "none"
+                            }
+                            game.create_surface("hell", my_map_gen_settings)
+                        end
 
-                    if param.parameter then
-                        local victim = game.players[param.parameter]
+                        if param.parameter then
+                            local victim = game.players[param.parameter]
 
-                        if (victim and victim.valid) then
-                            if victim.character and victim.character.valid then
-                                victim.character.die(victim.force, victim.character)
-                            end
+                            if (victim and victim.valid) then
+                                if victim.character and victim.character.valid then
+                                    victim.character.die(victim.force, victim.character)
+                                end
 
-                            local surf = game.surfaces["hell"]
-                            if surf and surf.name then
-                                local newpos =
-                                    victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
-                                if newpos then
-                                    victim.teleport(newpos, surf)
-                                    return
-                                else
-                                    victim.teleport({0, 0}, surf) --Screw it
-                                    return
+                                local surf = game.surfaces["hell"]
+                                if surf and surf.name then
+                                    local newpos =
+                                        victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
+                                    if newpos then
+                                        victim.teleport(newpos, surf)
+                                        return
+                                    else
+                                        victim.teleport({0, 0}, surf) --Screw it
+                                        return
+                                    end
                                 end
                             end
                         end
+                        smart_print(player, "Couldn't find that player.")
+                    else
+                        smart_print(player, "Admins only.")
                     end
-                    smart_print(player, "Couldn't find that player.")
                 end
             )
             --Admin vote overrrule
