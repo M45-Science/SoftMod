@@ -1,4 +1,4 @@
---v0483-7-29-2020_7-44-PM
+--v0484-8-17-2020_1251a
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -935,6 +935,54 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            --Damn them!
+            commands.add_command(
+                "damn",
+                "damn <player> sends player to hell, tfrom <player> to teleport them back out.",
+                function(param)
+                    if game.surfaces["hell"] == nil then
+                        local my_map_gen_settings = {
+                            width = 100,
+                            height = 100,
+                            default_enable_all_autoplace_controls = false,
+                            property_expression_names = {cliffiness = 0},
+                            autoplace_settings = {
+                                tile = {
+                                    settings = {
+                                        ["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}
+                                    }
+                                }
+                            },
+                            starting_area = "none"
+                        }
+                        game.create_surface("hell", my_map_gen_settings)
+                    end
+
+                    if param.parameter then
+                        local victim = game.players[param.parameter]
+
+                        if (victim and victim.valid) then
+                            if victim.character and victim.character.valid then
+                                victim.character.die(victim.force, victim.character)
+                            end
+
+                            local surf = game.surfaces["hell"]
+                            if surf and surf.name then
+                                local newpos =
+                                    victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
+                                if newpos then
+                                    victim.teleport(newpos, surf)
+                                    return
+                                else
+                                    victim.teleport({0, 0}, surf) --Screw it
+                                    return
+                                end
+                            end
+                        end
+                    end
+                    smart_print(player, "Couldn't find that player.")
+                end
+            )
             --Admin vote overrrule
             commands.add_command(
                 "overrule",
@@ -1885,10 +1933,24 @@ script.on_load(
                             return
                         end
 
+                        local surface = player.surface
+
                         if param.parameter then
                             local str = param.parameter
                             local xpos = "0.0"
                             local ypos = "0.0"
+
+                            local n = game.surfaces[param.parameter]
+                            if n then
+                                surface = n
+                                local position = {x = xpos, y = ypos}
+                                local newpos =
+                                    surface.find_non_colliding_position("character", position, 15, 0.01, false)
+                                if newpos then
+                                    player.teleport(newpos, surface)
+                                    return
+                                end
+                            end
 
                             xpos, ypos = str:match("([^,]+),([^,]+)")
                             if tonumber(xpos) and tonumber(ypos) then
@@ -1897,15 +1959,9 @@ script.on_load(
                                 if position then
                                     if position.x and position.y then
                                         local newpos =
-                                            player.surface.find_non_colliding_position(
-                                            "character",
-                                            position,
-                                            15,
-                                            0.01,
-                                            false
-                                        )
+                                            surface.find_non_colliding_position("character", position, 15, 0.01, false)
                                         if (newpos) then
-                                            player.teleport(newpos, player.surface)
+                                            player.teleport(newpos, surface)
                                             player.print("Okay.")
                                         else
                                             player.print("Area appears to be full.")
