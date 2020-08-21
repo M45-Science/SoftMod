@@ -1,4 +1,4 @@
---v0484-8-17-2020_1251a
+--v0485-8-20-2020_719p
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -940,7 +940,16 @@ script.on_load(
                 "damn",
                 "damn <player> sends player to hell, tfrom <player> to teleport them back out.",
                 function(param)
-                    local player = game.players[param.player_index]
+
+                    if param and param.player_index then
+                        player = game.players[param.player_index]
+                        if player and player.admin == false then
+                            is_admin = false
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
                     if (player and player.admin) or (not player) then
                         if game.surfaces["hell"] == nil then
                             local my_map_gen_settings = {
@@ -993,8 +1002,9 @@ script.on_load(
                 "overrule",
                 "overrule <defendant> (overrule votes against defendant)\noverrule <clear> (clear all votes, will unbanish all)",
                 function(param)
+                    if param and param.player_index then
                     local player = game.players[param.player_index]
-                    if (player and player.admin) or (not player) then
+                    if (player and player.admin) then
                         if global.banishvotes then
                             --get arguments
                             local args = mysplit(param.parameter, " ")
@@ -1053,6 +1063,7 @@ script.on_load(
                         smart_print(player, "Admins only.")
                     end
                 end
+            end
             )
 
             --Print votes
@@ -1060,6 +1071,7 @@ script.on_load(
                 "votes",
                 "votes (shows votes)",
                 function(param)
+                    if param and param.player_index then
                     local player = game.players[param.player_index]
 
                     if global.banishvotes and global.banishvotes ~= {} then
@@ -1117,6 +1129,7 @@ script.on_load(
                         return
                     end
                 end
+            end
             )
 
             --Banish command
@@ -1375,7 +1388,7 @@ script.on_load(
                 function(param)
                     local player
 
-                    if param.player_index then
+                    if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
                             smart_print(player, "Admins only.")
@@ -1399,7 +1412,7 @@ script.on_load(
                 "<code>",
                 function(param)
                     local player
-                    if param.player_index then
+                    if param and param.player_index then
                         local player = game.players[param.player_index]
 
                         if param.parameter then
@@ -1431,7 +1444,7 @@ script.on_load(
                 "cchat",
                 "<message here>",
                 function(param)
-                    if param.player_index then
+                    if param and param.player_index then
                         local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
                         return
@@ -1448,7 +1461,7 @@ script.on_load(
                 "cwhisper",
                 "<message here>",
                 function(param)
-                    if param.player_index then
+                    if param and param.player_index then
                         local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
                         return
@@ -1476,7 +1489,7 @@ script.on_load(
                 function(param)
                     local player
 
-                    if param.player_index then
+                    if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
                             smart_print(player, "Admins only.")
@@ -1524,7 +1537,7 @@ script.on_load(
                     local is_admin = true
                     local player
 
-                    if param.player_index then
+                    if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
                             is_admin = false
@@ -1559,7 +1572,7 @@ script.on_load(
                     local is_admin = true
                     local player
 
-                    if param.player_index then
+                    if param and param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
                             is_admin = false
@@ -1591,7 +1604,7 @@ script.on_load(
                     local is_admin = true
                     local player
 
-                    if param.player_index then
+                    if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
                             is_admin = false
@@ -1625,7 +1638,7 @@ script.on_load(
                     local new_pos_x = 0.0
                     local new_pos_y = 0.0
 
-                    if param.player_index then
+                    if param and param.player_index then
                         victim = game.players[param.player_index]
 
                         if victim and victim.admin == false then
@@ -1687,7 +1700,7 @@ script.on_load(
                     local is_admin = true
                     local victim
 
-                    if param.player_index then
+                    if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
                             is_admin = false
@@ -1744,7 +1757,7 @@ script.on_load(
                     local is_admin = true
                     local victim
 
-                    if param.player_index then
+                    if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
                             is_admin = false
@@ -1774,7 +1787,7 @@ script.on_load(
                     local victim
                     local is_admin = true
 
-                    if param.player_index then
+                    if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
                             is_admin = false
@@ -1830,7 +1843,7 @@ script.on_load(
                     local player
                     local is_admin = true
 
-                    if param.player_index then
+                    if param and param.player_index then
                         player = game.players[param.player_index]
                     end
 
