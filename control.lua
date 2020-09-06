@@ -1,4 +1,4 @@
---v0485-8-20-2020_719p
+--v0487-9-5-2020_822p
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -824,10 +824,12 @@ local function get_permgroup()
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
         if (player and player.valid) then
-            --Handle nil permissions, for mod compatability
+           --Handle se-remote-view
             if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                 if player.permission_group then
-                    if (player.admin and player.permission_group.name ~= global.adminsgroup.name) then
+                    if (player.admin and
+                    player.permission_group.name ~= global.adminsgroup.name and
+                    player.permission_group.name ~= global.adminsgroup.name .. "_satellite" ) then
                         global.adminsgroup.add_player(player)
                         message_all(player.name .. " moved to Admins group.")
                     elseif
@@ -835,7 +837,8 @@ local function get_permgroup()
                             global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
                             not player.admin)
                      then
-                        if (player.permission_group.name ~= global.regularsgroup.name) then
+                        if (player.permission_group.name ~= global.regularsgroup.name and
+                        player.permission_group.name ~= global.regularsgroup.name .. "_satellite" ) then
                             global.regularsgroup.add_player(player)
                             message_all(player.name .. " is now a regular!")
                             player.print(
@@ -857,8 +860,10 @@ local function get_permgroup()
                             not player.admin)
                      then
                         if
-                            (player.permission_group.name ~= global.membersgroup.name and
-                                player.permission_group.name ~= global.regularsgroup.name)
+                            ( player.permission_group.name ~= global.regularsgroup.name and
+                                player.permission_group.name ~= global.regularsgroup.name .. "_satellite" and
+                                player.permission_group.name ~= global.membersgroup.name and
+                                player.permission_group.name ~= global.membersgroup.name .. "_satellite" )
                          then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
@@ -876,10 +881,6 @@ local function get_permgroup()
                             )
                         end
                     end
-                else
-                    --Fix nil group (bugged mods)
-                    global.defaultgroup.add_player(player)
-                    message_alld(player.name .. " has nil permissions.")
                 end
             end
         end
@@ -2126,11 +2127,14 @@ script.on_event(
             end
 
             --Send info to bot--
+            --Handle se-remote-view--
             if (player.admin) then
                 message_alld(player.name .. " moved to Admins group.")
-            elseif (player.permission_group and player.permission_group.name == global.regularsgroup.name) then
+            elseif (player.permission_group and (player.permission_group.name == global.regularsgroup.name or
+            player.permission_group.name == global.regularsgroup.name .. "_satellite")) then
                 message_alld(player.name .. " is now a regular!")
-            elseif (player.permission_group and player.permission_group.name == global.membersgroup.name) then
+            elseif (player.permission_group and (player.permission_group.name == global.membersgroup.name or
+            player.permission_group.name == global.membersgroup.name .. "_satellite")) then
                 message_alld(player.name .. " is now a member!")
             end
 
