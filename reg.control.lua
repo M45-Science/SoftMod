@@ -80,39 +80,6 @@ script.on_load(
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
 
-            --register command
-            commands.add_command(
-                "register",
-                "<code>",
-                function(param)
-                    local player
-                    if param and param.player_index then
-                        local player = game.players[param.player_index]
-
-                        if param.parameter then
-                            local ptype = "Error"
-
-                            if player.admin then
-                                ptype = "admin"
-                            elseif is_regular(player) then
-                                ptype = "regular"
-                            elseif is_trusted(player) then
-                                ptype = "trusted"
-                            else
-                                ptype = "normal"
-                            end
-
-                            print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
-                            smart_print(player, "Sending registration code...")
-                            return
-                        end
-                        smart_print(player, "You need to specify an registration code!")
-                        return
-                    end
-                    smart_print(nil, "I don't think the console needs to use this command...")
-                end
-            )
-
             --server chat
             commands.add_command(
                 "cchat",
