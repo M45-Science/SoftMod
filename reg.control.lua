@@ -64,7 +64,7 @@ local function show_players(victim)
                     string.format(
                         "%-3d: %s",
                         numpeople,
-                        player.name,
+                        player.name
                     )
                 )
         end
