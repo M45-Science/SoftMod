@@ -59,19 +59,14 @@ local function show_players(victim)
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
 
-
-            if (global.active_playtime and global.active_playtime[player.index]) then
                 smart_print(
                     victim,
                     string.format(
-                        "%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh",
+                        "%-3d: %s",
                         numpeople,
                         player.name,
-                        (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0),
-                        (player.online_time / 60.0 / 60.0 / 60.0)
                     )
                 )
-            end
         end
     end
     if numpeople == 0 then
