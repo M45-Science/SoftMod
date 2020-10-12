@@ -1,27 +1,10 @@
---v0489-10-5-2020_611a
-
---Most of this code is written by:
+--v0490-10-12-2020_553a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
-
-local function dump(o)
-    if type(o) == "table" then
-        local s = "{ "
-        for k, v in pairs(o) do
-            if type(k) ~= "number" then
-                k = '"' .. k .. '"'
-            end
-            s = s .. "[" .. k .. "] = " .. dump(v) .. ","
-        end
-        return s .. "} "
-    else
-        return tostring(o)
-    end
-end
 
 --safe console print--
 local function console_print(message)
@@ -379,7 +362,7 @@ end
 
 --Set our default settings
 local function game_settings(player)
-    if game then
+    if player and player.valid and player.force then
         player.force.friendly_fire = false --friendly fire
         player.force.research_queue_enabled = true --nice to have
     end
@@ -417,7 +400,7 @@ local function get_permgroup()
                                 "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]"
                             )
                             player.print(
-                                "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]"
+                                "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]"
                             )
                         end
                     elseif
@@ -443,7 +426,7 @@ local function get_permgroup()
                                 "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]"
                             )
                             player.print(
-                                "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://bhmm.net/[/color]"
+                                "[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]"
                             )
                         end
                     end
@@ -507,11 +490,11 @@ script.on_load(
                 "damn",
                 "damn <player> sends player to hell, tfrom <player> to teleport them back out.",
                 function(param)
+                    local player
 
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
-                            is_admin = false
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -954,7 +937,6 @@ script.on_load(
                 "register",
                 "<code>",
                 function(param)
-                    local player
                     if param and param.player_index then
                         local player = game.players[param.player_index]
 
@@ -1077,13 +1059,11 @@ script.on_load(
                 "reset",
                 "<player> -- sets user to 0",
                 function(param)
-                    local is_admin = true
                     local player
 
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
-                            is_admin = false
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -1112,13 +1092,11 @@ script.on_load(
                 "member",
                 "<player> -- sets user to member status",
                 function(param)
-                    local is_admin = true
                     local player
 
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
-                            is_admin = false
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -1144,13 +1122,11 @@ script.on_load(
                 "regular",
                 "<player> -- sets user to regular status",
                 function(param)
-                    local is_admin = true
                     local player
 
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
-                            is_admin = false
                             smart_print(player, "Admins only.")
                             return
                         end
@@ -1176,7 +1152,6 @@ script.on_load(
                 "cspawn",
                 "<x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
                 function(param)
-                    local is_admin = true
                     local victim
                     local new_pos_x = 0.0
                     local new_pos_y = 0.0
@@ -1185,14 +1160,14 @@ script.on_load(
                         victim = game.players[param.player_index]
 
                         if victim and victim.admin == false then
-                            is_admin = false
+                            smart_print(victim, "Admins only.")
+                            return
                         else
                             new_pos_x = victim.position.x
                             new_pos_y = victim.position.y
                         end
                     end
 
-                    if is_admin then
                         local psurface = game.surfaces["nauvis"]
                         local pforce = game.forces["player"]
 
@@ -1229,10 +1204,7 @@ script.on_load(
                         else
                             smart_print(victim, "Couldn't find force or surface...")
                         end
-                    else
-                        smart_print(victim, "Admins only.")
                     end
-                end
             )
 
             --Reveal map
@@ -1240,17 +1212,16 @@ script.on_load(
                 "reveal",
                 "<size> -- <x> units of map. Default: 1024, max 4096",
                 function(param)
-                    local is_admin = true
                     local victim
 
                     if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
-                            is_admin = false
+                            smart_print(victim, "Admins only.")
+                            return
                         end
                     end
 
-                    if (is_admin) then
                         local psurface = game.surfaces["nauvis"]
                         local pforce = game.forces["player"]
                         local size = 1024
@@ -1286,9 +1257,6 @@ script.on_load(
                         else
                             smart_print(victim, "Either couldn't find surface nauvis, or couldn't find force player.")
                         end
-                    else
-                        smart_print(victim, "Admins only.")
-                    end
                 end
             )
 
@@ -1297,17 +1265,16 @@ script.on_load(
                 "rechart",
                 "resets fog of war",
                 function(param)
-                    local is_admin = true
                     local victim
 
                     if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
-                            is_admin = false
+                            smart_print(victim, "Admins only.")
+                            return
                         end
                     end
 
-                    if (is_admin) then
                         local pforce = game.forces["player"]
 
                         if pforce then
@@ -1316,9 +1283,6 @@ script.on_load(
                         else
                             smart_print(victim, "Couldn't find force: player")
                         end
-                    else
-                        smart_print(victim, "Admins only.")
-                    end
                 end
             )
 
@@ -1384,7 +1348,6 @@ script.on_load(
                 "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
                 function(param)
                     local player
-                    local is_admin = true
 
                     if param and param.player_index then
                         player = game.players[param.player_index]
@@ -1392,13 +1355,9 @@ script.on_load(
 
                     if (player) then
                         if (player and player.admin == false) then
-                            is_admin = false
-                        end
-                    end
-
-                    if (is_admin == false) then
-                        smart_print(player, "Admins only..")
+                            smart_print(player, "Admins only..")
                         return
+                        end
                     end
 
                     if (not param.parameter) then
@@ -1423,7 +1382,7 @@ script.on_load(
                                 )
                                 message_all("Game speed set to %" .. (game.speed * 100.00))
                             else
-                                smart_print(player, "Force: Player doesn't seem to exsist.")
+                                smart_print(player, "Force: Player doesn't seem to exist.")
                             end
                         else
                             smart_print(player, "That doesn't seem like a good idea...")
@@ -2006,23 +1965,15 @@ script.on_event(
     end
 )
 
---Looping timer, 15 seconds
-script.on_nth_tick(
-    900,
-    function(event)
-        --Check permissions / player time
-        get_permgroup()
-    end
-)
-
 --Looping timer, 2 minutes
 script.on_nth_tick(
     7200,
     function(event)
-        local toremove
 
         --Remove old corpse tags
         if (global.corpselist) then
+            local toremove
+
             for _, corpse in pairs(global.corpselist) do
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
@@ -2095,6 +2046,8 @@ script.on_nth_tick(
                 end
             end
         end
+
+        get_permgroup() --See if player qualifies now
     end
 )
 
