@@ -1608,6 +1608,13 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         if event and event.player_index then
+
+            --If map ended, tp new players there
+            local psurface = game.surfaces["end"]
+            if psurface then
+                victim.teleport(victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false), psurface)
+            end
+
             local player = game.players[event.player_index]
             create_myglobals()
             create_player_globals(player)
@@ -2110,7 +2117,7 @@ script.on_nth_tick(
             end
         end
 
-        local seconds = 10 - global.gtimer
+        local seconds = 84600 - global.gtimer
 
         if seconds > 0 then
             if seconds == (12 * 60 * 60) then
@@ -2181,7 +2188,8 @@ script.on_nth_tick(
                     psurface.always_day = true
 
                     --Set spawn
-                    game.forces["player"].set_spawn_position({0, 0}, psurface)
+                    local pforce = game.forces["player"]
+                    pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
 
                     --Teleport all players
                     for _, victim in pairs(game.players) do
