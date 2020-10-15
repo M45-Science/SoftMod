@@ -1,4 +1,4 @@
---v0490-10-12-2020_728
+--v0491-10-13-2020_704a
 
 --Most of this code is written by:
 --Carl Frank Otto III (aka Distortions864)
@@ -8,7 +8,6 @@
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
 handler.add_lib(require("silo-script"))
-
 
 --safe console print--
 local function console_print(message)
@@ -59,14 +58,7 @@ local function show_players(victim)
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
 
-                smart_print(
-                    victim,
-                    string.format(
-                        "%-3d: %s",
-                        numpeople,
-                        player.name
-                    )
-                )
+            smart_print(victim, string.format("%-3d: %s", numpeople, player.name))
         end
     end
     if numpeople == 0 then
@@ -79,7 +71,6 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
-
             --server chat
             commands.add_command(
                 "cchat",
@@ -96,7 +87,6 @@ script.on_load(
                     end
                 end
             )
-
 
             --Online
             commands.add_command(
@@ -116,7 +106,7 @@ script.on_load(
             --Game speed
             commands.add_command(
                 "gspeed",
-                "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
+                "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 1.0",
                 function(param)
                     local player
 
@@ -138,13 +128,9 @@ script.on_load(
 
                             if pforce then
                                 game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                                smart_print(
-                                    player,
-                                    "Game speed: " ..
-                                        value ..
-                                            " Walk speed: " .. game.forces["player"].character_running_speed_modifier
-                                )
-                                message_all("Game speed set to %" .. (game.speed * 100.00))
+                                if (player) then
+                                    message_all(player.name .. " set the game speed to %" .. (game.speed * 100.00))
+                                end
                             else
                                 smart_print(player, "Force: Player doesn't seem to exsist.")
                             end
