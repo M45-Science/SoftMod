@@ -2150,7 +2150,7 @@ script.on_nth_tick(
 
                 local surf = game.surfaces["hell"]
                 if surf and surf.name then
-                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
+                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 256, 0.01, false)
                     if newpos then
                         victim.teleport(newpos, surf)
                     else
