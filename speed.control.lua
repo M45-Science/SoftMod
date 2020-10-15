@@ -2118,6 +2118,7 @@ script.on_nth_tick(
                 end
             end
         else
+            --Reset map!
             global.gtimer = 0
             for _, candidate in pairs(game.surfaces) do
                 candidate.clear()
