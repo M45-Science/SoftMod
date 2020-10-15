@@ -2127,6 +2127,10 @@ script.on_nth_tick(
             for _, candidate in pairs(game.surfaces) do
                 candidate.clear()
             end
+            for _, player in pairs(game.connected_players) do
+                player.create_character()
+                player.force.reset()
+            end
         end
     end
 )
