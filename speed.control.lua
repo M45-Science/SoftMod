@@ -1617,6 +1617,10 @@ script.on_event(
                 player.gui.top.discord.destroy()
             end
 
+            if player.gui.top.gtimer then
+                player.gui.top.gtimer.destroy()
+            end
+
             --Discord Info--
             if not player.gui.top.discordurl then
                 player.gui.top.add {type = "text-box", name = "discordurl"}
