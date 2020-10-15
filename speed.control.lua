@@ -1,6 +1,7 @@
 --v0490-10-12-2020_553a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
+--daily reset version
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -2100,7 +2101,8 @@ script.on_nth_tick(
 script.on_nth_tick(
     60,
     function(event)
-        if game.surfaces["hell"] == nil then
+        --If game has eneded, don't count timer
+        if game.surfaces["end"] == nil then
             if global.gtimer then
                 global.gtimer = global.gtimer + 1
             else
@@ -2108,9 +2110,27 @@ script.on_nth_tick(
             end
         end
 
-        local seconds = 86400 - global.gtimer
+        local seconds = 10 - global.gtimer
 
         if seconds > 0 then
+            if seconds == (12 * 60 * 60) then
+                message_all("12 HOURS REMAINING!")
+            elseif seconds == (6 * 60 * 60) then
+                message_all("6 HOURS REMAINING!")
+            elseif seconds == (6 * 60 * 60) then
+                message_all("3 HOURS REMAINING!")
+            elseif seconds == (60 * 60) then
+                message_all("1 HOUR REMAINING!")
+            elseif seconds == (30 * 60) then
+                message_all("30 MINUTES REMAINING!")
+            elseif seconds == (15 * 60) then
+                message_all("15 MINUTES REMAINING!")
+            elseif seconds == (5 * 60) then
+                message_all("5 MINUTES REMAINING!")
+            elseif seconds == (5 * 60) then
+                message_all("1 MINUTE REMAINING!")
+            end
+
             --Update time in GUI
             local hours = string.format("%02.f", math.floor(seconds / 3600))
             local mins = string.format("%02.f", math.floor(seconds / 60 - (hours * 60)))
@@ -2122,14 +2142,22 @@ script.on_nth_tick(
                     player.gui.top.gtimer.text = ts
                 end
             end
-        else
-            if game.surfaces["hell"] == nil then
+        else -- Game ended
+            --If map hasn't ended yet
+            if game.surfaces["end"] == nil then
+                for _, player in pairs(game.players) do
+                    if player and player.valid and player.gui and player.gui.top and player.gui.top.gtimer then
+                        player.gui.top.gtimer.text = "MAP HAS ENEDED!"
+                    end
+                end
+
                 message_all("MAP HAS ENDED!")
                 print("[END]MAPEND")
 
+                --Make end area
                 local my_map_gen_settings = {
-                    width = 256,
-                    height = 256,
+                    width = 128,
+                    height = 128,
                     default_enable_all_autoplace_controls = false,
                     property_expression_names = {cliffiness = 0},
                     autoplace_settings = {
@@ -2139,29 +2167,34 @@ script.on_nth_tick(
                     },
                     starting_area = "none"
                 }
-                game.create_surface("hell", my_map_gen_settings)
+                --Create surface
+                game.create_surface("end", my_map_gen_settings)
 
+                --Grab new surface
+                local psurface = game.surfaces["end"]
 
-                --Change spawn here too
-                local psurface = game.surfaces["hell"]
-                local pforce = game.forces["player"]
-                pforce.set_spawn_position({0, 0}, psurface)
+                --If surface is valid
+                if psurface then
 
-                for _, victim in pairs(game.connected_players) do
-                    if victim.character and victim.character.valid then
-                        victim.character.die(victim.force, victim.character)
-                    end
+                    psurface.show_clouds = false
+                    psurface.generate_with_lab_tiles = true
+                    psurface.always_day = true
 
-                    local surf = game.surfaces["hell"]
-                    if surf and surf.name then
-                        local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 256, 0.01, false)
-                        if newpos then
-                            victim.teleport(newpos, surf)
-                        else
-                            victim.teleport({0, 0}, surf) --Screw it
-                        end
+                    --Set spawn
+                    game.forces["player"].set_spawn_position({0, 0}, psurface)
+
+                    --Teleport all players
+                    for _, victim in pairs(game.players) do
+                        victim.teleport(victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false), psurface)
                     end
                 end
+
+                --Grab old surface
+                local oldsurf = game.surfaces["nauvis"]
+                if oldsurf then
+                    oldsurf.clear(false)
+                end
+
             end
         end
     end
