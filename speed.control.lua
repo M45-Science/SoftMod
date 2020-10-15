@@ -2100,14 +2100,13 @@ script.on_nth_tick(
 script.on_nth_tick(
     60,
     function(event)
-
         if global.gtimer then
             global.gtimer = global.gtimer + 1
         else
             global.gtimer = 0
         end
 
-        local seconds = 60 - global.gtimer
+        local seconds = 86400 - global.gtimer
 
         if seconds > 0 then
             --Update time in GUI
@@ -2124,6 +2123,11 @@ script.on_nth_tick(
         else
             global.gtimer = 0
 
+            message_all("MAP HAS ENDED!")
+            message_all("MAP HAS ENDED!")
+            message_all("MAP HAS ENDED!")
+            message_alld("[END]MAPEND]")
+
             if game.surfaces["hell"] == nil then
                 local my_map_gen_settings = {
                     width = 256,
@@ -2138,20 +2142,20 @@ script.on_nth_tick(
                     starting_area = "none"
                 }
                 game.create_surface("hell", my_map_gen_settings)
-            end
 
-            for _, victim in pairs(game.connected_players) do
-                if victim.character and victim.character.valid then
-                    victim.character.die(victim.force, victim.character)
-                end
+                for _, victim in pairs(game.connected_players) do
+                    if victim.character and victim.character.valid then
+                        victim.character.die(victim.force, victim.character)
+                    end
 
-                local surf = game.surfaces["hell"]
-                if surf and surf.name then
-                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 256, 0.01, false)
-                    if newpos then
-                        victim.teleport(newpos, surf)
-                    else
-                        victim.teleport({0, 0}, surf) --Screw it
+                    local surf = game.surfaces["hell"]
+                    if surf and surf.name then
+                        local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 256, 0.01, false)
+                        if newpos then
+                            victim.teleport(newpos, surf)
+                        else
+                            victim.teleport({0, 0}, surf) --Screw it
+                        end
                     end
                 end
             end
