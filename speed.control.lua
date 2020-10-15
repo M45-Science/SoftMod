@@ -2100,7 +2100,6 @@ script.on_nth_tick(
 script.on_nth_tick(
     60,
     function(event)
-
         if global.gtimer then
             global.gtimer = global.gtimer + 1
         else
@@ -2128,7 +2127,9 @@ script.on_nth_tick(
                 candidate.clear()
             end
             for _, player in pairs(game.connected_players) do
-                player.character.destroy()
+                if player.character then
+                    player.character.destroy()
+                end
                 player.create_character()
                 player.force.reset()
             end
