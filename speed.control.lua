@@ -2100,10 +2100,12 @@ script.on_nth_tick(
 script.on_nth_tick(
     60,
     function(event)
-        if global.gtimer then
-            global.gtimer = global.gtimer + 1
-        else
-            global.gtimer = 0
+        if game.surfaces["hell"] == nil then
+            if global.gtimer then
+                global.gtimer = global.gtimer + 1
+            else
+                global.gtimer = 0
+            end
         end
 
         local seconds = 86400 - global.gtimer
@@ -2121,8 +2123,6 @@ script.on_nth_tick(
                 end
             end
         else
-            global.gtimer = 0
-
             if game.surfaces["hell"] == nil then
                 message_all("MAP HAS ENDED!")
                 print("[END]MAPEND")
@@ -2140,6 +2140,12 @@ script.on_nth_tick(
                     starting_area = "none"
                 }
                 game.create_surface("hell", my_map_gen_settings)
+
+
+                --Change spawn here too
+                local psurface = game.surfaces["hell"]
+                local pforce = game.forces["player"]
+                pforce.set_spawn_position({0, 0}, psurface)
 
                 for _, victim in pairs(game.connected_players) do
                     if victim.character and victim.character.valid then
