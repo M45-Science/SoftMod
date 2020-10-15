@@ -2126,7 +2126,7 @@ script.on_nth_tick(
             message_all("MAP HAS ENDED!")
             message_all("MAP HAS ENDED!")
             message_all("MAP HAS ENDED!")
-            message_alld("[END]MAPEND]")
+            message_alld("[END]MAPEND")
 
             if game.surfaces["hell"] == nil then
                 local my_map_gen_settings = {
