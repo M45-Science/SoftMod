@@ -2100,6 +2100,12 @@ script.on_nth_tick(
 script.on_nth_tick(
     60,
     function(event)
+        for _, player in pairs(game.connected_players) do
+            if not player.character then
+                player.create_character()
+            end
+        end
+
         if global.gtimer then
             global.gtimer = global.gtimer + 1
         else
@@ -2123,15 +2129,14 @@ script.on_nth_tick(
         else
             --Reset map!
             global.gtimer = 0
-            for _, candidate in pairs(game.surfaces) do
-                candidate.clear()
-            end
             for _, player in pairs(game.connected_players) do
                 if player.character then
                     player.character.destroy()
                 end
-                player.create_character()
                 player.force.reset()
+            end
+            for _, candidate in pairs(game.surfaces) do
+                candidate.clear()
             end
         end
     end
