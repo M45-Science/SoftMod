@@ -2127,17 +2127,36 @@ script.on_nth_tick(
                 end
             end
         else
-            --Reset map!
-            global.gtimer = 0
-            for _, player in pairs(game.connected_players) do
-                if player.character then
-                    player.character.destroy()
-                end
-                player.force.reset()
+            if game.surfaces["hell"] == nil then
+                local my_map_gen_settings = {
+                    width = 256,
+                    height = 256,
+                    default_enable_all_autoplace_controls = false,
+                    property_expression_names = {cliffiness = 0},
+                    autoplace_settings = {
+                        tile = {
+                            settings = {["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}}
+                        }
+                    },
+                    starting_area = "none"
+                }
+                game.create_surface("hell", my_map_gen_settings)
             end
-            for _, candidate in pairs(game.surfaces) do
-                candidate.clear()
-                candidate.map_gen_settings.seed = game.tick
+
+            for _, victim in pairs(game.connected_players) do
+                if victim.character and victim.character.valid then
+                    victim.character.die(victim.force, victim.character)
+                end
+
+                local surf = game.surfaces["hell"]
+                if surf and surf.name then
+                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
+                    if newpos then
+                        victim.teleport(newpos, surf)
+                    else
+                        victim.teleport({0, 0}, surf) --Screw it
+                    end
+                end
             end
         end
     end
