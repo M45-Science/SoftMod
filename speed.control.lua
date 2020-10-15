@@ -2100,11 +2100,6 @@ script.on_nth_tick(
 script.on_nth_tick(
     60,
     function(event)
-        for _, player in pairs(game.connected_players) do
-            if not player.character then
-                player.create_character()
-            end
-        end
 
         if global.gtimer then
             global.gtimer = global.gtimer + 1
