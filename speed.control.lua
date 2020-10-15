@@ -2127,6 +2127,8 @@ script.on_nth_tick(
                 end
             end
         else
+            global.gtimer = 0
+
             if game.surfaces["hell"] == nil then
                 local my_map_gen_settings = {
                     width = 256,
