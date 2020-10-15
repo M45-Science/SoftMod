@@ -2114,7 +2114,7 @@ script.on_nth_tick(
             local hours = string.format("%02.f", math.floor(seconds / 3600))
             local mins = string.format("%02.f", math.floor(seconds / 60 - (hours * 60)))
             local secs = string.format("%02.f", math.floor(seconds - hours * 3600 - mins * 60))
-            local ts = "TIME LEFT:" .. hours .. ":" .. mins .. "." .. secs
+            local ts = "TIME REMAINING: " .. hours .. ":" .. mins .. "." .. secs
 
             for _, player in pairs(game.connected_players) do
                 if player and player.valid and player.gui and player.gui.top and player.gui.top.gtimer then
@@ -2128,6 +2128,7 @@ script.on_nth_tick(
                 candidate.clear()
             end
             for _, player in pairs(game.connected_players) do
+                player.character.destroy()
                 player.create_character()
                 player.force.reset()
             end
