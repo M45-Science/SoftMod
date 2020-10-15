@@ -2118,7 +2118,7 @@ script.on_nth_tick(
 
             for _, player in pairs(game.connected_players) do
                 if player and player.valid and player.gui and player.gui.top and player.gui.top.gtimer then
-                    player.gui.top.gtimer = ts
+                    player.gui.top.gtimer.text = ts
                 end
             end
         else
