@@ -2136,8 +2136,8 @@ script.on_nth_tick(
                 player.force.reset()
             end
             for _, candidate in pairs(game.surfaces) do
-                candidate.map_gen_settings.seed = game.tick
                 candidate.clear()
+                candidate.map_gen_settings.seed = game.tick
             end
         end
     end
