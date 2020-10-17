@@ -1,4 +1,4 @@
---v0490-10-12-2020_553a
+--v0491-10-17-2020_1123a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 --daily reset version
@@ -1608,11 +1608,13 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         if event and event.player_index then
-
             --If map ended, tp new players there
             local psurface = game.surfaces["end"]
             if psurface then
-                victim.teleport(victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false), psurface)
+                victim.teleport(
+                    victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false),
+                    psurface
+                )
             end
 
             local player = game.players[event.player_index]
@@ -2134,7 +2136,7 @@ script.on_nth_tick(
                 message_all("15 MINUTES REMAINING!")
             elseif seconds == (5 * 60) then
                 message_all("5 MINUTES REMAINING!")
-            elseif seconds == (5 * 60) then
+            elseif seconds == (1 * 60) then
                 message_all("1 MINUTE REMAINING!")
             end
 
@@ -2182,18 +2184,22 @@ script.on_nth_tick(
 
                 --If surface is valid
                 if psurface then
-
                     psurface.show_clouds = false
                     psurface.generate_with_lab_tiles = true
                     psurface.always_day = true
 
                     --Set spawn
                     local pforce = game.forces["player"]
-                    pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
+                    pforce.set_spawn_position({x = 0, y = 0}, psurface)
 
                     --Teleport all players
                     for _, victim in pairs(game.players) do
-                        victim.teleport(victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false), psurface)
+                        if victim and victim.valid then
+                            victim.teleport(
+                                victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false),
+                                psurface
+                            )
+                        end
                     end
                 end
 
@@ -2202,7 +2208,6 @@ script.on_nth_tick(
                 if oldsurf then
                     oldsurf.clear(false)
                 end
-
             end
         end
     end
