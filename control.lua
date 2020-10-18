@@ -1,4 +1,4 @@
---v0490-10-12-2020_553a
+--v0490-10-18-2020_553a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -221,7 +221,6 @@ local function sorttime(a, b)
     end
 end
 
-
 --Create user groups if they don't exsist, and create global links to them
 local function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
@@ -373,12 +372,13 @@ local function get_permgroup()
     --Cleaned up 1-2020
     for _, player in pairs(game.connected_players) do
         if (player and player.valid) then
-           --Handle se-remote-view
+            --Handle se-remote-view
             if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                 if player.permission_group then
-                    if (player.admin and
-                    player.permission_group.name ~= global.adminsgroup.name and
-                    player.permission_group.name ~= global.adminsgroup.name .. "_satellite" ) then
+                    if
+                        (player.admin and player.permission_group.name ~= global.adminsgroup.name and
+                            player.permission_group.name ~= global.adminsgroup.name .. "_satellite")
+                     then
                         global.adminsgroup.add_player(player)
                         message_all(player.name .. " moved to Admins group.")
                     elseif
@@ -386,8 +386,10 @@ local function get_permgroup()
                             global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
                             not player.admin)
                      then
-                        if (player.permission_group.name ~= global.regularsgroup.name and
-                        player.permission_group.name ~= global.regularsgroup.name .. "_satellite" ) then
+                        if
+                            (player.permission_group.name ~= global.regularsgroup.name and
+                                player.permission_group.name ~= global.regularsgroup.name .. "_satellite")
+                         then
                             global.regularsgroup.add_player(player)
                             message_all(player.name .. " is now a regular!")
                             player.print(
@@ -409,10 +411,10 @@ local function get_permgroup()
                             not player.admin)
                      then
                         if
-                            ( player.permission_group.name ~= global.regularsgroup.name and
+                            (player.permission_group.name ~= global.regularsgroup.name and
                                 player.permission_group.name ~= global.regularsgroup.name .. "_satellite" and
                                 player.permission_group.name ~= global.membersgroup.name and
-                                player.permission_group.name ~= global.membersgroup.name .. "_satellite" )
+                                player.permission_group.name ~= global.membersgroup.name .. "_satellite")
                          then
                             global.membersgroup.add_player(player)
                             message_all(player.name .. " is now a member!")
@@ -553,67 +555,70 @@ script.on_load(
                 "overrule <defendant> (overrule votes against defendant)\noverrule <clear> (clear all votes, will unbanish all)",
                 function(param)
                     if param and param.player_index then
-                    local player = game.players[param.player_index]
-                    if (player and player.admin) then
-                        if global.banishvotes then
-                            --get arguments
-                            local args = mysplit(param.parameter, " ")
+                        local player = game.players[param.player_index]
+                        if (player and player.admin) then
+                            if global.banishvotes then
+                                --get arguments
+                                local args = mysplit(param.parameter, " ")
 
-                            --Must have two arguments
-                            if args ~= {} and args[1] then
-                                if args[1] == "clear" then
-                                    global.banishvotes = nil
-                                    smart_print(player, "All votes cleared.")
-                                    update_banished_votes()
-                                    return
-                                end
-                                local victim = game.players[args[1]]
-
-                                if victim and victim.valid then
-                                    local count = 0
-                                    for _, vote in pairs(global.banishvotes) do
-                                        if vote and vote.victim and vote.victim.valid then
-                                            if vote.victim == victim and vote.overruled == false then
-                                                vote.overruled = true
-                                                count = count + 1
-                                            end
-                                        end
+                                --Must have two arguments
+                                if args ~= {} and args[1] then
+                                    if args[1] == "clear" then
+                                        global.banishvotes = nil
+                                        smart_print(player, "All votes cleared.")
+                                        update_banished_votes()
+                                        return
                                     end
-                                    if count > 0 then
-                                        smart_print(player, "Overruled " .. count .. " votes against " .. victim.name)
-                                    else
+                                    local victim = game.players[args[1]]
+
+                                    if victim and victim.valid then
+                                        local count = 0
                                         for _, vote in pairs(global.banishvotes) do
                                             if vote and vote.victim and vote.victim.valid then
-                                                if vote.victim == victim and vote.overruled == true then
-                                                    vote.overruled = false
+                                                if vote.victim == victim and vote.overruled == false then
+                                                    vote.overruled = true
                                                     count = count + 1
                                                 end
                                             end
                                         end
-                                        smart_print(
-                                            player,
-                                            "Withdrew " .. count .. " overrulings, against " .. victim.name
-                                        )
+                                        if count > 0 then
+                                            smart_print(
+                                                player,
+                                                "Overruled " .. count .. " votes against " .. victim.name
+                                            )
+                                        else
+                                            for _, vote in pairs(global.banishvotes) do
+                                                if vote and vote.victim and vote.victim.valid then
+                                                    if vote.victim == victim and vote.overruled == true then
+                                                        vote.overruled = false
+                                                        count = count + 1
+                                                    end
+                                                end
+                                            end
+                                            smart_print(
+                                                player,
+                                                "Withdrew " .. count .. " overrulings, against " .. victim.name
+                                            )
+                                        end
+                                        update_banished_votes()
+                                        return
+                                    else
+                                        smart_print(player, "Couldn't find a player by that name.")
                                     end
-                                    update_banished_votes()
-                                    return
                                 else
-                                    smart_print(player, "Couldn't find a player by that name.")
+                                    smart_print(
+                                        player,
+                                        "Who do you want to overrule votes against? <player> or <clear> (clears/unbanishes all)"
+                                    )
                                 end
                             else
-                                smart_print(
-                                    player,
-                                    "Who do you want to overrule votes against? <player> or <clear> (clears/unbanishes all)"
-                                )
+                                smart_print(player, "There are no votes to overrule.")
                             end
                         else
-                            smart_print(player, "There are no votes to overrule.")
+                            smart_print(player, "Admins only.")
                         end
-                    else
-                        smart_print(player, "Admins only.")
                     end
                 end
-            end
             )
 
             --Print votes
@@ -622,64 +627,65 @@ script.on_load(
                 "votes (shows votes)",
                 function(param)
                     if param and param.player_index then
-                    local player = game.players[param.player_index]
+                        local player = game.players[param.player_index]
 
-                    if global.banishvotes and global.banishvotes ~= {} then
-                        for _, vote in pairs(global.banishvotes) do
-                            if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
-                                local notes = ""
-                                if vote.withdrawn then
-                                    notes = "(WITHDRAWN) "
-                                end
-                                if vote.overruled then
-                                    notes = "(OVERRULED) "
-                                end
-                                smart_print(
-                                    player,
-                                    notes ..
-                                        "plaintiff: " ..
-                                            vote.voter.name ..
-                                                ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason
-                                )
-                            end
-                        end
-                        update_banished_votes() -- for debug only
-                        if global.thebanished then
-                            for _, victim in pairs(game.players) do
-                                if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
+                        if global.banishvotes and global.banishvotes ~= {} then
+                            for _, vote in pairs(global.banishvotes) do
+                                if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
+                                    local notes = ""
+                                    if vote.withdrawn then
+                                        notes = "(WITHDRAWN) "
+                                    end
+                                    if vote.overruled then
+                                        notes = "(OVERRULED) "
+                                    end
                                     smart_print(
                                         player,
-                                        victim.name ..
-                                            " has had " ..
-                                                global.thebanished[victim.index] .. " complaints agianst them."
+                                        notes ..
+                                            "plaintiff: " ..
+                                                vote.voter.name ..
+                                                    ", defendant: " ..
+                                                        vote.victim.name .. ", complaint:\n" .. vote.reason
                                     )
                                 end
                             end
-                        end
-                        if global.banishvotes then
-                            for _, victim in pairs(game.players) do
-                                local votecount = 0
-                                for _, vote in pairs(global.banishvotes) do
-                                    if victim == vote.voter then
-                                        votecount = votecount + 1
+                            update_banished_votes() -- for debug only
+                            if global.thebanished then
+                                for _, victim in pairs(game.players) do
+                                    if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
+                                        smart_print(
+                                            player,
+                                            victim.name ..
+                                                " has had " ..
+                                                    global.thebanished[victim.index] .. " complaints agianst them."
+                                        )
                                     end
                                 end
-                                if votecount > 2 then
-                                    smart_print(
-                                        player,
-                                        victim.name .. " has voted against " .. votecount .. " players."
-                                    )
+                            end
+                            if global.banishvotes then
+                                for _, victim in pairs(game.players) do
+                                    local votecount = 0
+                                    for _, vote in pairs(global.banishvotes) do
+                                        if victim == vote.voter then
+                                            votecount = votecount + 1
+                                        end
+                                    end
+                                    if votecount > 2 then
+                                        smart_print(
+                                            player,
+                                            victim.name .. " has voted against " .. votecount .. " players."
+                                        )
+                                    end
                                 end
                             end
+                            return
+                        else
+                            smart_print(player, "The docket is clean.")
+                            update_banished_votes() -- for debug only
+                            return
                         end
-                        return
-                    else
-                        smart_print(player, "The docket is clean.")
-                        update_banished_votes() -- for debug only
-                        return
                     end
                 end
-            end
             )
 
             --Banish command
@@ -1168,43 +1174,39 @@ script.on_load(
                         end
                     end
 
-                        local psurface = game.surfaces["nauvis"]
-                        local pforce = game.forces["player"]
+                    local psurface = game.surfaces["nauvis"]
+                    local pforce = game.forces["player"]
 
-                        if victim then
-                            pforce = victim.force
-                            psurface = victim.surface
-                        end
+                    if victim then
+                        pforce = victim.force
+                        psurface = victim.surface
+                    end
 
-                        if param.parameter then
-                            local xytable = mysplit(param.parameter, ",")
-                            if xytable ~= {} and tonumber(xytable[1]) and tonumber(xytable[2]) then
-                                local argx = xytable[1]
-                                local argy = xytable[2]
-                                new_pos_x = argx
-                                new_pos_y = argy
-                            else
-                                smart_print(victim, "Invalid argument.")
-                                return
-                            end
-                        end
-
-                        if pforce and psurface and new_pos_x and new_pos_y then
-                            pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-                            smart_print(
-                                victim,
-                                string.format(
-                                    "New spawn point set: %d,%d",
-                                    math.floor(new_pos_x),
-                                    math.floor(new_pos_y)
-                                )
-                            )
-                            smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
-                            global.cspawnpos = {new_pos_x, new_pos_y}
+                    if param.parameter then
+                        local xytable = mysplit(param.parameter, ",")
+                        if xytable ~= {} and tonumber(xytable[1]) and tonumber(xytable[2]) then
+                            local argx = xytable[1]
+                            local argy = xytable[2]
+                            new_pos_x = argx
+                            new_pos_y = argy
                         else
-                            smart_print(victim, "Couldn't find force or surface...")
+                            smart_print(victim, "Invalid argument.")
+                            return
                         end
                     end
+
+                    if pforce and psurface and new_pos_x and new_pos_y then
+                        pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
+                        smart_print(
+                            victim,
+                            string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y))
+                        )
+                        smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
+                        global.cspawnpos = {new_pos_x, new_pos_y}
+                    else
+                        smart_print(victim, "Couldn't find force or surface...")
+                    end
+                end
             )
 
             --Reveal map
@@ -1222,41 +1224,38 @@ script.on_load(
                         end
                     end
 
-                        local psurface = game.surfaces["nauvis"]
-                        local pforce = game.forces["player"]
-                        local size = 1024
+                    local psurface = game.surfaces["nauvis"]
+                    local pforce = game.forces["player"]
+                    local size = 1024
 
-                        if param.parameter then
-                            if tonumber(param.parameter) then
-                                local rsize = tonumber(param.parameter)
+                    if param.parameter then
+                        if tonumber(param.parameter) then
+                            local rsize = tonumber(param.parameter)
 
-                                --limits
-                                if rsize > 0 then
-                                    if rsize < 128 then
-                                        rsize = 128
-                                    else
-                                        if rsize > 4096 then
-                                            rsize = 4096
-                                        end
-                                        size = rsize
+                            --limits
+                            if rsize > 0 then
+                                if rsize < 128 then
+                                    rsize = 128
+                                else
+                                    if rsize > 4096 then
+                                        rsize = 4096
                                     end
+                                    size = rsize
                                 end
-                            else
-                                smart_print(victim, "Numbers only.")
-                                return
                             end
-                        end
-
-                        if psurface and pforce and size then
-                            pforce.chart(
-                                psurface,
-                                {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}}
-                            )
-                            local sstr = string.format("%-4.0f", size)
-                            smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                         else
-                            smart_print(victim, "Either couldn't find surface nauvis, or couldn't find force player.")
+                            smart_print(victim, "Numbers only.")
+                            return
                         end
+                    end
+
+                    if psurface and pforce and size then
+                        pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
+                        local sstr = string.format("%-4.0f", size)
+                        smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
+                    else
+                        smart_print(victim, "Either couldn't find surface nauvis, or couldn't find force player.")
+                    end
                 end
             )
 
@@ -1275,14 +1274,14 @@ script.on_load(
                         end
                     end
 
-                        local pforce = game.forces["player"]
+                    local pforce = game.forces["player"]
 
-                        if pforce then
-                            pforce.clear_chart()
-                            smart_print(victim, "Recharting map...")
-                        else
-                            smart_print(victim, "Couldn't find force: player")
-                        end
+                    if pforce then
+                        pforce.clear_chart()
+                        smart_print(victim, "Recharting map...")
+                    else
+                        smart_print(victim, "Couldn't find force: player")
+                    end
                 end
             )
 
@@ -1356,7 +1355,7 @@ script.on_load(
                     if (player) then
                         if (player and player.admin == false) then
                             smart_print(player, "Admins only..")
-                        return
+                            return
                         end
                     end
 
@@ -1582,22 +1581,21 @@ script.on_event(
 
             if player and player.valid and area then
                 set_player_active(player)
-                if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
-                    local msg =
-                        player.name ..
-                        " is using the deconstruction planner from [gps=" ..
-                            math.floor(area.left_top.x) ..
-                                "," ..
-                                    math.floor(area.left_top.y) ..
-                                        "] to [gps=" ..
-                                            math.floor(area.right_bottom.x) ..
-                                                "," .. math.floor(area.right_bottom.y) .. "]"
-                    if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                local msg =
+                    player.name ..
+                    " is using the deconstruction planner from [gps=" ..
+                        math.floor(area.left_top.x) ..
+                            "," ..
+                                math.floor(area.left_top.y) ..
+                                    "] to [gps=" ..
+                                        math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
+                console_print(msg)
+                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                    if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
                         message_all(msg)
                     end
-                    console_print(msg)
-                    global.last_decon_warning = game.tick
                 end
+                global.last_decon_warning = game.tick
             end
         end
     end
@@ -1631,11 +1629,17 @@ script.on_event(
             --Handle se-remote-view--
             if (player.admin) then
                 message_alld(player.name .. " moved to Admins group.")
-            elseif (player.permission_group and (player.permission_group.name == global.regularsgroup.name or
-            player.permission_group.name == global.regularsgroup.name .. "_satellite")) then
+            elseif
+                (player.permission_group and
+                    (player.permission_group.name == global.regularsgroup.name or
+                        player.permission_group.name == global.regularsgroup.name .. "_satellite"))
+             then
                 message_alld(player.name .. " is now a regular!")
-            elseif (player.permission_group and (player.permission_group.name == global.membersgroup.name or
-            player.permission_group.name == global.membersgroup.name .. "_satellite")) then
+            elseif
+                (player.permission_group and
+                    (player.permission_group.name == global.membersgroup.name or
+                        player.permission_group.name == global.membersgroup.name .. "_satellite"))
+             then
                 message_alld(player.name .. " is now a member!")
             end
 
@@ -1969,7 +1973,6 @@ script.on_event(
 script.on_nth_tick(
     7200,
     function(event)
-
         --Remove old corpse tags
         if (global.corpselist) then
             local toremove
