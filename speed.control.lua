@@ -1,7 +1,6 @@
---v0491-10-17-2020_1123a
+--v0491-10-19-2020_0208p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
---daily reset version
 
 local handler = require("event_handler")
 handler.add_lib(require("freeplay"))
@@ -1353,13 +1352,6 @@ script.on_load(
                         player = game.players[param.player_index]
                     end
 
-                    if (player) then
-                        if (player and player.admin == false) then
-                            smart_print(player, "Admins only..")
-                            return
-                        end
-                    end
-
                     if (not param.parameter) then
                         smart_print(player, "But what speed? 0.1 to 10")
                         return
@@ -1380,7 +1372,9 @@ script.on_load(
                                         value ..
                                             " Walk speed: " .. game.forces["player"].character_running_speed_modifier
                                 )
-                                message_all("Game speed set to %" .. (game.speed * 100.00))
+                                if player then
+                                    message_all("Game speed set to %" .. (game.speed * 100.00))
+                                end
                             else
                                 smart_print(player, "Force: Player doesn't seem to exist.")
                             end
@@ -1582,22 +1576,21 @@ script.on_event(
 
             if player and player.valid and area then
                 set_player_active(player)
-                if (global.last_decon_warning and game.tick - global.last_decon_warning >= 600) then
-                    local msg =
-                        player.name ..
-                        " is using the deconstruction planner from [gps=" ..
-                            math.floor(area.left_top.x) ..
-                                "," ..
-                                    math.floor(area.left_top.y) ..
-                                        "] to [gps=" ..
-                                            math.floor(area.right_bottom.x) ..
-                                                "," .. math.floor(area.right_bottom.y) .. "]"
-                    if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                local msg =
+                    player.name ..
+                    " is using the deconstruction planner from [gps=" ..
+                        math.floor(area.left_top.x) ..
+                            "," ..
+                                math.floor(area.left_top.y) ..
+                                    "] to [gps=" ..
+                                        math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
+                console_print(msg)
+                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                    if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
                         message_all(msg)
                     end
-                    console_print(msg)
-                    global.last_decon_warning = game.tick
                 end
+                global.last_decon_warning = game.tick
             end
         end
     end
@@ -1608,15 +1601,6 @@ script.on_event(
     defines.events.on_player_joined_game,
     function(event)
         if event and event.player_index then
-            --If map ended, tp new players there
-            local psurface = game.surfaces["end"]
-            if psurface then
-                victim.teleport(
-                    victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false),
-                    psurface
-                )
-            end
-
             local player = game.players[event.player_index]
             create_myglobals()
             create_player_globals(player)
@@ -1627,10 +1611,6 @@ script.on_event(
                 player.gui.top.discord.destroy()
             end
 
-            if player.gui.top.gtimer then
-                player.gui.top.gtimer.destroy()
-            end
-
             --Discord Info--
             if not player.gui.top.discordurl then
                 player.gui.top.add {type = "text-box", name = "discordurl"}
@@ -1638,15 +1618,6 @@ script.on_event(
                 player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
                 player.gui.top.discordurl.read_only = true
                 player.gui.top.discordurl.selectable = true
-            end
-
-            --Time Remaining
-            if not player.gui.top.gtimer then
-                player.gui.top.add {type = "text-box", name = "gtimer"}
-                player.gui.top.gtimer.text = "???"
-                player.gui.top.gtimer.tooltip = "Time remaining until map reset"
-                player.gui.top.gtimer.read_only = true
-                player.gui.top.gtimer.selectable = false
             end
 
             --Send info to bot--
@@ -1825,25 +1796,9 @@ script.on_event(
             local obj = event.entity
             local prev_dir = event.previous_direction
 
-            --Don't let new players rotate other players items, unrotate and untouch the item.
-            if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-                --Unrotate
-                obj.direction = prev_dir
-
-                --Create untouch list if needed
-                if not global.untouchobj then
-                    global.untouchobj = {object = {}, prev = {}}
-                end
-
-                --Add to list
-                table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-                player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
-            else
-                console_print(
-                    player.name ..
-                        " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-                )
-            end
+            console_print(
+                player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
+            )
             set_player_active(player)
         end
     end
@@ -2075,140 +2030,5 @@ script.on_nth_tick(
         end
 
         get_permgroup() --See if player qualifies now
-    end
-)
-
---Reset last_user (untouch) objects, one per tick
-script.on_nth_tick(
-    1,
-    function(event)
-        if (global.untouchobj) then
-            local toremove
-
-            for _, item in pairs(global.untouchobj) do
-                if item.object then
-                    if item.object.valid then
-                        if item.prev and item.prev.valid then
-                            item.object.last_user = item.prev
-                        else --just in case
-                            item.object.last_user = game.players[1]
-                        end
-                    end
-                    toremove = item
-                    break
-                end
-            end
-            if (toremove) then
-                toremove.object = nil
-                toremove.prev = nil
-                toremove = nil
-            end
-        end
-    end
-)
-
-script.on_nth_tick(
-    60,
-    function(event)
-        --If game has eneded, don't count timer
-        if game.surfaces["end"] == nil then
-            if global.gtimer then
-                global.gtimer = global.gtimer + 1
-            else
-                global.gtimer = 0
-            end
-        end
-
-        local seconds = 84600 - global.gtimer
-
-        if seconds > 0 then
-            if seconds == (12 * 60 * 60) then
-                message_all("12 HOURS REMAINING!")
-            elseif seconds == (6 * 60 * 60) then
-                message_all("6 HOURS REMAINING!")
-            elseif seconds == (6 * 60 * 60) then
-                message_all("3 HOURS REMAINING!")
-            elseif seconds == (60 * 60) then
-                message_all("1 HOUR REMAINING!")
-            elseif seconds == (30 * 60) then
-                message_all("30 MINUTES REMAINING!")
-            elseif seconds == (15 * 60) then
-                message_all("15 MINUTES REMAINING!")
-            elseif seconds == (5 * 60) then
-                message_all("5 MINUTES REMAINING!")
-            elseif seconds == (1 * 60) then
-                message_all("1 MINUTE REMAINING!")
-            end
-
-            --Update time in GUI
-            local hours = string.format("%02.f", math.floor(seconds / 3600))
-            local mins = string.format("%02.f", math.floor(seconds / 60 - (hours * 60)))
-            local secs = string.format("%02.f", math.floor(seconds - hours * 3600 - mins * 60))
-            local ts = "TIME REMAINING: " .. hours .. ":" .. mins .. "." .. secs
-
-            for _, player in pairs(game.connected_players) do
-                if player and player.valid and player.gui and player.gui.top and player.gui.top.gtimer then
-                    player.gui.top.gtimer.text = ts
-                end
-            end
-        else -- Game ended
-            --If map hasn't ended yet
-            if game.surfaces["end"] == nil then
-                for _, player in pairs(game.players) do
-                    if player and player.valid and player.gui and player.gui.top and player.gui.top.gtimer then
-                        player.gui.top.gtimer.text = "MAP HAS ENEDED!"
-                    end
-                end
-
-                message_all("MAP HAS ENDED!")
-                print("[END]MAPEND")
-
-                --Make end area
-                local my_map_gen_settings = {
-                    width = 128,
-                    height = 128,
-                    default_enable_all_autoplace_controls = false,
-                    property_expression_names = {cliffiness = 0},
-                    autoplace_settings = {
-                        tile = {
-                            settings = {["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}}
-                        }
-                    },
-                    starting_area = "none"
-                }
-                --Create surface
-                game.create_surface("end", my_map_gen_settings)
-
-                --Grab new surface
-                local psurface = game.surfaces["end"]
-
-                --If surface is valid
-                if psurface then
-                    psurface.show_clouds = false
-                    psurface.generate_with_lab_tiles = true
-                    psurface.always_day = true
-
-                    --Set spawn
-                    local pforce = game.forces["player"]
-                    pforce.set_spawn_position({x = 0, y = 0}, psurface)
-
-                    --Teleport all players
-                    for _, victim in pairs(game.players) do
-                        if victim and victim.valid then
-                            victim.teleport(
-                                victim.surface.find_non_colliding_position("character", {0, 0}, 512, 0.25, false),
-                                psurface
-                            )
-                        end
-                    end
-                end
-
-                --Grab old surface
-                local oldsurf = game.surfaces["nauvis"]
-                if oldsurf then
-                    oldsurf.clear(false)
-                end
-            end
-        end
     end
 )
