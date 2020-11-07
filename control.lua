@@ -1,4 +1,4 @@
---v0490-10-18-2020_553a
+--v0491-110720200325p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1581,21 +1581,25 @@ script.on_event(
 
             if player and player.valid and area then
                 set_player_active(player)
-                local msg =
-                    player.name ..
-                    " is using the deconstruction planner from [gps=" ..
-                        math.floor(area.left_top.x) ..
-                            "," ..
-                                math.floor(area.left_top.y) ..
-                                    "] to [gps=" ..
-                                        math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
-                console_print(msg)
-                if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
-                    if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
-                        message_all(msg)
+                --Don't bother if selection is zero.
+                if area.left_top.x == area.right_bottom.x or area.left_top.y == area.right_bottom.y then
+                    local msg =
+                        player.name ..
+                        " is using the deconstruction planner from [gps=" ..
+                            math.floor(area.left_top.x) ..
+                                "," ..
+                                    math.floor(area.left_top.y) ..
+                                        "] to [gps=" ..
+                                            math.floor(area.right_bottom.x) ..
+                                                "," .. math.floor(area.right_bottom.y) .. "]"
+                    console_print(msg)
+                    if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
+                            message_all(msg)
+                        end
                     end
+                    global.last_decon_warning = game.tick
                 end
-                global.last_decon_warning = game.tick
             end
         end
     end
