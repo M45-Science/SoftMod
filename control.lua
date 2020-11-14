@@ -1,4 +1,4 @@
---v0491-110720200325p
+--v0492-111120200610p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -708,7 +708,7 @@ script.on_load(
                                     --Must have valid victim
                                     if victim and victim.valid and victim.name then
                                         --Check if we voted against them
-                                        if global.banishvotes and banishvotes ~= {} then
+                                        if global.banishvotes and global.banishvotes ~= {} then
                                             for _, vote in pairs(global.banishvotes) do
                                                 if vote and vote.voter and vote.victim then
                                                     if vote.voter == player and vote.victim == victim then
@@ -787,7 +787,7 @@ script.on_load(
                                             --Victim must be new or member
                                             if is_new(victim) or is_trusted(victim) then
                                                 --Check if we already voted against them
-                                                if global.banishvotes and banishvotes ~= {} then
+                                                if global.banishvotes and global.banishvotes ~= {} then
                                                     local votecount = 0
                                                     for _, vote in pairs(global.banishvotes) do
                                                         if vote and vote.voter and vote.victim then
