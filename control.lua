@@ -1,4 +1,4 @@
---v0494-111420200653p
+--v0495-111520200311a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1380,7 +1380,9 @@ script.on_load(
                                         value ..
                                             " Walk speed: " .. game.forces["player"].character_running_speed_modifier
                                 )
-                                message_all("Game speed set to %" .. (game.speed * 100.00))
+                                if (player) then
+                                    message_all("Game speed set to " .. (game.speed * 100.00) .. "%")
+                                end
                             else
                                 smart_print(player, "Force: Player doesn't seem to exist.")
                             end
