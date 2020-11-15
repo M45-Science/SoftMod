@@ -364,6 +364,7 @@ local function game_settings(player)
     if player and player.valid and player.force then
         player.force.friendly_fire = false --friendly fire
         player.force.research_queue_enabled = true --nice to have
+        game.disable_replay()
     end
 end
 
