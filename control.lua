@@ -1,4 +1,4 @@
---v0495-111520200311a
+--v0496-112420200304p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -285,7 +285,6 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.set_circuit_mode_of_operation, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_item, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_signal, false)
-        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_trash_filter_item, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_signal, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
