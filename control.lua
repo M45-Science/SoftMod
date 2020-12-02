@@ -1622,6 +1622,13 @@ script.on_event(
 
             --Discord Button--
             if not player.gui.top.dicon then
+
+                --Temp, for migrating old maps/players
+                --Otherwise, icons will be in wrong order
+                if player.gui.top.discordurl then
+                    player.gui.top.discordurl.destroy()
+                end
+
                 player.gui.top.add {
                     type = "sprite-button",
                     name = "dicon",
