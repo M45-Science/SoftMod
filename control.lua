@@ -7,12 +7,27 @@ local function dodrawlogo()
     local surf = game.surfaces["nauvis"]
 
     if not global.drawlogo and surf then
-        local tiles = {}
-        for i = -8, 7 do
-            for j = -10, 8 do
-                tiles[#tiles + 1] = {name = "refined-concrete", position = {i, j}}
-            end
+        if global.m45logo then
+            rendering.destroy(global.m45logo)
         end
+        if global.m45text then
+            rendering.destroy(global.m45text)
+        end
+        if global.servtext then
+            rendering.destroy(global.servtext)
+        end
+
+        local cpos = {x = 0, y = 0}
+        if global.cspawnpos then
+            cpos = global.cspawnpos
+        end
+
+        local tiles = {}
+        for i = -10, 10 do
+            for j = -10, 10 do
+                tiles[#tiles + 1] = {name = "refined-concrete", position = {cpos.x + i, cpos.y + j}}
+            end
+        end 
         surf.set_tiles(tiles)
 
         global.drawlogo = true
@@ -20,7 +35,7 @@ local function dodrawlogo()
             rendering.draw_sprite {
             sprite = "file/m45.png",
             render_layer = "floor",
-            target = {0, 0},
+            target = cpos,
             x_scale = 0.5,
             y_scale = 0.5,
             surface = surf
@@ -33,7 +48,7 @@ local function dodrawlogo()
             text = "M45-SCIENCE!",
             draw_on_ground = true,
             surface = surf,
-            target = {0, -10},
+            target = {cpos.x + 0, cpos.y + -10},
             scale = 5.0,
             color = {1, 1, 1},
             alignment = "center",
@@ -44,7 +59,7 @@ local function dodrawlogo()
             text = global.servname,
             draw_on_ground = true,
             surface = surf,
-            target = {0, 6},
+            target = {cpos.x + 0, cpos.y + 6},
             scale = 5.0,
             color = {1, 1, 1},
             alignment = "center",
@@ -1039,15 +1054,6 @@ script.on_load(
                     if param.parameter then
                         global.servname = param.parameter
                         global.drawlogo = false
-                        if global.m45logo then
-                            rendering.destroy(global.m45logo)
-                        end
-                        if global.m45text then
-                            rendering.destroy(global.m45text)
-                        end
-                        if global.servtext then
-                            rendering.destroy(global.servtext)
-                        end
                         dodrawlogo()
                     end
                 end
@@ -1285,7 +1291,9 @@ script.on_load(
                             string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y))
                         )
                         smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
-                        global.cspawnpos = {new_pos_x, new_pos_y}
+                        global.cspawnpos = {x = (math.floor(new_pos_x) + 0.5), y = (math.floor(new_pos_y) + 0.5)}
+                        global.drawlogo = false
+                        dodrawlogo()
                     else
                         smart_print(victim, "Couldn't find force or surface...")
                     end
@@ -2121,12 +2129,9 @@ script.on_nth_tick(
             local xpos = 0
             local ypos = 0
 
-            if
-                global.cspawnpos and global.cspawnpos[1] and global.cspawnpos[2] and tonumber(global.cspawnpos[1]) and
-                    tonumber(global.cspawnpos[2])
-             then
-                xpos = global.cspawnpos[1]
-                ypos = global.cspawnpos[2]
+            if global.cspawnpos then
+                xpos = global.cspawnpos.x
+                ypos = global.cspawnpos.y
             end
 
             local chartTag = {
