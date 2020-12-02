@@ -2,6 +2,57 @@
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
+--add logo to spawn area--
+local function dodrawlogo()
+    local surf = game.surfaces["nauvis"]
+
+    if not global.drawlogo and surf then
+        local tiles = {}
+        for i = -8, 7 do
+            for j = -10, 8 do
+                tiles[#tiles + 1] = {name = "refined-concrete", position = {i, j}}
+            end
+        end
+        surf.set_tiles(tiles)
+
+        global.drawlogo = true
+        global.m45logo =
+            rendering.draw_sprite {
+            sprite = "file/m45.png",
+            render_layer = "floor",
+            target = {0, 0},
+            x_scale = 0.5,
+            y_scale = 0.5,
+            surface = surf
+        }
+        if not global.servname then
+            global.servname = ""
+        end
+        global.m45text =
+            rendering.draw_text {
+            text = "M45-SCIENCE!",
+            draw_on_ground = true,
+            surface = surf,
+            target = {0, -10},
+            scale = 5.0,
+            color = {1, 1, 1},
+            alignment = "center",
+            scale_with_zoom = false
+        }
+        global.servtext =
+            rendering.draw_text {
+            text = global.servname,
+            draw_on_ground = true,
+            surface = surf,
+            target = {0, 6},
+            scale = 5.0,
+            color = {1, 1, 1},
+            alignment = "center",
+            scale_with_zoom = false
+        }
+    end
+end
+
 --safe console print--
 local function console_print(message)
     print("~" .. message)
@@ -972,6 +1023,36 @@ script.on_load(
                 end
             )
 
+            --server name
+            commands.add_command(
+                "cname",
+                "<name here>",
+                function(param)
+                    if param and param.player_index then
+                        local player = game.players[param.player_index]
+                        if not player.admin then
+                            smart_print(player, "This command is for console and admin use only.")
+                            return
+                        end
+                    end
+
+                    if param.parameter then
+                        global.servname = param.parameter
+                        global.drawlogo = false
+                        if global.m45logo then
+                            rendering.destroy(global.m45logo)
+                        end
+                        if global.m45text then
+                            rendering.destroy(global.m45text)
+                        end
+                        if global.servtext then
+                            rendering.destroy(global.servtext)
+                        end
+                        dodrawlogo()
+                    end
+                end
+            )
+
             --server chat
             commands.add_command(
                 "cchat",
@@ -1620,9 +1701,10 @@ script.on_event(
             create_groups()
             game_settings(player)
 
+            dodrawlogo()
+
             --Discord Button--
             if not player.gui.top.dicon then
-
                 --Temp, for migrating old maps/players
                 --Otherwise, icons will be in wrong order
                 if player.gui.top.discordurl then
