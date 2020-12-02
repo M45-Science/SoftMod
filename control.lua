@@ -18,7 +18,7 @@ local function dodrawlogo()
         end
 
         local cpos = {x = 0, y = 0}
-        if global.cspawnpos then
+        if global.cspawnpos and global.cspawnpos.x then
             cpos = global.cspawnpos
         end
 
