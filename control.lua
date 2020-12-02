@@ -1,10 +1,8 @@
---v0496-112420200304p
+--v0497-112520200845a-Multi
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
 local handler = require("event_handler")
-handler.add_lib(require("freeplay"))
-handler.add_lib(require("silo-script"))
 
 --safe console print--
 local function console_print(message)
@@ -924,12 +922,18 @@ script.on_load(
                                     "Discord link is now hidden. Using the command again will turn it back on."
                                 )
                                 player.gui.top.discordurl.visible = false
+                                if player.gui.top.dicon then
+                                    player.gui.top.dicon.visible = false
+                                end
                             else
                                 smart_print(
                                     player,
                                     "Discord link now shown. Using the command again will turn it back off."
                                 )
                                 player.gui.top.discordurl.visible = true
+                                if player.gui.top.dicon then
+                                    player.gui.top.dicon.visible = true
+                                end
                             end
                         end
                     else
@@ -1618,8 +1622,14 @@ script.on_event(
             create_groups()
             game_settings(player)
 
-            if player.gui.top.discord then
-                player.gui.top.discord.destroy()
+            --Discord Button--
+            if not player.gui.top.dicon then
+                player.gui.top.add {
+                    type = "sprite-button",
+                    name = "dicon",
+                    sprite = "file/discord.png",
+                    tooltip = "hide discord URL."
+                }
             end
 
             --Discord Info--
@@ -1629,6 +1639,16 @@ script.on_event(
                 player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
                 player.gui.top.discordurl.read_only = true
                 player.gui.top.discordurl.selectable = true
+            end
+
+            --Zoom button--
+            if not player.gui.top.zout then
+                player.gui.top.add {
+                    type = "sprite-button",
+                    name = "zout",
+                    sprite = "file/zoomout.png",
+                    tooltip = "Zoom out"
+                }
             end
 
             --Send info to bot--
@@ -2084,6 +2104,39 @@ script.on_nth_tick(
                 toremove.object = nil
                 toremove.prev = nil
                 toremove = nil
+            end
+        end
+    end
+)
+
+script.on_event(
+    defines.events.on_gui_click,
+    function(event)
+        local gui = event.element
+        if not (gui and gui.valid) then
+            return
+        end
+
+        if gui.name == "zout" then
+            if event.player_index then
+                local player = game.players[event.player_index]
+                if not (player and player.valid) then
+                    return
+                end
+                player.zoom = 0.1
+            end
+        end
+        if gui.name == "dicon" then
+            if event.player_index then
+                local player = game.players[event.player_index]
+                if not (player and player.valid) then
+                    return
+                end
+                if player.gui.top.discordurl.visible == true then
+                    player.gui.top.discordurl.visible = false
+                else
+                    player.gui.top.discordurl.visible = true
+                end
             end
         end
     end
