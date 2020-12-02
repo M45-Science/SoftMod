@@ -22,14 +22,6 @@ local function dodrawlogo()
             cpos = global.cspawnpos
         end
 
-        local tiles = {}
-        for i = -10, 10 do
-            for j = -10, 10 do
-                tiles[#tiles + 1] = {name = "refined-concrete", position = {cpos.x + i, cpos.y + j}}
-            end
-        end 
-        surf.set_tiles(tiles)
-
         global.drawlogo = true
         global.m45logo =
             rendering.draw_sprite {
@@ -45,11 +37,11 @@ local function dodrawlogo()
         end
         global.m45text =
             rendering.draw_text {
-            text = "M45-SCIENCE!",
+            text = "M45-Science",
             draw_on_ground = true,
             surface = surf,
-            target = {cpos.x + 0, cpos.y + -10},
-            scale = 5.0,
+            target = {cpos.x + 0, cpos.y + -6},
+            scale = 3.0,
             color = {1, 1, 1},
             alignment = "center",
             scale_with_zoom = false
@@ -59,8 +51,8 @@ local function dodrawlogo()
             text = global.servname,
             draw_on_ground = true,
             surface = surf,
-            target = {cpos.x + 0, cpos.y + 6},
-            scale = 5.0,
+            target = {cpos.x + 0, cpos.y + 4.5},
+            scale = 2.0,
             color = {1, 1, 1},
             alignment = "center",
             scale_with_zoom = false
