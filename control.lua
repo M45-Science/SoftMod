@@ -2,8 +2,6 @@
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
-local handler = require("event_handler")
-
 --safe console print--
 local function console_print(message)
     print("~" .. message)
