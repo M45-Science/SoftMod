@@ -2129,7 +2129,7 @@ script.on_nth_tick(
             local xpos = 0
             local ypos = 0
 
-            if global.cspawnpos then
+            if global.cspawnpos and global.cspawnpos.x then
                 xpos = global.cspawnpos.x
                 ypos = global.cspawnpos.y
             end
