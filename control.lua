@@ -1659,12 +1659,17 @@ script.on_event(
 script.on_event(
     defines.events.on_player_respawned,
     function(event)
-        player.insert(
-            {
-                ["pistol"] = 1,
-                ["firearm-magazine"] = 10
-            }
-        )
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+            if player and player.valid then
+                player.insert(
+                    {
+                        ["pistol"] = 1,
+                        ["firearm-magazine"] = 10
+                    }
+                )
+            end
+        end
     end
 )
 
