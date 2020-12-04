@@ -167,7 +167,7 @@ end
 
 local function update_banished_votes()
     --Reset banished list
-    banishedtemp = {}
+    local banishedtemp = {}
 
     --just in case
     if not global.banishvotes then
