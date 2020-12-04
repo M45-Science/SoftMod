@@ -1662,12 +1662,8 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid then
-                player.insert(
-                    {
-                        ["pistol"] = 1,
-                        ["firearm-magazine"] = 10
-                    }
-                )
+                player.insert{name="firearm-magazine", count=200}
+                player.insert{name="pistol", count=1}
             end
         end
     end
@@ -1755,16 +1751,12 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid then
-                player.insert(
-                    {
-                        ["iron-plate"] = 8,
-                        ["wood"] = 1,
-                        ["pistol"] = 1,
-                        ["firearm-magazine"] = 10,
-                        ["burner-mining-drill"] = 1,
-                        ["stone-furnace"] = 1
-                    }
-                )
+                player.insert{name="iron-plate", count=8}
+                player.insert{name="wood", count=1}
+                player.insert{name="pistol", count=1}
+                player.insert{name="firearm-magazine", count=10}
+                player.insert{name="burner-mining-drill", count=1}
+                player.insert{name="stone-furnace", count=1}
 
                 set_perms()
                 show_players(player)
