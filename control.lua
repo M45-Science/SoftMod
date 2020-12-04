@@ -1,4 +1,4 @@
---v502-120320200144p
+--v503-120320200718p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1655,6 +1655,19 @@ script.on_event(
     end
 )
 
+--Player respawn
+script.on_event(
+    defines.events.on_player_respawned,
+    function(event)
+        player.insert(
+            {
+                ["pistol"] = 1,
+                ["firearm-magazine"] = 10
+            }
+        )
+    end
+)
+
 --Player connected
 script.on_event(
     defines.events.on_player_joined_game,
@@ -1737,6 +1750,17 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid then
+                player.insert(
+                    {
+                        ["iron-plate"] = 8,
+                        ["wood"] = 1,
+                        ["pistol"] = 1,
+                        ["firearm-magazine"] = 10,
+                        ["burner-mining-drill"] = 1,
+                        ["stone-furnace"] = 1
+                    }
+                )
+
                 set_perms()
                 show_players(player)
                 smart_print(player, "To see online players, chat /online")
