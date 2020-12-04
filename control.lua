@@ -1662,7 +1662,7 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid then
-                player.insert{name="firearm-magazine", count=200}
+                player.insert{name="firearm-magazine", count=10}
                 player.insert{name="pistol", count=1}
             end
         end
