@@ -1690,13 +1690,16 @@ script.on_event(
             local obj = event.entity
 
             --Check player, surface and object are valid
-            if player and player.valid and player.surface and player.surface.valid and obj and obj.valid then
+            if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
 
                 --New players can't mine objects that they don't own, v2.0
                 if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
 
+                    --Unique surface name, avoid conflicts
+                    local surfname = "limbo_"..player.index
+
                     --Create temp surface if needed
-                    if game.surfaces["limbo"] == nil then
+                    if game.surfaces[surfname] == nil then
                         local my_map_gen_settings = {
                             width = 10, --larger than max entity size
                             height = 10,
@@ -1711,11 +1714,11 @@ script.on_event(
                             },
                             starting_area = "none"
                         }
-                        game.create_surface("limbo", my_map_gen_settings)
+                        game.create_surface(surfname, my_map_gen_settings)
                     end
 
                     --Get surface
-                    local surf = game.surfaces["limbo"]
+                    local surf = game.surfaces[surfname]
 
                     --Check if surface is valid
                     if surf and surf.valid then
@@ -1738,18 +1741,20 @@ script.on_event(
 
                             player.print("You are a new user, and are not allowed to mine other people's objects yet!")
                         else
-                            message_all("pre_player_mined_item: unable to clone object.")
+                            console_print("pre_player_mined_item: unable to clone object.")
                         end
 
                         --Clear the surface
                         surf.clear()
                     else
-                        message_all("pre_player_mined_item: unable to get surface.")
+                        console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
                 else
                     console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
                     set_player_active(player)
                 end
+            else
+                console_print("pre_player_mined_item: invalid player, obj or surface.")
             end
         end
     end
