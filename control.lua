@@ -1,4 +1,4 @@
---v505-121220200110a
+--v506-121220201005a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1689,16 +1689,17 @@ script.on_event(
             local player = game.players[event.player_index]
             local obj = event.entity
 
-            if player and player.valid and obj and obj.valid then
+            --Check player, surface and object are valid
+            if player and player.valid and player.surface and player.surface.valid and obj and obj.valid then
 
                 --New players can't mine objects that they don't own, v2.0
                 if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
 
-                    local limbosurf
-
                     --Create temp surface if needed
                     if game.surfaces["limbo"] == nil then
                         local my_map_gen_settings = {
+                            width = 10, --larger than max entity size
+                            height = 10,
                             default_enable_all_autoplace_controls = false,
                             property_expression_names = {cliffiness = 0},
                             autoplace_settings = {
@@ -1710,21 +1711,41 @@ script.on_event(
                             },
                             starting_area = "none"
                         }
-                        limbosurf = game.create_surface("limbo", my_map_gen_settings)
+                        game.create_surface("limbo", my_map_gen_settings)
                     end
-                
-                    --Clone object
-                    local savepos = obj.position
-                    local saveobj = obj.clone({position = {0,0}, surface = limbosurf, force = player.force})
-                    --Destroy object
-                    obj.destroy()
 
-                    --Create object from temp surface
-                    player.surface.clone_entities({entities = {saveobj}, destination_offset = savepos})
-                    --Destroy temporary item
-                    saveobj.destroy()
+                    --Get surface
+                    local surf = game.surfaces["limbo"]
 
-                    player.print("You are a new user, and are not allowed to mine other people's objects yet!")
+                    --Check if surface is valid
+                    if surf and surf.valid then
+
+                        --Clone object
+                        local savepos = obj.position
+                        local saveobj = obj.clone({position = {0, 0}, surface = surf, force = player.force})
+
+                        --Check that object was able to be cloned
+                        if saveobj and saveobj.valid then
+
+                            --Destroy original object
+                            obj.destroy()
+
+                            --Create object again, from temp surface
+                            player.surface.clone_entities({entities = {saveobj}, destination_offset = savepos})
+
+                            --Destroy temporary item
+                            saveobj.destroy()
+
+                            player.print("You are a new user, and are not allowed to mine other people's objects yet!")
+                        else
+                            message_all("pre_player_mined_item: unable to clone object.")
+                        end
+
+                        --Clear the surface
+                        surf.clear()
+                    else
+                        message_all("pre_player_mined_item: unable to get surface.")
+                    end
                 else
                     console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
                     set_player_active(player)
@@ -1758,10 +1779,7 @@ script.on_event(
                     table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
                     player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
                 else
-                    console_print(
-                        player.name ..
-                            " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]"
-                    )
+                    console_print(player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
                 end
                 set_player_active(player)
             end
@@ -1855,7 +1873,7 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid and event.tag then
-                console_print(player.name .. " edited a map tag at [gps=" .. event.tag.position.x  .. "," .. event.tag.position.y  .. "] called: " .. event.tag.text)
+                console_print(player.name .. " edited a map tag at [gps=" .. event.tag.position.x .. "," .. event.tag.position.y .. "] called: " .. event.tag.text)
             end
         end
     end
@@ -1869,7 +1887,7 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid and event.tag then
-                console_print(player.name .. " deleted a map tag at [gps=" .. event.tag.position.x  .. "," .. event.tag.position.y .. "] called: " .. event.tag.text)
+                console_print(player.name .. " deleted a map tag at [gps=" .. event.tag.position.x .. "," .. event.tag.position.y .. "] called: " .. event.tag.text)
             end
         end
     end
