@@ -1,4 +1,4 @@
---v507-121220201054a
+--v509-121220201153a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -947,7 +947,19 @@ script.on_load(
                         end
                     end
 
+                    --
+                    --Clear limbo surfaces on reboot
+                    --
                     if param.parameter then
+                        --Get limbo surface
+                        local surf = game.surfaces["limbo"]
+
+                        --Check if surface is valid
+                        if surf and surf.valid then
+                            --Clear surface
+                            surf.clear()
+                        end
+
                         global.servname = param.parameter
                         global.drawlogo = false
                         dodrawlogo()
@@ -1691,18 +1703,11 @@ script.on_event(
 
             --Check player, surface and object are valid
             if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
-
                 --New players can't mine objects that they don't own, v2.0
                 if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
-
-                    --Unique surface name, avoid conflicts
-                    local surfname = "limbo_"..player.index
-
-                    --Create temp surface if needed
-                    if game.surfaces[surfname] == nil then
+                    --Create limbo surface if needed
+                    if game.surfaces["limbo"] == nil then
                         local my_map_gen_settings = {
-                            width = 10, --larger than max entity size
-                            height = 10,
                             default_enable_all_autoplace_controls = false,
                             property_expression_names = {cliffiness = 0},
                             autoplace_settings = {
@@ -1714,27 +1719,24 @@ script.on_event(
                             },
                             starting_area = "none"
                         }
-                        game.create_surface(surfname, my_map_gen_settings)
+                        game.create_surface("limbo", my_map_gen_settings)
                     end
 
                     --Get surface
-                    local surf = game.surfaces[surfname]
+                    local surf = game.surfaces["limbo"]
 
                     --Check if surface is valid
                     if surf and surf.valid then
-
                         --Clone object
-                        local savepos = obj.position
-                        local saveobj = obj.clone({position = {0, 0}, surface = surf, force = player.force})
+                        local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
 
                         --Check that object was able to be cloned
                         if saveobj and saveobj.valid then
-
                             --Destroy original object
                             obj.destroy()
 
                             --Create object again, from temp surface
-                            player.surface.clone_entities({entities = {saveobj}, destination_offset = savepos})
+                            player.surface.clone_entities({entities = {saveobj}, destination_offset = {0, 0}})
 
                             --Destroy temporary item
                             saveobj.destroy()
