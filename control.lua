@@ -1,4 +1,4 @@
---v505-121220201238a
+--v505-121220200106a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1842,7 +1842,7 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid and event.tag then
-                console_print(player.name .. " placed a map tag at [gps=" .. event.tag.xpos .. "," .. event.tag.ypos .. "] called: " .. event.tag.object_name)
+                console_print(player.name .. " placed a map tag at [gps=" .. event.tag.position.x .. "," .. event.tag.position.y .. "] called: " .. event.tag.object_name)
             end
         end
     end
@@ -1855,7 +1855,7 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid and event.tag then
-                console_print(player.name .. " edited a map tag at [gps=" .. event.tag.xpos .. "," .. event.tag.ypos .. "] called: " .. event.tag.object_name)
+                console_print(player.name .. " edited a map tag at [gps=" .. event.tag.position.x  .. "," .. event.tag.position.y  .. "] called: " .. event.tag.object_name)
             end
         end
     end
@@ -1868,9 +1868,8 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
 
-            --Only count if actually walking...
             if player and player.valid and event.tag then
-                console_print(player.name .. " deleted a map tag at [gps=" .. event.tag.xpos .. "," .. event.tag.ypos .. "] called: " .. event.tag.object_name)
+                console_print(player.name .. " deleted a map tag at [gps=" .. event.tag.position.x  .. "," .. event.tag.position.y .. "] called: " .. event.tag.object_name)
             end
         end
     end
