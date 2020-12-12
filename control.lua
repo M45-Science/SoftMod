@@ -958,6 +958,7 @@ script.on_load(
                         if surf and surf.valid then
                             --Clear surface
                             surf.clear()
+                            console_print("Limbo surface cleared.")
                         end
 
                         global.servname = param.parameter
