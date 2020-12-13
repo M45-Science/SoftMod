@@ -1,4 +1,4 @@
---v509-121220201153a
+--v510-121320200329a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1748,7 +1748,7 @@ script.on_event(
                         end
 
                         --Clear the surface
-                        surf.clear()
+                        --surf.clear()
                     else
                         console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
