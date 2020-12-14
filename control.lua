@@ -1,4 +1,4 @@
---v511-121420200447a
+--v511-121420200735a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -370,29 +370,25 @@ local function create_myglobals()
     if not global.corpselist then
         global.corpselist = {tag = {}, tick = {}}
     end
-    if not global.servers then
-        global.servers = {
-            "Our Servers:",
-            "A-RailWorld",
-            "B-Peaceful",
-            "C-RailWorld-2 (*)",
-            "D-Peaceful-2 (*)",
-            "E-DeathWorld",
-            "F-The Forest (*)",
-            "[ v PRIVATE BELOW v ]",
-            "RA-Space-Krastorio",
-            "RB-RailWorld-3 (*)",
-            "RC-DeathWorld-3 (*)",
-            "RD-DeathWorld-2 (*)",
-            "(*) = Factorio 1.1.x"
-        }
-    end
-    if not global.ports then
-        global.ports = {"", "50000", "50001", "50002", "50003", "50004", "50005", "", "50101", "50102", "50103", "50104", ""}
-    end
-    if not global.domain then
-        global.domain = "m45sci.xyz:"
-    end
+
+    --Server List
+    global.servers = {
+        "Our Servers:",
+        "A-RailWorld",
+        "B-Peaceful",
+        "C-RailWorld-2 (*)",
+        "D-Peaceful-2 (*)",
+        "E-DeathWorld",
+        "F-The Forest (*)",
+        "[ v PRIVATE BELOW v ]",
+        "RA-Space-Krastorio",
+        "RB-RailWorld-3 (*)",
+        "RC-DeathWorld-3 (*)",
+        "RD-DeathWorld-2 (*)",
+        "(*) = Factorio 1.1.x"
+    }
+    global.ports = {"", "50000", "50001", "50002", "50003", "50004", "50005", "", "50101", "50102", "50103", "50104", ""}
+    global.domain = "m45sci.xyz:"
 end
 
 --Create player globals, if needed
@@ -2172,7 +2168,6 @@ script.on_event(
                                     local servname = global.servers[ele.selected_index]
                                     --smart_print(player, "Connecting to: " .. addr)
                                     player.connect_to_server {address = addr, name = servname}
-                                
                                 end
 
                                 --Revert selection
