@@ -2170,7 +2170,7 @@ script.on_event(
                                 if global.ports[ele.selected_index] ~= "" then
                                     local addr = global.domain .. global.ports[ele.selected_index]
                                     local servname = global.servers[ele.selected_index]
-                                    smart_print(player, "Connecting to: " .. addr)
+                                    --smart_print(player, "Connecting to: " .. addr)
                                     player.connect_to_server {address = addr, name = servname}
                                 
                                 end
