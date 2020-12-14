@@ -1575,6 +1575,13 @@ script.on_event(
                         player.gui.top.discordurl.selectable = true
                     end
 
+
+                    --Server List--
+                    if not player.gui.top.serverlist then
+                        player.gui.top.add {type = "drop-down", name = "serverlist"}
+                        player.gui.top.serverlist.items = {"A-RailWord", "B-Peaceful", "E-DeathWorld"}
+                    end
+
                     --Zoom button--
                     if not player.gui.top.zout then
                         player.gui.top.add {
@@ -1609,6 +1616,8 @@ script.on_event(
                 show_players(player)
                 smart_print(player, "To see online players, chat /online")
                 message_all("Welcome " .. player.name .. " to the map!")
+
+                
             end
         end
     end
@@ -1728,6 +1737,8 @@ script.on_event(
 
                     --Check if surface is valid
                     if surf and surf.valid then
+                        --Clear the surface
+                        --surf.clear()
                         --Clone object
                         local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
 
@@ -1746,9 +1757,6 @@ script.on_event(
                         else
                             console_print("pre_player_mined_item: unable to clone object.")
                         end
-
-                        --Clear the surface
-                        --surf.clear()
                     else
                         console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
@@ -2024,6 +2032,7 @@ script.on_nth_tick(
     end
 )
 
+--GUI
 script.on_event(
     defines.events.on_gui_click,
     function(event)
