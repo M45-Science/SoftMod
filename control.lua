@@ -1,4 +1,4 @@
---v510-121320200329a
+--v511-121420200349a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -63,7 +63,9 @@ end
 
 --safe console print
 local function console_print(message)
-    print("~" .. message)
+    if message then
+        print("~" .. message)
+    end
 end
 
 --smart console print--
@@ -77,22 +79,28 @@ end
 
 --Global messages
 local function message_all(message)
-    for _, player in pairs(game.connected_players) do
-        player.print(message)
+    if message then
+        for _, player in pairs(game.connected_players) do
+            player.print(message)
+        end
+        print("[MSG] " .. message)
     end
-    print("[MSG] " .. message)
 end
 
 --Global messages (players only)
 local function message_allp(message)
-    for _, player in pairs(game.connected_players) do
-        player.print(message)
+    if message then
+        for _, player in pairs(game.connected_players) do
+            player.print(message)
+        end
     end
 end
 
 --Global messages-- (discord only)
 local function message_alld(message)
-    print("[MSG] " .. message)
+    if message then
+        print("[MSG] " .. message)
+    end
 end
 
 --Check if player should be considered a regular
@@ -345,6 +353,7 @@ local function set_perms()
     end
 end
 
+--Create globals, if needed
 local function create_myglobals()
     if not global.playeractive then
         global.playeractive = {}
@@ -358,11 +367,35 @@ local function create_myglobals()
     if not global.last_decon_warning then
         global.last_decon_warning = 0
     end
-    if (not global.corpselist) then
+    if not global.corpselist then
         global.corpselist = {tag = {}, tick = {}}
+    end
+    if not global.servers then
+        global.servers = {
+            "Our Servers:",
+            "A-RailWorld",
+            "B-Peaceful",
+            "C-RailWorld-2 (*)",
+            "D-Peaceful-2 (*)",
+            "E-DeathWorld",
+            "F-The Forrest (*)",
+            "[ v PRIVATE BELOW v ]",
+            "RA-Space-Krastorio",
+            "RB-RailWorld-3 (*)",
+            "RC-DeathWorld-3 (*)",
+            "RD-DeathWorld-2 (*)",
+            "(*) = Factorio 1.1.x"
+        }
+    end
+    if not global.ports then
+        global.ports = {"", "50000", "50001", "50002", "50003", "50004", "50005", "", "50101", "50102", "50103", "50104", ""}
+    end
+    if not global.domain then
+        global.domain = "m45sci.xyz:"
     end
 end
 
+--Create player globals, if needed
 local function create_player_globals(player)
     if player and player.valid then
         if global.playeractive and player and player.index then
@@ -461,6 +494,7 @@ local function get_permgroup()
     end
 end
 
+--Show Players
 local function show_players(victim)
     local numpeople = 0
 
@@ -1575,11 +1609,15 @@ script.on_event(
                         player.gui.top.discordurl.selectable = true
                     end
 
-
                     --Server List--
-                    if not player.gui.top.serverlist then
-                        player.gui.top.add {type = "drop-down", name = "serverlist"}
-                        player.gui.top.serverlist.items = {"A-RailWord", "B-Peaceful", "E-DeathWorld"}
+                    if global.servers then
+                        if not player.gui.top.serverlist then
+                            player.gui.top.add {type = "drop-down", name = "serverlist"}
+                        end
+
+                        --Select, and update server list on login
+                        player.gui.top.serverlist.items = global.servers
+                        player.gui.top.serverlist.selected_index = 1
                     end
 
                     --Zoom button--
@@ -1593,6 +1631,33 @@ script.on_event(
                     end
                 end
                 get_permgroup()
+            end
+        end
+    end
+)
+
+--Player disconnected (Fact >= v1.1)
+script.on_event(
+    defines.events.on_player_left_game,
+    function(event)
+        if event and event.player_index and event.reason then
+            local player = game.players[event.player_index]
+            if player and player.valid then
+                local reason = {
+                    "(Quit)",
+                    "(Dropped)",
+                    "(Reconnecting)",
+                    "(WRONG INPUT)",
+                    "(TOO MANY DESYNC)",
+                    "(CPU TOO SLOW!!!)",
+                    "(AFK)",
+                    "(KICKED)",
+                    "(KICKED AND DELETED)",
+                    "(BANNED)",
+                    "(Switching servers)",
+                    "(Unknown)"
+                }
+                message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
             end
         end
     end
@@ -1616,8 +1681,6 @@ script.on_event(
                 show_players(player)
                 smart_print(player, "To see online players, chat /online")
                 message_all("Welcome " .. player.name .. " to the map!")
-
-                
             end
         end
     end
@@ -2081,6 +2144,43 @@ script.on_nth_tick(
                 toremove.object = nil
                 toremove.prev = nil
                 toremove = nil
+            end
+        end
+    end
+)
+
+--GUI state change
+script.on_event(
+    defines.events.on_gui_selection_state_changed,
+    function(event)
+        --If event and player and element
+        if event and event.player_index and event.element then
+            local player = game.players[event.player_index]
+            local ele = event.element
+            --If player and element are valid
+            if player and player.valid and ele.valid then
+                --If object is server list
+                if player.gui and player.gui.top and player.gui.top.serverlist and ele.index == player.gui.top.serverlist.index then
+                    --Skip label
+                    if ele.selected_index > 1 then
+                        --if valid selected item, and globals
+                        if ele.selected_index and global.servers and global.ports and global.domain then
+                            --If item exists
+                            if global.ports[ele.selected_index] and global.servers[ele.selected_index] then
+                                if global.ports[ele.selected_index] ~= "" then
+                                    local addr = global.domain .. global.ports[ele.selected_index]
+                                    local servname = global.servers[ele.selected_index]
+                                    smart_print(player, "Connecting to: " .. addr)
+                                    player.connect_to_server {address = addr, name = servname}
+                                
+                                end
+
+                                --Revert selection
+                                player.gui.top.serverlist.selected_index = 1
+                            end
+                        end
+                    end
+                end
             end
         end
     end
