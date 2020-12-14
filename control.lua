@@ -378,7 +378,7 @@ local function create_myglobals()
             "C-RailWorld-2 (*)",
             "D-Peaceful-2 (*)",
             "E-DeathWorld",
-            "F-The Forrest (*)",
+            "F-The Forest (*)",
             "[ v PRIVATE BELOW v ]",
             "RA-Space-Krastorio",
             "RB-RailWorld-3 (*)",
