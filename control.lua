@@ -1,4 +1,4 @@
---v511-121420200735a
+--v511-121520200345a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -372,23 +372,29 @@ local function create_myglobals()
     end
 
     --Server List
-    global.servers = {
-        "Our Servers:",
-        "A-RailWorld",
-        "B-Peaceful",
-        "C-RailWorld-2 (*)",
-        "D-Peaceful-2 (*)",
-        "E-DeathWorld",
-        "F-The Forest (*)",
-        "[ v PRIVATE BELOW v ]",
-        "RA-Space-Krastorio",
-        "RB-RailWorld-3 (*)",
-        "RC-DeathWorld-3 (*)",
-        "RD-DeathWorld-2 (*)",
-        "(*) = Factorio 1.1.x"
-    }
-    global.ports = {"", "50000", "50001", "50002", "50003", "50004", "50005", "", "50101", "50102", "50103", "50104", ""}
-    global.domain = "m45sci.xyz:"
+    if not global.servers then
+        global.servers = {
+            "Our Servers:",
+            "A-RailWorld",
+            "B-Peaceful",
+            "C-RailWorld-2 (*)",
+            "D-Peaceful-2 (*)",
+            "E-DeathWorld",
+            "F-The Forest (*)",
+            "[ v PRIVATE BELOW v ]",
+            "RA-Space-Krastorio",
+            "RB-RailWorld-3 (*)",
+            "RC-DeathWorld-3 (*)",
+            "RD-DeathWorld-2 (*)",
+            "(*) = Factorio 1.1.x"
+        }
+    end
+    if not global.ports then
+        global.ports = {"", "50000", "50001", "50002", "50003", "50004", "50005", "", "50101", "50102", "50103", "50104", ""}
+    end
+    if not global.domain then
+        global.domain = "m45sci.xyz:"
+    end
 end
 
 --Create player globals, if needed
