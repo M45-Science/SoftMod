@@ -1133,7 +1133,7 @@ script.on_load(
                         if (victim) then
                             if victim and victim.valid and global.membersgroup then
                                 smart_print(player, "Player given members status.")
-                                message_all(player.name .. " is now a member!")
+                                message_all(victim.name .. " is now a member!")
                                 global.membersgroup.add_player(victim)
                                 return
                             end
@@ -1163,7 +1163,7 @@ script.on_load(
 
                         if (victim) then
                             if victim and victim.valid and global.regularsgroup then
-                                message_all(player.name .. " is now a regular!")
+                                message_all(victim.name .. " is now a regular!")
                                 smart_print(player, "Player given regulars status.")
                                 global.regularsgroup.add_player(victim)
                                 return
