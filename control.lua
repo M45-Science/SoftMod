@@ -1,4 +1,4 @@
---v514-121520201043p
+--v515-121620200332a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -195,7 +195,7 @@ local function update_banished_votes()
                         banishedtemp[vote.victim.index] = 1
                     end
                 else
-                    banishedtemp[vote.victim.index] = 0
+                    --banishedtemp[vote.victim.index] = 0
                 end
             end
         end
@@ -214,7 +214,7 @@ local function update_banished_votes()
         --Was banished, but not anymore
         if is_banished(victim) == false and prevstate == true then
             local msg = victim.name .. " is no longer banished."
-            print("[REPORT] " .. msg)
+            print("[REPORT] SYSTEM " .. msg)
             message_all(msg)
 
             local surf = game.surfaces["nauvis"]
@@ -232,7 +232,7 @@ local function update_banished_votes()
             --Was not banished, but is now.
             local msg = victim.name .. " has been banished."
             message_all(msg)
-            print("[REPORT] " .. msg)
+            print("[REPORT] SYSTEM " .. msg)
 
             if game.surfaces["hell"] == nil then
                 local my_map_gen_settings = {
@@ -370,6 +370,12 @@ local function create_myglobals()
     if not global.corpselist then
         global.corpselist = {tag = {}, tick = {}}
     end
+    if not global.banishvotes then
+        global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}, withdrawn = {}, overruled = {}}
+    end
+    if not global.thebanished then
+        global.thebanished = {}
+    end
 
     --Server List
     if not global.servers then
@@ -494,7 +500,7 @@ local function get_permgroup()
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
                         elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
-                            if is_regular(player) == false and is_member == false and is_new == true then
+                            if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                                 global.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
                                 player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
@@ -522,16 +528,18 @@ local function show_players(victim)
 
             if player.permission_group then
                 local gname = player.permission_group.name
-                if gname == "Default" then
-                    gname = "NEW"
-                end
-
                 utag = gname
             else
                 utag = "none"
             end
 
-            if is_banished(player) then
+            if is_new(player) then
+                utag = "NEW"
+            elseif is_member(player) then
+                utag = "Members"
+            elseif is_regular(player) then
+                utag = "Regulars"
+            elseif is_banished(player) then
                 utag = "BANISHED"
             end
 
@@ -542,7 +550,7 @@ local function show_players(victim)
     end
     if numpeople == 0 then
         smart_print(victim, "No players online.")
-    end
+    ends
 end
 
 --Custom commands
@@ -682,7 +690,8 @@ script.on_load(
                     if param and param.player_index then
                         local player = game.players[param.player_index]
 
-                        if global.banishvotes and global.banishvotes ~= {} then
+                        if global.banishvotes then
+                            local pcount = 0
                             for _, vote in pairs(global.banishvotes) do
                                 if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
                                     local notes = ""
@@ -692,6 +701,7 @@ script.on_load(
                                     if vote.overruled then
                                         notes = "(OVERRULED) "
                                     end
+                                    pcount = pcount + 1
                                     smart_print(player, notes .. "plaintiff: " .. vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason)
                                 end
                             end
@@ -700,6 +710,7 @@ script.on_load(
                                 for _, victim in pairs(game.players) do
                                     if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
                                         smart_print(player, victim.name .. " has had " .. global.thebanished[victim.index] .. " complaints agianst them.")
+                                        pcount = pcount + 1
                                     end
                                 end
                             end
@@ -713,8 +724,12 @@ script.on_load(
                                     end
                                     if votecount > 2 then
                                         smart_print(player, victim.name .. " has voted against " .. votecount .. " players.")
+                                        pcount = pcount + 1
                                     end
                                 end
+                            end
+                            if pcount <= 0 then
+                                smart_print(player,"The docket is clean.")
                             end
                             return
                         else
@@ -756,7 +771,7 @@ script.on_load(
                                                         print("[REPORT] " .. message)
                                                         smart_print(player, "Your vote has been withdrawn, and posted on Discord.")
                                                         vote.withdrawn = true
-                                                        update_banished_votes() --Must do this to delete to tally
+                                                        update_banished_votes() --Must do this to delete from tally
                                                         return
                                                     end
                                                 end
