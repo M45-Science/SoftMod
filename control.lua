@@ -1,4 +1,4 @@
---v513-121520201037p
+--v514-121520201043p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -2152,7 +2152,7 @@ script.on_nth_tick(
                 --Sanity check
                 if item.surf and item.surf.valid and item.force and item.force.valid and item.pos then
                     --Check if an item is in our way ( fast replaced )
-                    local des = fsurf.find_entities({item.pos, item.pos})
+                    local des = item.surf.find_entities({item.pos, item.pos})
 
                     --Untouch the fast-replaced object (last_user)
                     if des then
@@ -2170,7 +2170,7 @@ script.on_nth_tick(
 
                     --Otherwise, clone limbo object back into place of original
                     if not skip then
-                        local rep = item.obj.clone({position = fpos, surface = fsurf, force = fforce})
+                        local rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
                         if not rep then
                             console_print("repobj: Unable to clone object from limbo.")
                         end
