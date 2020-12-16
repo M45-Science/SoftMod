@@ -778,7 +778,7 @@ script.on_load(
                                                     end
                                                 end
                                             end
-                                            smart_print("I don't see a vote from you, against that player, to withdraw.")
+                                            smart_print(player, "I don't see a vote from you, against that player, to withdraw.")
                                         end
                                     else
                                         smart_print(player, "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help.")
