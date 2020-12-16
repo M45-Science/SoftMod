@@ -1642,7 +1642,11 @@ script.on_event(
 
                     --Server List--
                     if global.servers then
-                        player.gui.top.serverlist.destroy()
+
+                        --Refresh
+                        if player.gui.top.serverlist then
+                            player.gui.top.serverlist.destroy()
+                        end
 
                         if not player.gui.top.serverlist then
                             player.gui.top.add {type = "drop-down", name = "serverlist"}
