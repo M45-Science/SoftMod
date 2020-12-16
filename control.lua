@@ -70,10 +70,12 @@ end
 
 --smart console print--
 local function smart_print(player, message)
-    if player and player.valid then
-        player.print(message)
-    else
-        rcon.print("~" .. message)
+    if message then
+        if player and player.valid then
+            player.print(message)
+        else
+            rcon.print("~" .. message)
+        end
     end
 end
 
@@ -729,7 +731,7 @@ script.on_load(
                                 end
                             end
                             if pcount <= 0 then
-                                smart_print(player,"The docket is clean.")
+                                smart_print(player, "The docket is clean.")
                             end
                             return
                         else
@@ -1862,7 +1864,6 @@ script.on_event(
             else
                 console_print("pre_player_mined_item: invalid player, obj or surface.")
             end
-
         end
     end
 )
