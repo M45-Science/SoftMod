@@ -1,4 +1,4 @@
---v511-121520200345a
+--v512-121520200852p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -390,7 +390,21 @@ local function create_myglobals()
         }
     end
     if not global.ports then
-        global.ports = {"", "50000", "50001", "50002", "50003", "50004", "50005", "", "50101", "50102", "50103", "50104", ""}
+        global.ports = {
+            "",
+            "50000",
+            "50001",
+            "50002",
+            "50003",
+            "50004",
+            "50005",
+            "",
+            "50101",
+            "50102",
+            "50103",
+            "50104",
+            ""
+        }
     end
     if not global.domain then
         global.domain = "m45sci.xyz:"
@@ -1779,7 +1793,7 @@ script.on_event(
             --Check player, surface and object are valid
             if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
                 --New players can't mine objects that they don't own, v2.0
-                if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+                if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
                     --Create limbo surface if needed
                     if game.surfaces["limbo"] == nil then
                         local my_map_gen_settings = {
@@ -1795,6 +1809,7 @@ script.on_event(
                             starting_area = "none"
                         }
                         game.create_surface("limbo", my_map_gen_settings)
+                    --console_print("Created limbo surface")
                     end
 
                     --Get surface
@@ -1802,35 +1817,38 @@ script.on_event(
 
                     --Check if surface is valid
                     if surf and surf.valid then
-                        --Clear the surface
-                        --surf.clear()
                         --Clone object
                         local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
+                        --console_print("Cloned object to limbo")
 
                         --Check that object was able to be cloned
                         if saveobj and saveobj.valid then
-                            --Destroy original object
+                            --console_print("Limbo obj added to list.")
+                            local oldpos = obj.position
+                            local oldsurf = player.surface
+                            local oldforce = player.force
                             obj.destroy()
+                            --console_print("Mined object destroyed.")
 
-                            --Create object again, from temp surface
-                            player.surface.clone_entities({entities = {saveobj}, destination_offset = {0, 0}})
+                            --Create list if needed
+                            if not global.repobj then
+                                global.repobj = {obj = {}, pos = {}, surf = {}, force = {}}
+                            end
 
-                            --Destroy temporary item
-                            saveobj.destroy()
-
-                            player.print("You are a new user, and are not allowed to mine other people's objects yet!")
+                            --Add obj to list
+                            table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = oldsurf, force = player.force})
                         else
-                            console_print("pre_player_mined_item: unable to clone object.")
+                            --console_print("pre_player_mined_item: unable to clone object.")
                         end
                     else
-                        console_print("pre_player_mined_item: unable to get limbo-surface.")
+                        --console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
                 else
                     console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
                     set_player_active(player)
                 end
             else
-                console_print("pre_player_mined_item: invalid player, obj or surface.")
+                --console_print("pre_player_mined_item: invalid player, obj or surface.")
             end
         end
     end
@@ -2015,6 +2033,7 @@ script.on_event(
 script.on_nth_tick(
     7200,
     function(event)
+        
         --Remove old corpse tags
         if (global.corpselist) then
             local toremove
@@ -2126,9 +2145,40 @@ script.on_event(
 script.on_nth_tick(
     1,
     function(event)
-        if global.untouchobj then
-            local toremove
+        if global.repobj then
+            for _, item in ipairs(global.repobj) do
+                local fsurf = item.surf
+                local fforce = item.force
+                local fpos = item.pos
+                local skip = false
 
+                if fsurf and fsurf.valid and fforce and fforce.valid and fpos then
+                    local des = fsurf.find_entities({item.pos, item.pos})
+                    if des then
+                        for _, d in pairs(des) do
+                            --console_print("object in the way, skipping.")
+                            skip = true
+                        end
+                    end
+
+                    if not skip then
+                        local rep = item.obj.clone({position = fpos, surface = fsurf, force = fforce})
+                        if rep and rep.valid then
+                            --console_print("Object cloned from limbo.")
+                        else
+                            --console_print("Unable to clone object from limbo")
+                        end
+                        item.obj.destroy()
+                    --console_print("Limbo object destroyed.")
+                    end
+                else
+                    --console_print("Invalid surface")
+                end
+            end
+            global.repobj = nil
+        end
+
+        if global.untouchobj then
             for _, item in pairs(global.untouchobj) do
                 if item.object then
                     if item.object.valid then
@@ -2138,15 +2188,9 @@ script.on_nth_tick(
                             item.object.last_user = game.players[1]
                         end
                     end
-                    toremove = item
-                    break
                 end
             end
-            if (toremove) then
-                toremove.object = nil
-                toremove.prev = nil
-                toremove = nil
-            end
+            global.untouchonj = nil
         end
     end
 )
