@@ -107,7 +107,8 @@ end
 
 --Check if player should be considered a regular
 local function is_regular(victim)
-    if victim and victim.valid then
+    if victim and victim.valid and not victim.admin then
+
         --If in group
         if victim.permission_group and global.regularsgroup then
             if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name == global.regularsgroup.name .. "_satellite" then
@@ -126,7 +127,8 @@ end
 
 --Check if player should be considered a member
 local function is_member(victim)
-    if victim and victim.valid then
+    if victim and victim.valid and not victim.admin then
+
         --If in group
         if victim.permission_group and global.membersgroup then
             if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name == global.membersgroup.name .. "_satellite" then
@@ -145,8 +147,9 @@ end
 
 --Check if player should be considered new
 local function is_new(victim)
-    if victim and victim.valid then
-        if is_member(victim) == false and is_regular(victim) == false and victim.admin == false then
+
+    if victim and victim.valid and not victim.admin then
+        if is_member(victim) == false and is_regular(victim) == false then
             return true
         end
     end
@@ -156,9 +159,9 @@ end
 
 --Check if player should be considered banished
 local function is_banished(victim)
-    if victim and victim.valid then
+    if victim and victim.valid and not victim.admin then
         --Admins and regulars can not be marked as banished
-        if victim.admin or is_regular(victim) then
+        if is_regular(victim) then
             return false
         elseif global.thebanished and global.thebanished[victim.index] then
             if (is_new(victim) and global.thebanished[victim.index] >= 2) or (is_member(victim) and global.thebanished[victim.index] >= 3) then
@@ -196,8 +199,6 @@ local function update_banished_votes()
                         --was empty, init
                         banishedtemp[vote.victim.index] = 1
                     end
-                else
-                    --banishedtemp[vote.victim.index] = 0
                 end
             end
         end
