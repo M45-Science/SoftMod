@@ -1,4 +1,4 @@
---v512-121520200852p
+--v513-121520201037p
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -1786,13 +1786,14 @@ script.on_event(
 script.on_event(
     defines.events.on_pre_player_mined_item,
     function(event)
+        --Sanity check
         if event and event.player_index and event.entity then
             local player = game.players[event.player_index]
             local obj = event.entity
 
             --Check player, surface and object are valid
             if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
-                --New players can't mine objects that they don't own, v2.0
+                --New players can't mine objects that they don't own!
                 if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
                     --Create limbo surface if needed
                     if game.surfaces["limbo"] == nil then
@@ -1809,7 +1810,6 @@ script.on_event(
                             starting_area = "none"
                         }
                         game.create_surface("limbo", my_map_gen_settings)
-                    --console_print("Created limbo surface")
                     end
 
                     --Get surface
@@ -1817,18 +1817,15 @@ script.on_event(
 
                     --Check if surface is valid
                     if surf and surf.valid then
-                        --Clone object
+                        --Clone object to limbo
                         local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
-                        --console_print("Cloned object to limbo")
 
                         --Check that object was able to be cloned
                         if saveobj and saveobj.valid then
-                            --console_print("Limbo obj added to list.")
-                            local oldpos = obj.position
-                            local oldsurf = player.surface
-                            local oldforce = player.force
+                            --Destroy orignal object.
                             obj.destroy()
-                            --console_print("Mined object destroyed.")
+
+                            player.print("You are a new user, and are not allowed to mine other people's objects yet!")
 
                             --Create list if needed
                             if not global.repobj then
@@ -1836,20 +1833,21 @@ script.on_event(
                             end
 
                             --Add obj to list
-                            table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = oldsurf, force = player.force})
+                            table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = player.surface, force = player.force})
                         else
-                            --console_print("pre_player_mined_item: unable to clone object.")
+                            console_print("pre_player_mined_item: unable to clone object.")
                         end
                     else
-                        --console_print("pre_player_mined_item: unable to get limbo-surface.")
+                        console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
                 else
                     console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
                     set_player_active(player)
                 end
             else
-                --console_print("pre_player_mined_item: invalid player, obj or surface.")
+                console_print("pre_player_mined_item: invalid player, obj or surface.")
             end
+
         end
     end
 )
@@ -1858,14 +1856,16 @@ script.on_event(
 script.on_event(
     defines.events.on_player_rotated_entity,
     function(event)
+        --Sanity check
         if event and event.player_index and event.previous_direction then
             local player = game.players[event.player_index]
             local obj = event.entity
             local prev_dir = event.previous_direction
 
+            --If player and object are valid
             if player and player.valid and obj and obj.valid then
                 --Don't let new players rotate other players items, unrotate and untouch the item.
-                if is_new(player) and obj.last_user ~= nil and obj.last_user ~= player then
+                if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
                     --Unrotate
                     obj.direction = prev_dir
 
@@ -2033,7 +2033,6 @@ script.on_event(
 script.on_nth_tick(
     7200,
     function(event)
-        
         --Remove old corpse tags
         if (global.corpselist) then
             local toremove
@@ -2141,55 +2140,68 @@ script.on_event(
     end
 )
 
---Reset last_user (untouch) objects, one per tick
+--Restore mined objects from limbo, and untouch items.
 script.on_nth_tick(
     1,
     function(event)
+        --Replace object list
         if global.repobj then
             for _, item in ipairs(global.repobj) do
-                local fsurf = item.surf
-                local fforce = item.force
-                local fpos = item.pos
                 local skip = false
 
-                if fsurf and fsurf.valid and fforce and fforce.valid and fpos then
+                --Sanity check
+                if item.surf and item.surf.valid and item.force and item.force.valid and item.pos then
+                    --Check if an item is in our way ( fast replaced )
                     local des = fsurf.find_entities({item.pos, item.pos})
+
+                    --Untouch the fast-replaced object (last_user)
                     if des then
                         for _, d in pairs(des) do
-                            --console_print("object in the way, skipping.")
+                            if item.obj.last_user and item.obj.last_user.valid then
+                                --Untouch
+                                d.last_user = item.obj.last_user.name
+                            else
+                                --Just in case
+                                d.last_user = game.players[1]
+                            end
                             skip = true
                         end
                     end
 
+                    --Otherwise, clone limbo object back into place of original
                     if not skip then
                         local rep = item.obj.clone({position = fpos, surface = fsurf, force = fforce})
-                        if rep and rep.valid then
-                            --console_print("Object cloned from limbo.")
-                        else
-                            --console_print("Unable to clone object from limbo")
+                        if not rep then
+                            console_print("repobj: Unable to clone object from limbo.")
                         end
-                        item.obj.destroy()
-                    --console_print("Limbo object destroyed.")
                     end
+
+                    --Clean up limbo object
+                    item.obj.destroy()
                 else
-                    --console_print("Invalid surface")
+                    console_print("repobj: Invalid surface")
                 end
             end
+
+            --Done with list, invalidate it.
             global.repobj = nil
         end
 
+        --Untouch rotated objects
         if global.untouchobj then
             for _, item in pairs(global.untouchobj) do
-                if item.object then
-                    if item.object.valid then
-                        if item.prev and item.prev.valid then
-                            item.object.last_user = item.prev
-                        else --just in case
-                            item.object.last_user = game.players[1]
-                        end
+                --Sanity Check
+                if item.object and item.object.valid then
+                    --Set last user to previous state
+                    if item.prev and item.prev.valid then
+                        item.object.last_user = item.prev
+                    else --just in case
+                        item.object.last_user = game.players[1]
                     end
                 end
             end
+
+            --Done with list, invalidate it
             global.untouchonj = nil
         end
     end
