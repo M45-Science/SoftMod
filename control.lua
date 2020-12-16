@@ -550,7 +550,7 @@ local function show_players(victim)
     end
     if numpeople == 0 then
         smart_print(victim, "No players online.")
-    ends
+    end
 end
 
 --Custom commands
