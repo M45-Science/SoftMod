@@ -1,4 +1,4 @@
---v516-121620200550a
+--v516-121620200623a
 --Carl Frank Otto III (aka Distortions864)
 --carlotto81@gmail.com
 
@@ -108,7 +108,6 @@ end
 --Check if player should be considered a regular
 local function is_regular(victim)
     if victim and victim.valid and not victim.admin then
-
         --If in group
         if victim.permission_group and global.regularsgroup then
             if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name == global.regularsgroup.name .. "_satellite" then
@@ -128,7 +127,6 @@ end
 --Check if player should be considered a member
 local function is_member(victim)
     if victim and victim.valid and not victim.admin then
-
         --If in group
         if victim.permission_group and global.membersgroup then
             if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name == global.membersgroup.name .. "_satellite" then
@@ -147,7 +145,6 @@ end
 
 --Check if player should be considered new
 local function is_new(victim)
-
     if victim and victim.valid and not victim.admin then
         if is_member(victim) == false and is_regular(victim) == false then
             return true
@@ -1625,11 +1622,6 @@ script.on_event(
                 if player.gui and player.gui.top then
                     --Discord Button--
                     if not player.gui.top.dicon then
-                        --Temp, for migrating old maps/players
-                        --Otherwise, icons will be in wrong order
-                        if player.gui.top.discordurl then
-                            player.gui.top.discordurl.destroy()
-                        end
 
                         player.gui.top.add {
                             type = "sprite-button",
@@ -1650,13 +1642,15 @@ script.on_event(
 
                     --Server List--
                     if global.servers then
+                        player.gui.top.serverlist.destroy()
+
                         if not player.gui.top.serverlist then
                             player.gui.top.add {type = "drop-down", name = "serverlist"}
-                        end
 
-                        --Select, and update server list on login
-                        player.gui.top.serverlist.items = global.servers
-                        player.gui.top.serverlist.selected_index = 1
+                            --Select, and update server list on login
+                            player.gui.top.serverlist.items = global.servers
+                            player.gui.top.serverlist.selected_index = 1
+                        end
                     end
 
                     --Zoom button--
