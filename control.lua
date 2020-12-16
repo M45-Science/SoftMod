@@ -538,11 +538,14 @@ local function show_players(victim)
 
             if is_new(player) then
                 utag = "NEW"
-            elseif is_member(player) then
+            end
+            if is_member(player) then
                 utag = "Members"
-            elseif is_regular(player) then
+            end
+            if is_regular(player) then
                 utag = "Regulars"
-            elseif is_banished(player) then
+            end
+            if is_banished(player) then
                 utag = "BANISHED"
             end
 
