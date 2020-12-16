@@ -6,7 +6,9 @@
 local function dodrawlogo()
     local surf = game.surfaces["nauvis"]
     if surf then
+        --Only draw if needed
         if not global.drawlogo then
+            --Destroy if already exists
             if global.m45logo then
                 rendering.destroy(global.m45logo)
             end
@@ -17,11 +19,13 @@ local function dodrawlogo()
                 rendering.destroy(global.servtext)
             end
 
+            --Get spawn position
             local cpos = {x = 0, y = 0}
             if global.cspawnpos and global.cspawnpos.x then
                 cpos = global.cspawnpos
             end
 
+            --Set drawn flag
             global.drawlogo = true
             global.m45logo =
                 rendering.draw_sprite {
@@ -175,7 +179,7 @@ local function update_banished_votes()
     --Reset banished list
     local banishedtemp = {}
 
-    --just in case
+    --Init if needed
     if not global.banishvotes then
         global.banishvotes = {voter = {}, victim = {}, reason = {}, tick = {}, withdrawn = {}, overruled = {}}
     end
@@ -184,6 +188,7 @@ local function update_banished_votes()
         global.thebanished = {}
     end
 
+    --Loop through votes, tally them
     for _, vote in pairs(global.banishvotes) do
         --only if everything seems to exist
         if vote and vote.voter and vote.victim then
@@ -201,10 +206,11 @@ local function update_banished_votes()
         end
     end
 
+    --Loop though players, look for matches
     for _, victim in pairs(game.players) do
         local prevstate = is_banished(victim)
 
-        --Check global list for items to remove
+        --Check global list for items to remove, otherwise copy over
         if banishedtemp[victim.index] then
             global.thebanished[victim.index] = banishedtemp[victim.index]
         else
@@ -234,6 +240,7 @@ local function update_banished_votes()
             message_all(msg)
             print("[REPORT] SYSTEM " .. msg)
 
+            --Create area if needed
             if game.surfaces["hell"] == nil then
                 local my_map_gen_settings = {
                     width = 100,
@@ -250,10 +257,12 @@ local function update_banished_votes()
                 game.create_surface("hell", my_map_gen_settings)
             end
 
+            --Kill them, so items are left behind
             if victim.character and victim.character.valid then
                 victim.character.die(victim.force, victim.character)
             end
 
+            --Teleport them to new surface
             local surf = game.surfaces["hell"]
             if surf and surf.name then
                 local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
@@ -474,23 +483,26 @@ local function game_settings(player)
     if player and player.valid and player.force then
         player.force.friendly_fire = false --friendly fire
         player.force.research_queue_enabled = true --nice to have
-        game.disable_replay()
+        game.disable_replay() --Smaller saves, prevent desync on script upgrade
     end
 end
 
 --Auto permisisons--
 local function get_permgroup()
     if game.connected_players then
-        --Cleaned up 1-2020
+        --Check all connected players
         for _, player in pairs(game.connected_players) do
             if (player and player.valid) then
-                --Handle se-remote-view
+                --Check if groups are valid
                 if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                     if player.permission_group then
+                        --(ADMINS) Check if they are in the right group, including se-remote-view
                         if (player.admin and player.permission_group.name ~= global.adminsgroup.name and player.permission_group.name ~= global.adminsgroup.name .. "_satellite") then
+                            --(REGULARS) Check if they are in the right group, including se-remote-view
                             global.adminsgroup.add_player(player)
                             message_all(player.name .. " moved to Admins group.")
                         elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
+                            --(MEMBERS) don't check group, only new/default gets promoted
                             if (player.permission_group.name ~= global.regularsgroup.name and player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
                                 global.regularsgroup.add_player(player)
                                 message_all(player.name .. " is now a regular!")
@@ -516,7 +528,7 @@ local function get_permgroup()
     end
 end
 
---Show Players
+--Show players online to a player
 local function show_players(victim)
     local numpeople = 0
 
@@ -526,6 +538,7 @@ local function show_players(victim)
             numpeople = (numpeople + 1)
             local utag = "error"
 
+            --Catch all
             if player.permission_group then
                 local gname = player.permission_group.name
                 utag = gname
@@ -533,6 +546,7 @@ local function show_players(victim)
                 utag = "none"
             end
 
+            --Normal groups
             if is_new(player) then
                 utag = "NEW"
             end
@@ -547,10 +561,11 @@ local function show_players(victim)
             end
 
             if (global.active_playtime and global.active_playtime[player.index]) then
-                smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3f, Online: %-4.3fh, (%s)", numpeople, player.name, (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
+                smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3fh, Online: %-4.3fh, (%s)", numpeople, player.name, (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
             end
         end
     end
+    --No one is online
     if numpeople == 0 then
         smart_print(victim, "No players online.")
     end
@@ -568,6 +583,7 @@ script.on_load(
                 function(param)
                     local player
 
+                    --Admins only
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
@@ -576,6 +592,7 @@ script.on_load(
                         end
                     end
 
+                    --Handle console too
                     if (player and player.admin) or (not player) then
                         if game.surfaces["hell"] == nil then
                             local my_map_gen_settings = {
@@ -595,6 +612,7 @@ script.on_load(
                             game.create_surface("hell", my_map_gen_settings)
                         end
 
+                        --Only if name provided
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
@@ -629,12 +647,14 @@ script.on_load(
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
+
+                        --Admins only
                         if (player and player.admin) then
                             if global.banishvotes then
                                 --get arguments
                                 local args = mysplit(param.parameter, " ")
 
-                                --Must have two arguments
+                                --Must have arguments
                                 if args ~= {} and args[1] then
                                     if args[1] == "clear" then
                                         global.banishvotes = nil
@@ -644,6 +664,7 @@ script.on_load(
                                     end
                                     local victim = game.players[args[1]]
 
+                                    --If victim found
                                     if victim and victim.valid then
                                         local count = 0
                                         for _, vote in pairs(global.banishvotes) do
@@ -693,7 +714,9 @@ script.on_load(
                     if param and param.player_index then
                         local player = game.players[param.player_index]
 
+                        --Only if banish data found
                         if global.banishvotes then
+                            --Print votes
                             local pcount = 0
                             for _, vote in pairs(global.banishvotes) do
                                 if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
@@ -708,7 +731,11 @@ script.on_load(
                                     smart_print(player, notes .. "plaintiff: " .. vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason)
                                 end
                             end
-                            update_banished_votes() -- for debug only
+
+                            --Tally votes before proceeding
+                            update_banished_votes()
+
+                            --Print accused
                             if global.thebanished then
                                 for _, victim in pairs(game.players) do
                                     if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
@@ -717,6 +744,7 @@ script.on_load(
                                     end
                                 end
                             end
+                            --Show summery of votes against them
                             if global.banishvotes then
                                 for _, victim in pairs(game.players) do
                                     local votecount = 0
@@ -731,13 +759,15 @@ script.on_load(
                                     end
                                 end
                             end
+                            --Nothing found, report it
                             if pcount <= 0 then
                                 smart_print(player, "The docket is clean.")
                             end
                             return
                         else
+                            --No vote data
                             smart_print(player, "The docket is clean.")
-                            update_banished_votes() -- for debug only
+                            update_banished_votes()
                             return
                         end
                     end
@@ -757,7 +787,7 @@ script.on_load(
                                 --get arguments
                                 local args = mysplit(param.parameter, " ")
 
-                                --Must have two arguments
+                                --Must have arguments
                                 if args ~= {} and args[1] then
                                     local victim = game.players[args[1]]
 
@@ -808,19 +838,19 @@ script.on_load(
                     if param and param.player_index then
                         local player = game.players[param.player_index]
                         if player and param.parameter then
-                            --regulars/admin players only
+                            --Regulars/admins only
                             if is_regular(player) or player.admin then
                                 --get arguments
                                 local args = mysplit(param.parameter, " ")
 
-                                --Must have two arguments
+                                --Must have arguments
                                 if args ~= {} and args[1] and args[2] then
                                     local victim = game.players[args[1]]
 
                                     --Quick arg combine
                                     local reason = args[2]
                                     for n, arg in pairs(args) do
-                                        if n > 2 and n < 100 then
+                                        if n > 2 and n < 100 then -- at least two words, max 100
                                             reason = reason .. " " .. args[n]
                                         end
                                     end
@@ -841,11 +871,13 @@ script.on_load(
                                                             if vote.voter == player then
                                                                 votecount = votecount + 1
                                                             end
+                                                            --Limit number of votes player gets
                                                             if votecount >= 10 then
                                                                 smart_print(player, "You have exhausted your voting privlege for this map.")
                                                                 return
                                                             end
 
+                                                            --Can't vote twice
                                                             if vote.voter == player and vote.victim == victim then
                                                                 smart_print(player, "You already voted, /unbanish <player> to withdraw your complaint.\nIf you already withdrew a vote aginst them, you can not reintroduce it. ")
                                                                 return
@@ -861,6 +893,7 @@ script.on_load(
                                                 smart_print(player, "Your vote has been added, and posted on Discord.")
                                                 smart_print(player, "/unbanish <user> to withdraw your vote.")
 
+                                                --Init if needed
                                                 if not global.banishvotes then
                                                     global.banishvotes = {
                                                         voter = {},
@@ -978,6 +1011,7 @@ script.on_load(
                     if param and param.player_index then
                         local player = game.players[param.player_index]
 
+                        --Only if arguments
                         if param.parameter and player and player.valid then
                             local ptype = "Error"
 
@@ -991,6 +1025,7 @@ script.on_load(
                                 ptype = "normal"
                             end
 
+                            --Send to ChatWire
                             print("[ACCESS] " .. ptype .. " " .. player.name .. " " .. param.parameter)
                             smart_print(player, "Sending registration code...")
                             return
@@ -1002,11 +1037,12 @@ script.on_load(
                 end
             )
 
-            --server name
+            --Server name
             commands.add_command(
                 "cname",
                 "<name here>",
                 function(param)
+                    --Admins only
                     if param and param.player_index then
                         local player = game.players[param.player_index]
                         if not player.admin then
@@ -1016,7 +1052,8 @@ script.on_load(
                     end
 
                     --
-                    --Clear limbo surfaces on reboot
+                    --Clear limbo surfaces on reboot, just in case
+                    --Could actually cause desync if run by admin with very bad timing.
                     --
                     if param.parameter then
                         --Get limbo surface
@@ -1036,11 +1073,12 @@ script.on_load(
                 end
             )
 
-            --server chat
+            --Server chat
             commands.add_command(
                 "cchat",
                 "<message here>",
                 function(param)
+                    --Console only, no players
                     if param and param.player_index then
                         local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
@@ -1053,20 +1091,25 @@ script.on_load(
                 end
             )
 
-            --server whisper
+            --Server whisper
             commands.add_command(
                 "cwhisper",
                 "<message here>",
                 function(param)
+                    --Console only, no players
                     if param and param.player_index then
                         local player = game.players[param.player_index]
                         smart_print(player, "This command is for console use only.")
                         return
                     end
 
+                    --Must have arguments
                     if param.parameter then
                         local args = mysplit(param.parameter, " ")
+
+                        --Require two args
                         if args ~= {} and args[1] and args[2] then
+                            --Find player
                             for _, player in pairs(game.connected_players) do
                                 if player.name == args[1] then
                                     args[1] = ""
@@ -1079,13 +1122,14 @@ script.on_load(
                 end
             )
 
-            --Reset user
+            --Reset user's time and status
             commands.add_command(
                 "reset",
                 "<player> -- sets user to 0",
                 function(param)
                     local player
 
+                    --Admins only
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
@@ -1094,6 +1138,7 @@ script.on_load(
                         end
                     end
 
+                    --Argument needed
                     if param.parameter then
                         local victim = game.players[param.parameter]
 
@@ -1108,7 +1153,7 @@ script.on_load(
                             end
                         end
                     end
-                    smart_print(player, "Error.")
+                    smart_print(player, "Player not found.")
                 end
             )
 
@@ -1119,6 +1164,7 @@ script.on_load(
                 function(param)
                     local player
 
+                    --Admins only
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player.admin == false then
@@ -1127,6 +1173,7 @@ script.on_load(
                         end
                     end
 
+                    --Argument required
                     if param.parameter then
                         local victim = game.players[param.parameter]
 
@@ -1138,7 +1185,7 @@ script.on_load(
                             end
                         end
                     end
-                    smart_print(player, "Error.")
+                    smart_print(player, "Player not found.")
                 end
             )
 
@@ -1149,6 +1196,7 @@ script.on_load(
                 function(param)
                     local player
 
+                    --Admins only
                     if param and param.player_index then
                         player = game.players[param.player_index]
                         if player and player.admin == false then
@@ -1157,6 +1205,7 @@ script.on_load(
                         end
                     end
 
+                    --Argument required
                     if param.parameter then
                         local victim = game.players[param.parameter]
 
@@ -1168,7 +1217,7 @@ script.on_load(
                             end
                         end
                     end
-                    smart_print(player, "Error.")
+                    smart_print(player, "Player not found.")
                 end
             )
 
@@ -1181,6 +1230,7 @@ script.on_load(
                     local new_pos_x = 0.0
                     local new_pos_y = 0.0
 
+                    --Admins only
                     if param and param.player_index then
                         victim = game.players[param.player_index]
 
@@ -1188,6 +1238,7 @@ script.on_load(
                             smart_print(victim, "Admins only.")
                             return
                         else
+                            --Use admin's location by default
                             new_pos_x = victim.position.x
                             new_pos_y = victim.position.y
                         end
@@ -1196,11 +1247,13 @@ script.on_load(
                     local psurface = game.surfaces["nauvis"]
                     local pforce = game.forces["player"]
 
+                    --use admin's force and surface
                     if victim and victim.valid then
                         pforce = victim.force
                         psurface = victim.surface
                     end
 
+                    --Location supplied
                     if param.parameter then
                         local xytable = mysplit(param.parameter, ",")
                         if xytable ~= {} and tonumber(xytable[1]) and tonumber(xytable[2]) then
@@ -1209,17 +1262,21 @@ script.on_load(
                             new_pos_x = argx
                             new_pos_y = argy
                         else
-                            smart_print(victim, "Invalid argument.")
+                            smart_print(victim, "Invalid argument. /cspawn x,y. No argument uses your location.")
                             return
                         end
                     end
 
+                    --Set new spawn spot
                     if pforce and psurface and new_pos_x and new_pos_y then
                         pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
                         smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
                         smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
                         global.cspawnpos = {x = (math.floor(new_pos_x) + 0.5), y = (math.floor(new_pos_y) + 0.5)}
+
+                        --Set logo to be redrawn
                         global.drawlogo = false
+                        --Redraw
                         dodrawlogo()
                     else
                         smart_print(victim, "Couldn't find force or surface...")
@@ -1234,6 +1291,7 @@ script.on_load(
                 function(param)
                     local victim
 
+                    --Admins only
                     if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
@@ -1242,15 +1300,24 @@ script.on_load(
                         end
                     end
 
+                    --Get surface and force
                     local psurface = game.surfaces["nauvis"]
                     local pforce = game.forces["player"]
+                    --Default size
                     local size = 1024
 
+                    --Use admin's surface and force
+                    if victim and victim.valid then
+                        psurface = player.surface
+                        pforce = player.force
+                    end
+
+                    --If size specified
                     if param.parameter then
                         if tonumber(param.parameter) then
                             local rsize = tonumber(param.parameter)
 
-                            --limits
+                            --Limit size of area
                             if rsize > 0 then
                                 if rsize < 128 then
                                     rsize = 128
@@ -1267,12 +1334,13 @@ script.on_load(
                         end
                     end
 
+                    --Chart the area
                     if psurface and pforce and size then
                         pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
                         local sstr = string.format("%-4.0f", size)
                         smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                     else
-                        smart_print(victim, "Either couldn't find surface nauvis, or couldn't find force player.")
+                        smart_print(victim, "Either couldn't find surface or force.")
                     end
                 end
             )
@@ -1284,6 +1352,7 @@ script.on_load(
                 function(param)
                     local victim
 
+                    --Admins only
                     if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
@@ -1294,11 +1363,16 @@ script.on_load(
 
                     local pforce = game.forces["player"]
 
+                    --Use admin's force
+                    if victim and victim.valid then
+                        pforce = player.force
+                    end
+
                     if pforce then
                         pforce.clear_chart()
                         smart_print(victim, "Recharting map...")
                     else
-                        smart_print(victim, "Couldn't find force: player")
+                        smart_print(victim, "Couldn't find force.")
                     end
                 end
             )
@@ -1311,6 +1385,7 @@ script.on_load(
                     local victim
                     local is_admin = true
 
+                    --Check if admin for active argument
                     if param and param.player_index then
                         victim = game.players[param.player_index]
                         if victim and victim.admin == false then
@@ -1318,6 +1393,7 @@ script.on_load(
                         end
                     end
 
+                    --If admin, show active players if specified
                     if (param.parameter == "active" and is_admin) then
                         local plen = 0
                         local playtime = {}
@@ -1327,11 +1403,12 @@ script.on_load(
                                 name = game.players[player.index].name
                             }
                             plen = plen + 1
-                            if plen > 3000 then --Max size
+                            if plen > 3000 then --Max number of players to scan (lag)
                                 break
                             end
                         end
 
+                        --Sort players
                         table.sort(playtime, sorttime)
 
                         --Lets limit number of results shown
@@ -1347,6 +1424,7 @@ script.on_load(
                         return
                     end
 
+                    --Show players
                     show_players(victim)
                 end
             )
@@ -1362,31 +1440,48 @@ script.on_load(
                         player = game.players[param.player_index]
                     end
 
+                    --Admins only
                     if player and player.admin == false then
                         smart_print(player, "Admins only.")
                         return
                     end
 
+                    --Need argument
                     if (not param.parameter) then
                         smart_print(player, "But what speed? 0.1 to 10")
                         return
                     end
 
+                    --Decode arg
                     if tonumber(param.parameter) then
                         local value = tonumber(param.parameter)
+
+                        --Limit speed range
                         if (value >= 0.1 and value <= 10.0) then
                             game.speed = value
 
+                            --Get default force
                             local pforce = game.forces["player"]
 
+                            --Use admin's force
+                            if victim and victim.valid then
+                                pforce = player.force
+                            end
+
+                            --If force found
                             if pforce then
-                                game.forces["player"].character_running_speed_modifier = ((1.0 / value) - 1.0)
-                                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. game.forces["player"].character_running_speed_modifier)
+
+                                --Calculate walk speed for UPS
+                                pforce.character_running_speed_modifier = ((1.0 / value) - 1.0)
+                                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier)
+
+                                --Don't show message if run via console (ChatWire)
                                 if (player) then
                                     message_all("Game speed set to " .. (game.speed * 100.00) .. "%")
                                 end
+
                             else
-                                smart_print(player, "Force: Player doesn't seem to exist.")
+                                smart_print(player, "Couldn't find a valid force")
                             end
                         else
                             smart_print(player, "That doesn't seem like a good idea...")
@@ -1402,18 +1497,22 @@ script.on_load(
                 "tto",
                 "<player> -- teleport to <player>",
                 function(param)
+
+                    --No console :P
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
 
+                    --Admin only
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
                             player.print("Admins only.")
                             return
                         end
 
+                        --Argument required
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
@@ -1421,14 +1520,14 @@ script.on_load(
                                 local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
                                 if (newpos) then
                                     player.teleport(newpos, victim.surface)
-                                    player.print("Okay.")
+                                    player.print("*Poof!*")
                                 else
                                     player.print("Area appears to be full.")
                                 end
                                 return
                             end
                         end
-                        player.print("Error...")
+                        player.print("Teleport to who?")
                     end
                 end
             )
@@ -1438,12 +1537,15 @@ script.on_load(
                 "tp",
                 "<x,y> -- teleport to <x,y>",
                 function(param)
+
+                    --No console :P
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
 
+                    --Admins only
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
                             player.print("Admins only.")
@@ -1452,11 +1554,13 @@ script.on_load(
 
                         local surface = player.surface
 
+                        --Aegument required
                         if param.parameter then
                             local str = param.parameter
                             local xpos = "0.0"
                             local ypos = "0.0"
 
+                            --Find surface from argument
                             local n = game.surfaces[param.parameter]
                             if n then
                                 surface = n
@@ -1468,6 +1572,7 @@ script.on_load(
                                 end
                             end
 
+                            --Find x/y from argument
                             xpos, ypos = str:match("([^,]+),([^,]+)")
                             if tonumber(xpos) and tonumber(ypos) then
                                 local position = {x = xpos, y = ypos}
@@ -1477,12 +1582,12 @@ script.on_load(
                                         local newpos = surface.find_non_colliding_position("character", position, 15, 0.01, false)
                                         if (newpos) then
                                             player.teleport(newpos, surface)
-                                            player.print("Okay.")
+                                            player.print("*Poof!*")
                                         else
                                             player.print("Area appears to be full.")
                                         end
                                     else
-                                        player.print("invalid x/y.")
+                                        player.print("Invalid location.")
                                     end
                                 end
                                 return
@@ -1490,7 +1595,7 @@ script.on_load(
                                 player.print("Numbers only.")
                             end
                         end
-                        player.print("Error...")
+                        player.print("Teleport where? x,y or surface name")
                     end
                 end
             )
@@ -1500,18 +1605,22 @@ script.on_load(
                 "tfrom",
                 "<player> -- teleport <player> to me",
                 function(param)
+
+                    --No console :P
                     if not param.player_index then
                         smart_print(nil, "You want me to teleport a remote console somewhere???")
                         return
                     end
                     local player = game.players[param.player_index]
 
+                    --Admins only
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
                             player.print("Admins only.")
                             return
                         end
 
+                        --Argument required
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
@@ -1519,13 +1628,13 @@ script.on_load(
                                 local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
                                 if (newpos) then
                                     victim.teleport(newpos, player.surface)
-                                    player.print("Okay.")
+                                    player.print("*Poof!*")
                                 else
-                                    player.print("Area full.")
+                                    player.print("Area appears to be full.")
                                 end
                             end
                         end
-                        player.print("Error.")
+                        player.print("Who do you want to teleport to you?")
                     end
                 end
             )
@@ -1589,7 +1698,7 @@ script.on_event(
     end
 )
 
---Player respawn
+--Player respawn, insert items
 script.on_event(
     defines.events.on_player_respawned,
     function(event)
@@ -1603,7 +1712,7 @@ script.on_event(
     end
 )
 
---Player connected
+--Player connected, make variables, draw UI, set permissions, and game settings
 script.on_event(
     defines.events.on_player_joined_game,
     function(event)
@@ -1620,7 +1729,6 @@ script.on_event(
                 if player.gui and player.gui.top then
                     --Discord Button--
                     if not player.gui.top.dicon then
-
                         player.gui.top.add {
                             type = "sprite-button",
                             name = "dicon",
@@ -1640,7 +1748,6 @@ script.on_event(
 
                     --Server List--
                     if global.servers then
-
                         --Refresh
                         if player.gui.top.serverlist then
                             player.gui.top.serverlist.destroy()
@@ -1698,7 +1805,7 @@ script.on_event(
     end
 )
 
---New player created
+--New player created, insert items set perms, show players online, welcome to map.
 script.on_event(
     defines.events.on_player_created,
     function(event)
@@ -1768,7 +1875,8 @@ script.on_event(
         end
     end
 )
---Cursor stack
+
+--Cursor stack, block huge blueprints
 script.on_event(
     defines.events.on_player_cursor_stack_changed,
     function(event)
@@ -1783,11 +1891,13 @@ script.on_event(
 
                         if player.admin then
                             return
+                            --If new user
                         elseif is_new(player) and count > 5000 then
                             console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                             smart_print(player, "You aren't allowed to use blueprints that large yet.")
                             stack.clear_blueprint()
                             return
+                            --Max size (lag)
                         elseif count > 20000 then
                             console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                             smart_print(player, "That blueprint is too large!")
@@ -1860,8 +1970,9 @@ script.on_event(
                         console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
                 else
+                    --Normal user, just log it
                     console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
-                    set_player_active(player)
+                    set_player_active(player) --Set player as active
                 end
             else
                 console_print("pre_player_mined_item: invalid player, obj or surface.")
@@ -1896,9 +2007,10 @@ script.on_event(
                     table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
                     player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
                 else
+                    --Normal user, just log it
                     console_print(player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
                 end
-                set_player_active(player)
+                set_player_active(player) --Sey player active
             end
         end
     end
@@ -2017,7 +2129,10 @@ script.on_event(
     function(event)
         if event and event.player_index then
             local player = game.players[event.player_index]
+            --Sanity check
             if player and player.valid and player.character then
+
+                --Make map pin
                 local centerPosition = player.position
                 local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
                 local chartTag = {position = centerPosition, icon = nil, text = label}
@@ -2026,6 +2141,7 @@ script.on_event(
                 create_myglobals()
                 create_player_globals(player)
 
+                --Add to list of pins
                 table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
                 --Log to discord
@@ -2048,6 +2164,10 @@ script.on_event(
 )
 
 --Looping timer, 2 minutes
+--delete old corpse map pins
+--Check spawn area map pin
+--Add to player active time if needed
+
 script.on_nth_tick(
     7200,
     function(event)
@@ -2133,7 +2253,7 @@ script.on_nth_tick(
     end
 )
 
---GUI
+--GUI clicks
 script.on_event(
     defines.events.on_gui_click,
     function(event)
@@ -2158,7 +2278,7 @@ script.on_event(
     end
 )
 
---Restore mined objects from limbo, and untouch items.
+--Restore (blocked) mined objects from limbo, and untouch (rotated) items.
 script.on_nth_tick(
     1,
     function(event)
@@ -2225,7 +2345,7 @@ script.on_nth_tick(
     end
 )
 
---GUI state change
+--GUI state change, server list drop-down
 script.on_event(
     defines.events.on_gui_selection_state_changed,
     function(event)
