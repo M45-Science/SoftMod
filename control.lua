@@ -1287,7 +1287,7 @@ script.on_load(
             --Reveal map
             commands.add_command(
                 "reveal",
-                "<size> -- <x> units of map. Default: 1024, max 4096",
+                "<size> -- <x> units of map. Default: 1024, max 8192",
                 function(param)
                     local victim
 
@@ -1322,8 +1322,8 @@ script.on_load(
                                 if rsize < 128 then
                                     rsize = 128
                                 else
-                                    if rsize > 4096 then
-                                        rsize = 4096
+                                    if rsize > 8192 then
+                                        rsize = 8192
                                     end
                                     size = rsize
                                 end
