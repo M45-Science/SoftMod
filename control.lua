@@ -1,4 +1,4 @@
---v520-122320200106p
+--v521-122320200300p
 --Carl Frank Otto III (Distortions864)
 --carlotto81@gmail.com
 
@@ -1686,7 +1686,7 @@ script.on_event(
                 if area.left_top.x == area.right_bottom.x or area.left_top.y == area.right_bottom.y then
                     local msg =
                         player.name ..
-                        " is using the deconstruction planner from [gps=" ..
+                        " decon [gps=" ..
                             math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                     console_print(msg)
                     if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
@@ -1871,7 +1871,7 @@ script.on_event(
                     elseif is_new(player) then
                         --Log blueprint placements
                         console_print(
-                            player.name .. " placed a " .. created_entity.ghost_name .. " (blueprint, " .. count .. " items) at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+                            player.name .. " put  " .. created_entity.ghost_name .. " (bp, " .. count .. " obj) [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
                         )
                         return
                     end
@@ -1894,10 +1894,10 @@ script.on_event(
                 if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
                     if created_entity.name == "entity-ghost" then
                         --Log item placement
-                        console_print(player.name .. " placed a ghost " .. created_entity.ghost_name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                        console_print(player.name .. " put ghost " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                     else
                         --Log item placement
-                        console_print(player.name .. " placed a " .. created_entity.name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                        console_print(player.name .. " put " .. created_entity.name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                     end
                 end
             end
@@ -1922,7 +1922,7 @@ script.on_event(
                         if is_new(player) or is_member(player) then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
-                                    console_print(player.name .. " told to wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting.")
+                                    --console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
                                     smart_print(player, "You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
                                     player.insert(player.cursor_stack)
                                     stack.clear()
@@ -1933,12 +1933,12 @@ script.on_event(
                         if player.admin then
                             return
                         elseif is_new(player) and count > 500 then --new user limt
-                            console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                            console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
                             smart_print(player, "You aren't allowed to use blueprints that large yet.")
                             stack.clear()
                             return
-                        elseif count > 20000 then --lag protection
-                            console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
+                        elseif count > 10000 then --lag protection
+                            console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
                             smart_print(player, "That blueprint is too large!")
                             stack.clear()
                             return
@@ -2010,7 +2010,7 @@ script.on_event(
                     end
                 else
                     --Normal user, just log it
-                    console_print(player.name .. " mined " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+                    console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                     set_player_active(player) --Set player as active
                 end
             else
@@ -2047,7 +2047,7 @@ script.on_event(
                     player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
                 else
                     --Normal user, just log it
-                    console_print(player.name .. " rotated " .. obj.name .. " at [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+                    console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                 end
                 set_player_active(player) --Sey player active
             end
@@ -2128,7 +2128,7 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid and event.tag then
-                console_print(player.name .. " placed a map tag at [gps=" .. event.tag.position.x .. "," .. event.tag.position.y .. "] called: " .. event.tag.text)
+                console_print(player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
             end
         end
     end
@@ -2141,7 +2141,7 @@ script.on_event(
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid and event.tag then
-                console_print(player.name .. " edited a map tag at [gps=" .. event.tag.position.x .. "," .. event.tag.position.y .. "] called: " .. event.tag.text)
+                console_print(player.name .. " -+ tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
             end
         end
     end
@@ -2155,7 +2155,7 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid and event.tag then
-                console_print(player.name .. " deleted a map tag at [gps=" .. event.tag.position.x .. "," .. event.tag.position.y .. "] called: " .. event.tag.text)
+                console_print(player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
             end
         end
     end
@@ -2172,7 +2172,7 @@ script.on_event(
             if player and player.valid and player.character then
                 --Make map pin
                 local centerPosition = player.position
-                local label = "Corpse of: " .. player.name .. " " .. math.floor(player.position.x) .. "," .. math.floor(player.position.y .. "")
+                local label = ("Body of: " .. player.name)
                 local chartTag = {position = centerPosition, icon = nil, text = label}
                 local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
@@ -2207,7 +2207,7 @@ script.on_event(
 --Add to player active time if needed
 
 script.on_nth_tick(
-    7200,
+    1800,
     function(event)
         --Remove old corpse tags
         if (global.corpselist) then
@@ -2274,7 +2274,7 @@ script.on_nth_tick(
                         global.playeractive[player.index] = false --Turn back off
 
                         if global.active_playtime[player.index] then
-                            global.active_playtime[player.index] = global.active_playtime[player.index] + 7200 --Same as loop time
+                            global.active_playtime[player.index] = global.active_playtime[player.index] + 1800 --Same as loop time
                         else
                             --INIT
                             global.active_playtime[player.index] = 0
@@ -2340,7 +2340,7 @@ script.on_nth_tick(
                         if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
-                                    console_print(player.name .. " told to wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting.")
+                                    --console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
                                     smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
                                     player.insert(player.cursor_stack)
                                     stack.clear()
