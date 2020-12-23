@@ -2,12 +2,11 @@
 --Carl Frank Otto III (Distortions864)
 --carlotto81@gmail.com
 
-
 local function round(number, precision)
-    local fmtStr = string.format('%%0.%sf',precision)
-    number = string.format(fmtStr,number)
+    local fmtStr = string.format("%%0.%sf", precision)
+    number = string.format(fmtStr, number)
     return number
- end
+end
 
 --add logo to spawn area
 local function dodrawlogo()
@@ -119,16 +118,12 @@ end
 --Check if player should be considered a regular
 local function is_regular(victim)
     if victim and victim.valid and not victim.admin then
+        
         --If in group
         if victim.permission_group and global.regularsgroup then
             if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name == global.regularsgroup.name .. "_satellite" then
                 return true
             end
-        end
-
-        --If they have enough hours
-        if (global.active_playtime and global.active_playtime[victim.index] and global.active_playtime[victim.index] > (4 * 60 * 60 * 60)) then
-            return true
         end
     end
 
@@ -138,6 +133,7 @@ end
 --Check if player should be considered a member
 local function is_member(victim)
     if victim and victim.valid and not victim.admin then
+
         --If in group
         if victim.permission_group and global.membersgroup then
             if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name == global.membersgroup.name .. "_satellite" then
@@ -145,10 +141,6 @@ local function is_member(victim)
             end
         end
 
-        --If they have enough hours
-        if (global.active_playtime and global.active_playtime[victim.index] and global.active_playtime[victim.index] > (30 * 60 * 60)) then
-            return true
-        end
     end
 
     return false
@@ -1906,6 +1898,7 @@ script.on_event(
                     else
                         --Log item placement
                         console_print(player.name .. " placed a " .. created_entity.name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                    end
                 end
             end
         end
@@ -2347,7 +2340,6 @@ script.on_nth_tick(
                         if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
-
                                     console_print(player.name .. " told to wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting.")
                                     smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
                                     player.insert(player.cursor_stack)
@@ -2359,7 +2351,6 @@ script.on_nth_tick(
                 end
             end
         end
-
 
         --Replace object list
         if global.repobj then
