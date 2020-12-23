@@ -1,4 +1,4 @@
---v519-122320201244p
+--v520-122320200106p
 --Carl Frank Otto III (Distortions864)
 --carlotto81@gmail.com
 
@@ -1899,9 +1899,13 @@ script.on_event(
                     end
                 end
 
-                if created_entity.name ~= "tile-ghost" then
-                    --Log item placement
-                    console_print(player.name .. " placed a " .. created_entity.name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
+                    if created_entity.name == "entity-ghost" then
+                        --Log item placement
+                        console_print(player.name .. " placed a ghost " .. created_entity.ghost_name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                    else
+                        --Log item placement
+                        console_print(player.name .. " placed a " .. created_entity.name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                 end
             end
         end
