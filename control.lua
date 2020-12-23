@@ -1871,7 +1871,7 @@ script.on_event(
                     elseif is_new(player) then
                         --Log blueprint placements
                         console_print(
-                            player.name .. " put  " .. created_entity.ghost_name .. " (bp, " .. count .. " obj) [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+                            player.name .. " +bp " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
                         )
                         return
                     end
@@ -1894,10 +1894,10 @@ script.on_event(
                 if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
                     if created_entity.name == "entity-ghost" then
                         --Log item placement
-                        console_print(player.name .. " put ghost " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                        console_print(player.name .. " +ghost " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                     else
                         --Log item placement
-                        console_print(player.name .. " put " .. created_entity.name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                        console_print(player.name .. " +" .. created_entity.name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                     end
                 end
             end
