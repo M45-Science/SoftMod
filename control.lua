@@ -1,6 +1,13 @@
---v518-122320200943a
+--v519-122320201244p
 --Carl Frank Otto III (Distortions864)
 --carlotto81@gmail.com
+
+
+local function round(number, precision)
+    local fmtStr = string.format('%%0.%sf',precision)
+    number = string.format(fmtStr,number)
+    return number
+ end
 
 --add logo to spawn area
 local function dodrawlogo()
@@ -370,12 +377,17 @@ local function create_myglobals()
     if not global.active_playtime then
         global.active_playtime = {}
     end
+    if not global.blueprint_throttle then
+        global.blueprint_throttle = {}
+    end
+
     if not global.last_speaker_warning then
         global.last_speaker_warning = 0
     end
     if not global.last_decon_warning then
         global.last_decon_warning = 0
     end
+
     if not global.corpselist then
         global.corpselist = {tag = {}, tick = {}}
     end
@@ -436,6 +448,10 @@ local function create_player_globals(player)
 
             if not global.active_playtime[player.index] then
                 global.active_playtime[player.index] = 0
+            end
+
+            if not global.blueprint_throttle[player.index] then
+                global.blueprint_throttle[player.index] = 0
             end
         end
     end
@@ -1838,17 +1854,27 @@ script.on_event(
                 if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                     local count = stack.get_blueprint_entity_count()
 
+                    --Add item to blueprint throttle
+                    if is_new(player) or is_member(player) then
+                        if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                            global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 15
+                        end
+                    end
+
+                    --Silently destroy blueprint items, if blueprint is too big
                     if player.admin then
                         return
-                    elseif is_new(player) and count > 5000 then
-                        console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                        smart_print(player, "You aren't allowed to use blueprints that large yet.")
-                        stack.clear_blueprint()
+                    elseif is_new(player) and count > 500 then
+                        if created_entity then
+                            created_entity.destroy()
+                        end
+                        stack.clear()
                         return
                     elseif count > 20000 then
-                        console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
-                        smart_print(player, "That blueprint is too large.")
-                        stack.clear_blueprint()
+                        if created_entity then
+                            created_entity.destroy()
+                        end
+                        stack.clear()
                         return
                     elseif is_new(player) then
                         --Log blueprint placements
@@ -1872,8 +1898,11 @@ script.on_event(
                         end
                     end
                 end
-                --Log item placement
-                console_print(player.name .. " placed a " .. created_entity.name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+
+                if created_entity.name ~= "tile-ghost" then
+                    --Log item placement
+                    console_print(player.name .. " placed a " .. created_entity.name .. " at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                end
             end
         end
     end
@@ -1892,19 +1921,29 @@ script.on_event(
                     if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                         local count = stack.get_blueprint_entity_count()
 
+                        --blueprint throttle if needed
+                        if is_new(player) or is_member(player) then
+                            if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                                if global.blueprint_throttle[player.index] > 0 then
+                                    console_print(player.name .. " told to wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting.")
+                                    smart_print(player, "You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
+                                    player.insert(player.cursor_stack)
+                                    stack.clear()
+                                    return
+                                end
+                            end
+                        end
                         if player.admin then
-                            --If new user
                             return
-                        elseif is_new(player) and count > 5000 then
-                            --Max size (lag)
+                        elseif is_new(player) and count > 500 then --new user limt
                             console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                             smart_print(player, "You aren't allowed to use blueprints that large yet.")
-                            stack.clear_blueprint()
+                            stack.clear()
                             return
-                        elseif count > 20000 then
+                        elseif count > 20000 then --lag protection
                             console_print(player.name .. " tried to load a blueprint with " .. count .. " items in it! (DELETED)")
                             smart_print(player, "That blueprint is too large!")
-                            stack.clear_blueprint()
+                            stack.clear()
                             return
                         end
                     end
@@ -2280,10 +2319,44 @@ script.on_event(
     end
 )
 
---Restore (blocked) mined objects from limbo, and untouch (rotated) items.
+--Blueprint throttle countdown
 script.on_nth_tick(
     1,
     function(event)
+        if global.blueprint_throttle then
+            --Loop through players, countdown blueprint throttle
+            for _, player in pairs(game.connected_players) do
+                --Init if needed
+                if not global.blueprint_throttle[player.index] then
+                    global.blueprint_throttle[player.index] = 0
+                end
+
+                --Subtract from count
+                if global.blueprint_throttle[player.index] > 0 then
+                    global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] - 1
+                end
+
+                --blueprint throttle if needed.
+                if is_new(player) or is_member(player) then
+                    if player.cursor_stack then
+                        local stack = player.cursor_stack
+                        if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+                            if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                                if global.blueprint_throttle[player.index] > 0 then
+
+                                    console_print(player.name .. " told to wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting.")
+                                    smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
+                                    player.insert(player.cursor_stack)
+                                    stack.clear()
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+
         --Replace object list
         if global.repobj then
             for _, item in ipairs(global.repobj) do
