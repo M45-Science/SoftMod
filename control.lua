@@ -1,6 +1,6 @@
---v521-122320200300p
---Carl Frank Otto III (Distortions864)
+--Carl Frank Otto III
 --carlotto81@gmail.com
+local svers = "v522-12-24-2020-0601a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -404,7 +404,7 @@ local function create_myglobals()
             "RA-Space-Krastorio",
             "RB-RailWorld-3 (*)",
             "RC-DeathWorld-3 (*)",
-            "RD-DeathWorld-2 (*)",
+            "RD-Fortress-Island (*)",
             "(*) = Factorio 1.1.x"
         }
     end
@@ -1011,6 +1011,28 @@ script.on_load(
                 end
             )
 
+            --Hide discord URL
+            commands.add_command(
+                "hideserver",
+                "toggles the server list on/off",
+                function(param)
+                    if param and param.player_index then
+                        local player = game.players[param.player_index]
+                        if player and player.valid and player.gui and player.gui.top and player.gui.top.serverlist then
+                            if player.gui.top.serverlist.visible == true then
+                                smart_print(player, "Server list is now hidden. Using the command again will turn it back on.")
+                                player.gui.top.serverlist.visible = false
+                            else
+                                smart_print(player, "Server list now shown. Using the command again will turn it back off.")
+                                player.gui.top.serverlist.visible = true
+                            end
+                        end
+                    else
+                        smart_print(nil, "The console can't see the discord url, but okay...")
+                    end
+                end
+            )
+
             --register command
             commands.add_command(
                 "register",
@@ -1344,8 +1366,8 @@ script.on_load(
 
                     --Chart the area
                     if psurface and pforce and size then
-                        pforce.chart(psurface, {lefttop = {x = -size, y = -size}, rightbottom = {x = size, y = size}})
-                        local sstr = string.format("%-4.0f", size)
+                        pforce.chart(psurface, {lefttop = {x = -size/2, y = -size/2}, rightbottom = {x = size/2, y = size/2}})
+                        local sstr = math.floor(size)
                         smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                     else
                         smart_print(victim, "Either couldn't find surface or force.")
@@ -1430,6 +1452,10 @@ script.on_load(
                             end
                         end
                         return
+                    end
+
+                    if is_admin then
+                        smart_print(victim,svers)
                     end
 
                     --Show players
@@ -1683,13 +1709,16 @@ script.on_event(
             if player and player.valid and area then
                 set_player_active(player)
                 --Don't bother if selection is zero.
-                if area.left_top.x == area.right_bottom.x or area.left_top.y == area.right_bottom.y then
+                if area.left_top.x == area.right_bottom.x or
+                area.left_top.y == area.right_bottom.y or
+                area.left_top.x == area.left_top.y or
+                area.right_bottom.x == area.right_bottom.y then
                     local msg =
                         player.name ..
                         " decon [gps=" ..
                             math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                     console_print(msg)
-                    if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                    if is_new(player) or is_member(player) then --Dont bother with regulars/admins
                         if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
                             message_all(msg)
                         end
@@ -1761,8 +1790,14 @@ script.on_event(
 
                     --Server List--
                     if global.servers then
+                        --Visibily
+                        local vis = true
+
                         --Refresh
                         if player.gui.top.serverlist then
+                            --Grab visibility state
+                            vis = player.gui.top.serverlist.visible
+
                             player.gui.top.serverlist.destroy()
                         end
 
@@ -1772,6 +1807,9 @@ script.on_event(
                             --Select, and update server list on login
                             player.gui.top.serverlist.items = global.servers
                             player.gui.top.serverlist.selected_index = 1
+
+                            --Restore previous visibility state, if there is one
+                            player.gui.top.serverlist.visible = vis
                         end
                     end
                 end
@@ -1846,10 +1884,16 @@ script.on_event(
                 if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                     local count = stack.get_blueprint_entity_count()
 
-                    --Add item to blueprint throttle
+                    --Add item to blueprint throttle, (new/member) 5 items a second
                     if is_new(player) or is_member(player) then
                         if global.blueprint_throttle and global.blueprint_throttle[player.index] then
-                            global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 15
+                            global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 12
+                        end
+                    end
+                     --Add item to blueprint throttle (regulars) 30 items a second
+                     if is_regular(player) then
+                        if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                            global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 2
                         end
                     end
 
@@ -1875,6 +1919,7 @@ script.on_event(
                         )
                         return
                     end
+
                 end
 
                 if created_entity and created_entity.valid then
@@ -1889,6 +1934,11 @@ script.on_event(
                             end
                         end
                     end
+                end
+
+                --Silence blueprints past this point
+                if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+                    return
                 end
 
                 if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
@@ -1919,7 +1969,7 @@ script.on_event(
                         local count = stack.get_blueprint_entity_count()
 
                         --blueprint throttle if needed
-                        if is_new(player) or is_member(player) then
+                        if not player.admin then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
                                     --console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
