@@ -2384,7 +2384,7 @@ script.on_nth_tick(
                 end
 
                 --blueprint throttle if needed.
-                if is_new(player) or is_member(player) then
+                if not player.admin then
                     if player.cursor_stack then
                         local stack = player.cursor_stack
                         if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
