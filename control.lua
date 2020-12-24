@@ -1072,11 +1072,21 @@ script.on_load(
                 "sversion",
                 "",
                 function(param)
+<<<<<<< HEAD
                     local player
 
                     --Admins only
                     if param and param.player_index then
                        player = game.players[param.player_index]
+=======
+                    --Admins only
+                    if param and param.player_index then
+                        local player = game.players[param.player_index]
+                        if not player.admin then
+                            smart_print(player, "This command is for console and admin use only.")
+                            return
+                        end
+>>>>>>> dafdf0b0dd754fed9bfd50a72fedf84abc2ecfaa
                     end
 
                     smart_print(player,svers)
