@@ -1067,6 +1067,22 @@ script.on_load(
                 end
             )
 
+            --softmod version
+            commands.add_command(
+                "sversion",
+                "",
+                function(param)
+                    local player
+
+                    --Admins only
+                    if param and param.player_index then
+                       player = game.players[param.player_index]
+                    end
+
+                    smart_print(player,svers)
+                end
+            )
+
             --Server name
             commands.add_command(
                 "cname",
@@ -1452,10 +1468,6 @@ script.on_load(
                             end
                         end
                         return
-                    end
-
-                    if is_admin then
-                        smart_print(victim,svers)
                     end
 
                     --Show players
@@ -1888,12 +1900,6 @@ script.on_event(
                     if is_new(player) or is_member(player) then
                         if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                             global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 12
-                        end
-                    end
-                     --Add item to blueprint throttle (regulars) 30 items a second
-                     if is_regular(player) then
-                        if global.blueprint_throttle and global.blueprint_throttle[player.index] then
-                            global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 2
                         end
                     end
 
