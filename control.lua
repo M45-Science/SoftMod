@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v523-12-27-2020-0450a"
+local svers = "v523-12-27-2020-0708a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -596,6 +596,22 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            
+            --game tick
+            commands.add_command(
+                "gt",
+                "(Shows game tick)",
+                function(param)
+                    local player
+
+                    if param and param.player_index then
+                        player = game.players[param.player_index]
+                    end
+
+                    smart_print(player, "[GT] ".. game.tick)
+                end
+            )
+
             --Damn them!
             commands.add_command(
                 "damn",
