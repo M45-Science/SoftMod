@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v522-12-24-2020-0601a"
+local svers = "v523-12-27-2020-0450a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -118,7 +118,6 @@ end
 --Check if player should be considered a regular
 local function is_regular(victim)
     if victim and victim.valid and not victim.admin then
-        
         --If in group
         if victim.permission_group and global.regularsgroup then
             if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name == global.regularsgroup.name .. "_satellite" then
@@ -133,14 +132,12 @@ end
 --Check if player should be considered a member
 local function is_member(victim)
     if victim and victim.valid and not victim.admin then
-
         --If in group
         if victim.permission_group and global.membersgroup then
             if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name == global.membersgroup.name .. "_satellite" then
                 return true
             end
         end
-
     end
 
     return false
@@ -149,7 +146,7 @@ end
 --Check if player should be considered new
 local function is_new(victim)
     if victim and victim.valid and not victim.admin then
-        if is_member(victim) == false and is_regular(victim) == false then
+        if is_member(victim) == false and is_regular(victim) == false and not victim.admin then
             return true
         end
     end
@@ -161,7 +158,7 @@ end
 local function is_banished(victim)
     if victim and victim.valid and not victim.admin then
         --Admins and regulars can not be marked as banished
-        if is_regular(victim) then
+        if is_regular(victim) or victim.admin then
             return false
         elseif global.thebanished and global.thebanished[victim.index] then
             if (is_new(victim) and global.thebanished[victim.index] >= 2) or (is_member(victim) and global.thebanished[victim.index] >= 3) then
@@ -191,14 +188,21 @@ local function update_banished_votes()
     for _, vote in pairs(global.banishvotes) do
         --only if everything seems to exist
         if vote and vote.voter and vote.victim then
-            --only if everything seems valid
+            --only if data exists
             if vote.voter.valid and vote.victim.valid then
-                if vote.withdrawn == false and vote.overruled == false then
-                    if banishedtemp[vote.victim.index] then
-                        banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 1 --Add vote against them
-                    else
-                        --was empty, init
-                        banishedtemp[vote.victim.index] = 1
+                --valid defendant
+                if is_new(vote.victim) or is_member(vote.victim) then
+                    --valid voter
+                    if is_regular(vote.voter) or vote.voter.admin then
+                        --vote isn't overruled or withdrawn
+                        if vote.withdrawn == false and vote.overruled == false then
+                            if banishedtemp[vote.victim.index] then
+                                banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 1 --Add vote against them
+                            else
+                                --was empty, init
+                                banishedtemp[vote.victim.index] = 1
+                            end
+                        end
                     end
                 end
             end
@@ -209,7 +213,7 @@ local function update_banished_votes()
     for _, victim in pairs(game.players) do
         local prevstate = is_banished(victim)
 
-        --Check global list for items to remove, otherwise copy over
+        --Add votes to global list, erase old votes
         if banishedtemp[victim.index] then
             global.thebanished[victim.index] = banishedtemp[victim.index]
         else
@@ -294,7 +298,7 @@ local function sorttime(a, b)
     end
 end
 
---Create user groups if they don't exist, and create global links to them
+--Create player groups if they don't exist, and create global links to them
 local function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
@@ -323,7 +327,7 @@ local function create_groups()
     global.adminsgroup = game.permissions.get_group("Admins")
 end
 
---Disable some permissions for new users
+--Disable some permissions for new players
 local function set_perms()
     --Auto set default group permissions
 
@@ -399,7 +403,7 @@ local function create_myglobals()
             "C-RailWorld-2 (*)",
             "D-Peaceful-2 (*)",
             "E-DeathWorld",
-            "F-The Forest (*)",
+            "F-DeathWorld-2(*)",
             "[ v PRIVATE BELOW v ]",
             "RA-Space-Krastorio",
             "RB-RailWorld-3 (*)",
@@ -444,6 +448,10 @@ local function create_player_globals(player)
 
             if not global.blueprint_throttle[player.index] then
                 global.blueprint_throttle[player.index] = 0
+            end
+
+            if not global.thebanished[player.index] then
+                global.thebanished[player.index] = 0
             end
         end
     end
@@ -510,23 +518,24 @@ local function get_permgroup()
                             global.adminsgroup.add_player(player)
                             message_all(player.name .. " moved to Admins group.")
                         elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
-                            --(MEMBERS) don't check group, only new/default gets promoted
+                            --Check if player has hours for regulars status, but isn't a in regulars group.
                             if (player.permission_group.name ~= global.regularsgroup.name and player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
                                 global.regularsgroup.add_player(player)
                                 message_all(player.name .. " is now a regular!")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
                         elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
+                            --Check if player has hours for members status, but isn't a in member group.
                             if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                                 global.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]You now have access to our 'Members' Discord role![/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
-                                player.print("[color=0.25,1,1](@ChatWire)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You now have access to our 'Members' Discord role![/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
                         end
                     end
@@ -540,7 +549,7 @@ end
 local function show_players(victim)
     local numpeople = 0
 
-    --Cleaned up 1-2020
+    --Cleaned up 12-2020
     for _, player in pairs(game.connected_players) do
         if (player and player.valid and player.connected) then
             numpeople = (numpeople + 1)
@@ -567,6 +576,9 @@ local function show_players(victim)
             if is_banished(player) then
                 utag = "BANISHED"
             end
+            if player.admin then
+                utag = "ADMINS"
+            end
 
             if (global.active_playtime and global.active_playtime[player.index]) then
                 smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3fh, Online: %-4.3fh, (%s)", numpeople, player.name, (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
@@ -587,7 +599,7 @@ script.on_load(
             --Damn them!
             commands.add_command(
                 "damn",
-                "damn <player> sends player to hell, tfrom <player> to teleport them back out.",
+                "<player>\n(sends player to hell, tfrom <player> to teleport them back out.)",
                 function(param)
                     local player
 
@@ -625,6 +637,7 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim and victim.valid) then
+                                --If they have a character, kill it to release items
                                 if victim.character and victim.character.valid then
                                     victim.character.die(victim.force, victim.character)
                                 end
@@ -651,7 +664,7 @@ script.on_load(
             --Admin vote overrrule
             commands.add_command(
                 "overrule",
-                "overrule <defendant> (overrule votes against defendant)\noverrule <clear> (clear all votes, will unbanish all)",
+                "<defendant>\n(overrule votes against defendant)\n<clear>\n(clear all votes, will unbanish all)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -717,7 +730,7 @@ script.on_load(
             --Print votes
             commands.add_command(
                 "votes",
-                "votes (shows votes)",
+                "(Shows banish votes)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -785,7 +798,7 @@ script.on_load(
             --Banish command
             commands.add_command(
                 "unbanish",
-                "unbanish <player>",
+                "<player>\n(Withdraws a banish vote)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -841,7 +854,7 @@ script.on_load(
             --Banish command
             commands.add_command(
                 "banish",
-                "banish <player> <reason for banishment>",
+                "<player> <reason for banishment>\n(Sends player to a confined area, off-map)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -880,14 +893,16 @@ script.on_load(
                                                                 votecount = votecount + 1
                                                             end
                                                             --Limit number of votes player gets
-                                                            if votecount >= 10 then
+                                                            if votecount >= 5 then
                                                                 smart_print(player, "You have exhausted your voting privlege for this map.")
                                                                 return
                                                             end
 
                                                             --Can't vote twice
                                                             if vote.voter == player and vote.victim == victim then
-                                                                smart_print(player, "You already voted, /unbanish <player> to withdraw your complaint.\nIf you already withdrew a vote aginst them, you can not reintroduce it. ")
+                                                                smart_print(player, "You already voted against them!")
+                                                                smart_print(player, "/unbanish <player> to withdraw your vote.")
+                                                                smart_print(player, "(WARNING) If you withdraw a vote, you CAN NOT reintroduce it.")
                                                                 return
                                                             end
                                                         end
@@ -898,8 +913,10 @@ script.on_load(
                                                 local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
                                                 message_all(message)
                                                 print("[REPORT] " .. message)
-                                                smart_print(player, "Your vote has been added, and posted on Discord.")
-                                                smart_print(player, "/unbanish <user> to withdraw your vote.")
+                                                smart_print(player, "Your vote has been added, and posted on Discord!")
+                                                smart_print(player, "/unbanish <player> to withdraw your vote.")
+                                                smart_print(player, "(WARNING) If you withdraw a vote, you CAN NOT reintroduce it.")
+                                                smart_print(player, "You have used " .. votecount .. " of your 5 available votes.")
 
                                                 --Init if needed
                                                 if not global.banishvotes then
@@ -925,17 +942,17 @@ script.on_load(
                                                 )
                                                 update_banished_votes() --Must do this to add to tally
                                             else
-                                                smart_print(player, "You can only vote against new users, or members!")
+                                                smart_print(player, "You can only vote against new players, or members!")
                                             end
                                         else
-                                            smart_print(player, "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help.")
+                                            smart_print(player, "I didn't find a player by that name, you can use the first few letters, and press <tab> (to autocomplete).")
                                         end
                                     end
                                 else
                                     smart_print(player, "Usage: /banish <player> <reason for banishment>")
                                 end
                             else
-                                smart_print(player, "This command is for regulars-status players only!")
+                                smart_print(player, "This command is for regulars-status players and admins only!")
                                 return
                             end
                         else
@@ -950,7 +967,7 @@ script.on_load(
             --User report command
             commands.add_command(
                 "report",
-                "send in a report",
+                "<detailed report here>\n(Sends in a report to the moderators)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -968,9 +985,9 @@ script.on_load(
                             end
 
                             --Limit and list number of reports
-                            if global.reportlimit[player.index] < 10 then
+                            if global.reportlimit[player.index] < 5 then
                                 print("[REPORT] " .. player.name .. " " .. param.parameter)
-                                smart_print(player, "Report sent." .. " (" .. global.reportlimit[player.index] .. "/" .. "10)")
+                                smart_print(player, "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports.")
                             else
                                 smart_print("You are not allowed to send any more reports.")
                             end
@@ -986,7 +1003,7 @@ script.on_load(
             --Hide discord URL
             commands.add_command(
                 "hideurl",
-                "toggles the discord url on/off",
+                "(toggles the discord url on/off)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -1011,10 +1028,10 @@ script.on_load(
                 end
             )
 
-            --Hide discord URL
+            --Hide server list
             commands.add_command(
                 "hideserver",
-                "toggles the server list on/off",
+                "(toggles the server list on/off)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -1028,7 +1045,7 @@ script.on_load(
                             end
                         end
                     else
-                        smart_print(nil, "The console can't see the discord url, but okay...")
+                        smart_print(nil, "The console can't see the server list, but okay...")
                     end
                 end
             )
@@ -1036,7 +1053,7 @@ script.on_load(
             --register command
             commands.add_command(
                 "register",
-                "<code>",
+                "<code>\n(Requires a registration code)",
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
@@ -1060,7 +1077,7 @@ script.on_load(
                             smart_print(player, "Sending registration code...")
                             return
                         end
-                        smart_print(player, "You need to specify an registration code!")
+                        smart_print(player, "You need to provide a registration code!")
                         return
                     end
                     smart_print(nil, "I don't think the console needs to use this command...")
@@ -1070,22 +1087,22 @@ script.on_load(
             --softmod version
             commands.add_command(
                 "sversion",
-                "",
+                "(Shows soft-mod version)",
                 function(param)
                     local player
 
                     if param and param.player_index then
-                       player = game.players[param.player_index]
+                        player = game.players[param.player_index]
                     end
 
-                    smart_print(player,svers)
+                    smart_print(player, svers)
                 end
             )
 
             --Server name
             commands.add_command(
                 "cname",
-                "<name here>",
+                "<name here>\n(Names the factorio server)",
                 function(param)
                     --Admins only
                     if param and param.player_index then
@@ -1121,7 +1138,7 @@ script.on_load(
             --Server chat
             commands.add_command(
                 "cchat",
-                "<message here>",
+                "<message here>\n(Used for Discord bridge)",
                 function(param)
                     --Console only, no players
                     if param and param.player_index then
@@ -1139,7 +1156,7 @@ script.on_load(
             --Server whisper
             commands.add_command(
                 "cwhisper",
-                "<message here>",
+                "<message here>\n(Used for Discord Bridge)",
                 function(param)
                     --Console only, no players
                     if param and param.player_index then
@@ -1167,10 +1184,10 @@ script.on_load(
                 end
             )
 
-            --Reset user's time and status
+            --Reset players's time and status
             commands.add_command(
                 "reset",
-                "<player> -- sets user to 0",
+                "<player>\n(Set player to NEW)",
                 function(param)
                     local player
 
@@ -1202,10 +1219,10 @@ script.on_load(
                 end
             )
 
-            --Trust user
+            --Trust player
             commands.add_command(
                 "member",
-                "<player> -- sets user to member status",
+                "<player>\n(Makes the player a member)",
                 function(param)
                     local player
 
@@ -1234,10 +1251,10 @@ script.on_load(
                 end
             )
 
-            --Set user to regular
+            --Set player to regular
             commands.add_command(
                 "regular",
-                "<player> -- sets user to regular status",
+                "<player>\n(Makes the player a regular)",
                 function(param)
                     local player
 
@@ -1269,7 +1286,7 @@ script.on_load(
             --Change default spawn point
             commands.add_command(
                 "cspawn",
-                "<x,y> -- Changes default spawn location, if no <x,y> then where you currently stand.",
+                "<x,y> (OPTIONAL)\n(Sets spawn point to <x,y>, or where admin is standing)",
                 function(param)
                     local victim
                     local new_pos_x = 0.0
@@ -1282,20 +1299,18 @@ script.on_load(
                         if victim and victim.admin == false then
                             smart_print(victim, "Admins only.")
                             return
-                        else
-                            --Use admin's location by default
-                            new_pos_x = victim.position.x
-                            new_pos_y = victim.position.y
                         end
                     end
 
                     local psurface = game.surfaces["nauvis"]
                     local pforce = game.forces["player"]
 
-                    --use admin's force and surface
+                    --use admin's force and position if available.
                     if victim and victim.valid then
                         pforce = victim.force
-                        psurface = victim.surface
+
+                        new_pos_x = victim.position.x
+                        new_pos_y = victim.position.y
                     end
 
                     --Location supplied
@@ -1307,7 +1322,7 @@ script.on_load(
                             new_pos_x = argx
                             new_pos_y = argy
                         else
-                            smart_print(victim, "Invalid argument. /cspawn x,y. No argument uses your location.")
+                            smart_print(victim, "Invalid argument. /cspawn x,y. No argument uses your current location.")
                             return
                         end
                     end
@@ -1316,7 +1331,7 @@ script.on_load(
                     if pforce and psurface and new_pos_x and new_pos_y then
                         pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
                         smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
-                        smart_print(victim, string.format("Surface: %s, Force: %s", psurface.name, pforce.name))
+                        smart_print(victim, string.format("Force: %s", pforce.name))
                         global.cspawnpos = {x = (math.floor(new_pos_x) + 0.5), y = (math.floor(new_pos_y) + 0.5)}
 
                         --Set logo to be redrawn
@@ -1324,7 +1339,7 @@ script.on_load(
                         --Redraw
                         dodrawlogo()
                     else
-                        smart_print(victim, "Couldn't find force or surface...")
+                        smart_print(victim, "Couldn't find force...")
                     end
                 end
             )
@@ -1332,7 +1347,7 @@ script.on_load(
             --Reveal map
             commands.add_command(
                 "reveal",
-                "<size> -- <x> units of map. Default: 1024, max 8192",
+                "<size> (OPTIONAL)\n(Reveals <size> units of the map, or 1024 by default. Min 128, Max 8192)",
                 function(param)
                     local victim
 
@@ -1351,10 +1366,10 @@ script.on_load(
                     --Default size
                     local size = 1024
 
-                    --Use admin's surface and force
+                    --Use admin's surface and force if possible
                     if victim and victim.valid then
-                        psurface = player.surface
-                        pforce = player.force
+                        psurface = victim.surface
+                        pforce = victim.force
                     end
 
                     --If size specified
@@ -1381,11 +1396,11 @@ script.on_load(
 
                     --Chart the area
                     if psurface and pforce and size then
-                        pforce.chart(psurface, {lefttop = {x = -size/2, y = -size/2}, rightbottom = {x = size/2, y = size/2}})
+                        pforce.chart(psurface, {lefttop = {x = -size / 2, y = -size / 2}, rightbottom = {x = size / 2, y = size / 2}})
                         local sstr = math.floor(size)
                         smart_print(victim, "Revealing " .. sstr .. "x" .. sstr .. " tiles")
                     else
-                        smart_print(victim, "Either couldn't find surface or force.")
+                        smart_print(victim, "Invalid force or surface.")
                     end
                 end
             )
@@ -1393,7 +1408,7 @@ script.on_load(
             --Rechart map
             commands.add_command(
                 "rechart",
-                "resets fog of war",
+                "(Refreshes all chunks that exist)",
                 function(param)
                     local victim
 
@@ -1410,7 +1425,7 @@ script.on_load(
 
                     --Use admin's force
                     if victim and victim.valid then
-                        pforce = player.force
+                        pforce = victim.force
                     end
 
                     if pforce then
@@ -1422,10 +1437,48 @@ script.on_load(
                 end
             )
 
+            --Rechart map
+            commands.add_command(
+                "fog",
+                "(Hides revealed map area)",
+                function(param)
+                    local victim
+
+                    --Admins only
+                    if param and param.player_index then
+                        victim = game.players[param.player_index]
+                        if victim and victim.admin == false then
+                            smart_print(victim, "Admins only.")
+                            return
+                        end
+                    end
+
+                    --Get surface and force
+                    local psurface = game.surfaces["nauvis"]
+                    local pforce = game.forces["player"]
+
+                    --Use admin's surface and force if possible
+                    if victim and victim.valid then
+                        psurface = victim.surface
+                        pforce = victim.force
+                    end
+
+                    if psurface and pforce then
+                        for chunk in psurface.get_chunks() do
+                            pforce.unchart_chunk({x = chunk.x, y = chunk.y}, psurface)
+                        end
+
+                        smart_print(victim, "Fogging map...")
+                    else
+                        smart_print(victim, "Couldn't find surface or force.")
+                    end
+                end
+            )
+
             --Online
             commands.add_command(
                 "online",
-                "See who is online!",
+                "(See who is online)",
                 function(param)
                     local victim
                     local is_admin = true
@@ -1477,7 +1530,7 @@ script.on_load(
             --Game speed
             commands.add_command(
                 "gspeed",
-                "<x.x> -- Changes game speed. Default: 1.0, min 0.1, max 10.0",
+                "<x.x>\n(Changes game speed)\nDefault speed: 1.0 (60 UPS), Min 0.1 (6 UPS), Max  10.0 (600 UPS)",
                 function(param)
                     local player
 
@@ -1720,14 +1773,8 @@ script.on_event(
             if player and player.valid and area then
                 set_player_active(player)
                 --Don't bother if selection is zero.
-                if area.left_top.x == area.right_bottom.x or
-                area.left_top.y == area.right_bottom.y or
-                area.left_top.x == area.left_top.y or
-                area.right_bottom.x == area.right_bottom.y then
-                    local msg =
-                        player.name ..
-                        " decon [gps=" ..
-                            math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
+                if area.left_top.x == area.right_bottom.x or area.left_top.y == area.right_bottom.y or area.left_top.x == area.left_top.y or area.right_bottom.x == area.right_bottom.y then
+                    local msg = player.name .. " decon [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                     console_print(msg)
                     if is_new(player) or is_member(player) then --Dont bother with regulars/admins
                         if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
@@ -1919,12 +1966,9 @@ script.on_event(
                         return
                     elseif is_new(player) then
                         --Log blueprint placements
-                        console_print(
-                            player.name .. " +bp " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                        )
+                        console_print(player.name .. " +bp " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                         return
                     end
-
                 end
 
                 if created_entity and created_entity.valid then
@@ -1987,7 +2031,7 @@ script.on_event(
                         end
                         if player.admin then
                             return
-                        elseif is_new(player) and count > 500 then --new user limt
+                        elseif is_new(player) and count > 500 then --new player limt
                             console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
                             smart_print(player, "You aren't allowed to use blueprints that large yet.")
                             stack.clear()
@@ -2048,7 +2092,7 @@ script.on_event(
                             --Destroy orignal object.
                             obj.destroy()
 
-                            player.print("You are a new user, and are not allowed to mine other people's objects yet!")
+                            player.print("You are a new player, and are not allowed to mine other people's objects yet!")
 
                             --Create list if needed
                             if not global.repobj then
@@ -2064,7 +2108,7 @@ script.on_event(
                         console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
                 else
-                    --Normal user, just log it
+                    --Normal player, just log it
                     console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                     set_player_active(player) --Set player as active
                 end
@@ -2099,9 +2143,9 @@ script.on_event(
 
                     --Add to list
                     table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-                    player.print("You are a new user, and are not allowed to rotate other people's objects yet!")
+                    player.print("You are a new player, and are not allowed to rotate other people's objects yet!")
                 else
-                    --Normal user, just log it
+                    --Normal player, just log it
                     console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                 end
                 set_player_active(player) --Sey player active
