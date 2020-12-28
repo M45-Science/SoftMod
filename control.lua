@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v524-12-28-2020-0110p"
+local svers = "v524-12-28-2020-01370p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -1963,11 +1963,6 @@ script.on_event(
                             end
                         end
                     end
-                end
-
-                --Silence blueprints past this point
-                if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
-                    return
                 end
 
                 if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
