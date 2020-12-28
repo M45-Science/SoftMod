@@ -1452,44 +1452,6 @@ script.on_load(
                 end
             )
 
-            --Rechart map
-            commands.add_command(
-                "fog",
-                "(Hides revealed map area)",
-                function(param)
-                    local victim
-
-                    --Admins only
-                    if param and param.player_index then
-                        victim = game.players[param.player_index]
-                        if victim and victim.admin == false then
-                            smart_print(victim, "Admins only.")
-                            return
-                        end
-                    end
-
-                    --Get surface and force
-                    local psurface = game.surfaces["nauvis"]
-                    local pforce = game.forces["player"]
-
-                    --Use admin's surface and force if possible
-                    if victim and victim.valid then
-                        psurface = victim.surface
-                        pforce = victim.force
-                    end
-
-                    if psurface and pforce then
-                        for chunk in psurface.get_chunks() do
-                            pforce.unchart_chunk({x = chunk.x, y = chunk.y}, psurface)
-                        end
-
-                        smart_print(victim, "Fogging map...")
-                    else
-                        smart_print(victim, "Couldn't find surface or force.")
-                    end
-                end
-            )
-
             --Online
             commands.add_command(
                 "online",
