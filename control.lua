@@ -1747,18 +1747,21 @@ script.on_event(
             local player = game.players[event.player_index]
             local area = event.area
 
-            if player and player.valid and area then
+            if player and area and area.left_top then
                 set_player_active(player)
                 --Don't bother if selection is zero.
-                if area.left_top.x == area.right_bottom.x or area.left_top.y == area.right_bottom.y or area.left_top.x == area.left_top.y or area.right_bottom.x == area.right_bottom.y then
+                if area.left_top == area.right_bottom.x and area.left_top.y == area.right_bottom.y then
                     local msg = player.name .. " decon [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                     console_print(msg)
+
                     if is_new(player) or is_member(player) then --Dont bother with regulars/admins
-                        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 30) then
+                        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
+                            global.last_decon_warning = game.tick
                             message_all(msg)
+                            
                         end
                     end
-                    global.last_decon_warning = game.tick
+
                 end
             end
         end
