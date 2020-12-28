@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v523-12-27-2020-0708a"
+local svers = "v524-12-28-2020-0607a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -596,7 +596,6 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
-            
             --game tick
             commands.add_command(
                 "gt",
@@ -608,7 +607,7 @@ script.on_load(
                         player = game.players[param.player_index]
                     end
 
-                    smart_print(player, "[GT] ".. game.tick)
+                    smart_print(player, "[GT] " .. game.tick)
                 end
             )
 
@@ -1974,7 +1973,7 @@ script.on_event(
                         end
                         stack.clear()
                         return
-                    elseif count > 20000 then
+                    elseif count > 10000 then
                         if created_entity then
                             created_entity.destroy()
                         end
@@ -1993,7 +1992,7 @@ script.on_event(
                         global.last_speaker_warning = game.tick
 
                         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
-                            if is_regular(player) == false and player.admin == false then --Dont bother with regulars/admins
+                            if player.admin == false then --Dont bother with admins
                                 message_all(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                                 global.last_speaker_warning = game.tick
                             end
@@ -2037,7 +2036,7 @@ script.on_event(
                         if not player.admin then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
-                                    --console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
+                                    console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
                                     smart_print(player, "You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
                                     player.insert(player.cursor_stack)
                                     stack.clear()
@@ -2455,7 +2454,7 @@ script.on_nth_tick(
                         if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
-                                    --console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
+                                    console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
                                     smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
                                     player.insert(player.cursor_stack)
                                     stack.clear()
