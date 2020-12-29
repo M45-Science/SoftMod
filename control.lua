@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v524-12-29-2020-1959a"
+local svers = "v524-12-29-2020-1112a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -1148,6 +1148,10 @@ script.on_load(
                         global.servname = param.parameter
                         global.drawlogo = false
                         dodrawlogo()
+
+                        global.serverlist = nil
+                        global.ports = nil
+                        create_myglobals()
                     end
                 end
             )
