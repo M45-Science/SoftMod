@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v524-12-29-2020-1112a"
+local svers = "v524-12-29-2020-1210p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -398,19 +398,19 @@ local function create_myglobals()
     if not global.servers then
         global.servers = {
             "Our Servers:",
-            "A-RailWorld",
+            "A-Rail World",
             "B-Peaceful",
-            "C-DeathWorld",
+            "C-Death World",
             "[ v Experimental v ]",
-            "XA-RailWorld-2  (*)",
-            "XB-Peaceful-2   (*)",
-            "XC-DeathWorld-2 (*)",
+            "XA-Rail World-2 *",
+            "XB-Peaceful-2 *",
+            "XC-Death World-2 *",
             "[ v PRIVATE BELOW v ]",
             "RA-Space-Krastorio",
-            "RB-RailWorld-3     (*)",
-            "RC-DeathWorld-3    (*)",
-            "RD-Fortress-Island (*)",
-            "(*) = Factorio 1.1.x"
+            "RB-Rail World-3 *",
+            "RC-Death World-3 *",
+            "RD-Fortress Island *",
+            "* = Factorio 1.1.x"
         }
     end
     if not global.ports then
