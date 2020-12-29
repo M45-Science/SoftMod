@@ -608,7 +608,7 @@ script.on_load(
             --adjust run speed
             commands.add_command(
                 "run",
-                "<float> (1.0 is normal speed)",
+                "<float> (0 is normal speed)",
                 function(param)
                     local player
                     local victim
@@ -626,7 +626,18 @@ script.on_load(
                         if player.character and player.character.valid then
                             if tonumber(param.parameter) then
                                 local speed = tonumber(param.parameter)
-                                player.character_mining_speed_modifier = speed
+
+                                --Factorio doesn't like speeds less than -1
+                                if speed < -0.99 then
+                                    speed = -0.99
+                                end
+
+                                --Cap to reasonable amount
+                                if speed > 100 then
+                                    speed = 100
+                                end
+
+                                player.character.character_running_speed_modifier = speed
                             else
                                 smart_print(player, "Numbers only.")
                             end
