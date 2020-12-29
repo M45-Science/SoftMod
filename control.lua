@@ -504,7 +504,8 @@ end
 
 --Set our default settings
 local function game_settings(player)
-    if player and player.valid and player.force then
+    if player and player.valid and player.force and not global.gset then
+        global.gset = true --Only apply these once
         player.force.friendly_fire = false --friendly fire
         player.force.research_queue_enabled = true --nice to have
         game.disable_replay() --Smaller saves, prevent desync on script upgrade
@@ -604,6 +605,50 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            
+            --turn invincible
+            commands.add_command(
+                "immortal",
+                "optional: <name> (toggle player immortality, default self)",
+                function(param)
+                    local player
+                    local victim
+
+                    --Admins only
+                    if param and param.player_index then
+                        player = game.players[param.player_index]
+                        if player and player.admin == false then
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    local target = player
+
+                    if param and param.parameter then
+                        victim = game.players[param.parameter]
+                    end
+
+                    if victim and victim.valid then
+                        target = victim
+                    end
+
+                    if target and target.valid then
+                        if target.character and target.character.valid then
+                            if target.character.destructible then
+                                target.character.destructible = false
+                                smart_print(player, target.name .. " is now immortal.")
+                            else
+                                target.character.destructible = true
+                                smart_print(player, target.name .. " is now mortal.")
+                            end
+                        else
+                            smart_print(player, "They don't have a body right now.")
+                        end
+                    end
+                end
+            )
+
             --change new player restrictions
             commands.add_command(
                 "restrict",
