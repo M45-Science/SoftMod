@@ -624,8 +624,9 @@ script.on_load(
 
                     if player and player.valid then
                         if player.character and player.character.valid then
-                            if param.parameter >= 0 then
-                                player.character_mining_speed_modifier = param.parameter
+                            if tonumber(param.parameter) then
+                                local speed = tonumber(param.parameter)
+                                player.character_mining_speed_modifier = speed
                             else
                                 smart_print(player, "Numbers only.")
                             end
