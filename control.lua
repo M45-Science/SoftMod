@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v525-12-29-2020-0158p"
+local svers = "v525-12-29-2020-0238p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -605,7 +605,7 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
-            
+
             --turn invincible
             commands.add_command(
                 "immortal",
