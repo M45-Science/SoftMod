@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v524-12-28-2020-01370p"
+local svers = "v524-12-29-2020-1959a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -400,14 +400,15 @@ local function create_myglobals()
             "Our Servers:",
             "A-RailWorld",
             "B-Peaceful",
-            "C-RailWorld-2 (*)",
-            "D-Peaceful-2 (*)",
-            "E-DeathWorld",
-            "F-DeathWorld-2(*)",
+            "C-DeathWorld",
+            "[ v Experimental v ]",
+            "XA-RailWorld-2  (*)",
+            "XB-Peaceful-2   (*)",
+            "XC-DeathWorld-2 (*)",
             "[ v PRIVATE BELOW v ]",
             "RA-Space-Krastorio",
-            "RB-RailWorld-3 (*)",
-            "RC-DeathWorld-3 (*)",
+            "RB-RailWorld-3     (*)",
+            "RC-DeathWorld-3    (*)",
             "RD-Fortress-Island (*)",
             "(*) = Factorio 1.1.x"
         }
@@ -418,9 +419,10 @@ local function create_myglobals()
             "50000",
             "50001",
             "50002",
-            "50003",
-            "50004",
-            "50005",
+            "",
+            "50200",
+            "50201",
+            "50202",
             "",
             "50100",
             "50101",
