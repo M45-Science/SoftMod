@@ -1149,7 +1149,7 @@ script.on_load(
                         global.drawlogo = false
                         dodrawlogo()
 
-                        global.serverlist = nil
+                        global.servers = nil
                         global.ports = nil
                         create_myglobals()
                     end
