@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v524-12-29-2020-1210p"
+local svers = "v525-12-29-2020-0158p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -331,7 +331,10 @@ end
 local function set_perms()
     --Auto set default group permissions
 
-    if global.defaultgroup then
+    if global.defaultgroup and not global.setperms then
+        --Only set perms once, unless cleared
+        global.setperms = true
+
         global.defaultgroup.set_allows_action(defines.input_action.wire_dragging, false)
         global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
         global.defaultgroup.set_allows_action(defines.input_action.add_train_station, false)
@@ -367,6 +370,9 @@ end
 
 --Create globals, if needed
 local function create_myglobals()
+    if global.restrict == nil then
+        global.restrict = true
+    end
     if not global.playeractive then
         global.playeractive = {}
     end
@@ -598,6 +604,45 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            --change new player restrictions
+            commands.add_command(
+                "restrict",
+                "change player restrictions",
+                function(param)
+                    local player
+
+                    --Admins only
+                    if param and param.player_index then
+                        player = game.players[param.player_index]
+                        if player and player.admin == false then
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    --Process argument
+                    if not param.parameter then
+                        smart_print(player, "options: on, off, perms")
+                        return
+                    elseif param.parameter == "perms" then
+                        global.setperms = false
+                        create_myglobals()
+
+                        smart_print(player, "New player perms-restrictions set.")
+                        return
+                    elseif param.parameter == "off" then
+                        global.restrict = false
+                        smart_print(player, "New player restrictions disabled.")
+                        return
+                    elseif param.parameter == "on" then
+                        global.restrict = true
+                        smart_print(player, "New player restrictions enabled.")
+                        return
+                    end
+                    create_player_globals()
+                end
+            )
+
             --game tick
             commands.add_command(
                 "gt",
@@ -1764,10 +1809,8 @@ script.on_event(
                         if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
                             global.last_decon_warning = game.tick
                             message_all(msg)
-                            
                         end
                     end
-
                 end
             end
         end
@@ -1929,7 +1972,7 @@ script.on_event(
                     local count = stack.get_blueprint_entity_count()
 
                     --Add item to blueprint throttle, (new/member) 5 items a second
-                    if is_new(player) or is_member(player) then
+                    if (is_new(player) or is_member(player)) and global.restrict then
                         if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                             global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 12
                         end
@@ -1938,7 +1981,7 @@ script.on_event(
                     --Silently destroy blueprint items, if blueprint is too big
                     if player.admin then
                         return
-                    elseif is_new(player) and count > 500 then
+                    elseif is_new(player) and count > 500 and global.restrict then
                         if created_entity then
                             created_entity.destroy()
                         end
@@ -1949,10 +1992,6 @@ script.on_event(
                             created_entity.destroy()
                         end
                         stack.clear()
-                        return
-                    elseif is_new(player) then
-                        --Log blueprint placements
-                        console_print(player.name .. " +bp " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                         return
                     end
                 end
@@ -1999,7 +2038,7 @@ script.on_event(
                         local count = stack.get_blueprint_entity_count()
 
                         --blueprint throttle if needed
-                        if not player.admin then
+                        if not player.admin and global.restrict then
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
                                     console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
@@ -2012,7 +2051,7 @@ script.on_event(
                         end
                         if player.admin then
                             return
-                        elseif is_new(player) and count > 500 then --new player limt
+                        elseif is_new(player) and count > 500 and global.restrict then --new player limt
                             console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
                             smart_print(player, "You aren't allowed to use blueprints that large yet.")
                             stack.clear()
@@ -2039,62 +2078,64 @@ script.on_event(
             local player = game.players[event.player_index]
             local obj = event.entity
 
-            --Check player, surface and object are valid
-            if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
-                --New players can't mine objects that they don't own!
-                if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
-                    --Create limbo surface if needed
-                    if game.surfaces["limbo"] == nil then
-                        local my_map_gen_settings = {
-                            default_enable_all_autoplace_controls = false,
-                            property_expression_names = {cliffiness = 0},
-                            autoplace_settings = {
-                                tile = {
-                                    settings = {
-                                        ["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}
+            if global.restrict then
+                --Check player, surface and object are valid
+                if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
+                    --New players can't mine objects that they don't own!
+                    if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
+                        --Create limbo surface if needed
+                        if game.surfaces["limbo"] == nil then
+                            local my_map_gen_settings = {
+                                default_enable_all_autoplace_controls = false,
+                                property_expression_names = {cliffiness = 0},
+                                autoplace_settings = {
+                                    tile = {
+                                        settings = {
+                                            ["sand-1"] = {frequency = "normal", size = "normal", richness = "normal"}
+                                        }
                                     }
-                                }
-                            },
-                            starting_area = "none"
-                        }
-                        game.create_surface("limbo", my_map_gen_settings)
-                    end
+                                },
+                                starting_area = "none"
+                            }
+                            game.create_surface("limbo", my_map_gen_settings)
+                        end
 
-                    --Get surface
-                    local surf = game.surfaces["limbo"]
+                        --Get surface
+                        local surf = game.surfaces["limbo"]
 
-                    --Check if surface is valid
-                    if surf and surf.valid then
-                        --Clone object to limbo
-                        local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
+                        --Check if surface is valid
+                        if surf and surf.valid then
+                            --Clone object to limbo
+                            local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
 
-                        --Check that object was able to be cloned
-                        if saveobj and saveobj.valid then
-                            --Destroy orignal object.
-                            obj.destroy()
+                            --Check that object was able to be cloned
+                            if saveobj and saveobj.valid then
+                                --Destroy orignal object.
+                                obj.destroy()
 
-                            player.print("You are a new player, and are not allowed to mine other people's objects yet!")
+                                player.print("You are a new player, and are not allowed to mine other people's objects yet!")
 
-                            --Create list if needed
-                            if not global.repobj then
-                                global.repobj = {obj = {}, pos = {}, surf = {}, force = {}}
+                                --Create list if needed
+                                if not global.repobj then
+                                    global.repobj = {obj = {}, pos = {}, surf = {}, force = {}}
+                                end
+
+                                --Add obj to list
+                                table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = player.surface, force = player.force})
+                            else
+                                console_print("pre_player_mined_item: unable to clone object.")
                             end
-
-                            --Add obj to list
-                            table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = player.surface, force = player.force})
                         else
-                            console_print("pre_player_mined_item: unable to clone object.")
+                            console_print("pre_player_mined_item: unable to get limbo-surface.")
                         end
                     else
-                        console_print("pre_player_mined_item: unable to get limbo-surface.")
+                        --Normal player, just log it
+                        console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+                        set_player_active(player) --Set player as active
                     end
                 else
-                    --Normal player, just log it
-                    console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
-                    set_player_active(player) --Set player as active
+                    console_print("pre_player_mined_item: invalid player, obj or surface.")
                 end
-            else
-                console_print("pre_player_mined_item: invalid player, obj or surface.")
             end
         end
     end
@@ -2110,26 +2151,28 @@ script.on_event(
             local obj = event.entity
             local prev_dir = event.previous_direction
 
-            --If player and object are valid
-            if player and player.valid and obj and obj.valid then
-                --Don't let new players rotate other players items, unrotate and untouch the item.
-                if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
-                    --Unrotate
-                    obj.direction = prev_dir
+            if global.restrict then
+                --If player and object are valid
+                if player and player.valid and obj and obj.valid then
+                    --Don't let new players rotate other players items, unrotate and untouch the item.
+                    if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
+                        --Unrotate
+                        obj.direction = prev_dir
 
-                    --Create untouch list if needed
-                    if not global.untouchobj then
-                        global.untouchobj = {object = {}, prev = {}}
+                        --Create untouch list if needed
+                        if not global.untouchobj then
+                            global.untouchobj = {object = {}, prev = {}}
+                        end
+
+                        --Add to list
+                        table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
+                        player.print("You are a new player, and are not allowed to rotate other people's objects yet!")
+                    else
+                        --Normal player, just log it
+                        console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                     end
-
-                    --Add to list
-                    table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-                    player.print("You are a new player, and are not allowed to rotate other people's objects yet!")
-                else
-                    --Normal player, just log it
-                    console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+                    set_player_active(player) --Sey player active
                 end
-                set_player_active(player) --Sey player active
             end
         end
     end
@@ -2400,97 +2443,99 @@ script.on_event(
 script.on_nth_tick(
     1,
     function(event)
-        if global.blueprint_throttle then
-            --Loop through players, countdown blueprint throttle
-            for _, player in pairs(game.connected_players) do
-                --Init if needed
-                if not global.blueprint_throttle[player.index] then
-                    global.blueprint_throttle[player.index] = 0
-                end
+        if global.restrict then
+            if global.blueprint_throttle then
+                --Loop through players, countdown blueprint throttle
+                for _, player in pairs(game.connected_players) do
+                    --Init if needed
+                    if not global.blueprint_throttle[player.index] then
+                        global.blueprint_throttle[player.index] = 0
+                    end
 
-                --Subtract from count
-                if global.blueprint_throttle[player.index] > 0 then
-                    global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] - 1
-                end
+                    --Subtract from count
+                    if global.blueprint_throttle[player.index] > 0 then
+                        global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] - 1
+                    end
 
-                --blueprint throttle if needed.
-                if not player.admin then
-                    if player.cursor_stack then
-                        local stack = player.cursor_stack
-                        if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
-                            if global.blueprint_throttle and global.blueprint_throttle[player.index] then
-                                if global.blueprint_throttle[player.index] > 0 then
-                                    console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
-                                    smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
-                                    player.insert(player.cursor_stack)
-                                    stack.clear()
+                    --blueprint throttle if needed.
+                    if not player.admin then
+                        if player.cursor_stack then
+                            local stack = player.cursor_stack
+                            if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+                                if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                                    if global.blueprint_throttle[player.index] > 0 then
+                                        console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
+                                        smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
+                                        player.insert(player.cursor_stack)
+                                        stack.clear()
+                                    end
                                 end
                             end
                         end
                     end
                 end
             end
-        end
 
-        --Replace object list
-        if global.repobj then
-            for _, item in ipairs(global.repobj) do
-                local skip = false
+            --Replace object list
+            if global.repobj then
+                for _, item in ipairs(global.repobj) do
+                    local skip = false
 
-                --Sanity check
-                if item.surf and item.surf.valid and item.force and item.force.valid and item.pos then
-                    --Check if an item is in our way ( fast replaced )
-                    local des = item.surf.find_entities({item.pos, item.pos})
+                    --Sanity check
+                    if item.surf and item.surf.valid and item.force and item.force.valid and item.pos then
+                        --Check if an item is in our way ( fast replaced )
+                        local des = item.surf.find_entities({item.pos, item.pos})
 
-                    --Untouch the fast-replaced object (last_user)
-                    if des then
-                        for _, d in pairs(des) do
-                            if item.obj.last_user and item.obj.last_user.valid then
-                                --Untouch
-                                d.last_user = item.obj.last_user.name
-                            else
-                                --Just in case
-                                d.last_user = game.players[1]
+                        --Untouch the fast-replaced object (last_user)
+                        if des then
+                            for _, d in pairs(des) do
+                                if item.obj.last_user and item.obj.last_user.valid then
+                                    --Untouch
+                                    d.last_user = item.obj.last_user.name
+                                else
+                                    --Just in case
+                                    d.last_user = game.players[1]
+                                end
+                                skip = true
                             end
-                            skip = true
                         end
-                    end
 
-                    --Otherwise, clone limbo object back into place of original
-                    if not skip then
-                        local rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
-                        if not rep then
-                            console_print("repobj: Unable to clone object from limbo.")
+                        --Otherwise, clone limbo object back into place of original
+                        if not skip then
+                            local rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
+                            if not rep then
+                                console_print("repobj: Unable to clone object from limbo.")
+                            end
                         end
-                    end
 
-                    --Clean up limbo object
-                    item.obj.destroy()
-                else
-                    console_print("repobj: Invalid surface")
-                end
-            end
-
-            --Done with list, invalidate it.
-            global.repobj = nil
-        end
-
-        --Untouch rotated objects
-        if global.untouchobj then
-            for _, item in pairs(global.untouchobj) do
-                --Sanity Check
-                if item.object and item.object.valid then
-                    --Set last user to previous state
-                    if item.prev and item.prev.valid then
-                        item.object.last_user = item.prev
-                    else --just in case
-                        item.object.last_user = game.players[1]
+                        --Clean up limbo object
+                        item.obj.destroy()
+                    else
+                        console_print("repobj: Invalid surface")
                     end
                 end
+
+                --Done with list, invalidate it.
+                global.repobj = nil
             end
 
-            --Done with list, invalidate it
-            global.untouchonj = nil
+            --Untouch rotated objects
+            if global.untouchobj then
+                for _, item in pairs(global.untouchobj) do
+                    --Sanity Check
+                    if item.object and item.object.valid then
+                        --Set last user to previous state
+                        if item.prev and item.prev.valid then
+                            item.object.last_user = item.prev
+                        else --just in case
+                            item.object.last_user = game.players[1]
+                        end
+                    end
+                end
+
+                --Done with list, invalidate it
+                global.untouchonj = nil
+            end
         end
     end
 )
