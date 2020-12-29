@@ -605,6 +605,38 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            --adjust run speed
+            commands.add_command(
+                "run",
+                "<float> (1.0 is normal speed)",
+                function(param)
+                    local player
+                    local victim
+
+                    --Admins only
+                    if param and param.player_index then
+                        player = game.players[param.player_index]
+                        if player and player.admin == false then
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    if player and player.valid then
+                        if player.character and player.character.valid then
+                            if param.parameter >= 0 then
+                                player.character_mining_speed_modifier = param.parameter
+                            else
+                                smart_print(player, "Numbers only.")
+                            end
+                        else
+                            smart_print(player, "Can't set walk speed, because you don't have a body.")
+                        end
+                    else
+                        smart_print(player, "The console can't walk...")
+                    end
+                end
+            )
 
             --turn invincible
             commands.add_command(
@@ -645,6 +677,8 @@ script.on_load(
                         else
                             smart_print(player, "They don't have a body right now.")
                         end
+                    else
+                        smart_print(player, "Couldn't find a player by that name.")
                     end
                 end
             )
