@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v526-12-30-2020-1253p"
+local svers = "v526-12-30-2020-0202p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -2464,17 +2464,7 @@ script.on_event(
     end
 )
 
---Research Started
-script.on_event(
-    defines.events.on_research_started,
-    function(event)
-        if event and event.research then
-                message_alld("Research " .. event.research.name .. " started.")
-        end
-    end
-)
-
---Looping timer, 2 minutes
+--Looping timer, 30 seconds
 --delete old corpse map pins
 --Check spawn area map pin
 --Add to player active time if needed
