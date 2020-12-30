@@ -2443,7 +2443,7 @@ script.on_event(
 
 --Research Started
 script.on_event(
-    defines.events.on_research_finished,
+    defines.events.on_research_started,
     function(event)
         if event and event.research then
                 message_alld("Research " .. event.research.name .. " started.")
