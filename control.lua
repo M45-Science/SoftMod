@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v526-12-30-2020-1036a"
+local svers = "v526-12-30-2020-1253p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
