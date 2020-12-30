@@ -2403,6 +2403,24 @@ script.on_event(
     end
 )
 
+--Banned
+script.on_event(
+    defines.events.on_player_banned,
+    function(event)
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+            if player and player.valid and player.character then
+                if global.cspawnpos then
+                    player.teleport(global.cspawnpos)
+                else
+                    player.teleport({0,0})
+                end
+                player.character.die(player.force, player.character)
+            end
+        end
+    end
+)
+
 --OTHER EVENTS
 --Corpse Marker
 script.on_event(
