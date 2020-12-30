@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v525-12-29-2020-0238p"
+local svers = "v526-12-30-2020-1036a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -365,6 +365,27 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_signal, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
+        --Added 12-2020
+        global.defaultgroup.set_allows_action(defines.input_action.cancel_research, false)
+        global.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, false)
+        global.defaultgroup.set_allows_action(defines.input_action.build_rail, false)
+        global.defaultgroup.set_allows_action(defines.input_action.activate_paste, false)
+        global.defaultgroup.set_allows_action(defines.input_action.destroy_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.destroy_opened_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, false)
+        global.defaultgroup.set_allows_action(defines.input_action.drop_item, false)
+        global.defaultgroup.set_allows_action(defines.input_action.export_blueprint, false)
+        global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_fluid, false)
+        global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_specific_fluid, false)
+        global.defaultgroup.set_allows_action(defines.input_action.grab_blueprint_record, false)
+        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint, false)
+        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, false)
+        global.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, false)
+        global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, false)
+        global.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, false)
+        global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
+        global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
+        global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, false)
     end
 end
 
@@ -1288,6 +1309,8 @@ script.on_load(
                         global.servers = nil
                         global.ports = nil
                         create_myglobals()
+
+                        set_perms()
                     end
                 end
             )
@@ -1933,6 +1956,7 @@ script.on_event(
                 create_player_globals(player)
                 create_groups()
                 game_settings(player)
+                set_perms()
 
                 dodrawlogo()
 
@@ -2198,6 +2222,10 @@ script.on_event(
                         if surf and surf.valid then
                             --Clone object to limbo
                             local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
+                            if obj.type == "electric-pole" and player and player.character then
+                                player.character.die(player.force, obj)
+                                return
+                            end
 
                             --Check that object was able to be cloned
                             if saveobj and saveobj.valid then
