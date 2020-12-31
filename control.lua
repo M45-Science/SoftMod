@@ -1081,16 +1081,16 @@ script.on_load(
                                                             end
                                                         end
                                                     end
-                                                end
 
-                                                --Send report to discord and add to vote list
-                                                local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
-                                                message_all(message)
-                                                print("[REPORT] " .. message)
-                                                smart_print(player, "Your vote has been added, and posted on Discord!")
-                                                smart_print(player, "/unbanish <player> to withdraw your vote.")
-                                                smart_print(player, "(WARNING) If you withdraw a vote, you CAN NOT reintroduce it.")
-                                                smart_print(player, "You have used " .. votecount .. " of your 5 available votes.")
+                                                    --Send report to discord and add to vote list
+                                                    local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
+                                                    message_all(message)
+                                                    print("[REPORT] " .. message)
+                                                    smart_print(player, "Your vote has been added, and posted on Discord!")
+                                                    smart_print(player, "/unbanish <player> to withdraw your vote.")
+                                                    smart_print(player, "(WARNING) If you withdraw a vote, you CAN NOT reintroduce it.")
+                                                    smart_print(player, "You have used " .. votecount .. " of your 5 available votes.")
+                                                end
 
                                                 --Init if needed
                                                 if not global.banishvotes then
@@ -2617,7 +2617,6 @@ script.on_nth_tick(
 
                     --Sanity check
                     if item.obj and item.surf and item.surf.valid and item.force and item.force.valid and item.pos and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
-
                         --Check if an item is in our way ( fast replaced )
                         local des = item.surf.find_entities({item.pos, item.pos})
 
