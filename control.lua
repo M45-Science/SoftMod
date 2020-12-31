@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v526-12-30-2020-0931p"
+local svers = "v526-12-30-2020-1108p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -2225,13 +2225,7 @@ script.on_event(
 
                             --ZAP!
                             if obj.type == "electric-pole" and player and player.character then
-                                local psurf = player.surface
-
-                                psurf.create_entity{name="nuclear-smouldering-smoke-source", position=player.position}
-                                psurf.create_entity{name="uranium-cannon-shell-explosion", position=player.position}
-                                psurf.create_entity{name="small-scorchmark", position=player.position}
-                                player.character.die(player.force, obj)
-                                return
+                                global.kplayer = player
                             end
 
                             --Check that object was able to be cloned
@@ -2239,15 +2233,13 @@ script.on_event(
                                 --Destroy orignal object.
                                 obj.destroy()
 
-                                player.print("You are a new player, and are not allowed to mine other people's objects yet!")
-
                                 --Create list if needed
                                 if not global.repobj then
-                                    global.repobj = {obj = {}, pos = {}, surf = {}, force = {}}
+                                    global.repobj = {obj = {}, pos = {}, surf = {}, force = {}, victim = {}}
                                 end
 
                                 --Add obj to list
-                                table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = player.surface, force = player.force})
+                                table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = player.surface, force = player.force, victim = player})
                             else
                                 console_print("pre_player_mined_item: unable to clone object.")
                             end
@@ -2420,7 +2412,7 @@ script.on_event(
                 if global.cspawnpos then
                     player.teleport(global.cspawnpos)
                 else
-                    player.teleport({0,0})
+                    player.teleport({0, 0})
                 end
                 player.character.die(player.force, player.character)
             end
@@ -2466,7 +2458,7 @@ script.on_event(
     defines.events.on_research_finished,
     function(event)
         if event and event.research then
-                message_alld("Research " .. event.research.name .. " completed.")
+            message_alld("Research " .. event.research.name .. " completed.")
         end
     end
 )
@@ -2652,6 +2644,22 @@ script.on_nth_tick(
                             local rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
                             if not rep then
                                 console_print("repobj: Unable to clone object from limbo.")
+                            else
+                                --Warn user 
+                                smart_print(item.victim, "You are a new player, and are not allowed to mine other people's objects yet!")
+
+                                --Zap players playing with eletrical lines
+                                if global.kplayer and global.kplayer.character then
+                                    local psurf = global.kplayer.surface
+
+                                    psurf.create_entity {name = "nuclear-smouldering-smoke-source", position = global.kplayer.position}
+                                    psurf.create_entity {name = "uranium-cannon-shell-explosion", position = global.kplayer.position}
+                                    psurf.create_entity {name = "small-scorchmark", position = global.kplayer.position}
+
+                                    smart_print(global.kplayer, "Don't mess with power lines you don't own!")
+                                    global.kplayer.character.die(global.kplayer.force, global.kplayer.character)
+                                    global.kplayer = nil
+                                end
                             end
                         end
 
