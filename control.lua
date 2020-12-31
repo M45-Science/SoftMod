@@ -1,6 +1,19 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v527-12-31-2020-1257a"
+local svers = "v528-12-31-2020-1112a"
+
+function dump(o)
+    if type(o) == 'table' then
+       local s = '{ '
+       for k,v in pairs(o) do
+          if type(k) ~= 'number' then k = '"'..k..'"' end
+          s = s .. '['..k..'] = ' .. dump(v) .. ','
+       end
+       return s .. '} '
+    else
+       return tostring(o)
+    end
+ end
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -2221,20 +2234,33 @@ script.on_event(
                         --Check if surface is valid
                         if surf and surf.valid then
                             --Clone object to limbo
-                            local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
+                            local saveobj = obj.clone({position = obj.position, surface = surf, force = obj.force})
 
                             --Check that object was able to be cloned
                             if saveobj and saveobj.valid then
+
+                                local cwire
+                                local rwire
+                                local gwire
+                                
+                                --
+                                if obj.type == "electric-pole" then
+                                    --Save wire connections
+                                    cwire = obj.neighbours["copper"]
+                                    rwire = obj.neighbours["red"]
+                                    gwire = obj.neighbours["green"]
+                                end
+
                                 --Destroy orignal object.
                                 obj.destroy()
 
                                 --Create list if needed
                                 if not global.repobj then
-                                    global.repobj = {obj = {}, pos = {}, surf = {}, force = {}, victim = {}}
+                                    global.repobj = {obj = {}, victim = {}, copper = {}, red = {}, green = {}}
                                 end
 
                                 --Add obj to list
-                                table.insert(global.repobj, {obj = saveobj, pos = saveobj.position, surf = player.surface, force = player.force, victim = player})
+                                table.insert(global.repobj, {obj = saveobj, victim = player, copper = cwire, red = rwire, green = gwire})
                             else
                                 console_print("pre_player_mined_item: unable to clone object.")
                             end
@@ -2616,9 +2642,9 @@ script.on_nth_tick(
                     local skip = false
 
                     --Sanity check
-                    if item.obj and item.surf and item.surf.valid and item.force and item.force.valid and item.pos and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+                    if item.obj and item.obj.valid and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
                         --Check if an item is in our way ( fast replaced )
-                        local des = item.surf.find_entities({item.pos, item.pos})
+                        local des = item.victim.surface.find_entities({item.obj.position, item.obj.position})
 
                         --Untouch the fast-replaced object (last_user)
                         if des then
@@ -2636,32 +2662,23 @@ script.on_nth_tick(
 
                         --Otherwise, clone limbo object back into place of original
                         if not skip then
-                            local rep
+                            local rep = item.obj.clone({position = item.obj.position, surface = item.victim.surface, force = item.obj.force})
 
-                            --Fix power poles... grr.
-                            if item.obj.type == "electric-pole" then
-                                --make ghost onbject
-                                rep = item.surf.create_entity {name = "entity-ghost", inner_name = item.obj.name, position = item.pos, surface = item.surf, force = item.force}
-
-                                --revive it
-                                rep.silent_revive {return_item_request_proxy = false, raise_revive = true}
-
-                                --Warn user
-                                smart_print(item.victim, "Don't mess with power poles you don't own!")
-
-                                --rep invalid after this
-                                rep = nil
-
-                                --Kill them
-                                if item.victim.character and item.victim.character.valid then
-                                    local psurf = item.victim.surface
-                                    psurf.create_entity {name = "nuclear-smouldering-smoke-source", position = item.victim.position}
-                                    psurf.create_entity {name = "uranium-cannon-shell-explosion", position = item.victim.position}
-                                    psurf.create_entity {name = "small-scorchmark", position = item.victim.position}
-                                    item.victim.character.die(item.victim.force, item.obj)
+                            --Reconnect lines if needed
+                            if item.copper then
+                                for ind, pole in pairs(item.copper) do
+                                    rep.connect_neighbour(pole)
                                 end
-                            else
-                                rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
+                            end
+                            if item.red then
+                                for ind, pole in pairs(item.red) do
+                                    rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.red}
+                                end
+                            end
+                            if item.green then
+                                for ind, pole in pairs(item.green) do
+                                    rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.green}
+                                end
                             end
 
                             if rep then
