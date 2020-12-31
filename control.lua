@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v526-12-30-2020-1108p"
+local svers = "v527-12-31-2020-1257a"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -2223,11 +2223,6 @@ script.on_event(
                             --Clone object to limbo
                             local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
 
-                            --ZAP!
-                            if obj.type == "electric-pole" and player and player.character then
-                                global.kplayer = player
-                            end
-
                             --Check that object was able to be cloned
                             if saveobj and saveobj.valid then
                                 --Destroy orignal object.
@@ -2630,7 +2625,7 @@ script.on_nth_tick(
                             for _, d in pairs(des) do
                                 if item.obj.last_user and item.obj.last_user.valid then
                                     --Untouch
-                                    d.last_user = item.obj.last_user.name
+                                    d.last_user = item.obj.last_user
                                 else
                                     --Just in case
                                     d.last_user = game.players[1]
@@ -2641,25 +2636,37 @@ script.on_nth_tick(
 
                         --Otherwise, clone limbo object back into place of original
                         if not skip then
-                            local rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
+                            local rep
+
+                            --Fix power poles... grr.
+                            if item.obj.type == "electric-pole" then
+                                --make ghost onbject
+                                rep = item.surf.create_entity {name = "entity-ghost", inner_name = item.obj.name, position = item.pos, surface = item.surf, force = item.force}
+
+                                --revive it
+                                rep.silent_revive {return_item_request_proxy = false, raise_revive = true}
+                                smart_print(item.victim, "Don't mess with power poles you don't own!")
+
+                                --rep invalid after this
+                                rep = nil
+
+                                --Kill them
+                                if item.victim.character and item.victim.character.valid then
+
+                                    local psurf = item.victim.surface
+                                    psurf.create_entity {name = "nuclear-smouldering-smoke-source", position =  item.victim.position}
+                                    psurf.create_entity {name = "uranium-cannon-shell-explosion", position =  item.victim.position}
+                                    psurf.create_entity {name = "small-scorchmark", position =  item.victim.position}
+                                    item.victim.character.die(item.victim.force, item.obj)
+                                end
+                            else
+                                rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
+                            end
+
                             if not rep then
                                 console_print("repobj: Unable to clone object from limbo.")
                             else
-                                --Warn user 
                                 smart_print(item.victim, "You are a new player, and are not allowed to mine other people's objects yet!")
-
-                                --Zap players playing with eletrical lines
-                                if global.kplayer and global.kplayer.character then
-                                    local psurf = global.kplayer.surface
-
-                                    psurf.create_entity {name = "nuclear-smouldering-smoke-source", position = global.kplayer.position}
-                                    psurf.create_entity {name = "uranium-cannon-shell-explosion", position = global.kplayer.position}
-                                    psurf.create_entity {name = "small-scorchmark", position = global.kplayer.position}
-
-                                    smart_print(global.kplayer, "Don't mess with power lines you don't own!")
-                                    global.kplayer.character.die(global.kplayer.force, global.kplayer.character)
-                                    global.kplayer = nil
-                                end
                             end
                         end
 
@@ -2690,6 +2697,19 @@ script.on_nth_tick(
 
                 --Done with list, invalidate it
                 global.untouchonj = nil
+            end
+        end
+    end
+)
+
+--script-revive, owner fix
+script.on_event(
+    defines.events.script_raised_revive,
+    function(event)
+        if event and event.entity then
+            if event.entity.last_user == nil then
+                --Slight hack, but works.
+                event.entity.last_user = game.players[1]
             end
         end
     end
