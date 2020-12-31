@@ -2436,13 +2436,13 @@ script.on_event(
                 --Add to list of pins
                 table.insert(global.corpselist, {tag = qtag, tick = game.tick})
 
-                local cause = "unknown"
+                --Log to discord
                 if event.cause and event.cause.valid then
                     cause = event.cause.name
+                    message_all(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+                else
+                    message_all(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
                 end
-
-                --Log to discord
-                message_all(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
             end
         end
     end
