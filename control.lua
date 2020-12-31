@@ -1,19 +1,21 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v528-12-31-2020-1112a"
+local svers = "v528-12-31-2020-1152a"
 
 function dump(o)
-    if type(o) == 'table' then
-       local s = '{ '
-       for k,v in pairs(o) do
-          if type(k) ~= 'number' then k = '"'..k..'"' end
-          s = s .. '['..k..'] = ' .. dump(v) .. ','
-       end
-       return s .. '} '
+    if type(o) == "table" then
+        local s = "{ "
+        for k, v in pairs(o) do
+            if type(k) ~= "number" then
+                k = '"' .. k .. '"'
+            end
+            s = s .. "[" .. k .. "] = " .. dump(v) .. ","
+        end
+        return s .. "} "
     else
-       return tostring(o)
+        return tostring(o)
     end
- end
+end
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -2238,17 +2240,24 @@ script.on_event(
 
                             --Check that object was able to be cloned
                             if saveobj and saveobj.valid then
-
                                 local cwire
                                 local rwire
                                 local gwire
-                                
-                                --
+
+                                --Fix wires... grr
+                                local wires = obj.circuit_connected_entities
+
+                                --Save wire connections
+                                cwire = wires["copper"]
+                                rwire = wires["red"]
+                                gwire = wires["green"]
+
                                 if obj.type == "electric-pole" then
+                                    wires = obj.neighbours
                                     --Save wire connections
-                                    cwire = obj.neighbours["copper"]
-                                    rwire = obj.neighbours["red"]
-                                    gwire = obj.neighbours["green"]
+                                    cwire = wires["copper"]
+                                    rwire = wires["red"]
+                                    gwire = wires["green"]
                                 end
 
                                 --Destroy orignal object.
@@ -2667,7 +2676,9 @@ script.on_nth_tick(
                             --Reconnect lines if needed
                             if item.copper then
                                 for ind, pole in pairs(item.copper) do
-                                    rep.connect_neighbour(pole)
+                                    if pole.type == "electric-pole" then
+                                        rep.connect_neighbour(pole)
+                                    end
                                 end
                             end
                             if item.red then
