@@ -2616,7 +2616,8 @@ script.on_nth_tick(
                     local skip = false
 
                     --Sanity check
-                    if item.surf and item.surf.valid and item.force and item.force.valid and item.pos then
+                    if item.obj and item.surf and item.surf.valid and item.force and item.force.valid and item.pos and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+
                         --Check if an item is in our way ( fast replaced )
                         local des = item.surf.find_entities({item.pos, item.pos})
 
@@ -2645,6 +2646,8 @@ script.on_nth_tick(
 
                                 --revive it
                                 rep.silent_revive {return_item_request_proxy = false, raise_revive = true}
+
+                                --Warn user
                                 smart_print(item.victim, "Don't mess with power poles you don't own!")
 
                                 --rep invalid after this
@@ -2652,20 +2655,17 @@ script.on_nth_tick(
 
                                 --Kill them
                                 if item.victim.character and item.victim.character.valid then
-
                                     local psurf = item.victim.surface
-                                    psurf.create_entity {name = "nuclear-smouldering-smoke-source", position =  item.victim.position}
-                                    psurf.create_entity {name = "uranium-cannon-shell-explosion", position =  item.victim.position}
-                                    psurf.create_entity {name = "small-scorchmark", position =  item.victim.position}
+                                    psurf.create_entity {name = "nuclear-smouldering-smoke-source", position = item.victim.position}
+                                    psurf.create_entity {name = "uranium-cannon-shell-explosion", position = item.victim.position}
+                                    psurf.create_entity {name = "small-scorchmark", position = item.victim.position}
                                     item.victim.character.die(item.victim.force, item.obj)
                                 end
                             else
                                 rep = item.obj.clone({position = item.pos, surface = item.surf, force = item.force})
                             end
 
-                            if not rep then
-                                console_print("repobj: Unable to clone object from limbo.")
-                            else
+                            if rep then
                                 smart_print(item.victim, "You are a new player, and are not allowed to mine other people's objects yet!")
                             end
                         end
@@ -2673,7 +2673,7 @@ script.on_nth_tick(
                         --Clean up limbo object
                         item.obj.destroy()
                     else
-                        console_print("repobj: Invalid surface")
+                        console_print("repobj: Invalid data")
                     end
                 end
 
