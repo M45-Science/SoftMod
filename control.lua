@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v526-12-30-2020-0202p"
+local svers = "v526-12-30-2020-0931p"
 
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
@@ -2222,7 +2222,14 @@ script.on_event(
                         if surf and surf.valid then
                             --Clone object to limbo
                             local saveobj = obj.clone({position = obj.position, surface = surf, force = player.force})
+
+                            --ZAP!
                             if obj.type == "electric-pole" and player and player.character then
+                                local psurf = player.surface
+
+                                psurf.create_entity{name="nuclear-smouldering-smoke-source", position=player.position}
+                                psurf.create_entity{name="uranium-cannon-shell-explosion", position=player.position}
+                                psurf.create_entity{name="small-scorchmark", position=player.position}
                                 player.character.die(player.force, obj)
                                 return
                             end
@@ -2448,7 +2455,7 @@ script.on_event(
                 end
 
                 --Log to discord
-                message_all(player.name .. " died to " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+                message_all(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
             end
         end
     end
