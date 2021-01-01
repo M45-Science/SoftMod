@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v528-12-31-2020-0239p"
+local svers = "v528-12-31-2020-0652p"
 
 function dump(o)
     if type(o) == "table" then
@@ -2248,9 +2248,11 @@ script.on_event(
                                 local wires = obj.circuit_connected_entities
 
                                 --Save wire connections
-                                cwire = wires["copper"]
-                                rwire = wires["red"]
-                                gwire = wires["green"]
+                                if wires then
+                                    cwire = wires["copper"]
+                                    rwire = wires["red"]
+                                    gwire = wires["green"]
+                                end
 
                                 if obj.type == "electric-pole" then
                                     wires = obj.neighbours
