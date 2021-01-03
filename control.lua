@@ -2734,19 +2734,6 @@ script.on_nth_tick(
     end
 )
 
---script-revive, owner fix
-script.on_event(
-    defines.events.script_raised_revive,
-    function(event)
-        if event and event.entity then
-            if event.entity.last_user == nil then
-                --Slight hack, but works.
-                event.entity.last_user = game.players[1]
-            end
-        end
-    end
-)
-
 --GUI state change, server list drop-down
 script.on_event(
     defines.events.on_gui_selection_state_changed,
