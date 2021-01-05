@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v528-12-31-2020-0652p"
+local svers = "v529-1-4-2021-1028p"
 
 function dump(o)
     if type(o) == "table" then
@@ -2508,21 +2508,21 @@ script.on_nth_tick(
     function(event)
         --Remove old corpse tags
         if (global.corpselist) then
-            local toremove
-
-            for _, corpse in pairs(global.corpselist) do
+            local toremove = nil
+            local index = nil
+            for i, corpse in pairs(global.corpselist) do
                 if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                     if (corpse.tag and corpse.tag.valid) then
                         corpse.tag.destroy()
                     end
                     toremove = corpse
+                    index = i
                     break
                 end
             end
-            if (toremove) then
-                toremove.tag = nil
-                toremove.tick = nil
-                toremove = nil
+            --Properly remove items
+            if global.corpselist and index then
+                table.remove(global.corpselist, index)
             end
         else
             create_myglobals()
