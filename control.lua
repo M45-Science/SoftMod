@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v529-1-4-2021-1028p"
+local svers = "v530-2-8-2021-1240p"
 
 function dump(o)
     if type(o) == "table" then
@@ -365,7 +365,6 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition_data, false)
         global.defaultgroup.set_allows_action(defines.input_action.connect_rolling_stock, false)
         global.defaultgroup.set_allows_action(defines.input_action.deconstruct, false)
-        global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, false)
         global.defaultgroup.set_allows_action(defines.input_action.disconnect_rolling_stock, false)
         global.defaultgroup.set_allows_action(defines.input_action.drag_train_schedule, false)
         global.defaultgroup.set_allows_action(defines.input_action.drag_train_wait_condition, false)
@@ -382,24 +381,14 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
         --Added 12-2020
         global.defaultgroup.set_allows_action(defines.input_action.cancel_research, false)
+        global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
         global.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, false)
         global.defaultgroup.set_allows_action(defines.input_action.build_rail, false)
         global.defaultgroup.set_allows_action(defines.input_action.activate_paste, false)
-        global.defaultgroup.set_allows_action(defines.input_action.destroy_item, false)
-        global.defaultgroup.set_allows_action(defines.input_action.destroy_opened_item, false)
-        global.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, false)
-        global.defaultgroup.set_allows_action(defines.input_action.drop_item, false)
-        global.defaultgroup.set_allows_action(defines.input_action.export_blueprint, false)
         global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_fluid, false)
         global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_specific_fluid, false)
-        global.defaultgroup.set_allows_action(defines.input_action.grab_blueprint_record, false)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint, false)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, false)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, false)
         global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, false)
-        global.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
-        global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
         global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, false)
     end
 end
@@ -435,6 +424,9 @@ local function create_myglobals()
     if not global.thebanished then
         global.thebanished = {}
     end
+    if not global.no_fastreplace then
+        global.no_fastreplace = false
+    end
 
     --Server List
     if not global.servers then
@@ -447,9 +439,9 @@ local function create_myglobals()
             "XA-Rail World-2 *",
             "XB-Peaceful-2 *",
             "XC-Death World-2 *",
+            "XD-Fear-The-Dark *",
             "[ v REGULARS-ONLY v ]",
             "RA-Space-Krastorio",
-            "RB-Rail World-3 *",
             "RC-Death World-3 *",
             "RD-Fortress Island *",
             "* = Factorio 1.1.x"
@@ -465,9 +457,10 @@ local function create_myglobals()
             "50200",
             "50201",
             "50202",
+            "50101",
+            --RB
             "",
             "50100",
-            "50101",
             "50102",
             "50103",
             ""
@@ -2101,8 +2094,8 @@ script.on_event(
                 if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                     local count = stack.get_blueprint_entity_count()
 
-                    --Add item to blueprint throttle, (new/member) 5 items a second
-                    if (is_new(player) or is_member(player)) and global.restrict then
+                    --Add item to blueprint throttle, (new) 5 items a second
+                    if is_new(player) and global.restrict then
                         if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                             global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 12
                         end
@@ -2654,6 +2647,7 @@ script.on_nth_tick(
             if global.repobj then
                 for _, item in ipairs(global.repobj) do
                     local skip = false
+                    local saverot = nil
 
                     --Sanity check
                     if item.obj and item.obj.valid and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
@@ -2663,12 +2657,31 @@ script.on_nth_tick(
                         --Untouch the fast-replaced object (last_user)
                         if des then
                             for _, d in pairs(des) do
+                                if global.no_fastreplace then
+                                    if item.obj.type ~= "electric-pole" then
+                                        d.destroy()
+                                        break
+                                    end
+                                end
+
+                                --Fix for players fast-replacing belts with splitters
+                                if d.type ~= item.obj.type then
+                                    d.destroy()
+                                    break
+                                end
+
+                                --Untouch object
                                 if item.obj.last_user and item.obj.last_user.valid then
                                     --Untouch
                                     d.last_user = item.obj.last_user
                                 else
                                     --Just in case
                                     d.last_user = game.players[1]
+                                end
+
+                                --Fix for players fast-replacing items to get around rotation block
+                                if d.supports_direction then
+                                    d.direction = item.obj.direction
                                 end
                                 skip = true
                             end
@@ -2698,7 +2711,7 @@ script.on_nth_tick(
                             end
 
                             if rep then
-                                smart_print(item.victim, "You are a new player, and are not allowed to mine other people's objects yet!")
+                                smart_print(item.victim, "You are a new player, and are not allowed to mine or replace other people's objects yet!")
                             end
                         end
 
