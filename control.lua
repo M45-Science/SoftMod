@@ -390,6 +390,7 @@ local function set_perms()
         global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, false)
         global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
         global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, false)
+        global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
     end
 end
 
