@@ -746,7 +746,7 @@ script.on_load(
                         return
                     elseif param.parameter == "perms" then
                         global.setperms = false
-                        create_myglobals()
+                        set_perms()
 
                         smart_print(player, "New player perms-restrictions set.")
                         return
