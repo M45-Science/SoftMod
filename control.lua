@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v530-2-8-2021-1240p"
+local svers = "v530-2-8-2021-0129p"
 
 function dump(o)
     if type(o) == "table" then
@@ -742,7 +742,7 @@ script.on_load(
 
                     --Process argument
                     if not param.parameter then
-                        smart_print(player, "options: on, off, perms")
+                        smart_print(player, "options: on, off, perms, fast, nofast")
                         return
                     elseif param.parameter == "perms" then
                         global.setperms = false
@@ -757,6 +757,14 @@ script.on_load(
                     elseif param.parameter == "on" then
                         global.restrict = true
                         smart_print(player, "New player restrictions enabled.")
+                        return
+                    elseif param.parameter == "fast" then
+                        global.no_fastreplace = flase
+                        smart_print(player, "New player fast-replace is now allowed.")
+                        return
+                    elseif param.parameter == "nofast" then
+                        global.no_fastreplace = true
+                        smart_print(player, "New player fast-replace is no longer allowed.")
                         return
                     end
                     create_player_globals()
