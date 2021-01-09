@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v530-2-8-2021-0129p"
+local svers = "v531-2-9-2021-0941a"
 
 function dump(o)
     if type(o) == "table" then
@@ -2656,12 +2656,11 @@ script.on_nth_tick(
             if global.repobj then
                 for _, item in ipairs(global.repobj) do
                     local skip = false
-                    local saverot = nil
 
                     --Sanity check
                     if item.obj and item.obj.valid and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
                         --Check if an item is in our way ( fast replaced )
-                        local des = item.victim.surface.find_entities({item.obj.position, item.obj.position})
+                        local des = item.victim.surface.find_entities_filtered{position=item.pos,radius=0.0001, force="player",type="character",invert=true, limit=100}
 
                         --Untouch the fast-replaced object (last_user)
                         if des then
