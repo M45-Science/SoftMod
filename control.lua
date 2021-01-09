@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v533-2-9-2021-0100p"
+local svers = "v533-2-9-2021-0443p"
 
 function dump(o)
     if type(o) == "table" then
@@ -96,7 +96,7 @@ end
 --smart console print--
 local function smart_print(player, message)
     if message then
-        if player and player.valid then
+        if player then
             player.print(message)
         else
             rcon.print("~" .. message)
@@ -107,9 +107,7 @@ end
 --Global messages
 local function message_all(message)
     if message then
-        for _, player in pairs(game.connected_players) do
-            player.print(message)
-        end
+        game.print(message)
         print("[MSG] " .. message)
     end
 end
@@ -117,9 +115,7 @@ end
 --Global messages (players only)
 local function message_allp(message)
     if message then
-        for _, player in pairs(game.connected_players) do
-            player.print(message)
-        end
+        game.print(message)
     end
 end
 
@@ -239,7 +235,7 @@ local function update_banished_votes()
         if is_banished(victim) == false and prevstate == true then
             local msg = victim.name .. " is no longer banished."
             print("[REPORT] SYSTEM " .. msg)
-            message_all(msg)
+            message_all("[color=red](SYSTEM) "..msg.."[/color]")
 
             local surf = game.surfaces["nauvis"]
             if surf and surf.name then
@@ -555,26 +551,26 @@ local function get_permgroup()
                         if (player.admin and player.permission_group.name ~= global.adminsgroup.name and player.permission_group.name ~= global.adminsgroup.name .. "_satellite") then
                             --(REGULARS) Check if they are in the right group, including se-remote-view
                             global.adminsgroup.add_player(player)
-                            message_all(player.name .. " moved to Admins group.")
+                            message_all(player.name .. " moved to Admins group")
                         elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
                             --Check if player has hours for regulars status, but isn't a in regulars group.
                             if (player.permission_group.name ~= global.regularsgroup.name and player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
                                 global.regularsgroup.add_player(player)
                                 message_all(player.name .. " is now a regular!")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
+                                smart_print(player, "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
+                                smart_print(player, "[color=red](SYSTEM) You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
+                                smart_print(player, "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                                smart_print(player, "[[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
                         elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
                             --Check if player has hours for members status, but isn't a in member group.
                             if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                                 global.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You have been active enough, that the restrictions on your character have been lifted.[/color]")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]You now have access to our 'Members' Discord role![/color]")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
-                                player.print("[color=0.25,1,1](SYSTEM)[/color] [color=1,0.75,0]Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
+                                smart_print(player, "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]")
+                                smart_print(player, "[color=red](SYSTEM) You now have access to our 'Members' Discord role![/color]")
+                                smart_print(player, "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                                smart_print(player, "[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
                         end
                     end
@@ -1011,7 +1007,7 @@ script.on_load(
                                                 if vote and vote.voter and vote.victim then
                                                     if vote.voter == player and vote.victim == victim then
                                                         --Send report to discord and withdraw vote
-                                                        local message = player.name .. " WITHDREW their vote to banish: " .. victim.name
+                                                        local message = "[color=red](SYSTEM) "..player.name .. " WITHDREW their vote to banish: " .. victim.name .."[/color]"
                                                         message_all(message)
                                                         print("[REPORT] " .. message)
                                                         smart_print(player, "Your vote has been withdrawn, and posted on Discord.")
@@ -1093,19 +1089,19 @@ script.on_load(
                                                             if vote.voter == player and vote.victim == victim then
                                                                 smart_print(player, "You already voted against them!")
                                                                 smart_print(player, "/unbanish <player> to withdraw your vote.")
-                                                                smart_print(player, "(WARNING) If you withdraw a vote, you CAN NOT reintroduce it.")
+                                                                smart_print(player, "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]")
                                                                 return
                                                             end
                                                         end
                                                     end
 
                                                     --Send report to discord and add to vote list
-                                                    local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
+                                                    local message = "[color=red](SYSTEM) " .. player.name .. " voted to banish: " .. victim.name .. " for: " .. reason .. "[/color]"
                                                     message_all(message)
                                                     print("[REPORT] " .. message)
                                                     smart_print(player, "Your vote has been added, and posted on Discord!")
                                                     smart_print(player, "/unbanish <player> to withdraw your vote.")
-                                                    smart_print(player, "(WARNING) If you withdraw a vote, you CAN NOT reintroduce it.")
+                                                    smart_print(player, "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]")
                                                     smart_print(player, "You have used " .. votecount .. " of your 5 available votes.")
                                                 end
 
@@ -1682,6 +1678,7 @@ script.on_load(
                     end
 
                     --Show players
+                    smart_print(victim, "PLAYERS ONLINE:")
                     show_players(victim)
                 end
             )
@@ -1762,7 +1759,7 @@ script.on_load(
                     --Admin only
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
-                            player.print("Admins only.")
+                            smart_print(player, "Admins only.")
                             return
                         end
 
@@ -1774,14 +1771,14 @@ script.on_load(
                                 local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
                                 if (newpos) then
                                     player.teleport(newpos, victim.surface)
-                                    player.print("*Poof!*")
+                                    smart_print(player, "*Poof!*")
                                 else
-                                    player.print("Area appears to be full.")
+                                    smart_print(player, "Area appears to be full.")
                                 end
                                 return
                             end
                         end
-                        player.print("Teleport to who?")
+                        smart_print(player, "Teleport to who?")
                     end
                 end
             )
@@ -1801,7 +1798,7 @@ script.on_load(
                     --Admins only
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
-                            player.print("Admins only.")
+                            smart_print(player, "Admins only.")
                             return
                         end
 
@@ -1835,20 +1832,20 @@ script.on_load(
                                         local newpos = surface.find_non_colliding_position("character", position, 15, 0.01, false)
                                         if (newpos) then
                                             player.teleport(newpos, surface)
-                                            player.print("*Poof!*")
+                                            smart_print(player, "*Poof!*")
                                         else
-                                            player.print("Area appears to be full.")
+                                            smart_print(player, "Area appears to be full.")
                                         end
                                     else
-                                        player.print("Invalid location.")
+                                        smart_print(player, "Invalid location.")
                                     end
                                 end
                                 return
                             else
-                                player.print("Numbers only.")
+                                smart_print(player, "Numbers only.")
                             end
                         end
-                        player.print("Teleport where? x,y or surface name")
+                        smart_print(player, "Teleport where? x,y or surface name")
                     end
                 end
             )
@@ -1868,7 +1865,7 @@ script.on_load(
                     --Admins only
                     if (player and player.valid and player.connected and player.character and player.character.valid) then
                         if (player.admin == false) then
-                            player.print("Admins only.")
+                            smart_print(player, "Admins only.")
                             return
                         end
 
@@ -1880,13 +1877,13 @@ script.on_load(
                                 local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
                                 if (newpos) then
                                     victim.teleport(newpos, player.surface)
-                                    player.print("*Poof!*")
+                                    smart_print(player, "*Poof!*")
                                 else
-                                    player.print("Area appears to be full.")
+                                    smart_print(player, "Area appears to be full.")
                                 end
                             end
                         end
-                        player.print("Who do you want to teleport to you?")
+                        smart_print(player, "Who do you want to teleport to you?")
                     end
                 end
             )
@@ -2081,8 +2078,8 @@ script.on_event(
 
                 set_perms()
                 show_players(player)
-                smart_print(player, "To see online players, chat /online")
-                message_all("Welcome " .. player.name .. " to the map!")
+                smart_print(player, "[color=red](SYSTEM) To see online players or your active time, chat /online[/color]")
+                message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
             end
         end
     end
@@ -2135,7 +2132,7 @@ script.on_event(
 
                         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
                             if player.admin == false then --Dont bother with admins
-                                message_all(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+                                message_all("[color=red](SYSTEM) "..player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]")
                                 global.last_speaker_warning = game.tick
                             end
                         end
@@ -2174,7 +2171,7 @@ script.on_event(
                             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                 if global.blueprint_throttle[player.index] > 0 then
                                     console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
-                                    smart_print(player, "You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
+                                    smart_print(player, "[color=red](SYSTEM) You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
                                     player.insert(player.cursor_stack)
                                     stack.clear()
                                     return
@@ -2185,12 +2182,12 @@ script.on_event(
                             return
                         elseif is_new(player) and count > 500 and global.restrict then --new player limt
                             console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
-                            smart_print(player, "You aren't allowed to use blueprints that large yet.")
+                            smart_print(player, "[color=red](SYSTEM) You aren't allowed to use blueprints that large yet.[/color]")
                             stack.clear()
                             return
                         elseif count > 10000 then --lag protection
                             console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
-                            smart_print(player, "That blueprint is too large!")
+                            smart_print(player, "[color=red](SYSTEM) That blueprint is too large![/color]")
                             stack.clear()
                             return
                         end
@@ -2321,7 +2318,11 @@ script.on_event(
 
                         --Add to list
                         table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-                        player.print("You are a new player, and are not allowed to rotate other people's objects yet!")
+                        smart_print(player, "[color=red](SYSTEM) You are a new player, and are not allowed to rotate other people's objects yet![/color]")
+
+                        if player and player.valid and player.character and player.character.valid then
+                            player.character.damage(15, "enemy") --Little discouragement
+                        end
                     else
                         --Normal player, just log it
                         console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
@@ -2357,18 +2358,6 @@ script.on_event(
     end
 )
 
---Shooting
-script.on_event(
-    defines.input_action.change_shooting_state,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-
-            set_player_active(player)
-        end
-    end
-)
-
 --Chatting
 script.on_event(
     defines.events.on_console_chat,
@@ -2390,7 +2379,15 @@ script.on_event(
 
             --Only count if actually walking...
             if player and player.valid and player.walking_state then
-                if player.walking_state.walking == true then
+                if
+                    player.walking_state.walking == true and
+                        (player.walking_state.direction == defines.direction.north or player.walking_state.direction == defines.direction.northeast or player.walking_state.direction == defines.direction.east or
+                            player.walking_state.direction == defines.direction.southeast or
+                            player.walking_state.direction == defines.direction.south or
+                            player.walking_state.direction == defines.direction.southwest or
+                            player.walking_state.direction == defines.direction.west or
+                            player.walking_state.direction == defines.direction.northwest)
+                 then
                     set_player_active(player)
                 end
             end
@@ -2481,9 +2478,9 @@ script.on_event(
                 --Log to discord
                 if event.cause and event.cause.valid then
                     cause = event.cause.name
-                    message_all(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+                    message_all("[color=red](SYSTEM) "..player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
                 else
-                    message_all(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+                    message_all("[color=red](SYSTEM) "..player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
                 end
             end
         end
@@ -2581,7 +2578,7 @@ script.on_nth_tick(
                     end
                 else
                     --INIT
-                    global.playeractive[player.index] = true
+                    global.playeractive[player.index] = false
                 end
             end
         end
@@ -2616,10 +2613,10 @@ script.on_event(
 )
 
 local function replace_with_clone(item)
-    local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force, })
+    local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force})
 
     if rep then
-        --Reconnect lines if needed
+        --If we saved wire data, reconnect them now
         if item.copper then
             for ind, pole in pairs(item.copper) do
                 if pole.type == "electric-pole" then
@@ -2639,7 +2636,10 @@ local function replace_with_clone(item)
         end
 
         if rep then
-            smart_print(item.victim, "You are a new player, and are not allowed to mine or replace other people's objects yet!")
+            smart_print(player, "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]")
+            if item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+                item.victim.character.damage(15, "enemy") --Little discouragement
+            end
         end
     end
 end
@@ -2670,7 +2670,7 @@ script.on_nth_tick(
                                 if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                     if global.blueprint_throttle[player.index] > 0 then
                                         console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
-                                        smart_print(player, "You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.")
+                                        smart_print(player, "[color=red](SYSTEM) You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
                                         player.insert(player.cursor_stack)
                                         stack.clear()
                                     end
@@ -2686,61 +2686,65 @@ script.on_nth_tick(
                 for _, item in ipairs(global.repobj) do
                     --Sanity check
                     if item.obj and item.obj.valid then
+                        --Check if an item is in our way ( fast replace )
+                        local fast_replaced = item.surface.find_entities_filtered {position = item.obj.position, radius = 0.99, force = item.obj.force, limit = 100}
 
-                        --Check if an item is in our way ( fast replaced )
-                            --item changed type
-                        local fast_replaced = item.surface.find_entities_filtered{position=item.obj.position, radius=0.99, force=item.obj.force, limit=100}
+                        local fixed_obj = false --Item is cloned or untouched
+                        local clone_obj = false --Do put a clone in place
 
-                        local fixed_obj = false
-                        local clone_obj = false
-
+                        --If there are items in our way from fast replace
                         if fast_replaced then
                             --Loop through items in our way
                             for _, fastobj in pairs(fast_replaced) do
                                 local do_untouch = true
 
+                                --Valid object please
                                 if fastobj and fastobj.valid then
+                                    --Skip these, we have to do this because fast replace can change item type...
                                     if fastobj.type ~= "character" and fastobj.type ~= "item-on-ground" then
-
-                                    --Fast replace disabled? just delete it and leave
-                                    if global.no_fastreplace then
-                                        if fastobj.type ~= "electric-pole" then
+                                        --Fast replace disabled? Delete fast-replace object, put clone in place.
+                                        if global.no_fastreplace then
+                                            --If the item changed type, replace with clone
+                                            if fastobj.type ~= "electric-pole" then
+                                                fastobj.destroy()
+                                                do_untouch = false
+                                                clone_obj = true
+                                            end
+                                        elseif fastobj.type ~= item.obj.type then
                                             fastobj.destroy()
                                             do_untouch = false
                                             clone_obj = true
                                         end
-                                    elseif fastobj.type ~= item.obj.type then
-                                        fastobj.destroy()
-                                        do_untouch = false
-                                        clone_obj = true
-                                    end
 
-                                    if do_untouch then
-                                        fixed_obj = true
+                                        --If allow the fast replace ( same type ) untouch and restore rotation
+                                        if do_untouch then
+                                            fixed_obj = true
 
-                                        --Untouch object
-                                        if item.obj.last_user and item.obj.last_user.valid then
-                                            --Untouched
-                                            fastobj.last_user = item.obj.last_user
-                                        else
-                                            --Just in case
-                                            fastobj.last_user = game.players[1]
-                                        end
+                                            --Untouch object
+                                            if item.obj.last_user and item.obj.last_user.valid then
+                                                --Untouched
+                                                fastobj.last_user = item.obj.last_user
+                                            else
+                                                --Just in case
+                                                fastobj.last_user = game.players[1]
+                                            end
 
-                                        --Fix for players fast-replacing items to get around rotation block
-                                        if fastobj.supports_direction then
-                                            fastobj.direction = item.obj.direction
+                                            --Fix for players fast-replacing items to get around rotation block
+                                            if fastobj.supports_direction then
+                                                fastobj.direction = item.obj.direction
+                                            end
                                         end
                                     end
-                                end
                                 end
                             end
+                            --We deleted item in the way, put clone in place now.
                             if clone_obj then
                                 replace_with_clone(item)
                                 fixed_obj = true
                             end
                         end
 
+                        --If there was no fast replace, just put a clone back in the place of the item
                         if not fixed_obj then
                             replace_with_clone(item)
                         end
