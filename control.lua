@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v532-2-9-2021-1005a"
+local svers = "v533-2-9-2021-0100p"
 
 function dump(o)
     if type(o) == "table" then
@@ -2272,11 +2272,11 @@ script.on_event(
 
                                 --Create list if needed
                                 if not global.repobj then
-                                    global.repobj = {obj = {}, victim = {}, copper = {}, red = {}, green = {}}
+                                    global.repobj = {obj = {}, victim = {}, copper = {}, red = {}, green = {}, surface = {}}
                                 end
 
                                 --Add obj to list
-                                table.insert(global.repobj, {obj = saveobj, victim = player, copper = cwire, red = rwire, green = gwire})
+                                table.insert(global.repobj, {obj = saveobj, victim = player, copper = cwire, red = rwire, green = gwire, surface = player.surface})
                             else
                                 console_print("pre_player_mined_item: unable to clone object.")
                             end
@@ -2615,6 +2615,35 @@ script.on_event(
     end
 )
 
+local function replace_with_clone(item)
+    local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force, })
+
+    if rep then
+        --Reconnect lines if needed
+        if item.copper then
+            for ind, pole in pairs(item.copper) do
+                if pole.type == "electric-pole" then
+                    rep.connect_neighbour(pole)
+                end
+            end
+        end
+        if item.red then
+            for ind, pole in pairs(item.red) do
+                rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.red}
+            end
+        end
+        if item.green then
+            for ind, pole in pairs(item.green) do
+                rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.green}
+            end
+        end
+
+        if rep then
+            smart_print(item.victim, "You are a new player, and are not allowed to mine or replace other people's objects yet!")
+        end
+    end
+end
+
 --Blueprint throttle countdown
 script.on_nth_tick(
     1,
@@ -2655,80 +2684,72 @@ script.on_nth_tick(
             --Replace object list
             if global.repobj then
                 for _, item in ipairs(global.repobj) do
-                    local skip = false
-
                     --Sanity check
-                    if item.obj and item.obj.valid and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+                    if item.obj and item.obj.valid then
+
                         --Check if an item is in our way ( fast replaced )
-                        local des = item.victim.surface.find_entities_filtered {position = item.obj.position, type = "character", invert = true}
+                            --item changed type
+                        local fast_replaced = item.surface.find_entities_filtered{position=item.obj.position, radius=0.99, force=item.obj.force, limit=100}
 
-                        --Untouch the fast-replaced object (last_user)
-                        if des then
-                            for _, d in pairs(des) do
-                                if global.no_fastreplace then
-                                    if item.obj.type ~= "electric-pole" then
-                                        d.destroy()
-                                        break
+                        local fixed_obj = false
+                        local clone_obj = false
+
+                        if fast_replaced then
+                            --Loop through items in our way
+                            for _, fastobj in pairs(fast_replaced) do
+                                local do_untouch = true
+
+                                if fastobj and fastobj.valid then
+                                    if fastobj.type ~= "character" and fastobj.type ~= "item-on-ground" then
+
+                                    --Fast replace disabled? just delete it and leave
+                                    if global.no_fastreplace then
+                                        if fastobj.type ~= "electric-pole" then
+                                            fastobj.destroy()
+                                            do_untouch = false
+                                            clone_obj = true
+                                        end
+                                    elseif fastobj.type ~= item.obj.type then
+                                        fastobj.destroy()
+                                        do_untouch = false
+                                        clone_obj = true
+                                    end
+
+                                    if do_untouch then
+                                        fixed_obj = true
+
+                                        --Untouch object
+                                        if item.obj.last_user and item.obj.last_user.valid then
+                                            --Untouched
+                                            fastobj.last_user = item.obj.last_user
+                                        else
+                                            --Just in case
+                                            fastobj.last_user = game.players[1]
+                                        end
+
+                                        --Fix for players fast-replacing items to get around rotation block
+                                        if fastobj.supports_direction then
+                                            fastobj.direction = item.obj.direction
+                                        end
                                     end
                                 end
-
-                                --Fix for players fast-replacing belts with splitters
-                                if d.type ~= item.obj.type then
-                                    d.destroy()
-                                    break
-                                else
-                                    --Untouch object
-                                    if item.obj.last_user and item.obj.last_user.valid then
-                                        --Untouch
-                                        d.last_user = item.obj.last_user
-                                    else
-                                        --Just in case
-                                        d.last_user = game.players[1]
-                                    end
-
-                                    --Fix for players fast-replacing items to get around rotation block
-                                    if d.supports_direction then
-                                        d.direction = item.obj.direction
-                                    end
-
-                                    skip = true
                                 end
+                            end
+                            if clone_obj then
+                                replace_with_clone(item)
+                                fixed_obj = true
                             end
                         end
 
-                        --Otherwise, clone limbo object back into place of original
-                        if not skip then
-                            local rep = item.obj.clone({position = item.obj.position, surface = item.victim.surface, force = item.obj.force})
-
-                            --Reconnect lines if needed
-                            if item.copper then
-                                for ind, pole in pairs(item.copper) do
-                                    if pole.type == "electric-pole" then
-                                        rep.connect_neighbour(pole)
-                                    end
-                                end
-                            end
-                            if item.red then
-                                for ind, pole in pairs(item.red) do
-                                    rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.red}
-                                end
-                            end
-                            if item.green then
-                                for ind, pole in pairs(item.green) do
-                                    rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.green}
-                                end
-                            end
-
-                            if rep then
-                                smart_print(item.victim, "You are a new player, and are not allowed to mine or replace other people's objects yet!")
-                            end
+                        if not fixed_obj then
+                            replace_with_clone(item)
                         end
-
-                        --Clean up limbo object
-                        item.obj.destroy()
                     else
                         console_print("repobj: Invalid data")
                     end
+
+                    --Clean up limbo object
+                    item.obj.destroy()
                 end
 
                 --Done with list, invalidate it.
