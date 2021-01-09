@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v531-2-9-2021-0941a"
+local svers = "v532-2-9-2021-1005a"
 
 function dump(o)
     if type(o) == "table" then
@@ -2660,7 +2660,7 @@ script.on_nth_tick(
                     --Sanity check
                     if item.obj and item.obj.valid and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
                         --Check if an item is in our way ( fast replaced )
-                        local des = item.victim.surface.find_entities_filtered{position=item.pos,radius=0.0001, force="player",type="character",invert=true, limit=100}
+                        local des = item.victim.surface.find_entities_filtered {position = item.obj.position, type = "character", invert = true}
 
                         --Untouch the fast-replaced object (last_user)
                         if des then
@@ -2676,22 +2676,23 @@ script.on_nth_tick(
                                 if d.type ~= item.obj.type then
                                     d.destroy()
                                     break
-                                end
-
-                                --Untouch object
-                                if item.obj.last_user and item.obj.last_user.valid then
-                                    --Untouch
-                                    d.last_user = item.obj.last_user
                                 else
-                                    --Just in case
-                                    d.last_user = game.players[1]
-                                end
+                                    --Untouch object
+                                    if item.obj.last_user and item.obj.last_user.valid then
+                                        --Untouch
+                                        d.last_user = item.obj.last_user
+                                    else
+                                        --Just in case
+                                        d.last_user = game.players[1]
+                                    end
 
-                                --Fix for players fast-replacing items to get around rotation block
-                                if d.supports_direction then
-                                    d.direction = item.obj.direction
+                                    --Fix for players fast-replacing items to get around rotation block
+                                    if d.supports_direction then
+                                        d.direction = item.obj.direction
+                                    end
+
+                                    skip = true
                                 end
-                                skip = true
                             end
                         end
 
