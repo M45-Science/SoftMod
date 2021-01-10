@@ -2079,7 +2079,7 @@ script.on_event(
                 set_perms()
                 show_players(player)
                 smart_print(player, "[color=red](SYSTEM) To see online players or your active time, chat /online[/color]")
-                message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
+                message_all("(SYSTEM) Welcome " .. player.name .. " to the map!")
             end
         end
     end
