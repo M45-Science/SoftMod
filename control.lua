@@ -251,7 +251,7 @@ local function update_banished_votes()
         elseif is_banished(victim) == true and prevstate == false then
             --Was not banished, but is now.
             local msg = victim.name .. " has been banished."
-            message_all(msg)
+            message_all("[color=red](SYSTEM) "..msg.."[/color]")
             print("[REPORT] SYSTEM " .. msg)
 
             --Create area if needed
@@ -1936,7 +1936,7 @@ script.on_event(
                     if is_new(player) or is_member(player) then --Dont bother with regulars/admins
                         if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
                             global.last_decon_warning = game.tick
-                            message_all(msg)
+                            message_all("[color=red](SYSTEM)"..msg.."[/color]")
                         end
                     end
                 end
@@ -2079,7 +2079,7 @@ script.on_event(
                 set_perms()
                 show_players(player)
                 smart_print(player, "[color=red](SYSTEM) To see online players or your active time, chat /online[/color]")
-                message_all("(SYSTEM) Welcome " .. player.name .. " to the map!")
+                message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
             end
         end
     end
