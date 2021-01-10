@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v533-2-9-2021-0443p"
+local svers = "v534-1-10-2021-0333p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -50,7 +50,7 @@ local function dodrawlogo()
             global.drawlogo = true
             global.m45logo =
                 rendering.draw_sprite {
-                sprite = "file/m45.png",
+                sprite = "file/img/m45-pad.png",
                 render_layer = "floor",
                 target = cpos,
                 x_scale = 0.5,
@@ -235,7 +235,7 @@ local function update_banished_votes()
         if is_banished(victim) == false and prevstate == true then
             local msg = victim.name .. " is no longer banished."
             print("[REPORT] SYSTEM " .. msg)
-            message_all("[color=red](SYSTEM) "..msg.."[/color]")
+            message_all("[color=red](SYSTEM) " .. msg .. "[/color]")
 
             local surf = game.surfaces["nauvis"]
             if surf and surf.name then
@@ -251,7 +251,7 @@ local function update_banished_votes()
         elseif is_banished(victim) == true and prevstate == false then
             --Was not banished, but is now.
             local msg = victim.name .. " has been banished."
-            message_all("[color=red](SYSTEM) "..msg.."[/color]")
+            message_all("[color=red](SYSTEM) " .. msg .. "[/color]")
             print("[REPORT] SYSTEM " .. msg)
 
             --Create area if needed
@@ -631,6 +631,62 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
+            commands.add_command(
+                "destroym45gui",
+                "for migrating maps/user m45 guis",
+                function(param)
+                    local player
+                    local ccount = 0
+                    local ecount = 0
+
+                    --Admins only
+                    if param and param.player_index then
+                        player = game.players[param.player_index]
+                        if player and player.admin == false then
+                            smart_print(player, "Admins only.")
+                            return
+                        end
+                    end
+
+                    --Refresh spawn logo
+                    global.drawlogo = nil
+                    dodrawlogo()
+
+                    if param and param.parameter then
+                        if param.parameter == "confirm" then
+                            for _, player in pairs(game.players) do
+                                if player.gui then
+                                    if player.gui.top then
+                                        ccount = ccount + 1
+
+                                        if player.gui.top.dicon then
+                                            player.gui.top.dicon.destroy()
+                                            ecount = ecount + 1
+                                        end
+                                        if player.gui.top.zout then
+                                            player.gui.top.zout.destroy()
+                                            ecount = ecount + 1
+                                        end
+                                        if player.gui.top.serverlist then
+                                            player.gui.top.serverlist.destroy()
+                                            ecount = ecount + 1
+                                        end
+                                        if player.gui.top.discordurl then
+                                            player.gui.top.discordurl.destroy()
+                                            ecount = ecount + 1
+                                        end
+                                    end
+                                end
+                            end
+                            smart_print(player, ccount .. " player GUIs, and " .. ecount .. " elements were destroyed.")
+                        else
+                            smart_print(player, "This shouldnot normally be used, and is used for m45 map/user GUI migration.")
+                            smart_print(player, "/clearm45gui confirm if you are completely sure.")
+                        end
+                    end
+                end
+            )
+
             --adjust run speed
             commands.add_command(
                 "run",
@@ -1007,7 +1063,7 @@ script.on_load(
                                                 if vote and vote.voter and vote.victim then
                                                     if vote.voter == player and vote.victim == victim then
                                                         --Send report to discord and withdraw vote
-                                                        local message = "[color=red](SYSTEM) "..player.name .. " WITHDREW their vote to banish: " .. victim.name .."[/color]"
+                                                        local message = "[color=red](SYSTEM) " .. player.name .. " WITHDREW their vote to banish: " .. victim.name .. "[/color]"
                                                         message_all(message)
                                                         print("[REPORT] " .. message)
                                                         smart_print(player, "Your vote has been withdrawn, and posted on Discord.")
@@ -1183,56 +1239,6 @@ script.on_load(
                         end
                     else
                         smart_print(nil, "The console doesn't need to send in reports this way.")
-                    end
-                end
-            )
-
-            --Hide discord URL
-            commands.add_command(
-                "hideurl",
-                "(toggles the discord url on/off)",
-                function(param)
-                    if param and param.player_index then
-                        local player = game.players[param.player_index]
-                        if player and player.valid and player.gui and player.gui.top and player.gui.top.discordurl then
-                            if player.gui.top.discordurl.visible == true then
-                                smart_print(player, "Discord link is now hidden. Using the command again will turn it back on.")
-                                player.gui.top.discordurl.visible = false
-                                if player.gui.top.dicon then
-                                    player.gui.top.dicon.visible = false
-                                end
-                            else
-                                smart_print(player, "Discord link now shown. Using the command again will turn it back off.")
-                                player.gui.top.discordurl.visible = true
-                                if player.gui.top.dicon then
-                                    player.gui.top.dicon.visible = true
-                                end
-                            end
-                        end
-                    else
-                        smart_print(nil, "The console can't see the discord url, but okay...")
-                    end
-                end
-            )
-
-            --Hide server list
-            commands.add_command(
-                "hideserver",
-                "(toggles the server list on/off)",
-                function(param)
-                    if param and param.player_index then
-                        local player = game.players[param.player_index]
-                        if player and player.valid and player.gui and player.gui.top and player.gui.top.serverlist then
-                            if player.gui.top.serverlist.visible == true then
-                                smart_print(player, "Server list is now hidden. Using the command again will turn it back on.")
-                                player.gui.top.serverlist.visible = false
-                            else
-                                smart_print(player, "Server list now shown. Using the command again will turn it back off.")
-                                player.gui.top.serverlist.visible = true
-                            end
-                        end
-                    else
-                        smart_print(nil, "The console can't see the server list, but okay...")
                     end
                 end
             )
@@ -1936,7 +1942,7 @@ script.on_event(
                     if is_new(player) or is_member(player) then --Dont bother with regulars/admins
                         if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
                             global.last_decon_warning = game.tick
-                            message_all("[color=red](SYSTEM)"..msg.."[/color]")
+                            message_all("[color=red](SYSTEM)" .. msg .. "[/color]")
                         end
                     end
                 end
@@ -1975,59 +1981,252 @@ script.on_event(
                 dodrawlogo()
 
                 if player.gui and player.gui.top then
-                    --Discord Button--
-                    if not player.gui.top.dicon then
+                    --M45 button--
+                    if not player.gui.top.m45_button then
                         player.gui.top.add {
                             type = "sprite-button",
-                            name = "dicon",
-                            sprite = "file/discord.png",
-                            tooltip = "hide discord URL."
+                            name = "m45_button",
+                            sprite = "file/img/m45-24.png",
+                            tooltip = "Opens the server info window"
                         }
                     end
+                end
 
-                    --Discord Info--
-                    if not player.gui.top.discordurl then
-                        player.gui.top.add {type = "text-box", name = "discordurl"}
-                        player.gui.top.discordurl.text = "https://discord.gg/Ps2jnm7"
-                        player.gui.top.discordurl.tooltip = "Select with mouse and press control-c to copy!"
-                        player.gui.top.discordurl.read_only = true
-                        player.gui.top.discordurl.selectable = true
+                
+                --M45 Welcome--
+                if player.gui.center then
+                    if player.gui.center.splash_screen then
+                        player.gui.center.splash_screen.destroy()
                     end
+                    if not player.gui.center.splash_screen then
+                        local info_pane = player.gui.center.add {type = "tabbed-pane", name = "splash_screen"}
+                        local tab1 = info_pane.add {type = "tab", caption = "Welcome"}
+                        local tab2 = info_pane.add {type = "tab", caption = "Membership"}
+                        local tab3 = info_pane.add {type = "tab", caption = "Servers"}
 
-                    --Zoom button--
-                    if not player.gui.top.zout then
-                        player.gui.top.add {
-                            type = "sprite-button",
-                            name = "zout",
-                            sprite = "file/zoomout.png",
-                            tooltip = "Zoom out"
+                        --Tab 1 -- Welcome
+                        local tab1_frame =
+                            info_pane.add {
+                            type = "flow",
+                            direction = "vertical"
                         }
+                        tab1_frame.style.horizontal_align = "center"
+
+                        --Tab 1 -- Title Bar
+                        local title_bar_frame =
+                            tab1_frame.add {
+                            type = "frame",
+                            direction = "horizontal"
+                        }
+                        title_bar_frame.style.horizontal_align = "center"
+                        title_bar_frame.style.horizontally_stretchable = true
+                        title_bar_frame.style.padding = 5
+
+                        title_bar_frame.add {
+                            type = "label",
+                            name = "tab1_title",
+                            caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: " .. global.servname .. "[/font]"
+                        }
+
+                        --Tab 1 -- Main
+                        local tab1_main_frame =
+                            tab1_frame.add {
+                            type = "flow",
+                            direction = "horizontal"
+                        }
+
+                        local tab1_lframe =
+                            tab1_main_frame.add {
+                            type = "flow",
+                            direction = "vertical"
+                        }
+                        tab1_main_frame.add {
+                            type = "line",
+                            direction = "vertical"
+                        }
+
+                        tab1_lframe.style.padding = 10
+                        local tab1_rframe =
+                            tab1_main_frame.add {
+                            type = "flow",
+                            direction = "vertical"
+                        }
+                        tab1_rframe.style.horizontal_align = "right"
+                        tab1_rframe.style.padding = 10
+
+                        --Logo
+                        tab1_lframe.add {
+                            type = "sprite",
+                            sprite = "file/img/m45-128.png",
+                            tooltip = ""
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[font=default-bold]M45-Science[/font]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = ""
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]PATREONS:[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]SirVorlon[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]beefjrkytime[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]Dwits[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]Estabon[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]joloman2[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]LeoR998[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]Merciless210[/color]"
+                        }
+                        tab1_lframe.add {
+                            type = "label",
+                            caption = "[color=purple]NameisGareth[/color]"
+                        }
+                        tab1_lframe.style.horizontal_align = "center"
+
+                        --New player info
+                        local tab1_info_top =
+                            tab1_rframe.add {
+                            type = "flow",
+                            direction = "vertical"
+                        }
+                        tab1_info_top.style.horizontally_stretchable = true
+                        tab1_info_top.add {
+                            type = "label",
+                            caption = ""
+                        }
+                        tab1_info_top.add {
+                            type = "label",
+                            caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some RESTRICTIONS![/font][/color]"
+                        }
+                        tab1_info_top.add {
+                            type = "label",
+                            caption = "[entity=inserter]  [font=default-large]You can only remove or modify your own items![/font]"
+                        }
+                        tab1_info_top.add {
+                            type = "label",
+                            caption = "[item=locomotive]  [font=default-large]You will also not be allowed to modify trains or logistics.[/font]"
+                        }
+                        tab1_info_top.add {
+                            type = "label",
+                            caption = ""
+                        }
+
+                        --Reporting
+                        local tab1_info_center =
+                            tab1_rframe.add {
+                            type = "flow",
+                            direction = "vertical"
+                        }
+                        tab1_info_center.style.horizontally_stretchable = true
+                        tab1_info_center.add {
+                            type = "label",
+                            caption = "[color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
+                        }
+                        tab1_info_center.add {
+                            type = "label",
+                            caption = "[font=default-large]In chat: /report <name> <problem>[/font]"
+                        }
+                        tab1_info_center.add {
+                            type = "label",
+                            caption = ""
+                        }
+
+                        --Discord
+                        local tab_discord_frame =
+                            tab1_rframe.add {
+                            type = "frame",
+                            direction = "vertical"
+                        }
+                        local tab_discord_sub1_frame =
+                            tab_discord_frame.add {
+                            type = "flow",
+                            direction = "vertical"
+                        }
+
+                        --vertical area for texts
+                        tab_discord_sub1_frame.add {
+                            type = "label",
+                            caption = "[font=default-large-bold]See our [color=blue]Discord Server[/color] for more info![/font]"
+                        }
+                        tab_discord_sub1_frame.add {
+                            type = "label",
+                            caption = "[font=default-large]Visit [color=red]m45[/color][color=orange]sci[/color][color=yellow].xyz[/color], or copy-paste the Discord URL below:[/font]"
+                        }
+
+                        --horizontal area for logo/url
+                        local tab_discord_sub2_frame =
+                            tab_discord_sub1_frame.add {
+                            type = "flow",
+                            direction = "horizontal"
+                        }
+                        tab_discord_sub2_frame.style.vertical_align = "center"
+                        tab_discord_sub2_frame.add {
+                            type = "sprite",
+                            name = "discord_logo",
+                            sprite = "file/img/discord-64.png",
+                            tooltip = ""
+                        }
+                        tab_discord_sub2_frame.add {
+                            type = "text-box",
+                            name = "discord_url",
+                            text = "https://discord.gg/Ps2jnm7"
+                        }
+
+                        tab_discord_sub1_frame.add {
+                            type = "label",
+                            caption = "(drag select with your mouse, and then use control-c to copy.)"
+                        }
+                        tab_discord_sub1_frame.add {
+                            type = "label",
+                            caption = "[font=default-large-bold]See channel [color=blue]#read-me-first[/color] to find out how to become a member![/font]"
+                        }
+
+                        --style
+                        tab_discord_sub2_frame.discord_url.style.font = "default-large"
+                        tab_discord_sub2_frame.discord_url.style.minimal_width = 250
+
+                        tab1_rframe.add {
+                            type = "label",
+                            caption = ""
+                        }
+                        tab1_rframe.add {
+                            type = "button",
+                            name = "splash_close_button",
+                            tooltip = "The button in the top-left (M45 logo) re-opens this window.",
+
+                            caption = "Close"
+                        }
+
+                        info_pane.add_tab(tab1, tab1_frame)
+                        info_pane.selected_tab_index = 1
                     end
+                end
 
-                    --Server List--
-                    if global.servers then
-                        --Visibily
-                        local vis = true
-
-                        --Refresh
-                        if player.gui.top.serverlist then
-                            --Grab visibility state
-                            vis = player.gui.top.serverlist.visible
-
-                            player.gui.top.serverlist.destroy()
-                        end
-
-                        if not player.gui.top.serverlist then
-                            player.gui.top.add {type = "drop-down", name = "serverlist"}
-
-                            --Select, and update server list on login
-                            player.gui.top.serverlist.items = global.servers
-                            player.gui.top.serverlist.selected_index = 1
-
-                            --Restore previous visibility state, if there is one
-                            player.gui.top.serverlist.visible = vis
-                        end
-                    end
+                if player.gui.center.splash_screen and not is_new(player) then
+                    player.gui.center.splash_screen.visible = false
                 end
                 get_permgroup()
             end
@@ -2132,7 +2331,7 @@ script.on_event(
 
                         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
                             if player.admin == false then --Dont bother with admins
-                                message_all("[color=red](SYSTEM) "..player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]")
+                                message_all("[color=red](SYSTEM) " .. player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]")
                                 global.last_speaker_warning = game.tick
                             end
                         end
@@ -2478,9 +2677,9 @@ script.on_event(
                 --Log to discord
                 if event.cause and event.cause.valid then
                     cause = event.cause.name
-                    message_all("[color=red](SYSTEM) "..player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
+                    message_all("[color=red](SYSTEM) " .. player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
                 else
-                    message_all("[color=red](SYSTEM) "..player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
+                    message_all("[color=red](SYSTEM) " .. player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
                 end
             end
         end
@@ -2595,16 +2794,14 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid then
-                if event.element.name == "zout" then
-                    player.zoom = 0.1
+                if event.element.name == "splash_close_button" then
+                    player.gui.center.splash_screen.visible = false
                 end
-                if event.element.name == "dicon" then
-                    if player.gui and player.gui.top and player.gui.top.discordurl then
-                        if player.gui.top.discordurl.visible == true then
-                            player.gui.top.discordurl.visible = false
-                        else
-                            player.gui.top.discordurl.visible = true
-                        end
+                if event.element.name == "m45_button" then
+                    if player.gui.center.splash_screen.visible then
+                        player.gui.center.splash_screen.visible = false
+                    else
+                        player.gui.center.splash_screen.visible = true
                     end
                 end
             end
