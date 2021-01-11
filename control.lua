@@ -157,7 +157,7 @@ end
 --Check if player should be considered new
 local function is_new(victim)
     if victim and victim.valid and not victim.admin then
-        if is_member(victim) == false and is_regular(victim) == false and not victim.admin then
+        if is_member(victim) == false and is_regular(victim) == false then
             return true
         end
     end
@@ -179,6 +179,426 @@ local function is_banished(victim)
     end
 
     return false
+end
+
+local function make_m45_info_window(player)
+    --M45 Welcome--
+    if player.gui.center then
+        if player.gui.center.splash_screen then
+            player.gui.center.splash_screen.destroy()
+        end
+        if not player.gui.center.splash_screen then
+            local info_pane = player.gui.center.add {type = "tabbed-pane", name = "splash_screen"}
+            info_pane.style.minimal_width = 700
+
+
+            local tab1 = info_pane.add {type = "tab", caption = "Welcome"}
+            local tab2 = info_pane.add {type = "tab", caption = "Membership"}
+            local tab3 = info_pane.add {type = "tab", caption = "Servers"}
+
+
+            --Tab 1 -- Welcome
+            local tab1_frame =
+                info_pane.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab1_frame.style.horizontal_align = "center"
+
+            --Tab 1 -- Title Bar
+            local tab1_title_bar_frame =
+                tab1_frame.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            tab1_title_bar_frame.style.horizontal_align = "center"
+            tab1_title_bar_frame.style.horizontally_stretchable = true
+            tab1_title_bar_frame.add {
+                type = "label",
+                name = "tab1_title",
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: [M45] " .. global.servname .. "[/font]"
+            }
+
+            --CLOSE BUTTON--
+            local tab1_close_button =
+            tab1_title_bar_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab1_close_button.style.horizontal_align = "right"
+            tab1_close_button.style.horizontally_stretchable = true
+            tab1_close_button.add {
+                type = "sprite-button",
+                name = "splash_close_button",
+                sprite = "file/img/close-16.png",
+                tooltip = "Close this window"
+            }
+            --Tab 1 -- Main
+            local tab1_main_frame =
+                tab1_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+
+            --Tab 1 left-frame logo-patreons
+            local tab1_lframe =
+                tab1_main_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab1_lframe.style.padding = 4
+            tab1_lframe.add {
+                type = "sprite",
+                sprite = "file/img/m45-128.png",
+                tooltip = ""
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[font=default-bold]M45-Science[/font]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = ""
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]PATREONS:[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]SirVorlon[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]beefjrkytime[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]Dwits[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]Estabon[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]joloman2[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]LeoR998[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]Merciless210[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]NameisGareth[/color]"
+            }
+            tab1_lframe.style.horizontal_align = "center"
+
+            --Tab 1 -- left/right divider line
+            tab1_main_frame.add {
+                type = "line",
+                direction = "vertical"
+            }
+
+            --Tab 1 right-frame
+            local tab1_rframe =
+                tab1_main_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab1_rframe.style.horizontal_align = "right"
+            tab1_rframe.style.vertical_align = "bottom"
+            tab1_rframe.style.padding = 4
+
+            --Tab 1 Main -- New Player Warning
+            local tab1_info_top =
+                tab1_rframe.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab1_info_top.style.horizontally_stretchable = true
+            tab1_info_top.add {
+                type = "label",
+                caption = ""
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some RESTRICTIONS![/font][/color]"
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = "[entity=inserter]  [font=default-large]You can only remove or modify your own items![/font]"
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = "[item=locomotive]  [font=default-large]You will also not be allowed to modify trains or logistics.[/font]"
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = "Click the \"Members\" tab above, to find out how to become a member."
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = ""
+            }
+
+            --Tab 1 Main -- Reporting
+            local tab1_info_center =
+                tab1_rframe.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab1_info_center.style.horizontally_stretchable = true
+            tab1_info_center.add {
+                type = "label",
+                caption = "[color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
+            }
+            tab1_info_center.add {
+                type = "label",
+                caption = "[font=default-large]In chat: /report <name> <problem>[/font]"
+            }
+            tab1_info_center.add {
+                type = "label",
+                caption = ""
+            }
+
+            --Tab 1 Main -- Discord
+            local tab1_discord_frame =
+                tab1_rframe.add {
+                type = "frame",
+                direction = "vertical"
+            }
+            tab1_discord_frame.style.horizontally_stretchable = true
+            tab1_discord_frame.style.vertically_squashable = true
+            local tab1_discord_sub1_frame =
+                tab1_discord_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+
+            --Tab 1 Main -- Discord -- Info Text
+            tab1_discord_sub1_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]See our [color=blue]Discord Server[/color] for more info![/font]"
+            }
+            tab1_discord_sub1_frame.add {
+                type = "label",
+                caption = "[font=default-large]Visit [color=red]m45[/color][color=orange]sci[/color][color=yellow].xyz[/color], or copy-paste the Discord URL below:[/font]"
+            }
+
+            --Tab 1 Main -- Discord -- Logo/URL frame
+            local tab1_discord_sub2_frame =
+                tab1_discord_sub1_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab1_discord_sub2_frame.style.vertical_align = "center"
+            tab1_discord_sub2_frame.add {
+                type = "sprite",
+                name = "tab1_discord_logo",
+                sprite = "file/img/discord-64.png",
+                tooltip = ""
+            }
+            tab1_discord_sub2_frame.add {
+                type = "text-box",
+                name = "discord_url",
+                text = "https://discord.gg/Ps2jnm7"
+            }
+            --URL Style
+            tab1_discord_sub2_frame.discord_url.style.font = "default-large"
+            tab1_discord_sub2_frame.discord_url.style.minimal_width = 250
+
+            --Tab 1 Main -- Discord -- Bottom Info Text
+            tab1_discord_sub1_frame.add {
+                type = "label",
+                caption = "(drag select with your mouse, and then use control-c to copy.)"
+            }
+            info_pane.add_tab(tab1, tab1_frame)
+
+            ------------------------
+            --TAB 2 -- MEMBERSHIP --
+            --tab 2 -- Welcome    --
+            ------------------------
+            --tab 2 -- Welcome
+            local tab2_frame =
+                info_pane.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab2_frame.style.vertically_squashable = true
+            tab2_frame.style.horizontal_align = "center"
+
+            --tab 2 -- Title Bar
+            local tab2_title_bar_frame =
+                tab2_frame.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            tab2_title_bar_frame.style.horizontal_align = "center"
+            tab2_title_bar_frame.style.horizontally_stretchable = true
+            tab2_title_bar_frame.add {
+                type = "label",
+                name = "tab2_title",
+                caption = "[item=iron-gear-wheel]  [color=red][font=default-large-bold]Your Activity Score: " .. math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
+            }
+            local tab2_close_button =
+                tab2_title_bar_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab2_close_button.style.horizontal_align = "right"
+            tab2_close_button.style.horizontally_stretchable = true
+            tab2_close_button.add {
+                type = "sprite-button",
+                name = "splash_close_button",
+                sprite = "file/img/close-16.png",
+                tooltip = "Close this window"
+            }
+
+            --tab 2 -- Main
+            local tab2_main_frame =
+                tab2_frame.add {
+                type = "scroll-pane",
+                direction = "vertical"
+            }
+            tab2_main_frame.style.horizontal_align = "right"
+            tab2_main_frame.style.padding = 4
+
+            tab2_main_frame.style.horizontally_stretchable = true
+            tab2_main_frame.add {
+                type = "label",
+                caption = "   [font=default-bold]Membership is automatic, and based on activity.[/font] Your current activity score is listed above."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "The score is specific to this map, and does not carry over to other maps or servers."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Once you achieve a specific level, the level persists between maps and servers (but the activity score does not)."
+            }
+            tab2_main_frame.add {
+                type = "line",
+                direction = "horizontal"
+            }
+            if is_new(player) then
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[color=red][font=default-bold]Level 1:[/font] New[/color]"
+                }
+            else
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[font=default-bold]Level 1:[/font] New"
+                }
+            end
+            tab2_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+
+            tab2_main_frame.add {
+                type = "label",
+                caption = "   [font=default-bold]New players can not pick-up or rotate other people's objects,[/font] and have these permissions limitations:"
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Modify wires, trains, combinators, signals, speakers, launch rockets or edit logistics."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Blueprints are limited to 500 items, and throttled ( rate/speed limited )."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Level 3 players (regulars) can banish you with two votes."
+            }
+            tab2_main_frame.add {
+                type = "line",
+                direction = "horizontal"
+            }
+
+            if is_member(player) then
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[color=red][font=default-bold]Level 2:[/font] Members[/color] (Score: 30)"
+                }
+            else
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[font=default-bold]Level 2:[/font] Members (Score: 30)"
+                }
+            end
+            tab2_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Ability to pick-up and rotate other's objects, and permissions restrictions are lifted."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Votes needed to banish you increases to 3. Access to deconstruction planner (warns other users on use)."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Blueprint size/speed limits increase."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "[font=default-bold]Discord Role available[/font] (Members)."
+            }
+
+            tab2_main_frame.add {
+                type = "line",
+                direction = "horizontal"
+            }
+
+            if is_regular(player) then
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[color=red][font=default-bold]Level 3:[/font] Regulars[/color] (Score: 240)"
+                }
+            else
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[font=default-bold]Level 3:[/font] Regulars (Score: 240)"
+                }
+            end
+            tab2_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Access to /banish command (5 votes per map), other players can not banish you."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Deconstruction planner warning removed, blueprint size/speed limits removed."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "[font=default-bold]Discord role available[/font] (Regulars), gain access to regulars-only Discord channels, and private Factorio servers."
+            }
+            --Close Button Frame
+            local tab2_close_frame =
+                tab2_main_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab2_close_frame.style.horizontal_align = "right"
+
+            info_pane.add_tab(tab2, tab2_frame)
+            info_pane.selected_tab_index = 1
+        end
+    end
 end
 
 --Count up banish votes
@@ -626,12 +1046,8 @@ local function show_players(victim)
     end
 end
 
-
-
 --Custom commands
 script.on_load(
-
-
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
@@ -1996,243 +2412,14 @@ script.on_event(
                     end
                 end
 
-                
-                --M45 Welcome--
-                if player.gui.center then
-                    if player.gui.center.splash_screen then
-                        player.gui.center.splash_screen.destroy()
-                    end
-                    if not player.gui.center.splash_screen then
-                        local info_pane = player.gui.center.add {type = "tabbed-pane", name = "splash_screen"}
-                        local tab1 = info_pane.add {type = "tab", caption = "Welcome"}
-                        local tab2 = info_pane.add {type = "tab", caption = "Membership"}
-                        local tab3 = info_pane.add {type = "tab", caption = "Servers"}
-
-                        --Tab 1 -- Welcome
-                        local tab1_frame =
-                            info_pane.add {
-                            type = "flow",
-                            direction = "vertical"
-                        }
-                        tab1_frame.style.horizontal_align = "center"
-
-                        --Tab 1 -- Title Bar
-                        local title_bar_frame =
-                            tab1_frame.add {
-                            type = "frame",
-                            direction = "horizontal"
-                        }
-                        title_bar_frame.style.horizontal_align = "center"
-                        title_bar_frame.style.horizontally_stretchable = true
-                        title_bar_frame.style.padding = 5
-
-                        title_bar_frame.add {
-                            type = "label",
-                            name = "tab1_title",
-                            caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: " .. global.servname .. "[/font]"
-                        }
-
-                        --Tab 1 -- Main
-                        local tab1_main_frame =
-                            tab1_frame.add {
-                            type = "flow",
-                            direction = "horizontal"
-                        }
-
-                        local tab1_lframe =
-                            tab1_main_frame.add {
-                            type = "flow",
-                            direction = "vertical"
-                        }
-                        tab1_main_frame.add {
-                            type = "line",
-                            direction = "vertical"
-                        }
-
-                        tab1_lframe.style.padding = 10
-                        local tab1_rframe =
-                            tab1_main_frame.add {
-                            type = "flow",
-                            direction = "vertical"
-                        }
-                        tab1_rframe.style.horizontal_align = "right"
-                        tab1_rframe.style.padding = 10
-
-                        --Logo
-                        tab1_lframe.add {
-                            type = "sprite",
-                            sprite = "file/img/m45-128.png",
-                            tooltip = ""
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[font=default-bold]M45-Science[/font]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = ""
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]PATREONS:[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]SirVorlon[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]beefjrkytime[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]Dwits[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]Estabon[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]joloman2[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]LeoR998[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]Merciless210[/color]"
-                        }
-                        tab1_lframe.add {
-                            type = "label",
-                            caption = "[color=purple]NameisGareth[/color]"
-                        }
-                        tab1_lframe.style.horizontal_align = "center"
-
-                        --New player info
-                        local tab1_info_top =
-                            tab1_rframe.add {
-                            type = "flow",
-                            direction = "vertical"
-                        }
-                        tab1_info_top.style.horizontally_stretchable = true
-                        tab1_info_top.add {
-                            type = "label",
-                            caption = ""
-                        }
-                        tab1_info_top.add {
-                            type = "label",
-                            caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some RESTRICTIONS![/font][/color]"
-                        }
-                        tab1_info_top.add {
-                            type = "label",
-                            caption = "[entity=inserter]  [font=default-large]You can only remove or modify your own items![/font]"
-                        }
-                        tab1_info_top.add {
-                            type = "label",
-                            caption = "[item=locomotive]  [font=default-large]You will also not be allowed to modify trains or logistics.[/font]"
-                        }
-                        tab1_info_top.add {
-                            type = "label",
-                            caption = ""
-                        }
-
-                        --Reporting
-                        local tab1_info_center =
-                            tab1_rframe.add {
-                            type = "flow",
-                            direction = "vertical"
-                        }
-                        tab1_info_center.style.horizontally_stretchable = true
-                        tab1_info_center.add {
-                            type = "label",
-                            caption = "[color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
-                        }
-                        tab1_info_center.add {
-                            type = "label",
-                            caption = "[font=default-large]In chat: /report <name> <problem>[/font]"
-                        }
-                        tab1_info_center.add {
-                            type = "label",
-                            caption = ""
-                        }
-
-                        --Discord
-                        local tab_discord_frame =
-                            tab1_rframe.add {
-                            type = "frame",
-                            direction = "vertical"
-                        }
-                        local tab_discord_sub1_frame =
-                            tab_discord_frame.add {
-                            type = "flow",
-                            direction = "vertical"
-                        }
-
-                        --vertical area for texts
-                        tab_discord_sub1_frame.add {
-                            type = "label",
-                            caption = "[font=default-large-bold]See our [color=blue]Discord Server[/color] for more info![/font]"
-                        }
-                        tab_discord_sub1_frame.add {
-                            type = "label",
-                            caption = "[font=default-large]Visit [color=red]m45[/color][color=orange]sci[/color][color=yellow].xyz[/color], or copy-paste the Discord URL below:[/font]"
-                        }
-
-                        --horizontal area for logo/url
-                        local tab_discord_sub2_frame =
-                            tab_discord_sub1_frame.add {
-                            type = "flow",
-                            direction = "horizontal"
-                        }
-                        tab_discord_sub2_frame.style.vertical_align = "center"
-                        tab_discord_sub2_frame.add {
-                            type = "sprite",
-                            name = "discord_logo",
-                            sprite = "file/img/discord-64.png",
-                            tooltip = ""
-                        }
-                        tab_discord_sub2_frame.add {
-                            type = "text-box",
-                            name = "discord_url",
-                            text = "https://discord.gg/Ps2jnm7"
-                        }
-
-                        tab_discord_sub1_frame.add {
-                            type = "label",
-                            caption = "(drag select with your mouse, and then use control-c to copy.)"
-                        }
-                        tab_discord_sub1_frame.add {
-                            type = "label",
-                            caption = "[font=default-large-bold]See channel [color=blue]#read-me-first[/color] to find out how to become a member![/font]"
-                        }
-
-                        --style
-                        tab_discord_sub2_frame.discord_url.style.font = "default-large"
-                        tab_discord_sub2_frame.discord_url.style.minimal_width = 250
-
-                        tab1_rframe.add {
-                            type = "label",
-                            caption = ""
-                        }
-                        tab1_rframe.add {
-                            type = "button",
-                            name = "splash_close_button",
-                            tooltip = "The button in the top-left (M45 logo) re-opens this window.",
-
-                            caption = "Close"
-                        }
-
-                        info_pane.add_tab(tab1, tab1_frame)
-                        info_pane.selected_tab_index = 1
-                    end
-                end
-
-                if player.gui.center.splash_screen and not is_new(player) then
-                    player.gui.center.splash_screen.visible = false
-                end
                 get_permgroup()
+                if player.gui and player.gui.center and player.gui.center.splash_screen then
+                    player.gui.center.splash_screen.destroy()
+                end
+
+                if is_new(player) then
+                    make_m45_info_window(player)
+                end
             end
         end
     end
@@ -2810,13 +2997,15 @@ script.on_event(
 
             if player and player.valid then
                 if event.element.name == "splash_close_button" then
-                    player.gui.center.splash_screen.visible = false
+                    player.gui.center.splash_screen.destroy()
+                    return
                 end
                 if event.element.name == "m45_button" then
-                    if player.gui.center.splash_screen.visible then
-                        player.gui.center.splash_screen.visible = false
+                    if player.gui.center.splash_screen then
+                        player.gui.center.splash_screen.destroy()
+                        return
                     else
-                        player.gui.center.splash_screen.visible = true
+                        make_m45_info_window(player)
                     end
                 end
             end
