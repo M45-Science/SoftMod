@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v534-1-10-2021-0333p-exp"
+local svers = "v535-1-10-2021-1106p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -626,8 +626,12 @@ local function show_players(victim)
     end
 end
 
+
+
 --Custom commands
 script.on_load(
+
+
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
@@ -2229,6 +2233,17 @@ script.on_event(
                     player.gui.center.splash_screen.visible = false
                 end
                 get_permgroup()
+            end
+        end
+    end
+)
+
+script.on_event(
+    defines.events.on_gui_text_changed,
+    function(event)
+        if event and event.element and event.player_index and event.text then
+            if event.element.name and event.element.name == "discord_url" then
+                event.element.text = "https://discord.gg/Ps2jnm7"
             end
         end
     end
