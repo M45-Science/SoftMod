@@ -230,7 +230,7 @@ local function make_m45_info_window(player)
             tab1_close_button.add {
                 type = "sprite-button",
                 name = "splash_close_button",
-                sprite = "file/img/close-16.png",
+                sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
             --Tab 1 -- Main
@@ -455,7 +455,7 @@ local function make_m45_info_window(player)
             tab2_close_button.add {
                 type = "sprite-button",
                 name = "splash_close_button",
-                sprite = "file/img/close-16.png",
+                sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
 
