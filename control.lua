@@ -2817,7 +2817,6 @@ script.on_event(
                 for _, victim in pairs(game.connected_players) do
                     if victim and victim.valid and victim.gui and
                     victim.gui.left and victim.gui.left.m45_online then
-                        victim.gui.left.m45_online.destroy()
                         make_m45_online_window(victim)
                     end
                 end
@@ -2899,7 +2898,6 @@ script.on_event(
                 for _, victim in pairs(game.connected_players) do
                     if victim and victim.valid and victim.gui and
                     victim.gui.left and victim.gui.left.m45_online then
-                        victim.gui.left.m45_online.destroy()
                         make_m45_online_window(victim)
                     end
                 end
@@ -3367,6 +3365,15 @@ script.on_event(
 script.on_nth_tick(
     1800,
     function(event)
+        --Refresh open player-online windows
+        for _, victim in pairs(game.connected_players) do
+            if victim and victim.valid and victim.gui and
+            victim.gui.left and victim.gui.left.m45_online then
+                victim.gui.left.m45_online.destroy()
+                make_m45_online_window(victim)
+            end
+        end
+
         --Remove old corpse tags
         if (global.corpselist) then
             local toremove = nil
