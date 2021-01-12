@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v535-1-10-2021-1106p-exp"
+local svers = "v536-1-11-2021-0501p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -191,11 +191,11 @@ local function make_m45_info_window(player)
             local info_pane = player.gui.center.add {type = "tabbed-pane", name = "splash_screen"}
             info_pane.style.minimal_width = 700
 
-
             local tab1 = info_pane.add {type = "tab", caption = "Welcome"}
             local tab2 = info_pane.add {type = "tab", caption = "Membership"}
-            local tab3 = info_pane.add {type = "tab", caption = "Servers"}
-
+            local tab3 = info_pane.add {type = "tab", caption = "Rules"}
+            local tab4 = info_pane.add {type = "tab", caption = "Tips & Tricks"}
+            local tab5 = info_pane.add {type = "tab", caption = "QR-Code"}
 
             --Tab 1 -- Welcome
             local tab1_frame =
@@ -221,7 +221,7 @@ local function make_m45_info_window(player)
 
             --CLOSE BUTTON--
             local tab1_close_button =
-            tab1_title_bar_frame.add {
+                tab1_title_bar_frame.add {
                 type = "flow",
                 direction = "horizontal"
             }
@@ -339,7 +339,11 @@ local function make_m45_info_window(player)
             }
             tab1_info_top.add {
                 type = "label",
-                caption = "Click the \"Members\" tab above, to find out how to become a member."
+                caption = "[recipe=combat-shotgun] All players: Friendly fire is off for players and buildings."
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = '[recipe=power-armor-mk2] Click the "Members" tab above, to find out how to become a member.'
             }
             tab1_info_top.add {
                 type = "label",
@@ -355,11 +359,11 @@ local function make_m45_info_window(player)
             tab1_info_center.style.horizontally_stretchable = true
             tab1_info_center.add {
                 type = "label",
-                caption = "[color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
+                caption = "[item=raw-fish] [color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
             }
             tab1_info_center.add {
                 type = "label",
-                caption = "[font=default-large]In chat: /report <name> <problem>[/font]"
+                caption = "in chat) /report <name> <problem>"
             }
             tab1_info_center.add {
                 type = "label",
@@ -406,7 +410,8 @@ local function make_m45_info_window(player)
             tab1_discord_sub2_frame.add {
                 type = "text-box",
                 name = "discord_url",
-                text = "https://discord.gg/Ps2jnm7"
+                text = "https://discord.gg/Ps2jnm7",
+                tooltip = "drag-select with mouse, control-c to copy."
             }
             --URL Style
             tab1_discord_sub2_frame.discord_url.style.font = "default-large"
@@ -415,15 +420,13 @@ local function make_m45_info_window(player)
             --Tab 1 Main -- Discord -- Bottom Info Text
             tab1_discord_sub1_frame.add {
                 type = "label",
-                caption = "(drag select with your mouse, and then use control-c to copy.)"
+                caption = "(There is also a tab with a QR-Code)"
             }
             info_pane.add_tab(tab1, tab1_frame)
 
             ------------------------
             --TAB 2 -- MEMBERSHIP --
-            --tab 2 -- Welcome    --
             ------------------------
-            --tab 2 -- Welcome
             local tab2_frame =
                 info_pane.add {
                 type = "flow",
@@ -596,6 +599,278 @@ local function make_m45_info_window(player)
             tab2_close_frame.style.horizontal_align = "right"
 
             info_pane.add_tab(tab2, tab2_frame)
+
+            ------------------------
+            --tab 3 -- Help --
+            ------------------------
+            local tab3_frame =
+                info_pane.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab3_frame.style.vertically_squashable = true
+            tab3_frame.style.horizontal_align = "center"
+
+            --tab 3 -- Title Bar
+            local tab3_title_bar_frame =
+                tab3_frame.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            tab3_title_bar_frame.style.horizontal_align = "center"
+            tab3_title_bar_frame.style.horizontally_stretchable = true
+            tab3_title_bar_frame.add {
+                type = "label",
+                name = "tab3_title",
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Rules:[/font]"
+            }
+            local tab3_close_button =
+                tab3_title_bar_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab3_close_button.style.horizontal_align = "right"
+            tab3_close_button.style.horizontally_stretchable = true
+            tab3_close_button.add {
+                type = "sprite-button",
+                name = "splash_close_button",
+                sprite = "file/img/close-24.png",
+                tooltip = "Close this window"
+            }
+
+            --tab 3 -- Main
+            local tab3_main_frame =
+                tab3_frame.add {
+                type = "scroll-pane",
+                direction = "vertical"
+            }
+            tab3_main_frame.style.horizontal_align = "right"
+            tab3_main_frame.style.padding = 4
+
+            tab3_main_frame.style.horizontally_stretchable = true
+            tab3_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]1: No griefing, use common sense. Don't be toxic or annoying.[/font]"
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]2: Don't advertise or link other servers.[/font]"
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]3: Read the Welcome, Rules and Membership tabs before asking for help.[/font]"
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]4: Use /report <name> <message> if there are issues or problem-players.[/font]"
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]5: This is a multiplayer server, try to cooperate with other players.[/font]"
+            }
+            tab3_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]   If you want everything your way, go play single player.[/font]"
+            }
+
+            --Close Button Frame
+            local tab3_close_frame =
+                tab3_main_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab3_close_frame.style.horizontal_align = "right"
+
+            info_pane.add_tab(tab3, tab3_frame)
+
+            ------------------------
+            --tab 4 -- Tips & Tricks --
+            ------------------------
+            local tab4_frame =
+                info_pane.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab4_frame.style.vertically_squashable = true
+            tab4_frame.style.horizontal_align = "center"
+
+            --tab 4 -- Title Bar
+            local tab4_title_bar_frame =
+                tab4_frame.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            tab4_title_bar_frame.style.horizontal_align = "center"
+            tab4_title_bar_frame.style.horizontally_stretchable = true
+            tab4_title_bar_frame.add {
+                type = "label",
+                name = "tab4_title",
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Tips and tricks:[/font]"
+            }
+            local tab4_close_button =
+                tab4_title_bar_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab4_close_button.style.horizontal_align = "right"
+            tab4_close_button.style.horizontally_stretchable = true
+            tab4_close_button.add {
+                type = "sprite-button",
+                name = "splash_close_button",
+                sprite = "file/img/close-24.png",
+                tooltip = "Close this window"
+            }
+
+            --tab 4 -- Main
+            local tab4_main_frame =
+                tab4_frame.add {
+                type = "scroll-pane",
+                direction = "vertical"
+            }
+            tab4_main_frame.style.horizontal_align = "right"
+            tab4_main_frame.style.padding = 4
+
+            tab4_main_frame.style.horizontally_stretchable = true
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]Auto-complete:[/font]"
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]/whis[TAB] NameOf[TAB][/font]"
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]Becomes[/font]"
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]/whisper NameOfPlayer[/font]"
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]You can bookmark servers, by clicking the gear icon in the server browser![/font]"
+            }
+            local tab4_img2_frame =
+            tab4_main_frame.add {
+                type = "frame",
+                direction = "vertical"
+            }
+            tab4_img2_frame.add {
+                type = "sprite",
+                sprite = "file/img/tips/bookmark.png",
+                tooltip = "The gear icon will turn orange, and the bookmarked servers appear first in the list."
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+
+
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]Map reset, but want to keep playing the old map?[/font]"
+            }
+            tab4_main_frame.add {
+                type = "text-box",
+                name = "old_maps",
+                text = "http://m45sci.xyz/u/fact/old-maps/",
+                tooltip = "drag-select with mouse, control-c to copy."
+            }
+            tab4_main_frame.old_maps.style.font = "default-large"
+            tab4_main_frame.old_maps.style.minimal_width = 350
+            tab4_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]Mod portal down, or slow? Download modpacks here:[/font]"
+            }
+            tab4_main_frame.add {
+                type = "text-box",
+                name = "mod_pack",
+                text = "http://m45sci.xyz:10001/",
+                tooltip = "drag-select with mouse, control-c to copy."
+            }
+            tab4_main_frame.mod_pack.style.font = "default-large"
+            tab4_main_frame.mod_pack.style.minimal_width = 250
+            tab4_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]Download a stand-alone copy of Factorio (no install)![/font]"
+            }
+            tab4_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]It is a great way to have multiple versions, or mod-sets![/font]"
+            }
+            tab4_main_frame.add {
+                type = "sprite",
+                sprite = "file/img/tips/dl-fact.png",
+                tooltip = "Place the unzipped folder wherever you want!"
+            }
+
+            --Close Button Frame
+            local tab4_close_frame =
+                tab4_main_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab4_close_frame.style.horizontal_align = "right"
+
+            info_pane.add_tab(tab4, tab4_frame)
+
+            local tab5_frame =
+                info_pane.add {
+                type = "flow",
+                direction = "vertical"
+            }
+
+            local tab5_qr_frame =
+            tab5_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab5_qr_frame.style.horizontally_stretchable = true
+            tab5_qr_frame.style.vertically_stretchable = true
+            tab5_qr_frame.style.horizontal_align = "center"
+            tab5_qr_frame.style.vertical_align = "center"
+            local tab5_qr = tab5_qr_frame.add {
+                type = "sprite",
+                sprite = "file/img/m45-qr.png",
+                tooltip = "Just open camera on cellphone!"
+            }
+            info_pane.add_tab(tab5, tab5_frame)
+
             info_pane.selected_tab_index = 1
         end
     end
@@ -2428,9 +2703,13 @@ script.on_event(
 script.on_event(
     defines.events.on_gui_text_changed,
     function(event)
-        if event and event.element and event.player_index and event.text then
-            if event.element.name and event.element.name == "discord_url" then
+        if event and event.element and event.player_index and event.text and event.element.name then
+            if event.element.name == "discord_url" then
                 event.element.text = "https://discord.gg/Ps2jnm7"
+            elseif event.element.name == "old_maps" then
+                event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
+            elseif event.element.name == "mod_pack" then
+                event.element.text = "http://m45sci.xyz:10001/"
             end
         end
     end
