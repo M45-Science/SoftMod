@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v536-1-11-2021-0501p-exp"
+local svers = "v536-1-11-2021-0720p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -839,20 +839,43 @@ local function make_m45_info_window(player)
                 tooltip = "Place the unzipped folder wherever you want!"
             }
 
-            --Close Button Frame
-            local tab4_close_frame =
-                tab4_main_frame.add {
-                type = "flow",
-                direction = "vertical"
-            }
-            tab4_close_frame.style.horizontal_align = "right"
-
             info_pane.add_tab(tab4, tab4_frame)
 
+
+            ---------------
+            --- QR CODE ---
+            ---------------
             local tab5_frame =
                 info_pane.add {
                 type = "flow",
                 direction = "vertical"
+            }
+
+            --tab 5 -- Title Bar
+            local tab5_title_bar_frame =
+                tab5_frame.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            tab5_title_bar_frame.style.horizontal_align = "center"
+            tab5_title_bar_frame.style.horizontally_stretchable = true
+            tab5_title_bar_frame.add {
+                type = "label",
+                name = "tab5_title",
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Discord Server QR Code (Scan with phone)[/font]"
+            }
+            local tab5_close_button =
+                tab5_title_bar_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab5_close_button.style.horizontal_align = "right"
+            tab5_close_button.style.horizontally_stretchable = true
+            tab5_close_button.add {
+                type = "sprite-button",
+                name = "splash_close_button",
+                sprite = "file/img/close-24.png",
+                tooltip = "Close this window"
             }
 
             local tab5_qr_frame =
@@ -867,8 +890,9 @@ local function make_m45_info_window(player)
             local tab5_qr = tab5_qr_frame.add {
                 type = "sprite",
                 sprite = "file/img/m45-qr.png",
-                tooltip = "Just open camera on cellphone!"
+                tooltip = "Just open camera on a cellphone!"
             }
+
             info_pane.add_tab(tab5, tab5_frame)
 
             info_pane.selected_tab_index = 1
