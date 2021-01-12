@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v538-1-12-2021-0145p-exp"
+local svers = "v538-1-12-2021-0151p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -287,19 +287,19 @@ local function make_m45_online_window(player)
                     direction = "vertical"
                 }
                 local utag = ""
-                if is_new(player) then
+                if is_new(victim) then
                     utag = "NEW"
                 end
-                if is_member(player) then
+                if is_member(victim) then
                     utag = "Members"
                 end
-                if is_regular(player) then
+                if is_regular(victim) then
                     utag = "Regulars"
                 end
-                if is_banished(player) then
+                if is_banished(victim) then
                     utag = "BANISHED"
                 end
-                if player.admin then
+                if victim.admin then
                     utag = "ADMINS"
                 end
                 local score_label =
