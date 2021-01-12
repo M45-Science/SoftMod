@@ -2836,7 +2836,7 @@ script.on_event(
                             sprite = "file/img/m45-32.png",
                             tooltip = "Opens the server info window"
                         }
-                        m45_32.style.size = {32, 32}
+                        --m45_32.style.size = {32, 32}
                     end
 
                     --Online button--
@@ -2851,7 +2851,7 @@ script.on_event(
                             sprite = "file/img/online-32.png",
                             tooltip = "See players online"
                         }
-                        online_32.style.size = {32, 32}
+                        --online_32.style.size = {32, 32}
                     end
                 end
 
