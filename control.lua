@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v536-1-11-2021-0501p-exp"
+local svers = "v537-1-12-2021-0217a-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -217,7 +217,7 @@ local function make_m45_info_window(player)
                 type = "label",
                 name = "tab1_title",
                 caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: [M45] " .. global.servname .. "[/font]",
-                tooltip = "M45 script version: "..svers
+                tooltip = "M45 script version: " .. svers
             }
 
             --CLOSE BUTTON--
@@ -786,7 +786,7 @@ local function make_m45_info_window(player)
                 caption = "[font=default-large]You can bookmark servers, by clicking the gear icon in the server browser![/font]"
             }
             local tab4_img2_frame =
-            tab4_main_frame.add {
+                tab4_main_frame.add {
                 type = "frame",
                 direction = "vertical"
             }
@@ -799,7 +799,6 @@ local function make_m45_info_window(player)
                 type = "label",
                 caption = ""
             }
-
 
             tab4_main_frame.add {
                 type = "label",
@@ -859,7 +858,6 @@ local function make_m45_info_window(player)
 
             info_pane.add_tab(tab4, tab4_frame)
 
-
             ---------------
             --- QR CODE ---
             ---------------
@@ -897,7 +895,7 @@ local function make_m45_info_window(player)
             }
 
             local tab5_qr_frame =
-            tab5_frame.add {
+                tab5_frame.add {
                 type = "flow",
                 direction = "vertical"
             }
@@ -905,7 +903,8 @@ local function make_m45_info_window(player)
             tab5_qr_frame.style.vertically_stretchable = true
             tab5_qr_frame.style.horizontal_align = "center"
             tab5_qr_frame.style.vertical_align = "center"
-            local tab5_qr = tab5_qr_frame.add {
+            local tab5_qr =
+                tab5_qr_frame.add {
                 type = "sprite",
                 sprite = "file/img/m45-qr.png",
                 tooltip = "Just open camera on a cellphone!"
@@ -918,7 +917,7 @@ local function make_m45_info_window(player)
                 type = "label",
                 caption = "(links to: https://discord.gg/Ps2jnm7)"
             }
-            
+
             info_pane.add_tab(tab5, tab5_frame)
 
             info_pane.selected_tab_index = 1
@@ -984,17 +983,18 @@ local function update_banished_votes()
             print("[REPORT] SYSTEM " .. msg)
             message_all("[color=red](SYSTEM) " .. msg .. "[/color]")
 
-            local surf = game.surfaces["nauvis"]
-            if surf and surf.name then
-                local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
-                if newpos then
-                    victim.teleport(newpos, surf)
-                else
-                    victim.teleport({0, 0}, surf) --Screw it
-                end
-            else
-                message_all("default surface is missing, unable to un-banish player.")
+            --Kill them, so items are left behind
+            if victim.character and victim.character.valid then
+                victim.character.die("player")
             end
+            if not global.send_to_surface then
+                global.send_to_surface = {}
+            end
+            local spawnpos = {0, 0}
+            if global.cspawnpos and global.cspawnpos.x then
+                spawnpos = global.cspawnpos
+            end
+            table.insert(global.send_to_surface, {victim = victim, surface = "nauvis", position = spawnpos})
         elseif is_banished(victim) == true and prevstate == false then
             --Was not banished, but is now.
             local msg = victim.name .. " has been banished."
@@ -1020,19 +1020,13 @@ local function update_banished_votes()
 
             --Kill them, so items are left behind
             if victim.character and victim.character.valid then
-                victim.character.die(victim.force, victim.character)
+                victim.character.die("player")
             end
 
-            --Teleport them to new surface
-            local surf = game.surfaces["hell"]
-            if surf and surf.name then
-                local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
-                if newpos then
-                    victim.teleport(newpos, surf)
-                else
-                    victim.teleport({0, 0}, surf) --Screw it
-                end
+            if not global.send_to_surface then
+                global.send_to_surface = {}
             end
+            table.insert(global.send_to_surface, {victim = victim, surface = "hell", position = {0, 0}})
         end
     end
 end
@@ -1378,62 +1372,6 @@ script.on_load(
     function()
         --Only add if no commands yet
         if (not commands.commands.server_interface) then
-            commands.add_command(
-                "destroym45gui",
-                "for migrating maps/user m45 guis",
-                function(param)
-                    local player
-                    local ccount = 0
-                    local ecount = 0
-
-                    --Admins only
-                    if param and param.player_index then
-                        player = game.players[param.player_index]
-                        if player and player.admin == false then
-                            smart_print(player, "Admins only.")
-                            return
-                        end
-                    end
-
-                    --Refresh spawn logo
-                    global.drawlogo = nil
-                    dodrawlogo()
-
-                    if param and param.parameter then
-                        if param.parameter == "confirm" then
-                            for _, player in pairs(game.players) do
-                                if player.gui then
-                                    if player.gui.top then
-                                        ccount = ccount + 1
-
-                                        if player.gui.top.dicon then
-                                            player.gui.top.dicon.destroy()
-                                            ecount = ecount + 1
-                                        end
-                                        if player.gui.top.zout then
-                                            player.gui.top.zout.destroy()
-                                            ecount = ecount + 1
-                                        end
-                                        if player.gui.top.serverlist then
-                                            player.gui.top.serverlist.destroy()
-                                            ecount = ecount + 1
-                                        end
-                                        if player.gui.top.discordurl then
-                                            player.gui.top.discordurl.destroy()
-                                            ecount = ecount + 1
-                                        end
-                                    end
-                                end
-                            end
-                            smart_print(player, ccount .. " player GUIs, and " .. ecount .. " elements were destroyed.")
-                        else
-                            smart_print(player, "This shouldnot normally be used, and is used for m45 map/user GUI migration.")
-                            smart_print(player, "/clearm45gui confirm if you are completely sure.")
-                        end
-                    end
-                end
-            )
-
             --adjust run speed
             commands.add_command(
                 "run",
@@ -1462,8 +1400,8 @@ script.on_load(
                                 end
 
                                 --Cap to reasonable amount
-                                if speed > 100 then
-                                    speed = 100
+                                if speed > 1000 then
+                                    speed = 1000
                                 end
 
                                 player.character.character_running_speed_modifier = speed
@@ -1626,26 +1564,19 @@ script.on_load(
                         if param.parameter then
                             local victim = game.players[param.parameter]
 
-                            if (victim and victim.valid) then
+                            if (victim and victim.valid and victim.character and victim.character.valid) then
                                 --If they have a character, kill it to release items
                                 if victim.character and victim.character.valid then
-                                    victim.character.die(victim.force, victim.character)
+                                    victim.character.die("player")
                                 end
-
-                                local surf = game.surfaces["hell"]
-                                if surf and surf.name then
-                                    local newpos = victim.surface.find_non_colliding_position("character", {0, 0}, 99, 0.01, false)
-                                    if newpos then
-                                        victim.teleport(newpos, surf)
-                                        return
-                                    else
-                                        victim.teleport({0, 0}, surf) --Screw it
-                                        return
-                                    end
+                                if not global.send_to_surface then
+                                    global.send_to_surface = {}
                                 end
+                                table.insert(global.send_to_surface, {victim = victim, surface = "hell", position = {0, 0}})
+                            else
+                                smart_print(player, "Couldn't find that player.")
                             end
                         end
-                        smart_print(player, "Couldn't find that player.")
                     else
                         smart_print(player, "Admins only.")
                     end
@@ -1676,7 +1607,7 @@ script.on_load(
                                     local victim = game.players[args[1]]
 
                                     --If victim found
-                                    if victim and victim.valid then
+                                    if victim and victim.valid and victim.character and victim.character.valid then
                                         local count = 0
                                         for _, vote in pairs(global.banishvotes) do
                                             if vote and vote.victim and vote.victim.valid then
@@ -1803,7 +1734,7 @@ script.on_load(
                                     local victim = game.players[args[1]]
 
                                     --Must have valid victim
-                                    if victim and victim.valid and victim.name then
+                                    if victim and victim.valid and victim.character and victim.character.valid then
                                         --Check if we voted against them
                                         if global.banishvotes and global.banishvotes ~= {} then
                                             for _, vote in pairs(global.banishvotes) do
@@ -1823,7 +1754,7 @@ script.on_load(
                                             smart_print(player, "I don't see a vote from you, against that player, to withdraw.")
                                         end
                                     else
-                                        smart_print(player, "I didn't find a player by that name, you can use the first few letters, and <tab> (autocomplete) to help.")
+                                        smart_print(player, "There are no players online by that name.")
                                     end
                                 else
                                     smart_print(player, "Usage: /unbanish <player>")
@@ -1870,12 +1801,12 @@ script.on_load(
                                         smart_print(player, "You must supply a more descriptive complaint.")
                                     else
                                         --Must have valid victim
-                                        if victim and victim.valid and victim.name then
+                                        if victim and victim.valid and victim.character and victim.character.valid then
                                             --Victim must be new or member
                                             if is_new(victim) or is_member(victim) then
                                                 --Check if we already voted against them
                                                 if global.banishvotes and global.banishvotes ~= {} then
-                                                    local votecount = 0
+                                                    local votecount = 1
                                                     for _, vote in pairs(global.banishvotes) do
                                                         if vote and vote.voter and vote.victim then
                                                             --Count player's total votes, cap them
@@ -1935,7 +1866,7 @@ script.on_load(
                                                 smart_print(player, "You can only vote against new players, or members!")
                                             end
                                         else
-                                            smart_print(player, "I didn't find a player by that name, you can use the first few letters, and press <tab> (to autocomplete).")
+                                            smart_print(player, "There are no players online by that name.")
                                         end
                                     end
                                 else
@@ -1975,7 +1906,7 @@ script.on_load(
                             end
 
                             --Limit and list number of reports
-                            if global.reportlimit[player.index] < 5 then
+                            if global.reportlimit[player.index] <= 5 then
                                 print("[REPORT] " .. player.name .. " " .. param.parameter)
                                 smart_print(player, "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports.")
                             else
@@ -2000,6 +1931,24 @@ script.on_load(
 
                         --Only if arguments
                         if param.parameter and player and player.valid then
+
+                            --Init global if needed
+                            if not global.access_count then
+                                global.access_count = {}
+                            end
+
+                            --Init player if needed, else add to
+                            if not global.access_count[player.index] then
+                                global.access_count[player.index] = 1
+                            else
+                                if global.access_count[player.index] > 3 then
+                                    smart_print(player,"You have exhausted your registration attempts.")
+                                    return
+                                end
+                                global.access_count[player.index] = global.access_count[player.index] + 1
+                            end
+
+
                             local ptype = "Error"
 
                             if player.admin then
@@ -2521,12 +2470,13 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim and victim.valid) then
-                                local newpos = victim.surface.find_non_colliding_position("character", victim.position, 15, 0.01, false)
+                                local newpos = victim.surface.find_non_colliding_position("character", victim.position, 100, 0.1, false)
                                 if (newpos) then
                                     player.teleport(newpos, victim.surface)
                                     smart_print(player, "*Poof!*")
                                 else
                                     smart_print(player, "Area appears to be full.")
+                                    console_print("error: tto: unable to find non_colliding_position.")
                                 end
                                 return
                             end
@@ -2568,10 +2518,13 @@ script.on_load(
                             if n then
                                 surface = n
                                 local position = {x = xpos, y = ypos}
-                                local newpos = surface.find_non_colliding_position("character", position, 15, 0.01, false)
+                                local newpos = surface.find_non_colliding_position("character", position, 100, 0.1, false)
                                 if newpos then
                                     player.teleport(newpos, surface)
                                     return
+                                else
+                                    player.teleport(position, surface)
+                                    console_print("error: tp: unable to find non_colliding_position.")
                                 end
                             end
 
@@ -2582,12 +2535,13 @@ script.on_load(
 
                                 if position then
                                     if position.x and position.y then
-                                        local newpos = surface.find_non_colliding_position("character", position, 15, 0.01, false)
+                                        local newpos = surface.find_non_colliding_position("character", position, 100, 0.1, false)
                                         if (newpos) then
                                             player.teleport(newpos, surface)
                                             smart_print(player, "*Poof!*")
                                         else
                                             smart_print(player, "Area appears to be full.")
+                                            console_print("error: tp: unable to find non_colliding_position.")
                                         end
                                     else
                                         smart_print(player, "Invalid location.")
@@ -2627,16 +2581,18 @@ script.on_load(
                             local victim = game.players[param.parameter]
 
                             if (victim and victim.valid) then
-                                local newpos = player.surface.find_non_colliding_position("character", player.position, 15, 0.01, false)
+                                local newpos = player.surface.find_non_colliding_position("character", player.position, 100, 0.1, false)
                                 if (newpos) then
                                     victim.teleport(newpos, player.surface)
                                     smart_print(player, "*Poof!*")
                                 else
                                     smart_print(player, "Area appears to be full.")
+                                    console_print("error: tfrom: unable to find non_colliding_position.")
                                 end
+                            else
+                                smart_print(player, "Who do you want to teleport to you?")
                             end
                         end
-                        smart_print(player, "Who do you want to teleport to you?")
                     end
                 end
             )
@@ -2693,20 +2649,6 @@ script.on_event(
                         end
                     end
                 end
-            end
-        end
-    end
-)
-
---Player respawn, insert items
-script.on_event(
-    defines.events.on_player_respawned,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            if player and player.valid then
-                player.insert {name = "firearm-magazine", count = 10}
-                player.insert {name = "pistol", count = 1}
             end
         end
     end
@@ -3183,7 +3125,7 @@ script.on_event(
                 else
                     player.teleport({0, 0})
                 end
-                player.character.die(player.force, player.character)
+                player.character.die("player")
             end
         end
     end
@@ -3330,8 +3272,7 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid then
-                if event.element.name == "splash_close_button" and
-                player.gui and player.gui.center and player.gui.center.splash_screen then
+                if event.element.name == "splash_close_button" and player.gui and player.gui.center and player.gui.center.splash_screen then
                     player.gui.center.splash_screen.destroy()
                     return
                 elseif event.element.name == "m45_button" then
@@ -3341,10 +3282,63 @@ script.on_event(
                     else
                         make_m45_info_window(player)
                     end
-                elseif event.element.name == "qr_button" and
-                player.gui and player.gui.center and player.gui.center.splash_screen then
+                elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.splash_screen then
                     player.gui.center.splash_screen.selected_tab_index = 5
                 end
+            end
+        end
+    end
+)
+
+--handle killing and teleporting users to other surfaces
+script.on_event(
+    defines.events.on_player_respawned,
+    function(event)
+        --Anything queued?
+        if global.send_to_surface then
+            --Event and player?
+            if event and event.player_index then
+                local player = game.players[event.player_index]
+
+                --Valid player?
+                if player and player.valid and player.character and player.character.valid then
+                    local index = nil
+                    --Check list
+                    for i, item in pairs(global.send_to_surface) do
+                        --Check if item is valid
+                        if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and item.position and item.surface then
+                            --Check if names match
+                            if item.victim.name == player.name then
+                                --If surface is valid
+                                local surf = game.surfaces[item.surface]
+                                if surf and surf.valid then
+                                    local newpos = surf.find_non_colliding_position("character", item.position, 100, 0.1, false)
+                                    if newpos then
+                                        player.teleport(newpos, surf)
+                                    else
+                                        player.teleport(item.position, surf) -- screw it
+                                        console_print("error: send_to_surface(respawn): unable to find non_colliding_position.")
+                                    end
+                                    index = i
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    --Remove item we processed
+                    if index then
+                        game.print("item removed: " .. index)
+                        table.remove(global.send_to_surface, index)
+                    end
+                end
+            end
+        end
+
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+            if player and player.valid then
+                player.insert {name = "firearm-magazine", count = 10}
+                player.insert {name = "pistol", count = 1}
             end
         end
     end
@@ -3386,6 +3380,8 @@ end
 script.on_nth_tick(
     1,
     function(event)
+        --game.force_crc()
+
         if global.restrict then
             if global.blueprint_throttle then
                 --Loop through players, countdown blueprint throttle
