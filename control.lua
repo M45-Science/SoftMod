@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v537-1-12-2021-0217a-exp"
+local svers = "v538-1-12-2021-0145p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -181,14 +181,151 @@ local function is_banished(victim)
     return false
 end
 
+local function make_m45_online_window(player)
+    if player.gui and player.gui.left then
+        if player.gui.left.m45_online then
+            player.gui.left.m45_online.destroy()
+        end
+        if not player.gui.left.m45_online then
+            local count = 0
+            for i, victim in pairs(game.connected_players) do
+                count = i
+            end
+            local main_flow =
+                player.gui.left.add {
+                type = "frame",
+                name = "m45_online",
+                direction = "vertical"
+            }
+            main_flow.style.horizontal_align = "left"
+            main_flow.style.vertical_align = "top"
+
+            --Online Title Bar--
+            local online_titlebar =
+                main_flow.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            online_titlebar.style.horizontal_align = "center"
+            online_titlebar.style.horizontally_stretchable = true
+            online_titlebar.add {
+                type = "label",
+                name = "online_title",
+                caption = "[entity=character][font=default-large-bold]Players Online: "..count.."[/font]",
+                tooltip = "M45 script version: " .. svers
+            }
+
+            --CLOSE BUTTON--
+            local online_close_button =
+                online_titlebar.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            online_close_button.style.horizontal_align = "right"
+            online_close_button.style.horizontally_stretchable = true
+            online_close_button.add {
+                type = "sprite-button",
+                name = "m45_online_close_button",
+                sprite = "file/img/close-24.png",
+                tooltip = "Close this window"
+            }
+
+            local online_main =
+                main_flow.add {
+                type = "frame",
+                direction = "vertical"
+            }
+
+            for i, victim in pairs(game.connected_players) do
+                local pframe =
+                    online_main.add {
+                    type = "flow",
+                    direction = "horizontal"
+                }
+                local name_label =
+                    pframe.add {
+                    type = "label",
+                    caption = i
+                }
+                name_label.style.width = 32
+                local name_label =
+                    pframe.add {
+                    type = "line",
+                    direction = "vertical"
+                }
+                local name_label =
+                    pframe.add {
+                    type = "label",
+                    caption = "  "..victim.name
+                }
+                name_label.style.width = 200
+                local name_label =
+                    pframe.add {
+                    type = "line",
+                    direction = "vertical"
+                }
+                local score_label =
+                    pframe.add {
+                    type = "label",
+                    caption = "  Score: "..math.floor(global.active_playtime[victim.index] / 60.0 / 60.0)
+                }
+                score_label.style.width = 100
+                local name_label =
+                    pframe.add {
+                    type = "line",
+                    direction = "vertical"
+                }
+                local time_label =
+                    pframe.add {
+                    type = "label",
+                    caption = "  Time: "..math.floor(victim.online_time / 60.0 / 60.0).."m"
+                }
+                time_label.style.width = 100
+                local name_label =
+                    pframe.add {
+                    type = "line",
+                    direction = "vertical"
+                }
+                local utag = ""
+                if is_new(player) then
+                    utag = "NEW"
+                end
+                if is_member(player) then
+                    utag = "Members"
+                end
+                if is_regular(player) then
+                    utag = "Regulars"
+                end
+                if is_banished(player) then
+                    utag = "BANISHED"
+                end
+                if player.admin then
+                    utag = "ADMINS"
+                end
+                local score_label =
+                    pframe.add {
+                    type = "label",
+                    caption = "  "..utag
+                }
+                score_label.style.width = 100
+            end
+        end
+    end
+end
+
 local function make_m45_info_window(player)
     --M45 Welcome--
     if player.gui.center then
+        --Delete old ones
         if player.gui.center.splash_screen then
             player.gui.center.splash_screen.destroy()
         end
-        if not player.gui.center.splash_screen then
-            local info_pane = player.gui.center.add {type = "tabbed-pane", name = "splash_screen"}
+
+        if player.gui.center.m45_info_window then
+            player.gui.center.m45_info_window.destroy()
+        end
+        if not player.gui.center.m45_info_window then
+            local info_pane = player.gui.center.add {type = "tabbed-pane", name = "m45_info_window"}
             info_pane.style.minimal_width = 700
 
             local tab1 = info_pane.add {type = "tab", caption = "[entity=character] Welcome"}
@@ -230,7 +367,7 @@ local function make_m45_info_window(player)
             tab1_close_button.style.horizontally_stretchable = true
             tab1_close_button.add {
                 type = "sprite-button",
-                name = "splash_close_button",
+                name = "m45_info_close_button",
                 sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
@@ -253,6 +390,7 @@ local function make_m45_info_window(player)
                 sprite = "file/img/m45-128.png",
                 tooltip = ""
             }
+
             tab1_lframe.add {
                 type = "label",
                 caption = "[font=default-bold]M45-Science[/font]"
@@ -467,7 +605,7 @@ local function make_m45_info_window(player)
             tab2_close_button.style.horizontally_stretchable = true
             tab2_close_button.add {
                 type = "sprite-button",
-                name = "splash_close_button",
+                name = "m45_info_close_button",
                 sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
@@ -651,7 +789,7 @@ local function make_m45_info_window(player)
             tab3_close_button.style.horizontally_stretchable = true
             tab3_close_button.add {
                 type = "sprite-button",
-                name = "splash_close_button",
+                name = "m45_info_close_button",
                 sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
@@ -754,7 +892,7 @@ local function make_m45_info_window(player)
             tab4_close_button.style.horizontally_stretchable = true
             tab4_close_button.add {
                 type = "sprite-button",
-                name = "splash_close_button",
+                name = "m45_info_close_button",
                 sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
@@ -897,7 +1035,7 @@ local function make_m45_info_window(player)
             tab5_close_button.style.horizontally_stretchable = true
             tab5_close_button.add {
                 type = "sprite-button",
-                name = "splash_close_button",
+                name = "m45_info_close_button",
                 sprite = "file/img/close-24.png",
                 tooltip = "Close this window"
             }
@@ -1939,7 +2077,6 @@ script.on_load(
 
                         --Only if arguments
                         if param.parameter and player and player.valid then
-
                             --Init global if needed
                             if not global.access_count then
                                 global.access_count = {}
@@ -1950,12 +2087,11 @@ script.on_load(
                                 global.access_count[player.index] = 1
                             else
                                 if global.access_count[player.index] > 3 then
-                                    smart_print(player,"You have exhausted your registration attempts.")
+                                    smart_print(player, "You have exhausted your registration attempts.")
                                     return
                                 end
                                 global.access_count[player.index] = global.access_count[player.index] + 1
                             end
-
 
                             local ptype = "Error"
 
@@ -2677,24 +2813,56 @@ script.on_event(
 
                 dodrawlogo()
 
+                --Refresh open player-online windows
+                for _, victim in pairs(game.connected_players) do
+                    if victim and victim.valid and victim.gui and
+                    victim.gui.left and victim.gui.left.m45_online then
+                        victim.gui.left.m45_online.destroy()
+                        make_m45_online_window(victim)
+                    end
+                end
+
+
                 if player.gui and player.gui.top then
                     --M45 button--
+
+                    if player.gui.top.m45_button then
+                        player.gui.top.m45_button.destroy()
+                    end
                     if not player.gui.top.m45_button then
-                        player.gui.top.add {
+                        local m45_32 =
+                            player.gui.top.add {
                             type = "sprite-button",
                             name = "m45_button",
-                            sprite = "file/img/m45-24.png",
+                            sprite = "file/img/m45-32.png",
                             tooltip = "Opens the server info window"
                         }
+                        m45_32.style.size = {32, 32}
+                    end
+
+                    --Online button--
+                    if player.gui.top.online_button then
+                        player.gui.top.online_button.destroy()
+                    end
+                    if not player.gui.top.online_button then
+                        local online_32 =
+                            player.gui.top.add {
+                            type = "sprite-button",
+                            name = "online_button",
+                            sprite = "file/img/online-32.png",
+                            tooltip = "See players online"
+                        }
+                        online_32.style.size = {32, 32}
                     end
                 end
 
                 get_permgroup()
-                if player.gui and player.gui.center and player.gui.center.splash_screen then
-                    player.gui.center.splash_screen.destroy()
+                if player.gui and player.gui.center and player.gui.center.m45_info_window then
+                    player.gui.center.m45_info_window.destroy()
                 end
 
                 if is_new(player) then
+                    make_m45_online_window(player)
                     make_m45_info_window(player)
                 end
             end
@@ -2727,6 +2895,15 @@ script.on_event(
         if event and event.player_index and event.reason then
             local player = game.players[event.player_index]
             if player and player.valid then
+                --Refresh open player-online windows
+                for _, victim in pairs(game.connected_players) do
+                    if victim and victim.valid and victim.gui and
+                    victim.gui.left and victim.gui.left.m45_online then
+                        victim.gui.left.m45_online.destroy()
+                        make_m45_online_window(victim)
+                    end
+                end
+                
                 local reason = {
                     "(Quit)",
                     "(Dropped)",
@@ -3280,18 +3457,32 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid then
-                if event.element.name == "splash_close_button" and player.gui and player.gui.center and player.gui.center.splash_screen then
-                    player.gui.center.splash_screen.destroy()
+                if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
+                    player.gui.center.m45_info_window.destroy()
                     return
                 elseif event.element.name == "m45_button" then
-                    if player.gui and player.gui.center and player.gui.center.splash_screen then
-                        player.gui.center.splash_screen.destroy()
+                    if player.gui and player.gui.center and player.gui.center.m45_info_window then
+                        player.gui.center.m45_info_window.destroy()
                         return
                     else
                         make_m45_info_window(player)
+                        return
                     end
-                elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.splash_screen then
-                    player.gui.center.splash_screen.selected_tab_index = 5
+                elseif event.element.name == "online_button" then
+                    if player.gui and player.gui.left and player.gui.left.m45_online then
+                        player.gui.left.m45_online.destroy()
+                        return
+                    else
+                        make_m45_online_window(player)
+                        return
+                    end
+                elseif event.element.name == "m45_online_close_button" then
+                    if player.gui and player.gui.left and player.gui.left.m45_online then
+                        player.gui.left.m45_online.destroy()
+                        return
+                    end
+                elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
+                    player.gui.center.m45_info_window.selected_tab_index = 5
                 end
             end
         end
