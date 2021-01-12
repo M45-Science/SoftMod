@@ -364,7 +364,7 @@ local function make_m45_info_window(player)
             tab1_info_center.style.horizontally_stretchable = true
             tab1_info_center.add {
                 type = "label",
-                caption = "[item=raw-fish] [color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
+                caption = "[color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
             }
             tab1_info_center.add {
                 type = "label",
