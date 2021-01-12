@@ -495,6 +495,14 @@ local function make_m45_info_window(player)
                 caption = "Once you achieve a specific level, the level persists between maps and servers (but the activity score does not)."
             }
             tab2_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "[font=default-bold]Logged:[/font] Rotating, picking up, placing, and add/remove/edit map pins."
+            }
+            tab2_main_frame.add {
                 type = "line",
                 direction = "horizontal"
             }
