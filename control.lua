@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v536-1-11-2021-0720p-exp"
+local svers = "v536-1-11-2021-0501p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -191,11 +191,11 @@ local function make_m45_info_window(player)
             local info_pane = player.gui.center.add {type = "tabbed-pane", name = "splash_screen"}
             info_pane.style.minimal_width = 700
 
-            local tab1 = info_pane.add {type = "tab", caption = "Welcome"}
-            local tab2 = info_pane.add {type = "tab", caption = "Membership"}
-            local tab3 = info_pane.add {type = "tab", caption = "Rules"}
-            local tab4 = info_pane.add {type = "tab", caption = "Tips & Tricks"}
-            local tab5 = info_pane.add {type = "tab", caption = "QR-Code"}
+            local tab1 = info_pane.add {type = "tab", caption = "[entity=character] Welcome"}
+            local tab2 = info_pane.add {type = "tab", caption = "[item=automation-science-pack] Membership"}
+            local tab3 = info_pane.add {type = "tab", caption = "[item=steel-plate]Rules"}
+            local tab4 = info_pane.add {type = "tab", caption = "[virtual-signal=signal-info] Tips & Tricks"}
+            local tab5 = info_pane.add {type = "tab", caption = "[item=advanced-circuit] QR-Code"}
 
             --Tab 1 -- Welcome
             local tab1_frame =
@@ -216,7 +216,8 @@ local function make_m45_info_window(player)
             tab1_title_bar_frame.add {
                 type = "label",
                 name = "tab1_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: [M45] " .. global.servname .. "[/font]"
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: [M45] " .. global.servname .. "[/font]",
+                tooltip = "M45 script version: "..svers
             }
 
             --CLOSE BUTTON--
@@ -339,11 +340,15 @@ local function make_m45_info_window(player)
             }
             tab1_info_top.add {
                 type = "label",
-                caption = "[recipe=combat-shotgun] All players: Friendly fire is off for players and buildings."
+                caption = ""
             }
             tab1_info_top.add {
                 type = "label",
-                caption = '[recipe=power-armor-mk2] Click the "Members" tab above, to find out how to become a member.'
+                caption = "[recipe=combat-shotgun] Friendly fire is off, for players and buildings."
+            }
+            tab1_info_top.add {
+                type = "label",
+                caption = "Click the '[item=automation-science-pack] Membership' tab above, to find out how to become a member."
             }
             tab1_info_top.add {
                 type = "label",
@@ -363,7 +368,7 @@ local function make_m45_info_window(player)
             }
             tab1_info_center.add {
                 type = "label",
-                caption = "in chat) /report <name> <problem>"
+                caption = "[font=default-game]/report <name> <problem>[/font]"
             }
             tab1_info_center.add {
                 type = "label",
@@ -411,16 +416,21 @@ local function make_m45_info_window(player)
                 type = "text-box",
                 name = "discord_url",
                 text = "https://discord.gg/Ps2jnm7",
-                tooltip = "drag-select with mouse, control-c to copy."
+                tooltip = "(if not selected), drag-select with mouse, control-c to copy."
             }
             --URL Style
             tab1_discord_sub2_frame.discord_url.style.font = "default-large"
             tab1_discord_sub2_frame.discord_url.style.minimal_width = 250
 
-            --Tab 1 Main -- Discord -- Bottom Info Text
-            tab1_discord_sub1_frame.add {
+            tab1_discord_sub2_frame.add {
                 type = "label",
-                caption = "(There is also a tab with a QR-Code)"
+                caption = "  "
+            }
+            --Tab 1 Main -- Discord -- Bottom Info Text
+            tab1_discord_sub2_frame.add {
+                type = "button",
+                caption = "Get QR Code",
+                name = "qr_button"
             }
             info_pane.add_tab(tab1, tab1_frame)
 
@@ -474,7 +484,7 @@ local function make_m45_info_window(player)
             tab2_main_frame.style.horizontally_stretchable = true
             tab2_main_frame.add {
                 type = "label",
-                caption = "   [font=default-bold]Membership is automatic, and based on activity.[/font] Your current activity score is listed above."
+                caption = "[recipe=construction-robot]   [font=default-bold]Membership is automatic, and based on activity.[/font] Your current activity score is listed above."
             }
             tab2_main_frame.add {
                 type = "label",
@@ -506,7 +516,7 @@ local function make_m45_info_window(player)
 
             tab2_main_frame.add {
                 type = "label",
-                caption = "   [font=default-bold]New players can not pick-up or rotate other people's objects,[/font] and have these permissions limitations:"
+                caption = "[recipe=inserter]   [font=default-bold]New players can not pick-up or rotate other people's objects,[/font] and have these permissions limitations:"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -542,11 +552,11 @@ local function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "Ability to pick-up and rotate other's objects, and permissions restrictions are lifted."
+                caption = "[recipe=fast-inserter]   Ability to pick-up and rotate other's objects, and permissions restrictions are lifted."
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "Votes needed to banish you increases to 3. Access to deconstruction planner (warns other users on use)."
+                caption = "Votes needed to banish you increases to 3. Access to deconstruction planner (warns other players, with location)."
             }
             tab2_main_frame.add {
                 type = "label",
@@ -580,7 +590,7 @@ local function make_m45_info_window(player)
 
             tab2_main_frame.add {
                 type = "label",
-                caption = "Access to /banish command (5 votes per map), other players can not banish you."
+                caption = "[recipe=stack-inserter]   Access to /banish command (5 votes per map), other players can not banish you."
             }
             tab2_main_frame.add {
                 type = "label",
@@ -601,7 +611,7 @@ local function make_m45_info_window(player)
             info_pane.add_tab(tab2, tab2_frame)
 
             ------------------------
-            --tab 3 -- Help --
+            --tab 3 -- Rules --
             ------------------------
             local tab3_frame =
                 info_pane.add {
@@ -654,7 +664,7 @@ local function make_m45_info_window(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]1: No griefing, use common sense. Don't be toxic or annoying.[/font]"
+                caption = "[font=default-large-bold]1: [recipe=cluster-grenade] No griefing, use common sense. Don't be toxic or annoying.[/font]"
             }
             tab3_main_frame.add {
                 type = "label",
@@ -662,7 +672,7 @@ local function make_m45_info_window(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]2: Don't advertise or link other servers.[/font]"
+                caption = "[font=default-large-bold]2: [item=programmable-speaker] Don't advertise or link other servers.[/font]"
             }
             tab3_main_frame.add {
                 type = "label",
@@ -670,7 +680,7 @@ local function make_m45_info_window(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]3: Read the Welcome, Rules and Membership tabs before asking for help.[/font]"
+                caption = "[font=default-large-bold]3: [item=blueprint-book] Read the Welcome, Rules and Membership tabs before asking for help.[/font]"
             }
             tab3_main_frame.add {
                 type = "label",
@@ -678,7 +688,7 @@ local function make_m45_info_window(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]4: Use /report <name> <message> if there are issues or problem-players.[/font]"
+                caption = "[font=default-large-bold]4: [item=repair-pack] Use [/font][font=default-game]/report <name> <problem>[/font] [font=default-large-bold]if there are problem-players.[/font]"
             }
             tab3_main_frame.add {
                 type = "label",
@@ -686,7 +696,7 @@ local function make_m45_info_window(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]5: This is a multiplayer server, try to cooperate with other players.[/font]"
+                caption = "[font=default-large-bold]5: [fluid=steam] This is a multiplayer server, try to cooperate with other players.[/font]"
             }
             tab3_main_frame.add {
                 type = "label",
@@ -757,7 +767,7 @@ local function make_m45_info_window(player)
             }
             tab4_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]/whis[TAB] NameOf[TAB][/font]"
+                caption = "[font=default-game]/whis[TAB] NameOf[TAB][/font]"
             }
             tab4_main_frame.add {
                 type = "label",
@@ -765,7 +775,7 @@ local function make_m45_info_window(player)
             }
             tab4_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]/whisper NameOfPlayer[/font]"
+                caption = "[font=default-game]/whisper NameOfPlayer[/font]"
             }
             tab4_main_frame.add {
                 type = "label",
@@ -838,6 +848,14 @@ local function make_m45_info_window(player)
                 sprite = "file/img/tips/dl-fact.png",
                 tooltip = "Place the unzipped folder wherever you want!"
             }
+            tab4_main_frame.add {
+                type = "text-box",
+                name = "wube_dl",
+                text = "https://factorio.com/download",
+                tooltip = "drag-select with mouse, control-c to copy."
+            }
+            tab4_main_frame.wube_dl.style.font = "default-large"
+            tab4_main_frame.wube_dl.style.minimal_width = 250
 
             info_pane.add_tab(tab4, tab4_frame)
 
@@ -892,10 +910,20 @@ local function make_m45_info_window(player)
                 sprite = "file/img/m45-qr.png",
                 tooltip = "Just open camera on a cellphone!"
             }
-
+            tab5_qr_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab5_qr_frame.add {
+                type = "label",
+                caption = "(links to: https://discord.gg/Ps2jnm7)"
+            }
+            
             info_pane.add_tab(tab5, tab5_frame)
 
             info_pane.selected_tab_index = 1
+            tab1_discord_sub2_frame.discord_url.focus()
+            tab1_discord_sub2_frame.discord_url.select_all()
         end
     end
 end
@@ -2727,6 +2755,7 @@ script.on_event(
 script.on_event(
     defines.events.on_gui_text_changed,
     function(event)
+        -- Automatically fix URLs, because read-only/selectable text is confusing to players --
         if event and event.element and event.player_index and event.text and event.element.name then
             if event.element.name == "discord_url" then
                 event.element.text = "https://discord.gg/Ps2jnm7"
@@ -2734,6 +2763,8 @@ script.on_event(
                 event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
             elseif event.element.name == "mod_pack" then
                 event.element.text = "http://m45sci.xyz:10001/"
+            elseif event.element.name == "wube_dl" then
+                event.element.text = "https://factorio.com/download"
             end
         end
     end
@@ -3299,17 +3330,20 @@ script.on_event(
             local player = game.players[event.player_index]
 
             if player and player.valid then
-                if event.element.name == "splash_close_button" then
+                if event.element.name == "splash_close_button" and
+                player.gui and player.gui.center and player.gui.center.splash_screen then
                     player.gui.center.splash_screen.destroy()
                     return
-                end
-                if event.element.name == "m45_button" then
-                    if player.gui.center.splash_screen then
+                elseif event.element.name == "m45_button" then
+                    if player.gui and player.gui.center and player.gui.center.splash_screen then
                         player.gui.center.splash_screen.destroy()
                         return
                     else
                         make_m45_info_window(player)
                     end
+                elseif event.element.name == "qr_button" and
+                player.gui and player.gui.center and player.gui.center.splash_screen then
+                    player.gui.center.splash_screen.selected_tab_index = 5
                 end
             end
         end
