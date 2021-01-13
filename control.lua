@@ -2,6 +2,7 @@
 --carlotto81@gmail.com
 local svers = "v539-1-12-2021-1035p-exp"
 
+--Quickly turn tables into strings
 function dump(o)
     if type(o) == "table" then
         local s = "{ "
@@ -17,13 +18,14 @@ function dump(o)
     end
 end
 
+--Cut off extra precision
 local function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
     number = string.format(fmtStr, number)
     return number
 end
 
---add logo to spawn area
+--Add M45 Logo to spawn area
 local function dodrawlogo()
     local surf = game.surfaces["nauvis"]
     if surf then
@@ -86,14 +88,14 @@ local function dodrawlogo()
     end
 end
 
---safe console print
+--Safe console print
 local function console_print(message)
     if message then
         print("~" .. message)
     end
 end
 
---smart console print--
+--Smart/safe Print
 local function smart_print(player, message)
     if message then
         if player then
@@ -104,7 +106,7 @@ local function smart_print(player, message)
     end
 end
 
---Global messages
+--Global messages (game/discord)
 local function message_all(message)
     if message then
         game.print(message)
@@ -112,14 +114,14 @@ local function message_all(message)
     end
 end
 
---Global messages (players only)
+--Global messages (game only)
 local function message_allp(message)
     if message then
         game.print(message)
     end
 end
 
---Global messages-- (discord only)
+--Global messages (discord only)
 local function message_alld(message)
     if message then
         print("[MSG] " .. message)
@@ -181,6 +183,7 @@ local function is_banished(victim)
     return false
 end
 
+--M45 Online Players Window
 local function make_m45_online_window(player)
     if player.gui and player.gui.left then
         if player.gui.left.m45_online then
@@ -313,6 +316,7 @@ local function make_m45_online_window(player)
     end
 end
 
+--M45 Info/Welcome window
 local function make_m45_info_window(player)
     --M45 Welcome--
     if player.gui.center then
@@ -1189,7 +1193,7 @@ local function make_m45_info_window(player)
     end
 end
 
---Count up banish votes
+--Process banish votes
 local function update_banished_votes()
     --Reset banished list
     local banishedtemp = {}
@@ -1531,7 +1535,7 @@ local function mysplit(inputstr, sep)
     return {""}
 end
 
---Set our default settings
+--Set our default game-settings
 local function game_settings(player)
     if player and player.valid and player.force and not global.gset then
         global.gset = true --Only apply these once
@@ -1541,7 +1545,7 @@ local function game_settings(player)
     end
 end
 
---Auto permisisons--
+--Automatically promote users to higher levels
 local function get_permgroup()
     if game.connected_players then
         --Check all connected players
@@ -2914,6 +2918,7 @@ script.on_event(
     end
 )
 
+--Count online players, store
 local function count_online_players()
     local count = 0
     for i, _ in pairs(game.connected_players) do
@@ -3000,6 +3005,7 @@ script.on_event(
     end
 )
 
+--Auto-Fix text-boxes (no-edit text boxes feel odd)
 script.on_event(
     defines.events.on_gui_text_changed,
     function(event)
@@ -3021,7 +3027,7 @@ script.on_event(
 )
 
 
---Player disconnected (Fact >= v1.1)
+--Player disconnect messages, with reason (Fact >= v1.1)
 script.on_event(
     defines.events.on_player_left_game,
     function(event)
@@ -3080,8 +3086,7 @@ script.on_event(
     end
 )
 
---ACTIVITY EVENTS
---Build stuff
+--Build stuff -- activity
 script.on_event(
     defines.events.on_built_entity,
     function(event)
@@ -3193,7 +3198,7 @@ script.on_event(
     end
 )
 
---Pre-Mined item
+--Pre-Mined item, block some users
 script.on_event(
     defines.events.on_pre_player_mined_item,
     function(event)
@@ -3288,7 +3293,7 @@ script.on_event(
     end
 )
 
---Rotated item
+--Rotated item, block some users
 script.on_event(
     defines.events.on_player_rotated_entity,
     function(event)
@@ -3329,7 +3334,7 @@ script.on_event(
     end
 )
 
---Mine tiles
+--Mine tiles -- activity
 script.on_event(
     defines.events.on_player_mined_tile,
     function(event)
@@ -3341,7 +3346,7 @@ script.on_event(
     end
 )
 
---Repair entity
+--Repair entity -- activity
 script.on_event(
     defines.events.on_player_repaired_entity,
     function(event)
@@ -3353,7 +3358,7 @@ script.on_event(
     end
 )
 
---Chatting
+--Chatting -- activity
 script.on_event(
     defines.events.on_console_chat,
     function(event)
@@ -3365,7 +3370,7 @@ script.on_event(
     end
 )
 
---Walking/Driving
+--Walking -- activity
 script.on_event(
     defines.events.on_player_changed_position,
     function(event)
@@ -3390,7 +3395,7 @@ script.on_event(
     end
 )
 
---Create map tag
+--Create map tag -- log
 script.on_event(
     defines.events.on_chart_tag_added,
     function(event)
@@ -3404,7 +3409,7 @@ script.on_event(
     end
 )
 
---Edit map tag
+--Edit map tag -- log
 script.on_event(
     defines.events.on_chart_tag_modified,
     function(event)
@@ -3417,7 +3422,7 @@ script.on_event(
     end
 )
 
---Delete map tag
+--Delete map tag -- log
 script.on_event(
     defines.events.on_chart_tag_removed,
     function(event)
@@ -3431,7 +3436,7 @@ script.on_event(
     end
 )
 
---Banned
+--Banned -- kill player to return items
 script.on_event(
     defines.events.on_player_banned,
     function(event)
@@ -3449,8 +3454,7 @@ script.on_event(
     end
 )
 
---OTHER EVENTS
---Corpse Marker
+--Corpse Map Marker
 script.on_event(
     defines.events.on_pre_player_died,
     function(event)
@@ -3482,7 +3486,7 @@ script.on_event(
     end
 )
 
---Research Finished
+--Research Finished -- discord
 script.on_event(
     defines.events.on_research_finished,
     function(event)
@@ -3496,6 +3500,7 @@ script.on_event(
 --delete old corpse map pins
 --Check spawn area map pin
 --Add to player active time if needed
+--Refresh players online window
 
 script.on_nth_tick(
     1800,
@@ -3629,7 +3634,7 @@ script.on_event(
     end
 )
 
---handle killing and teleporting users to other surfaces
+--Handle killing ,and teleporting users to other surfaces
 script.on_event(
     defines.events.on_player_respawned,
     function(event)
@@ -3683,6 +3688,7 @@ script.on_event(
     end
 )
 
+--Replace an item with a clone, from limbo
 local function replace_with_clone(item)
     local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force})
 
