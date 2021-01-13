@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v538-1-12-2021-0151p-exp"
+local svers = "v539-1-12-2021-1035p-exp"
 
 function dump(o)
     if type(o) == "table" then
@@ -333,6 +333,7 @@ local function make_m45_info_window(player)
             local tab3 = info_pane.add {type = "tab", caption = "[item=steel-plate]Rules"}
             local tab4 = info_pane.add {type = "tab", caption = "[virtual-signal=signal-info] Tips & Tricks"}
             local tab5 = info_pane.add {type = "tab", caption = "[item=advanced-circuit] QR-Code"}
+            local tab6 = info_pane.add {type = "tab", caption = "[item=production-science-pack] Patreon"}
 
             --Tab 1 -- Welcome
             local tab1_frame =
@@ -434,6 +435,15 @@ local function make_m45_info_window(player)
             tab1_lframe.add {
                 type = "label",
                 caption = "[color=purple]NameisGareth[/color]"
+            }
+            tab1_lframe.add {
+                type = "label",
+                caption = ""
+            }
+            tab1_lframe.add {
+                type = "button",
+                caption = "Help Out!",
+                name = "patreon_button"
             }
             tab1_lframe.style.horizontal_align = "center"
 
@@ -1065,6 +1075,112 @@ local function make_m45_info_window(player)
             }
 
             info_pane.add_tab(tab5, tab5_frame)
+
+            --------------
+            --- HELP    ---
+            ---------------
+            local tab6_frame =
+                info_pane.add {
+                type = "flow",
+                direction = "vertical"
+            }
+
+            --tab 6 -- Title Bar
+            local tab6_title_bar_frame =
+                tab6_frame.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            tab6_title_bar_frame.style.horizontal_align = "center"
+            tab6_title_bar_frame.style.horizontally_stretchable = true
+            tab6_title_bar_frame.add {
+                type = "label",
+                name = "tab6_title",
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Help:[/font]"
+            }
+            local tab6_close_button =
+                tab6_title_bar_frame.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            tab6_close_button.style.horizontal_align = "right"
+            tab6_close_button.style.horizontally_stretchable = true
+            tab6_close_button.add {
+                type = "sprite-button",
+                name = "m45_info_close_button",
+                sprite = "file/img/close-24.png",
+                tooltip = "Close this window"
+            }
+
+            local tab6_main_frame =
+                tab6_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab6_frame.style.horizontal_align = "center"
+            tab6_frame.style.vertical_align = "center"
+            tab6_main_frame.add {
+                type = "sprite",
+                sprite = "file/img/patreon-64.png",
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = "[font=default-large-bold]Our patreons keep these servers online![/font]"
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]CPU: Ryzen 9 3900X, 32GB RAM, NVME SSD, Gigabit Fiber[/font]"
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = "(Rented in a datacenter, in Kansas City, Kansas, USA)"
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]Our server costs are $84/mo USD[/font]"
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = "[font=default-large]See the link below to find out more:[/font]"
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            local tab6_patreon_url = tab6_main_frame.add {
+                type = "text-box",
+                text = "https://www.patreon.com/m45sci",
+                name = "patreon_url"
+            }
+            tab6_patreon_url.style.font = "default-large"
+            tab6_patreon_url.style.minimal_width = 300
+
+            tab6_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab6_main_frame.add {
+                type = "sprite",
+                sprite = "file/img/patreon-qr.png",
+            }
+            tab6_main_frame.add {
+                type = "label",
+                caption = "(Or scan this QR Code, it links to the address above)"
+            }
+
+            info_pane.add_tab(tab6, tab6_frame)
 
             info_pane.selected_tab_index = 1
             tab1_discord_sub2_frame.discord_url.focus()
@@ -2895,12 +3011,15 @@ script.on_event(
                 event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
             elseif event.element.name == "mod_pack" then
                 event.element.text = "http://m45sci.xyz:10001/"
+            elseif event.element.name == "patreon_url" then
+                event.element.text = "https://www.patreon.com/m45sci"
             elseif event.element.name == "wube_dl" then
                 event.element.text = "https://factorio.com/download"
             end
         end
     end
 )
+
 
 --Player disconnected (Fact >= v1.1)
 script.on_event(
@@ -3487,24 +3606,21 @@ script.on_event(
                 elseif event.element.name == "m45_button" then
                     if player.gui and player.gui.center and player.gui.center.m45_info_window then
                         player.gui.center.m45_info_window.destroy()
-                        return
                     else
                         make_m45_info_window(player)
-                        return
                     end
                 elseif event.element.name == "online_button" then
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
-                        return
                     else
                         make_m45_online_window(player)
-                        return
                     end
                 elseif event.element.name == "m45_online_close_button" then
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
-                        return
                     end
+                elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
+                        player.gui.center.m45_info_window.selected_tab_index = 6
                 elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
                     player.gui.center.m45_info_window.selected_tab_index = 5
                 end
