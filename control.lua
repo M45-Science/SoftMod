@@ -187,10 +187,6 @@ local function make_m45_online_window(player)
             player.gui.left.m45_online.destroy()
         end
         if not player.gui.left.m45_online then
-            local count = 0
-            for i, victim in pairs(game.connected_players) do
-                count = i
-            end
             local main_flow =
                 player.gui.left.add {
                 type = "frame",
@@ -208,10 +204,14 @@ local function make_m45_online_window(player)
             }
             online_titlebar.style.horizontal_align = "center"
             online_titlebar.style.horizontally_stretchable = true
+
+            if not global.player_count then
+                count_players_online()
+            end
             online_titlebar.add {
                 type = "label",
                 name = "online_title",
-                caption = "[entity=character][font=default-large-bold]Players Online: "..count.."[/font]",
+                caption = "[entity=character][font=default-large-bold]Players Online: " .. global.player_count .. "[/font]",
                 tooltip = "M45 script version: " .. svers
             }
 
@@ -256,7 +256,7 @@ local function make_m45_online_window(player)
                 local name_label =
                     pframe.add {
                     type = "label",
-                    caption = "  "..victim.name
+                    caption = "  " .. victim.name
                 }
                 name_label.style.width = 200
                 local name_label =
@@ -267,7 +267,7 @@ local function make_m45_online_window(player)
                 local score_label =
                     pframe.add {
                     type = "label",
-                    caption = "  Score: "..math.floor(global.active_playtime[victim.index] / 60.0 / 60.0)
+                    caption = "  Score: " .. math.floor(global.active_playtime[victim.index] / 60.0 / 60.0)
                 }
                 score_label.style.width = 100
                 local name_label =
@@ -278,7 +278,7 @@ local function make_m45_online_window(player)
                 local time_label =
                     pframe.add {
                     type = "label",
-                    caption = "  Time: "..math.floor(victim.online_time / 60.0 / 60.0).."m"
+                    caption = "  Time: " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
                 }
                 time_label.style.width = 100
                 local name_label =
@@ -305,7 +305,7 @@ local function make_m45_online_window(player)
                 local score_label =
                     pframe.add {
                     type = "label",
-                    caption = "  "..utag
+                    caption = "  " .. utag
                 }
                 score_label.style.width = 100
             end
@@ -2798,10 +2798,25 @@ script.on_event(
     end
 )
 
+local function count_online_players()
+    local count = 0
+    for i, _ in pairs(game.connected_players) do
+        count = i
+    end
+    for _, victim in pairs(game.connected_players) do
+        if victim.gui and victim.gui.top and victim.gui.top.online_button then
+            victim.gui.top.online_button.number = count
+        end
+    end
+    global.player_count = count
+end
+
 --Player connected, make variables, draw UI, set permissions, and game settings
 script.on_event(
     defines.events.on_player_joined_game,
     function(event)
+        count_online_players()
+
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid then
@@ -2815,12 +2830,10 @@ script.on_event(
 
                 --Refresh open player-online windows
                 for _, victim in pairs(game.connected_players) do
-                    if victim and victim.valid and victim.gui and
-                    victim.gui.left and victim.gui.left.m45_online then
+                    if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
                         make_m45_online_window(victim)
                     end
                 end
-
 
                 if player.gui and player.gui.top then
                     --M45 button--
@@ -2836,7 +2849,8 @@ script.on_event(
                             sprite = "file/img/m45-32.png",
                             tooltip = "Opens the server info window"
                         }
-                        --m45_32.style.size = {32, 32}
+                    --Invalid in Factorio 1.0
+                    --m45_32.style.size = {32, 32}
                     end
 
                     --Online button--
@@ -2851,7 +2865,8 @@ script.on_event(
                             sprite = "file/img/online-32.png",
                             tooltip = "See players online"
                         }
-                        --online_32.style.size = {32, 32}
+                    --Invalid in Factorio 1.0
+                    --online_32.style.size = {32, 32}
                     end
                 end
 
@@ -2891,17 +2906,18 @@ script.on_event(
 script.on_event(
     defines.events.on_player_left_game,
     function(event)
+        count_online_players()
+
         if event and event.player_index and event.reason then
             local player = game.players[event.player_index]
             if player and player.valid then
                 --Refresh open player-online windows
                 for _, victim in pairs(game.connected_players) do
-                    if victim and victim.valid and victim.gui and
-                    victim.gui.left and victim.gui.left.m45_online then
+                    if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
                         make_m45_online_window(victim)
                     end
                 end
-                
+
                 local reason = {
                     "(Quit)",
                     "(Dropped)",
@@ -3365,10 +3381,11 @@ script.on_event(
 script.on_nth_tick(
     1800,
     function(event)
+        count_online_players()
+        
         --Refresh open player-online windows
         for _, victim in pairs(game.connected_players) do
-            if victim and victim.valid and victim.gui and
-            victim.gui.left and victim.gui.left.m45_online then
+            if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
                 victim.gui.left.m45_online.destroy()
                 make_m45_online_window(victim)
             end
