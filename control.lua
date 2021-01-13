@@ -1096,7 +1096,7 @@ local function make_m45_info_window(player)
             tab6_title_bar_frame.add {
                 type = "label",
                 name = "tab6_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Help:[/font]"
+                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Patreon Information:[/font]"
             }
             local tab6_close_button =
                 tab6_title_bar_frame.add {
