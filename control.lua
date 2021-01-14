@@ -192,7 +192,7 @@ local function make_m45_online_window(player)
         if not player.gui.left.m45_online then
             local main_flow =
                 player.gui.left.add {
-                type = "frame",
+                type = "flow",
                 name = "m45_online",
                 direction = "vertical"
             }
@@ -208,14 +208,14 @@ local function make_m45_online_window(player)
             online_titlebar.style.horizontal_align = "center"
             online_titlebar.style.horizontally_stretchable = true
 
-            if not global.player_count then
-                count_players_online()
+            if not global.player_count or not global.player_list then
+                update_player_list()
             end
+
             online_titlebar.add {
                 type = "label",
                 name = "online_title",
-                caption = "[entity=character][font=default-large-bold]Players Online: " .. global.player_count .. "[/font]",
-                tooltip = "M45 script version: " .. svers
+                caption = "[entity=character][font=default-large-bold]Players Online: " .. global.player_count .. "[/font]"
             }
 
             --CLOSE BUTTON--
@@ -235,26 +235,18 @@ local function make_m45_online_window(player)
 
             local online_main =
                 main_flow.add {
-                type = "frame",
+                type = "scroll-pane",
                 direction = "vertical"
             }
+            online_main.style.maximal_height = ((player.display_resolution.height - 900) / player.display_scale) 
 
-            for i, victim in pairs(game.connected_players) do
+            for i, target in pairs(global.player_list) do
+                local victim = target.victim
+
                 local pframe =
                     online_main.add {
-                    type = "flow",
+                    type = "frame",
                     direction = "horizontal"
-                }
-                local name_label =
-                    pframe.add {
-                    type = "label",
-                    caption = i
-                }
-                name_label.style.width = 32
-                local name_label =
-                    pframe.add {
-                    type = "line",
-                    direction = "vertical"
                 }
                 local name_label =
                     pframe.add {
@@ -262,17 +254,6 @@ local function make_m45_online_window(player)
                     caption = "  " .. victim.name
                 }
                 name_label.style.width = 200
-                local name_label =
-                    pframe.add {
-                    type = "line",
-                    direction = "vertical"
-                }
-                local score_label =
-                    pframe.add {
-                    type = "label",
-                    caption = "  Score: " .. math.floor(global.active_playtime[victim.index] / 60.0 / 60.0)
-                }
-                score_label.style.width = 100
                 local name_label =
                     pframe.add {
                     type = "line",
@@ -312,8 +293,8 @@ local function make_m45_online_window(player)
                 }
                 score_label.style.width = 100
             end
+            end
         end
-    end
 end
 
 --M45 Info/Welcome window
@@ -440,6 +421,11 @@ local function make_m45_info_window(player)
                 type = "label",
                 caption = "[color=purple]NameisGareth[/color]"
             }
+            tab1_lframe.add {
+                type = "label",
+                caption = "[color=purple]Livedeath[/color]"
+            }
+            
             tab1_lframe.add {
                 type = "label",
                 caption = ""
@@ -1129,7 +1115,7 @@ local function make_m45_info_window(player)
             tab6_frame.style.vertical_align = "center"
             tab6_main_frame.add {
                 type = "sprite",
-                sprite = "file/img/patreon-64.png",
+                sprite = "file/img/patreon-64.png"
             }
             tab6_main_frame.add {
                 type = "label",
@@ -1163,7 +1149,8 @@ local function make_m45_info_window(player)
                 type = "label",
                 caption = ""
             }
-            local tab6_patreon_url = tab6_main_frame.add {
+            local tab6_patreon_url =
+                tab6_main_frame.add {
                 type = "text-box",
                 text = "https://www.patreon.com/m45sci",
                 name = "patreon_url"
@@ -1177,7 +1164,7 @@ local function make_m45_info_window(player)
             }
             tab6_main_frame.add {
                 type = "sprite",
-                sprite = "file/img/patreon-qr.png",
+                sprite = "file/img/patreon-qr.png"
             }
             tab6_main_frame.add {
                 type = "label",
@@ -1294,25 +1281,6 @@ local function update_banished_votes()
             end
             table.insert(global.send_to_surface, {victim = victim, surface = "hell", position = {0, 0}})
         end
-    end
-end
-
---Sort players
-local function sorttime(a, b)
-    if (not a or not b) then
-        return false
-    end
-
-    if (not a.time or not b.time) then
-        return false
-    end
-
-    if (a.time < b.time) then
-        return true
-    elseif (a.time > b.time) then
-        return false
-    else
-        return nil
     end
 end
 
@@ -1589,47 +1557,23 @@ end
 
 --Show players online to a player
 local function show_players(victim)
-    local numpeople = 0
+    if not global.player_list then
+        update_player_list()
+    end
+
+    local buf = ""
+    local count = 0
 
     --Cleaned up 12-2020
-    for _, player in pairs(game.connected_players) do
-        if (player and player.valid and player.connected) then
-            numpeople = (numpeople + 1)
-            local utag = "error"
-
-            --Catch all
-            if player.permission_group then
-                local gname = player.permission_group.name
-                utag = gname
-            else
-                utag = "none"
-            end
-
-            --Normal groups
-            if is_new(player) then
-                utag = "NEW"
-            end
-            if is_member(player) then
-                utag = "Members"
-            end
-            if is_regular(player) then
-                utag = "Regulars"
-            end
-            if is_banished(player) then
-                utag = "BANISHED"
-            end
-            if player.admin then
-                utag = "ADMINS"
-            end
-
-            if (global.active_playtime and global.active_playtime[player.index]) then
-                smart_print(victim, string.format("%-3d: %-18s Activity: %-4.3fh, Online: %-4.3fh, (%s)", numpeople, player.name, (global.active_playtime[player.index] / 60.0 / 60.0 / 60.0), (player.online_time / 60.0 / 60.0 / 60.0), utag))
-            end
-        end
+    for i, target in pairs(global.player_list) do
+        buf = buf .. string.format("%16s: - Score: %d - Online: %dm - (%s)\n",
+        target.victim.name, math.floor(target.time / 60 / 60), math.floor(target.time / 60 / 60), target.type)
     end
     --No one is online
-    if numpeople == 0 then
+    if global.player_count == 0 then
         smart_print(victim, "No players online.")
+    else
+        smart_print(victim, "Players Online: " .. global.player_count .."\n".. buf)
     end
 end
 
@@ -2602,49 +2546,10 @@ script.on_load(
                 "(See who is online)",
                 function(param)
                     local victim
-                    local is_admin = true
 
-                    --Check if admin for active argument
                     if param and param.player_index then
                         victim = game.players[param.player_index]
-                        if victim and victim.admin == false then
-                            is_admin = false
-                        end
                     end
-
-                    --If admin, show active players if specified
-                    if (param.parameter == "active" and is_admin) then
-                        local plen = 0
-                        local playtime = {}
-                        for pos, player in pairs(game.players) do
-                            playtime[pos] = {
-                                time = global.active_playtime[player.index],
-                                name = game.players[player.index].name
-                            }
-                            plen = plen + 1
-                            if plen > 3000 then --Max number of players to scan (lag)
-                                break
-                            end
-                        end
-
-                        --Sort players
-                        table.sort(playtime, sorttime)
-
-                        --Lets limit number of results shown
-                        for ipos, time in pairs(playtime) do
-                            if (time) then
-                                if (time.time) then
-                                    if ipos > (plen - 20) then
-                                        smart_print(victim, string.format("%-4d: %-32s Active: %-4.2fm", ipos, time.name, time.time / 60.0 / 60.0))
-                                    end
-                                end
-                            end
-                        end
-                        return
-                    end
-
-                    --Show players
-                    smart_print(victim, "PLAYERS ONLINE:")
                     show_players(victim)
                 end
             )
@@ -2919,24 +2824,74 @@ script.on_event(
 )
 
 --Count online players, store
-local function count_online_players()
+local function update_player_list()
+    --Sort by active time
+    local results = {}
     local count = 0
-    for i, _ in pairs(game.connected_players) do
+
+    --Init if needed
+    if not global.active_playtime then
+        global.active_playtime = {}
+    end
+
+    --Make a table with active time, handle missing data
+    for i, victim in pairs(game.connected_players) do
+        local utag
+
+        --Catch all
+        if victim.permission_group then
+            local gname = victim.permission_group.name
+            utag = gname
+        else
+            utag = "none"
+        end
+
+        --Normal groups
+        if is_new(victim) then
+            utag = "NEW"
+        end
+        if is_member(victim) then
+            utag = "Members"
+        end
+        if is_regular(victim) then
+            utag = "Regulars"
+        end
+        if is_banished(victim) then
+            utag = "BANISHED"
+        end
+        if victim.admin then
+            utag = "ADMINS"
+        end
+
+        if global.active_playtime[victim.index] then
+            table.insert(results, {victim = victim, score = global.active_playtime[victim.index], time=victim.online_time, type=utag})
+        else
+            table.insert(results, {victim = victim, score = 0, time=victim.online_time, type=utag})
+        end
+
         count = i
     end
-    for _, victim in pairs(game.connected_players) do
+    table.sort(
+        results,
+        function(k1, k2)
+            return k1.time > k2.time
+        end
+    )
+
+    for _, victim in pairs(results) do
         if victim.gui and victim.gui.top and victim.gui.top.online_button then
-            victim.gui.top.online_button.number = count
+            victim.gui.top.online_button.number = i
         end
     end
     global.player_count = count
+    global.player_list = results
 end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 script.on_event(
     defines.events.on_player_joined_game,
     function(event)
-        count_online_players()
+        update_player_list()
 
         if event and event.player_index then
             local player = game.players[event.player_index]
@@ -3026,12 +2981,11 @@ script.on_event(
     end
 )
 
-
 --Player disconnect messages, with reason (Fact >= v1.1)
 script.on_event(
     defines.events.on_player_left_game,
     function(event)
-        count_online_players()
+        update_player_list()
 
         if event and event.player_index and event.reason then
             local player = game.players[event.player_index]
@@ -3079,7 +3033,6 @@ script.on_event(
 
                 set_perms()
                 show_players(player)
-                smart_print(player, "[color=red](SYSTEM) To see online players or your active time, chat /online[/color]")
                 message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
             end
         end
@@ -3505,9 +3458,9 @@ script.on_event(
 script.on_nth_tick(
     1800,
     function(event)
-        count_online_players()
-        
-        --Refresh open player-online windows
+        update_player_list()
+
+        --Refresh open players-online windows
         for _, victim in pairs(game.connected_players) do
             if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
                 victim.gui.left.m45_online.destroy()
@@ -3625,7 +3578,7 @@ script.on_event(
                         player.gui.left.m45_online.destroy()
                     end
                 elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
-                        player.gui.center.m45_info_window.selected_tab_index = 6
+                    player.gui.center.m45_info_window.selected_tab_index = 6
                 elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
                     player.gui.center.m45_info_window.selected_tab_index = 5
                 end
