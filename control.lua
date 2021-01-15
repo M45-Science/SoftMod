@@ -183,6 +183,112 @@ local function is_banished(victim)
     return false
 end
 
+local function make_m45_online_submenu(player, target_name)
+    --make online root submenu
+    if player and target_name then
+    if player.gui and player.gui.center then
+        if not player.gui.center.online_submenu then
+            if not player.gui.center.online_submenu then
+                local main_flow =
+                    player.gui.center.add {
+                    type = "frame",
+                    name = "m45_online_submenu",
+                    direction = "vertical"
+                }
+                main_flow.style.horizontal_align = "left"
+                main_flow.style.vertical_align = "top"
+    
+                --Online Title Bar--
+                local online_submenu_titlebar =
+                    main_flow.add {
+                    type = "frame",
+                    direction = "horizontal"
+                }
+                online_submenu_titlebar.style.horizontal_align = "center"
+                online_submenu_titlebar.style.horizontally_stretchable = true
+    
+                if not global.player_count or not global.player_list then
+                    update_player_list()
+                end
+    
+                online_submenu_titlebar.add {
+                    type = "label",
+                    name = "online_title",
+                    caption = target_name
+                }
+    
+                --CLOSE BUTTON--
+                local online_submenu_close_button =
+                online_submenu_titlebar.add {
+                    type = "flow",
+                    direction = "horizontal"
+                }
+                online_submenu_close_button.style.horizontal_align = "right"
+                online_submenu_close_button.style.horizontally_stretchable = true
+                online_submenu_close_button.add {
+                    type = "sprite-button",
+                    name = "m45_online_submenu_close_button",
+                    sprite = "file/img/close-24.png",
+                    tooltip = "Close this window"
+                }
+    
+                local online_submenu_main =
+                    main_flow.add {
+                    type = "frame",
+                    direction = "vertical"
+                }
+                online_submenu_main.add {
+                    type = "button",
+                    caption = "[item=programmable-speaker] Message",
+                    name = "whisper"
+                }
+                online_submenu_main.add {
+                    type = "button",
+                    caption = "[item=gate] Ignore",
+                    name = "ignore"
+                }
+                online_submenu_main.add {
+                    type = "button",
+                    caption = "[item=artillery-targeting-remote] Find On Map",
+                    name = "find_on_map"
+                }
+                    
+            end
+        end
+    end
+end
+end
+
+local function destroy_m45_online_submenu(player, target_name)
+    --destroy online root submenu
+end
+
+local function handle_m45_online_submenu(player, target_name)
+    --init if needed
+    if not global.m45_online_submenu_target then
+        global.m45_online_submenu_target = {}
+    end
+    if not global.m45_online_submenu_type then
+        global.m45_online_submenu_type = {}
+    end
+
+    --Empty, add target
+    if not global.m45_online_submenu_target[player.index] then
+        global.m45_online_submenu_target[player.index] = target_name
+        make_m45_online_submenu(player, target_name)
+
+    --Already targeting something else
+    elseif global.m45_online_submenu_target[player.index] ~= target_name then
+        destroy_m45_online_submenu(player, target_name)
+        make_m45_online_submenu(player, target_name)
+
+    --Target is already the same
+    elseif global.m45_online_submenu_target[player.index] == taget_name then
+        --Close sub-menus
+        destroy_m45_online_submenu(player, target_name)
+    end
+end
+
 --M45 Online Players Window
 local function make_m45_online_window(player)
     if player.gui and player.gui.left then
@@ -248,6 +354,12 @@ local function make_m45_online_window(player)
                     type = "frame",
                     direction = "horizontal"
                 }
+                local submenu = pframe.add {
+                    type = "button",
+                    caption = ">",
+                    name = "m45_online_submenu,"..victim.name --Pass name
+                }
+                submenu.style.width = 32
                 local name_label =
                     pframe.add {
                     type = "label",
@@ -3557,28 +3669,39 @@ script.on_event(
         if event and event.element and event.element.valid and event.player_index then
             local player = game.players[event.player_index]
 
+            local args = mysplit(event.element.name, ",")
+
             if player and player.valid then
+                --Info window close
                 if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
                     player.gui.center.m45_info_window.destroy()
                     return
+                --Online sun-menu root
+                elseif args and args[2] and args[1] == "m45_online_submenu" then
+                    handle_m45_online_submenu(player, args[2])
+                --Info window toggle
                 elseif event.element.name == "m45_button" then
                     if player.gui and player.gui.center and player.gui.center.m45_info_window then
                         player.gui.center.m45_info_window.destroy()
                     else
                         make_m45_info_window(player)
                     end
+                --Online window toggle
                 elseif event.element.name == "online_button" then
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
                     else
                         make_m45_online_window(player)
                     end
+                --Online window close
                 elseif event.element.name == "m45_online_close_button" then
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
                     end
+                --Patreon changetab button (info windows)
                 elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
                     player.gui.center.m45_info_window.selected_tab_index = 6
+                --QR changetab button (info window)
                 elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
                     player.gui.center.m45_info_window.selected_tab_index = 5
                 end
