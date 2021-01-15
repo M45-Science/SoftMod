@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v540-1-14-2021-0855p-exp"
+local svers = "v540-1-14-2021-1018p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -772,6 +772,15 @@ local function make_m45_info_window(player)
             tab2_main_frame.style.padding = 4
 
             tab2_main_frame.style.horizontally_stretchable = true
+            tab2_main_frame.add {
+                type = "label",
+                name = "tab2_score",
+                caption = "[color=red][font=default-large-bold]Your Activity Score: " .. math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = ""
+            }
             tab2_main_frame.add {
                 type = "label",
                 caption = "[recipe=construction-robot]   [font=default-bold]Membership is automatic, and based on activity.[/font] Your current activity score is listed above."
