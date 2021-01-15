@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v539-1-12-2021-1035p-exp"
+local svers = "v540-1-14-2021-0855p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -186,77 +186,127 @@ end
 local function make_m45_online_submenu(player, target_name)
     --make online root submenu
     if player and target_name then
-    if player.gui and player.gui.center then
-        if not player.gui.center.online_submenu then
-            if not player.gui.center.online_submenu then
-                local main_flow =
-                    player.gui.center.add {
-                    type = "frame",
-                    name = "m45_online_submenu",
-                    direction = "vertical"
-                }
-                main_flow.style.horizontal_align = "left"
-                main_flow.style.vertical_align = "top"
-    
-                --Online Title Bar--
-                local online_submenu_titlebar =
-                    main_flow.add {
-                    type = "frame",
-                    direction = "horizontal"
-                }
-                online_submenu_titlebar.style.horizontal_align = "center"
-                online_submenu_titlebar.style.horizontally_stretchable = true
-    
-                if not global.player_count or not global.player_list then
-                    update_player_list()
+        if player.gui and player.gui.screen then
+            if not player.gui.screen.online_submenu then
+                if not player.gui.screen.online_submenu then
+                    local main_flow =
+                        player.gui.screen.add {
+                        type = "frame",
+                        name = "m45_online_submenu",
+                        direction = "vertical"
+                    }
+                    main_flow.style.horizontal_align = "center"
+                    main_flow.style.vertical_align = "center"
+
+                    --Online Title Bar--
+                    local online_submenu_titlebar =
+                        main_flow.add {
+                        type = "frame",
+                        direction = "horizontal"
+                    }
+                    online_submenu_titlebar.drag_target = main_flow
+                    online_submenu_titlebar.style.horizontal_align = "center"
+                    online_submenu_titlebar.style.horizontally_stretchable = true
+
+                    if not global.player_count or not global.player_list then
+                        update_player_list()
+                    end
+
+                    online_submenu_titlebar.add {
+                        type = "label",
+                        name = "online_title",
+                        style = "frame_title",
+                        caption = "Player: " .. target_name
+                    }
+                    local pusher = online_submenu_titlebar.add {type = "empty-widget", style = "draggable_space_header"}
+                    pusher.style.vertically_stretchable = true
+                    pusher.style.horizontally_stretchable = true
+                    pusher.drag_target = main_flow
+
+                    online_submenu_titlebar.add {
+                        type = "sprite-button",
+                        name = "m45_online_submenu_close_button",
+                        sprite = "utility/close_white",
+                        style = "frame_action_button",
+                        tooltip = "Close this window"
+                    }
+
+                    local online_submenu_main =
+                        main_flow.add {
+                        type = "frame",
+                        direction = "vertical"
+                    }
+                    online_submenu_main.style.horizontal_align = "center"
+
+                    local whisper_frame =
+                        online_submenu_main.add {
+                        type = "flow",
+                        direction = "horizontal"
+                    }
+                    local whisper =
+                        whisper_frame.add {
+                        type = "button",
+                        caption = "[item=programmable-speaker] Message",
+                        name = "whisper"
+                    }
+                    whisper_frame.add {
+                        type = "label",
+                        caption = "  "
+                    }
+                    local whiser_textbox =
+                        whisper_frame.add {
+                        type = "text-box",
+                        text = "Hey!",
+                        name = "whisper_textbox"
+                    }
+                    whisper.style.width = 125
+                    whisper.style.horizontal_align = "left"
+
+                    local ignore_frame =
+                        online_submenu_main.add {
+                        type = "flow",
+                        direction = "horizontal"
+                    }
+                    local ignore =
+                        ignore_frame.add {
+                        type = "button",
+                        caption = "[item=gate] Ignore",
+                        name = "ignore"
+                    }
+                    ignore.style.width = 125
+                    ignore.style.horizontal_align = "left"
+
+                    local find_on_map_frame =
+                        online_submenu_main.add {
+                        type = "flow",
+                        direction = "horizontal"
+                    }
+                    local find_on_map =
+                        find_on_map_frame.add {
+                        type = "button",
+                        caption = "[item=artillery-targeting-remote] Find On Map",
+                        name = "find_on_map"
+                    }
+                    find_on_map_frame.add {
+                        type = "label",
+                        caption = "  "
+                    }
+
+                    local victim = game.players[target_name]
+                    if victim and victim.valid then
+                        local whiser_textbox =
+                            find_on_map_frame.add {
+                            type = "label",
+                            caption = "  Location: " .. math.floor(victim.position.x) .. ", " .. math.floor(victim.position.y),
+                            name = "whisper_gps"
+                        }
+                    end
+                    find_on_map.style.width = 125
+                    find_on_map.style.horizontal_align = "left"
                 end
-    
-                online_submenu_titlebar.add {
-                    type = "label",
-                    name = "online_title",
-                    caption = target_name
-                }
-    
-                --CLOSE BUTTON--
-                local online_submenu_close_button =
-                online_submenu_titlebar.add {
-                    type = "flow",
-                    direction = "horizontal"
-                }
-                online_submenu_close_button.style.horizontal_align = "right"
-                online_submenu_close_button.style.horizontally_stretchable = true
-                online_submenu_close_button.add {
-                    type = "sprite-button",
-                    name = "m45_online_submenu_close_button",
-                    sprite = "file/img/close-24.png",
-                    tooltip = "Close this window"
-                }
-    
-                local online_submenu_main =
-                    main_flow.add {
-                    type = "frame",
-                    direction = "vertical"
-                }
-                online_submenu_main.add {
-                    type = "button",
-                    caption = "[item=programmable-speaker] Message",
-                    name = "whisper"
-                }
-                online_submenu_main.add {
-                    type = "button",
-                    caption = "[item=gate] Ignore",
-                    name = "ignore"
-                }
-                online_submenu_main.add {
-                    type = "button",
-                    caption = "[item=artillery-targeting-remote] Find On Map",
-                    name = "find_on_map"
-                }
-                    
             end
         end
     end
-end
 end
 
 local function destroy_m45_online_submenu(player, target_name)
@@ -268,21 +318,17 @@ local function handle_m45_online_submenu(player, target_name)
     if not global.m45_online_submenu_target then
         global.m45_online_submenu_target = {}
     end
-    if not global.m45_online_submenu_type then
-        global.m45_online_submenu_type = {}
-    end
 
     --Empty, add target
     if not global.m45_online_submenu_target[player.index] then
+        --Already targeting something else
         global.m45_online_submenu_target[player.index] = target_name
         make_m45_online_submenu(player, target_name)
-
-    --Already targeting something else
     elseif global.m45_online_submenu_target[player.index] ~= target_name then
+        --Target is already the same
         destroy_m45_online_submenu(player, target_name)
+        global.m45_online_submenu_target[player.index] = target_name
         make_m45_online_submenu(player, target_name)
-
-    --Target is already the same
     elseif global.m45_online_submenu_target[player.index] == taget_name then
         --Close sub-menus
         destroy_m45_online_submenu(player, target_name)
@@ -321,7 +367,8 @@ local function make_m45_online_window(player)
             online_titlebar.add {
                 type = "label",
                 name = "online_title",
-                caption = "[entity=character][font=default-large-bold]Players Online: " .. global.player_count .. "[/font]"
+                style = "frame_title",
+                caption = "Players Online: " .. global.player_count
             }
 
             --CLOSE BUTTON--
@@ -335,7 +382,8 @@ local function make_m45_online_window(player)
             online_close_button.add {
                 type = "sprite-button",
                 name = "m45_online_close_button",
-                sprite = "file/img/close-24.png",
+                sprite = "utility/close_white",
+                style = "frame_action_button",
                 tooltip = "Close this window"
             }
 
@@ -344,7 +392,7 @@ local function make_m45_online_window(player)
                 type = "scroll-pane",
                 direction = "vertical"
             }
-            online_main.style.maximal_height = ((player.display_resolution.height - 900) / player.display_scale) 
+            online_main.style.maximal_height = ((player.display_resolution.height - 900) / player.display_scale)
 
             for i, target in pairs(global.player_list) do
                 local victim = target.victim
@@ -354,12 +402,13 @@ local function make_m45_online_window(player)
                     type = "frame",
                     direction = "horizontal"
                 }
-                local submenu = pframe.add {
-                    type = "button",
-                    caption = ">",
-                    name = "m45_online_submenu,"..victim.name --Pass name
-                }
-                submenu.style.width = 32
+                --local submenu =
+                --    pframe.add {
+                --    type = "sprite-button",
+                --    sprite = "utility/expand",
+                --    name = "m45_online_submenu," .. victim.name --Pass name
+                --}
+                --submenu.style.width = 32
                 local name_label =
                     pframe.add {
                     type = "label",
@@ -405,8 +454,8 @@ local function make_m45_online_window(player)
                 }
                 score_label.style.width = 100
             end
-            end
         end
+    end
 end
 
 --M45 Info/Welcome window
@@ -418,11 +467,54 @@ local function make_m45_info_window(player)
             player.gui.center.splash_screen.destroy()
         end
 
-        if player.gui.center.m45_info_window then
-            player.gui.center.m45_info_window.destroy()
+        if player.gui.screen.m45_info_window then
+            player.gui.screen.m45_info_window.destroy()
         end
-        if not player.gui.center.m45_info_window then
-            local info_pane = player.gui.center.add {type = "tabbed-pane", name = "m45_info_window"}
+        if not player.gui.screen.m45_info_window then
+            local main_flow =
+                player.gui.screen.add {
+                type = "frame",
+                name = "m45_info_window",
+                direction = "vertical"
+            }
+            main_flow.style.horizontal_align = "center"
+            main_flow.style.vertical_align = "center"
+            main_flow.force_auto_center()
+
+            --Online Title Bar--
+            local info_titlebar =
+                main_flow.add {
+                type = "flow",
+                direction = "horizontal"
+            }
+            info_titlebar.drag_target = main_flow
+            info_titlebar.style.horizontal_align = "center"
+            info_titlebar.style.horizontally_stretchable = true
+
+            if not global.player_count or not global.player_list then
+                update_player_list()
+            end
+
+            info_titlebar.add {
+                type = "label",
+                name = "online_title",
+                style = "frame_title",
+                caption = "M45 Science, a gaming community."
+            }
+            local pusher = info_titlebar.add {type = "empty-widget", style = "draggable_space_header"}
+            pusher.style.vertically_stretchable = true
+            pusher.style.horizontally_stretchable = true
+            pusher.drag_target = main_flow
+
+            info_titlebar.add {
+                type = "sprite-button",
+                name = "m45_info_close_button",
+                sprite = "utility/close_white",
+                style = "frame_action_button",
+                tooltip = "Close this window"
+            }
+
+            local info_pane = main_flow.add {type = "tabbed-pane", name = "m45_info_window_tabs"}
             info_pane.style.minimal_width = 700
 
             local tab1 = info_pane.add {type = "tab", caption = "[entity=character] Welcome"}
@@ -440,35 +532,6 @@ local function make_m45_info_window(player)
             }
             tab1_frame.style.horizontal_align = "center"
 
-            --Tab 1 -- Title Bar
-            local tab1_title_bar_frame =
-                tab1_frame.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            tab1_title_bar_frame.style.horizontal_align = "center"
-            tab1_title_bar_frame.style.horizontally_stretchable = true
-            tab1_title_bar_frame.add {
-                type = "label",
-                name = "tab1_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Server Name: [M45] " .. global.servname .. "[/font]",
-                tooltip = "M45 script version: " .. svers
-            }
-
-            --CLOSE BUTTON--
-            local tab1_close_button =
-                tab1_title_bar_frame.add {
-                type = "flow",
-                direction = "horizontal"
-            }
-            tab1_close_button.style.horizontal_align = "right"
-            tab1_close_button.style.horizontally_stretchable = true
-            tab1_close_button.add {
-                type = "sprite-button",
-                name = "m45_info_close_button",
-                sprite = "file/img/close-24.png",
-                tooltip = "Close this window"
-            }
             --Tab 1 -- Main
             local tab1_main_frame =
                 tab1_frame.add {
@@ -537,7 +600,7 @@ local function make_m45_info_window(player)
                 type = "label",
                 caption = "[color=purple]Livedeath[/color]"
             }
-            
+
             tab1_lframe.add {
                 type = "label",
                 caption = ""
@@ -545,6 +608,7 @@ local function make_m45_info_window(player)
             tab1_lframe.add {
                 type = "button",
                 caption = "Help Out!",
+                style = "red_button",
                 name = "patreon_button"
             }
             tab1_lframe.style.horizontal_align = "center"
@@ -680,6 +744,7 @@ local function make_m45_info_window(player)
             tab1_discord_sub2_frame.add {
                 type = "button",
                 caption = "Get QR Code",
+                style = "rounded_button",
                 name = "qr_button"
             }
             info_pane.add_tab(tab1, tab1_frame)
@@ -694,33 +759,6 @@ local function make_m45_info_window(player)
             }
             tab2_frame.style.vertically_squashable = true
             tab2_frame.style.horizontal_align = "center"
-
-            --tab 2 -- Title Bar
-            local tab2_title_bar_frame =
-                tab2_frame.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            tab2_title_bar_frame.style.horizontal_align = "center"
-            tab2_title_bar_frame.style.horizontally_stretchable = true
-            tab2_title_bar_frame.add {
-                type = "label",
-                name = "tab2_title",
-                caption = "[item=iron-gear-wheel]  [color=red][font=default-large-bold]Your Activity Score: " .. math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
-            }
-            local tab2_close_button =
-                tab2_title_bar_frame.add {
-                type = "flow",
-                direction = "horizontal"
-            }
-            tab2_close_button.style.horizontal_align = "right"
-            tab2_close_button.style.horizontally_stretchable = true
-            tab2_close_button.add {
-                type = "sprite-button",
-                name = "m45_info_close_button",
-                sprite = "file/img/close-24.png",
-                tooltip = "Close this window"
-            }
 
             --tab 2 -- Main
             local tab2_main_frame =
@@ -879,33 +917,6 @@ local function make_m45_info_window(player)
             tab3_frame.style.vertically_squashable = true
             tab3_frame.style.horizontal_align = "center"
 
-            --tab 3 -- Title Bar
-            local tab3_title_bar_frame =
-                tab3_frame.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            tab3_title_bar_frame.style.horizontal_align = "center"
-            tab3_title_bar_frame.style.horizontally_stretchable = true
-            tab3_title_bar_frame.add {
-                type = "label",
-                name = "tab3_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Rules:[/font]"
-            }
-            local tab3_close_button =
-                tab3_title_bar_frame.add {
-                type = "flow",
-                direction = "horizontal"
-            }
-            tab3_close_button.style.horizontal_align = "right"
-            tab3_close_button.style.horizontally_stretchable = true
-            tab3_close_button.add {
-                type = "sprite-button",
-                name = "m45_info_close_button",
-                sprite = "file/img/close-24.png",
-                tooltip = "Close this window"
-            }
-
             --tab 3 -- Main
             local tab3_main_frame =
                 tab3_frame.add {
@@ -981,33 +992,6 @@ local function make_m45_info_window(player)
             }
             tab4_frame.style.vertically_squashable = true
             tab4_frame.style.horizontal_align = "center"
-
-            --tab 4 -- Title Bar
-            local tab4_title_bar_frame =
-                tab4_frame.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            tab4_title_bar_frame.style.horizontal_align = "center"
-            tab4_title_bar_frame.style.horizontally_stretchable = true
-            tab4_title_bar_frame.add {
-                type = "label",
-                name = "tab4_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Tips and tricks:[/font]"
-            }
-            local tab4_close_button =
-                tab4_title_bar_frame.add {
-                type = "flow",
-                direction = "horizontal"
-            }
-            tab4_close_button.style.horizontal_align = "right"
-            tab4_close_button.style.horizontally_stretchable = true
-            tab4_close_button.add {
-                type = "sprite-button",
-                name = "m45_info_close_button",
-                sprite = "file/img/close-24.png",
-                tooltip = "Close this window"
-            }
 
             --tab 4 -- Main
             local tab4_main_frame =
@@ -1125,33 +1109,6 @@ local function make_m45_info_window(player)
                 direction = "vertical"
             }
 
-            --tab 5 -- Title Bar
-            local tab5_title_bar_frame =
-                tab5_frame.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            tab5_title_bar_frame.style.horizontal_align = "center"
-            tab5_title_bar_frame.style.horizontally_stretchable = true
-            tab5_title_bar_frame.add {
-                type = "label",
-                name = "tab5_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Discord Server QR Code (Scan with phone)[/font]"
-            }
-            local tab5_close_button =
-                tab5_title_bar_frame.add {
-                type = "flow",
-                direction = "horizontal"
-            }
-            tab5_close_button.style.horizontal_align = "right"
-            tab5_close_button.style.horizontally_stretchable = true
-            tab5_close_button.add {
-                type = "sprite-button",
-                name = "m45_info_close_button",
-                sprite = "file/img/close-24.png",
-                tooltip = "Close this window"
-            }
-
             local tab5_qr_frame =
                 tab5_frame.add {
                 type = "flow",
@@ -1185,33 +1142,6 @@ local function make_m45_info_window(player)
                 info_pane.add {
                 type = "flow",
                 direction = "vertical"
-            }
-
-            --tab 6 -- Title Bar
-            local tab6_title_bar_frame =
-                tab6_frame.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            tab6_title_bar_frame.style.horizontal_align = "center"
-            tab6_title_bar_frame.style.horizontally_stretchable = true
-            tab6_title_bar_frame.add {
-                type = "label",
-                name = "tab6_title",
-                caption = "[item=iron-gear-wheel]  [font=default-large-bold]Patreon Information:[/font]"
-            }
-            local tab6_close_button =
-                tab6_title_bar_frame.add {
-                type = "flow",
-                direction = "horizontal"
-            }
-            tab6_close_button.style.horizontal_align = "right"
-            tab6_close_button.style.horizontally_stretchable = true
-            tab6_close_button.add {
-                type = "sprite-button",
-                name = "m45_info_close_button",
-                sprite = "file/img/close-24.png",
-                tooltip = "Close this window"
             }
 
             local tab6_main_frame =
@@ -1678,14 +1608,13 @@ local function show_players(victim)
 
     --Cleaned up 12-2020
     for i, target in pairs(global.player_list) do
-        buf = buf .. string.format("%16s: - Score: %d - Online: %dm - (%s)\n",
-        target.victim.name, math.floor(target.time / 60 / 60), math.floor(target.time / 60 / 60), target.type)
+        buf = buf .. string.format("%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.time / 60 / 60), math.floor(target.time / 60 / 60), target.type)
     end
     --No one is online
     if global.player_count == 0 then
         smart_print(victim, "No players online.")
     else
-        smart_print(victim, "Players Online: " .. global.player_count .."\n".. buf)
+        smart_print(victim, "Players Online: " .. global.player_count .. "\n" .. buf)
     end
 end
 
@@ -2976,9 +2905,9 @@ local function update_player_list()
         end
 
         if global.active_playtime[victim.index] then
-            table.insert(results, {victim = victim, score = global.active_playtime[victim.index], time=victim.online_time, type=utag})
+            table.insert(results, {victim = victim, score = global.active_playtime[victim.index], time = victim.online_time, type = utag})
         else
-            table.insert(results, {victim = victim, score = 0, time=victim.online_time, type=utag})
+            table.insert(results, {victim = victim, score = 0, time = victim.online_time, type = utag})
         end
 
         count = i
@@ -3059,8 +2988,8 @@ script.on_event(
                 end
 
                 get_permgroup()
-                if player.gui and player.gui.center and player.gui.center.m45_info_window then
-                    player.gui.center.m45_info_window.destroy()
+                if player.gui and player.gui.screen and player.gui.screen.m45_info_window then
+                    player.gui.screen.m45_info_window.destroy()
                 end
 
                 if is_new(player) then
@@ -3673,37 +3602,47 @@ script.on_event(
 
             if player and player.valid then
                 --Info window close
-                if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
-                    player.gui.center.m45_info_window.destroy()
+                if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                    --Online sun-menu root
+                    player.gui.screen.m45_info_window.destroy()
                     return
-                --Online sun-menu root
                 elseif args and args[2] and args[1] == "m45_online_submenu" then
+                    --Online sun-menu gos
                     handle_m45_online_submenu(player, args[2])
-                --Info window toggle
+                elseif event.element.name == "find_on_map" then
+                    if global.m45_online_submenu_target and global.m45_online_submenu_target[player.index] then
+                        local victim_name = global.m45_online_submenu_target[player.index]
+                        local victim = game.players[victim_name]
+                        if victim and victim.valid then
+                            player.open_map(victim.position, 0.25)
+                        else
+                            smart_print(player, "Invalid target.")
+                        end
+                    end
                 elseif event.element.name == "m45_button" then
-                    if player.gui and player.gui.center and player.gui.center.m45_info_window then
-                        player.gui.center.m45_info_window.destroy()
+                    --Online window toggle
+                    if player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                        player.gui.screen.m45_info_window.destroy()
                     else
                         make_m45_info_window(player)
                     end
-                --Online window toggle
                 elseif event.element.name == "online_button" then
+                    --Online window close
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
                     else
                         make_m45_online_window(player)
                     end
-                --Online window close
                 elseif event.element.name == "m45_online_close_button" then
+                    --Patreon changetab button (info windows)
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
                     end
-                --Patreon changetab button (info windows)
-                elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
-                    player.gui.center.m45_info_window.selected_tab_index = 6
-                --QR changetab button (info window)
-                elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.center.m45_info_window then
-                    player.gui.center.m45_info_window.selected_tab_index = 5
+                elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                    --QR changetab button (info window)
+                    player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 6
+                elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                    player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 5
                 end
             end
         end
