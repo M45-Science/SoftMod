@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v540-1-14-2021-1018p-exp"
+local svers = "v540-1-15-2021-0331p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -101,7 +101,7 @@ local function smart_print(player, message)
         if player then
             player.print(message)
         else
-            rcon.print("~" .. message)
+            rcon.print("~ "..message)
         end
     end
 end
@@ -1684,7 +1684,7 @@ local function show_players(victim)
 
     --Cleaned up 12-2020
     for i, target in pairs(global.player_list) do
-        buf = buf .. string.format("%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.time / 60 / 60), math.floor(target.time / 60 / 60), target.type)
+        buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.time / 60 / 60), math.floor(target.time / 60 / 60), target.type)
     end
     --No one is online
     if global.player_count == 0 then
