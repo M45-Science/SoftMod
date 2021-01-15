@@ -344,7 +344,7 @@ local function make_m45_online_window(player)
         if not player.gui.left.m45_online then
             local main_flow =
                 player.gui.left.add {
-                type = "flow",
+                type = "frame",
                 name = "m45_online",
                 direction = "vertical"
             }
@@ -354,7 +354,7 @@ local function make_m45_online_window(player)
             --Online Title Bar--
             local online_titlebar =
                 main_flow.add {
-                type = "frame",
+                type = "flow",
                 direction = "horizontal"
             }
             online_titlebar.style.horizontal_align = "center"
@@ -392,8 +392,9 @@ local function make_m45_online_window(player)
                 type = "scroll-pane",
                 direction = "vertical"
             }
-            online_main.style.maximal_height = ((player.display_resolution.height - 900) / player.display_scale)
+            online_main.style.maximal_height = 500
 
+            --for x = 0, 100, 1 do
             for i, target in pairs(global.player_list) do
                 local victim = target.victim
 
@@ -454,6 +455,7 @@ local function make_m45_online_window(player)
                 }
                 score_label.style.width = 100
             end
+        --end
         end
     end
 end
