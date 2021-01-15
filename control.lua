@@ -183,6 +183,71 @@ local function is_banished(victim)
     return false
 end
 
+--Count online players, store
+local function update_player_list()
+    --Sort by active time
+    local results = {}
+    local count = 0
+
+    --Init if needed
+    if not global.active_playtime then
+        global.active_playtime = {}
+    end
+
+    --Make a table with active time, handle missing data
+    for i, victim in pairs(game.connected_players) do
+        local utag
+
+        --Catch all
+        if victim.permission_group then
+            local gname = victim.permission_group.name
+            utag = gname
+        else
+            utag = "none"
+        end
+
+        --Normal groups
+        if is_new(victim) then
+            utag = "NEW"
+        end
+        if is_member(victim) then
+            utag = "Members"
+        end
+        if is_regular(victim) then
+            utag = "Regulars"
+        end
+        if is_banished(victim) then
+            utag = "BANISHED"
+        end
+        if victim.admin then
+            utag = "ADMINS"
+        end
+
+        if global.active_playtime[victim.index] then
+            table.insert(results, {victim = victim, score = global.active_playtime[victim.index], time = victim.online_time, type = utag})
+        else
+            table.insert(results, {victim = victim, score = 0, time = victim.online_time, type = utag})
+        end
+
+        count = i
+    end
+    table.sort(
+        results,
+        function(k1, k2)
+            return k1.time > k2.time
+        end
+    )
+
+    for _, victim in pairs(results) do
+        if victim.gui and victim.gui.top and victim.gui.top.online_button then
+            victim.gui.top.online_button.number = i
+        end
+    end
+    global.player_count = count
+    global.player_list = results
+end
+
+
 local function make_m45_online_submenu(player, target_name)
     --make online root submenu
     if player and target_name then
@@ -2874,70 +2939,6 @@ script.on_event(
         end
     end
 )
-
---Count online players, store
-local function update_player_list()
-    --Sort by active time
-    local results = {}
-    local count = 0
-
-    --Init if needed
-    if not global.active_playtime then
-        global.active_playtime = {}
-    end
-
-    --Make a table with active time, handle missing data
-    for i, victim in pairs(game.connected_players) do
-        local utag
-
-        --Catch all
-        if victim.permission_group then
-            local gname = victim.permission_group.name
-            utag = gname
-        else
-            utag = "none"
-        end
-
-        --Normal groups
-        if is_new(victim) then
-            utag = "NEW"
-        end
-        if is_member(victim) then
-            utag = "Members"
-        end
-        if is_regular(victim) then
-            utag = "Regulars"
-        end
-        if is_banished(victim) then
-            utag = "BANISHED"
-        end
-        if victim.admin then
-            utag = "ADMINS"
-        end
-
-        if global.active_playtime[victim.index] then
-            table.insert(results, {victim = victim, score = global.active_playtime[victim.index], time = victim.online_time, type = utag})
-        else
-            table.insert(results, {victim = victim, score = 0, time = victim.online_time, type = utag})
-        end
-
-        count = i
-    end
-    table.sort(
-        results,
-        function(k1, k2)
-            return k1.time > k2.time
-        end
-    )
-
-    for _, victim in pairs(results) do
-        if victim.gui and victim.gui.top and victim.gui.top.online_button then
-            victim.gui.top.online_button.number = i
-        end
-    end
-    global.player_count = count
-    global.player_list = results
-end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 script.on_event(
