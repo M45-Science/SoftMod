@@ -238,9 +238,9 @@ local function update_player_list()
         end
     )
 
-    for _, victim in pairs(results) do
-        if victim.gui and victim.gui.top and victim.gui.top.online_button then
-            victim.gui.top.online_button.number = count
+    for _, item in pairs(results) do
+        if item.victim.gui and item.victim.gui.top and item.victim.gui.top.online_button then
+            item.ictim.gui.top.online_button.number = count
         end
     end
     global.player_count = count
