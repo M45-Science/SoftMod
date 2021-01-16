@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v540-1-15-2021-0331p-exp"
+local svers = "v541-1-15-2021-0520p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -3245,41 +3245,27 @@ script.on_event(
 
                             --Check that object was able to be cloned
                             if saveobj and saveobj.valid then
-                                local cwire
-                                local rwire
-                                local gwire
+                                local signal_wires
+                                local copper_wires
 
                                 --Fix wires... grr
-                                local wires = obj.circuit_connected_entities
-
-                                --Save wire connections
-                                if wires then
-                                    cwire = wires["copper"]
-                                    rwire = wires["red"]
-                                    gwire = wires["green"]
-                                end
-
+                                signal_wires = obj.circuit_connection_definitions 
                                 if obj.type == "electric-pole" then
-                                    wires = obj.neighbours
-                                    --Save wire connections
-
-                                    if wires then
-                                        cwire = wires["copper"]
-                                        rwire = wires["red"]
-                                        gwire = wires["green"]
-                                    end
+                                    copper_wires = obj.neighbours["copper"]
                                 end
+                                --game.print("SIGNALS: "..dump(signal_wires))
+                                --game.print("COPPER: "..dump(copper_wires))
 
                                 --Destroy orignal object.
                                 obj.destroy()
 
                                 --Create list if needed
                                 if not global.repobj then
-                                    global.repobj = {obj = {}, victim = {}, copper = {}, red = {}, green = {}, surface = {}}
+                                    global.repobj = {obj = {}, victim = {}, surface = {}, swires={}, cwires={} }
                                 end
 
                                 --Add obj to list
-                                table.insert(global.repobj, {obj = saveobj, victim = player, copper = cwire, red = rwire, green = gwire, surface = player.surface})
+                                table.insert(global.repobj, {obj = saveobj, victim = player, surface = player.surface, swires=signal_wires, cwires=copper_wires})
                             else
                                 console_print("pre_player_mined_item: unable to clone object.")
                             end
@@ -3720,22 +3706,18 @@ local function replace_with_clone(item)
     local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force})
 
     if rep then
-        --If we saved wire data, reconnect them now
-        if item.copper then
-            for ind, pole in pairs(item.copper) do
-                if pole.type == "electric-pole" then
-                    rep.connect_neighbour(pole)
-                end
+
+        if item.cwires then
+            for ind, pole in pairs(item.cwires) do
+                rep.connect_neighbour(pole)
             end
         end
-        if item.red then
-            for ind, pole in pairs(item.red) do
-                rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.red}
-            end
-        end
-        if item.green then
-            for ind, pole in pairs(item.green) do
-                rep.connect_neighbour {target_entity = pole, wire = defines.wire_type.green}
+
+
+        --If we saved signal wire data, reconnect them now
+        if item.swires then
+            for ind, pole in pairs(item.swires) do
+                rep.connect_neighbour(pole)
             end
         end
 
