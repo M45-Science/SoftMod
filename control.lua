@@ -240,7 +240,7 @@ local function update_player_list()
 
     for _, item in pairs(results) do
         if item.victim.gui and item.victim.gui.top and item.victim.gui.top.online_button then
-            item.ictim.gui.top.online_button.number = count
+            item.victim.gui.top.online_button.number = count
         end
     end
     global.player_count = count
