@@ -1517,48 +1517,6 @@ local function create_myglobals()
     if not global.no_fastreplace then
         global.no_fastreplace = false
     end
-
-    --Server List
-    if not global.servers then
-        global.servers = {
-            "Our Servers:",
-            "A-Rail World",
-            "B-Peaceful",
-            "C-Death World",
-            "[ v EXPERIMENTAL v ]",
-            "XA-Rail World-2 *",
-            "XB-Peaceful-2 *",
-            "XC-Death World-2 *",
-            "XD-Fear-The-Dark *",
-            "[ v REGULARS-ONLY v ]",
-            "RA-Space-Krastorio",
-            "RC-Death World-3 *",
-            "RD-Fortress Island *",
-            "* = Factorio 1.1.x"
-        }
-    end
-    if not global.ports then
-        global.ports = {
-            "",
-            "50000",
-            "50001",
-            "50002",
-            "",
-            "50200",
-            "50201",
-            "50202",
-            "50101",
-            --RB
-            "",
-            "50100",
-            "50102",
-            "50103",
-            ""
-        }
-    end
-    if not global.domain then
-        global.domain = "m45sci.xyz:"
-    end
 end
 
 --Create player globals, if needed
@@ -3864,42 +3822,6 @@ script.on_nth_tick(
 
                 --Done with list, invalidate it
                 global.untouchonj = nil
-            end
-        end
-    end
-)
-
---GUI state change, server list drop-down
-script.on_event(
-    defines.events.on_gui_selection_state_changed,
-    function(event)
-        --If event and player and element
-        if event and event.player_index and event.element then
-            local player = game.players[event.player_index]
-            local ele = event.element
-            --If player and element are valid
-            if player and player.valid and ele.valid then
-                --If object is server list
-                if player.gui and player.gui.top and player.gui.top.serverlist and ele.index == player.gui.top.serverlist.index then
-                    --Skip label
-                    if ele.selected_index > 1 then
-                        --if valid selected item, and globals
-                        if ele.selected_index and global.servers and global.ports and global.domain then
-                            --If item exists
-                            if global.ports[ele.selected_index] and global.servers[ele.selected_index] then
-                                if global.ports[ele.selected_index] ~= "" then
-                                    local addr = global.domain .. global.ports[ele.selected_index]
-                                    local servname = global.servers[ele.selected_index]
-                                    --smart_print(player, "Connecting to: " .. addr)
-                                    player.connect_to_server {address = addr, name = servname}
-                                end
-
-                                --Revert selection
-                                player.gui.top.serverlist.selected_index = 1
-                            end
-                        end
-                    end
-                end
             end
         end
     end
