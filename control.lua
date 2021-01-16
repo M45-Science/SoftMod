@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v541-1-15-2021-0520p-exp"
+local svers = "v541-1-15-2021-0953-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -240,7 +240,7 @@ local function update_player_list()
 
     for _, victim in pairs(results) do
         if victim.gui and victim.gui.top and victim.gui.top.online_button then
-            victim.gui.top.online_button.number = i
+            victim.gui.top.online_button.number = count
         end
     end
     global.player_count = count
