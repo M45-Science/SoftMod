@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v541-1-22-2021-0133p-exp"
+local svers = "v542-1-22-2021-0442p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -35,6 +35,9 @@ local function dodrawlogo()
             if global.m45logo then
                 rendering.destroy(global.m45logo)
             end
+            if global.m45logo_light then
+                rendering.destroy(global.m45logo_light)
+            end
             if global.m45text then
                 rendering.destroy(global.m45text)
             end
@@ -52,12 +55,21 @@ local function dodrawlogo()
             global.drawlogo = true
             global.m45logo =
                 rendering.draw_sprite {
-                sprite = "file/img/m45-pad.png",
+                sprite = "file/img/m45-pad-v2.png",
                 render_layer = "floor",
                 target = cpos,
                 x_scale = 0.5,
                 y_scale = 0.5,
                 surface = surf
+            }
+            global.m45logo_light =
+                rendering.draw_light {
+                sprite = "utility/light_medium",
+                render_layer = 148,
+                target = cpos,
+                scale = 8,
+                surface = surf,
+                minimum_darkness = 0.5
             }
             if not global.servname then
                 global.servname = ""
