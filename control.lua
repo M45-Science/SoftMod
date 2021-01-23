@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v542-1-22-2021-0442p-exp"
+local svers = "v542-1-23-2021-0403p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -27,7 +27,7 @@ end
 
 --Add M45 Logo to spawn area
 local function dodrawlogo()
-    local surf = game.surfaces["nauvis"]
+    local surf = global.psurf
     if surf then
         --Only draw if needed
         if not global.drawlogo then
@@ -49,6 +49,27 @@ local function dodrawlogo()
             local cpos = {x = 0, y = 0}
             if global.cspawnpos and global.cspawnpos.x then
                 cpos = global.cspawnpos
+            end
+
+            --Find nice clear area for spawn
+            local newpos =
+                global.psurf.find_non_colliding_position(
+                "crash-site-spaceship",
+                cpos,
+                1000,
+                0.1,
+                false
+            )
+            --Set spawn position if we found a better spot
+            if newpos and newpos.x ~= 0 and newpos.y ~= 0 then
+                cpos = newpos
+                global.cspawnpos = newpos
+            end
+
+            --Clear map at start to hide everything
+            if not global.map_started then
+                global.map_started = true
+                global.pforce.clear_chart()
             end
 
             --Set drawn flag
@@ -1619,6 +1640,14 @@ local function create_myglobals()
     if not global.no_fastreplace then
         global.no_fastreplace = false
     end
+
+    if not global.psurf then
+        global.psurf = game.surfaces[1]
+    end
+
+    if not global.pforce then
+        global.pforce = game.forces["player"]
+    end
 end
 
 --Create player globals, if needed
@@ -2778,8 +2807,8 @@ script.on_load(
                         end
                     end
 
-                    local psurface = game.surfaces["nauvis"]
-                    local pforce = game.forces["player"]
+                    local psurface = global.psurf
+                    local pforce = global.pforce
 
                     --use admin's force and position if available.
                     if victim and victim.valid then
@@ -2850,8 +2879,8 @@ script.on_load(
                     end
 
                     --Get surface and force
-                    local psurface = game.surfaces["nauvis"]
-                    local pforce = game.forces["player"]
+                    local psurface = global.psurf
+                    local pforce = global.pforce
                     --Default size
                     local size = 1024
 
@@ -2916,7 +2945,7 @@ script.on_load(
                         end
                     end
 
-                    local pforce = game.forces["player"]
+                    local pforce = global.pforce
 
                     --Use admin's force
                     if victim and victim.valid then
@@ -2978,7 +3007,7 @@ script.on_load(
                             game.speed = value
 
                             --Get default force
-                            local pforce = game.forces["player"]
+                            local pforce = global.pforce
 
                             --Use admin's force
                             if victim and victim.valid then
@@ -4059,8 +4088,8 @@ script.on_nth_tick(
                 icon = {type = "item", name = "heavy-armor"},
                 text = label
             }
-            local pforce = game.forces["player"]
-            local psurface = game.surfaces["nauvis"]
+            local pforce = global.pforce
+            local psurface = global.psurf
 
             if pforce and psurface then
                 global.servertag = pforce.add_chart_tag(psurface, chartTag)
