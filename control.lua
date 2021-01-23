@@ -55,7 +55,7 @@ local function dodrawlogo()
             global.drawlogo = true
             global.m45logo =
                 rendering.draw_sprite {
-                sprite = "file/img/m45-pad-v2.png",
+                sprite = "file/img/m45-pad-v3.png",
                 render_layer = "floor",
                 target = cpos,
                 x_scale = 0.5,
