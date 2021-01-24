@@ -66,12 +66,6 @@ local function dodrawlogo()
                 global.cspawnpos = newpos
             end
 
-            --Clear map at start to hide everything
-            if not global.map_started then
-                global.map_started = true
-                global.pforce.clear_chart()
-            end
-
             --Set drawn flag
             global.drawlogo = true
             global.m45logo =
