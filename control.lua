@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v543-1-25-2021-1226a-exp"
+local svers = "v544-1-25-2021-1258p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -18,15 +18,44 @@ function dump(o)
     end
 end
 
+--Calculate distance between two points
+function dist_to(pos_a, pos_b)
+    if pos_a and pos_b and pos_a.x and pos_a.y and pos_b.x and pos_b.y then
+        local axbx = pos_a.x - pos_b.x
+        local ayby = pos_a.y - pos_b.y
+        return (axbx * axbx + ayby * ayby) ^ 0.5
+    else
+        return 10000000
+    end
+end
+
+function d_sameobj(obj_a, obj_b)
+    --Valid objects?
+    if obj_a and obj_b and obj_a.valid and obj_b.valid then
+        --Same surface?
+        if obj_a.surface.name == obj_b.surface.name then
+            --Same name and type?
+            if obj_a.object_name == obj_b.object_name and obj_a.type == obj_b.type then
+                --Same position?
+                if obj_a.position.x == obj_b.position.x and obj_a.position.y == obj_b.position.y then
+                    return true
+                end
+            end
+        end
+    end
+
+    return false
+end
+
 --Cut off extra precision
-local function round(number, precision)
+function round(number, precision)
     local fmtStr = string.format("%%0.%sf", precision)
     number = string.format(fmtStr, number)
     return number
 end
 
 --Add M45 Logo to spawn area
-local function dodrawlogo()
+function dodrawlogo()
     local surf = global.psurf
     if surf then
         --Only draw if needed
@@ -69,7 +98,7 @@ local function dodrawlogo()
             global.drawlogo = true
             global.m45logo =
                 rendering.draw_sprite {
-                sprite = "file/img/m45-pad-v3.png",
+                sprite = "file/img/m45-pad-v4.png",
                 render_layer = "floor",
                 target = cpos,
                 x_scale = 0.5,
@@ -115,14 +144,14 @@ local function dodrawlogo()
 end
 
 --Safe console print
-local function console_print(message)
+function console_print(message)
     if message then
         print("~" .. message)
     end
 end
 
 --Smart/safe Print
-local function smart_print(player, message)
+function smart_print(player, message)
     if message then
         if player then
             player.print(message)
@@ -133,7 +162,7 @@ local function smart_print(player, message)
 end
 
 --Global messages (game/discord)
-local function message_all(message)
+function message_all(message)
     if message then
         game.print(message)
         print("[MSG] " .. message)
@@ -141,21 +170,21 @@ local function message_all(message)
 end
 
 --Global messages (game only)
-local function message_allp(message)
+function message_allp(message)
     if message then
         game.print(message)
     end
 end
 
 --Global messages (discord only)
-local function message_alld(message)
+function message_alld(message)
     if message then
         print("[MSG] " .. message)
     end
 end
 
 --Check if player should be considered a regular
-local function is_regular(victim)
+function is_regular(victim)
     if victim and victim.valid and not victim.admin then
         --If in group
         if victim.permission_group and global.regularsgroup then
@@ -169,7 +198,7 @@ local function is_regular(victim)
 end
 
 --Check if player should be considered a member
-local function is_member(victim)
+function is_member(victim)
     if victim and victim.valid and not victim.admin then
         --If in group
         if victim.permission_group and global.membersgroup then
@@ -183,7 +212,7 @@ local function is_member(victim)
 end
 
 --Check if player should be considered new
-local function is_new(victim)
+function is_new(victim)
     if victim and victim.valid and not victim.admin then
         if is_member(victim) == false and is_regular(victim) == false then
             return true
@@ -194,7 +223,7 @@ local function is_new(victim)
 end
 
 --Check if player should be considered banished
-local function is_banished(victim)
+function is_banished(victim)
     if victim and victim.valid and not victim.admin then
         --Admins and regulars can not be marked as banished
         if is_regular(victim) or victim.admin then
@@ -210,7 +239,7 @@ local function is_banished(victim)
 end
 
 --Count online players, store
-local function update_player_list()
+function update_player_list()
     --Sort by active time
     local results = {}
     local count = 0
@@ -281,7 +310,7 @@ local function update_player_list()
     global.player_list = results
 end
 
-local function make_m45_online_submenu(player, target_name)
+function make_m45_online_submenu(player, target_name)
     local target = game.players[target_name]
 
     --make online root submenu
@@ -458,13 +487,13 @@ local function make_m45_online_submenu(player, target_name)
     end
 end
 
-local function destroy_m45_online_submenu(player)
+function destroy_m45_online_submenu(player)
     if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
         player.gui.screen.m45_online_submenu.destroy()
     end
 end
 
-local function handle_m45_online_submenu(player, target_name)
+function handle_m45_online_submenu(player, target_name)
     --init if needed
     if not global.m45_online_submenu_target then
         global.m45_online_submenu_target = {}
@@ -478,7 +507,7 @@ local function handle_m45_online_submenu(player, target_name)
 end
 
 --M45 Online Players Window
-local function make_m45_online_window(player)
+function make_m45_online_window(player)
     if player.gui and player.gui.left then
         if player.gui.left.m45_online then
             player.gui.left.m45_online.destroy()
@@ -680,7 +709,7 @@ local function make_m45_online_window(player)
 end
 
 --M45 Info/Welcome window
-local function make_m45_info_window(player)
+function make_m45_info_window(player)
     --M45 Welcome--
     if player.gui.center then
         --Delete old ones
@@ -1468,7 +1497,7 @@ local function make_m45_info_window(player)
 end
 
 --Process banish votes
-local function update_banished_votes()
+function update_banished_votes()
     --Reset banished list
     local banishedtemp = {}
 
@@ -1585,7 +1614,7 @@ local function update_banished_votes()
 end
 
 --Create player groups if they don't exist, and create global links to them
-local function create_groups()
+function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
@@ -1614,7 +1643,7 @@ local function create_groups()
 end
 
 --Disable some permissions for new players
-local function set_perms()
+function set_perms()
     --Auto set default group permissions
 
     if global.defaultgroup and not global.setperms then
@@ -1666,7 +1695,7 @@ local function set_perms()
 end
 
 --Create globals, if needed
-local function create_myglobals()
+function create_myglobals()
     if global.restrict == nil then
         global.restrict = true
     end
@@ -1717,7 +1746,7 @@ local function create_myglobals()
 end
 
 --Create player globals, if needed
-local function create_player_globals(player)
+function create_player_globals(player)
     if player and player.valid then
         if global.playeractive and player and player.index then
             if not global.playeractive[player.index] then
@@ -1740,7 +1769,7 @@ local function create_player_globals(player)
 end
 
 --Flag player as currently active
-local function set_player_active(player)
+function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid and global.playeractive) then
         --banished players don't get activity score
         if is_banished(player) == false then
@@ -1750,7 +1779,7 @@ local function set_player_active(player)
 end
 
 --Split strings
-local function mysplit(inputstr, sep)
+function mysplit(inputstr, sep)
     if inputstr and sep and inputstr ~= "" then
         local t = {}
         local x = 0
@@ -1777,7 +1806,7 @@ local function mysplit(inputstr, sep)
 end
 
 --Set our default game-settings
-local function game_settings(player)
+function game_settings(player)
     if player and player.valid and player.force and not global.gset then
         global.gset = true --Only apply these once
         player.force.friendly_fire = false --friendly fire
@@ -1787,7 +1816,7 @@ local function game_settings(player)
 end
 
 --Automatically promote users to higher levels
-local function get_permgroup()
+function get_permgroup()
     if game.connected_players then
         --Check all connected players
         for _, player in pairs(game.connected_players) do
@@ -1863,7 +1892,7 @@ local function get_permgroup()
 end
 
 --Show players online to a player
-local function show_players(victim)
+function show_players(victim)
     if not global.player_list then
         update_player_list()
     end
@@ -1891,7 +1920,7 @@ local function show_players(victim)
     end
 end
 
-local function g_banish(player, victim, reason)
+function g_banish(player, victim, reason)
     if player and player.valid then
         --Regulars/admins only
         if is_regular(player) or player.admin then
@@ -4089,7 +4118,7 @@ script.on_event(
 )
 
 --Replace an item with a clone, from limbo
-local function replace_with_clone(item)
+function replace_with_clone(item)
     local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force})
 
     if rep then
