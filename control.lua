@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v542-1-23-2021-0403p-exp"
+local svers = "v543-1-24-2021-0541p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -301,8 +301,10 @@ local function update_player_list()
 end
 
 local function make_m45_online_submenu(player, target_name)
+    local target = game.players[target_name]
+
     --make online root submenu
-    if player and target_name then
+    if player and target and target.valid then
         if player.gui and player.gui.screen then
             if not player.gui.screen.online_submenu then
                 if not player.gui.screen.online_submenu then
@@ -312,6 +314,7 @@ local function make_m45_online_submenu(player, target_name)
                         name = "m45_online_submenu",
                         direction = "vertical"
                     }
+                    main_flow.force_auto_center()
                     main_flow.style.horizontal_align = "center"
                     main_flow.style.vertical_align = "center"
 
@@ -359,44 +362,84 @@ local function make_m45_online_submenu(player, target_name)
                     }
                     online_submenu_main.style.horizontal_align = "center"
 
+                    --WHISPER
                     local whisper_frame =
                         online_submenu_main.add {
                         type = "flow",
-                        direction = "horizontal"
+                        direction = "vertical"
                     }
                     local whisper =
                         whisper_frame.add {
-                        type = "button",
-                        caption = "[item=programmable-speaker] Message",
-                        name = "whisper"
-                    }
-                    whisper_frame.add {
                         type = "label",
-                        caption = "  "
+                        caption = "[item=programmable-speaker] Message:",
+                        name = "whisper"
                     }
                     local whiser_textbox =
                         whisper_frame.add {
                         type = "text-box",
-                        text = "Hey!",
-                        name = "whisper_textbox"
+                        text = "",
+                        name = "whisper_textbox," .. player.name .. "," .. target_name,
+                        tooltip = "Return or Enter sends message."
                     }
-                    whisper.style.width = 125
-                    whisper.style.horizontal_align = "left"
+                    whisper_frame.add {
+                        type = "label",
+                        caption = "(enter or return to send)"
+                    }
+                    whisper_frame.add {
+                        type = "label",
+                        caption = " "
+                    }
+                    whiser_textbox.style.width = 500
+                    whiser_textbox.style.height = 128
+                    whiser_textbox.word_wrap = true
+                    whiser_textbox.style.horizontal_align = "left"
 
-                    local ignore_frame =
+                    --BANISH
+                    local banish_frame =
                         online_submenu_main.add {
                         type = "flow",
-                        direction = "horizontal"
+                        direction = "vertical"
                     }
-                    local ignore =
-                        ignore_frame.add {
-                        type = "button",
-                        caption = "[item=gate] Ignore",
-                        name = "ignore"
+                    local banish =
+                        banish_frame.add {
+                        type = "label",
+                        caption = "[entity=entity-ghost]BANISH PLAYER:",
+                        name = "banish"
                     }
-                    ignore.style.width = 125
-                    ignore.style.horizontal_align = "left"
+                    local banish_textbox =
+                        banish_frame.add {
+                        type = "text-box",
+                        text = "",
+                        name = "banish_textbox," .. player.name .. "," .. target_name,
+                        tooltip = "Return or Enter votes with this as the reason."
+                    }
 
+                    banish_textbox.style.width = 500
+                    banish_textbox.style.height = 128
+                    banish_textbox.word_wrap = true
+                    banish_textbox.style.horizontal_align = "left"
+
+                    if is_regular(target) or target.admin then
+                        banish.enabled = false
+                        banish_textbox.enabled = false
+                        local dis_note = banish_frame.add {
+                            type = "label",
+                            caption = "(Regulars and Admins can not be banished)"
+                        }
+                        dis_note.enabled = false
+                    else
+                        local bansh_note = banish_frame.add {
+                            type = "label",
+                            caption = "(reason required, enter or return to send)"
+                        }
+                        bansh_note.enabled = false
+                    end
+                    banish_frame.add {
+                        type = "label",
+                        caption = " "
+                    }
+
+                    --FIND ON MAP
                     local find_on_map_frame =
                         online_submenu_main.add {
                         type = "flow",
@@ -408,32 +451,16 @@ local function make_m45_online_submenu(player, target_name)
                         caption = "[item=artillery-targeting-remote] Find On Map",
                         name = "find_on_map"
                     }
-                    find_on_map_frame.add {
-                        type = "label",
-                        caption = "  "
-                    }
-
-                    local victim = game.players[target_name]
-                    if victim and victim.valid then
-                        local whiser_textbox =
-                            find_on_map_frame.add {
-                            type = "label",
-                            caption = "  Location: " ..
-                                math.floor(victim.position.x) ..
-                                    ", " .. math.floor(victim.position.y),
-                            name = "whisper_gps"
-                        }
-                    end
-                    find_on_map.style.width = 125
-                    find_on_map.style.horizontal_align = "left"
                 end
             end
         end
     end
 end
 
-local function destroy_m45_online_submenu(player, target_name)
-    --destroy online root submenu
+local function destroy_m45_online_submenu(player)
+    if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
+        player.gui.screen.m45_online_submenu.destroy()
+    end
 end
 
 local function handle_m45_online_submenu(player, target_name)
@@ -442,19 +469,10 @@ local function handle_m45_online_submenu(player, target_name)
         global.m45_online_submenu_target = {}
     end
 
-    --Empty, add target
-    if not global.m45_online_submenu_target[player.index] then
-        --Already targeting something else
+    if player and player.valid and target_name then
         global.m45_online_submenu_target[player.index] = target_name
+        destroy_m45_online_submenu(player)
         make_m45_online_submenu(player, target_name)
-    elseif global.m45_online_submenu_target[player.index] ~= target_name then
-        --Target is already the same
-        destroy_m45_online_submenu(player, target_name)
-        global.m45_online_submenu_target[player.index] = target_name
-        make_m45_online_submenu(player, target_name)
-    elseif global.m45_online_submenu_target[player.index] == taget_name then
-        --Close sub-menus
-        destroy_m45_online_submenu(player, target_name)
     end
 end
 
@@ -517,6 +535,45 @@ local function make_m45_online_window(player)
             }
             online_main.style.maximal_height = 500
 
+            local pframe =
+                online_main.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+
+            local submenu =
+                pframe.add {
+                type = "label",
+                caption = "MENU"
+            }
+            submenu.style.width = 45
+            local name_label =
+                pframe.add {
+                type = "label",
+                caption = "  Name:"
+            }
+            name_label.style.width = 200
+            pframe.add {
+                type = "line",
+                direction = "vertical"
+            }
+            local time_label =
+                pframe.add {
+                type = "label",
+                caption = " Time:"
+            }
+            time_label.style.width = 100
+            pframe.add {
+                type = "line",
+                direction = "vertical"
+            }
+            local score_label =
+                pframe.add {
+                type = "label",
+                caption = "  Level:"
+            }
+            score_label.style.width = 100
+
             --for x = 0, 100, 1 do
             for i, target in pairs(global.player_list) do
                 local victim = target.victim
@@ -526,13 +583,13 @@ local function make_m45_online_window(player)
                     type = "frame",
                     direction = "horizontal"
                 }
-                --local submenu =
-                --    pframe.add {
-                --    type = "sprite-button",
-                --    sprite = "utility/expand",
-                --    name = "m45_online_submenu," .. victim.name --Pass name
-                --}
-                --submenu.style.width = 32
+                local submenu =
+                    pframe.add {
+                    type = "sprite-button",
+                    sprite = "utility/expand",
+                    name = "m45_online_submenu," .. victim.name --Pass name
+                }
+                submenu.style.width = 45
                 local name_label =
                     pframe.add {
                     type = "label",
@@ -547,7 +604,7 @@ local function make_m45_online_window(player)
                 local time_label =
                     pframe.add {
                     type = "label",
-                    caption = "  Time: " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
+                    caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
                 }
                 time_label.style.width = 100
                 local name_label =
@@ -1842,6 +1899,135 @@ local function show_players(victim)
     end
 end
 
+local function g_banish(player, target, reason)
+    if player and player.valid then
+            --Regulars/admins only
+            if is_regular(player) or player.admin then
+
+                --Must have arguments
+                if target and reason then
+                    local victim = game.players[target]
+
+                    if victim.name == player.name then
+                        smart_print(player,"You can't banish yourself.")
+                        return
+                    end
+
+
+                    if string.len(reason) < 5 then
+                        smart_print(player, "You must supply a more descriptive complaint.")
+                        return
+                    else
+                        --Must have valid victim
+                        if victim and victim.valid and victim.character and victim.character.valid then
+                            --Victim must be new or member
+                            if is_new(victim) or is_member(victim) then
+                                --Check if we already voted against them
+                                if global.banishvotes and global.banishvotes ~= {} then
+                                    local votecount = 1
+                                    for _, vote in pairs(global.banishvotes) do
+                                        if vote and vote.voter and vote.victim then
+                                            --Count player's total votes, cap them
+                                            if vote.voter == player then
+                                                votecount = votecount + 1
+                                            end
+                                            --Limit number of votes player gets
+                                            if votecount >= 5 then
+                                                smart_print(
+                                                    player,
+                                                    "You have exhausted your voting privlege for this map."
+                                                )
+                                                return
+                                            end
+
+                                            --Can't vote twice
+                                            if vote.voter == player and vote.victim == victim then
+                                                smart_print(
+                                                    player,
+                                                    "You already voted against them!"
+                                                )
+                                                smart_print(
+                                                    player,
+                                                    "/unbanish <player> to withdraw your vote."
+                                                )
+                                                smart_print(
+                                                    player,
+                                                    "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]"
+                                                )
+                                                return
+                                            end
+                                        end
+                                    end
+
+                                    --Send report to discord and add to vote list
+                                    local message =
+                                        "[color=red](SYSTEM) " ..
+                                        player.name ..
+                                            " voted to banish: " ..
+                                                victim.name .. " for: " .. reason .. "[/color]"
+                                    message_all(message)
+                                    print("[REPORT] " .. message)
+                                    smart_print(
+                                        player,
+                                        "(SYSTEM): Your vote has been added, and posted on Discord!"
+                                    )
+                                    smart_print(player, "/unbanish <player> to withdraw your vote.")
+                                    smart_print(
+                                        player,
+                                        "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]"
+                                    )
+                                    smart_print(
+                                        player,
+                                        "You have used " ..
+                                            votecount .. " of your 5 available votes."
+                                    )
+                                end
+
+                                --Init if needed
+                                if not global.banishvotes then
+                                    global.banishvotes = {
+                                        voter = {},
+                                        victim = {},
+                                        reason = {},
+                                        tick = {},
+                                        withdrawn = {},
+                                        overruled = {}
+                                    }
+                                end
+                                table.insert(
+                                    global.banishvotes,
+                                    {
+                                        voter = player,
+                                        victim = victim,
+                                        reason = reason,
+                                        tick = game.tick,
+                                        withdrawn = false,
+                                        overruled = false
+                                    }
+                                )
+                                update_banished_votes() --Must do this to add to tally
+                            else
+                                smart_print(
+                                    player,
+                                    "You can only vote against new players, or members!"
+                                )
+                            end
+                        else
+                            smart_print(player, "There are no players online by that name.")
+                        end
+                    end
+                else
+                    smart_print(player, "Usage: /banish <player> <reason for banishment>")
+                end
+            else
+                smart_print(player, "This command is for regulars-status players and admins only!")
+                return
+            end
+    else
+        smart_print(nil, "The console can't vote.")
+    end
+end
+
 --Custom commands
 script.on_load(
     function()
@@ -2327,160 +2513,9 @@ script.on_load(
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
-                        if player and param.parameter then
-                            --Regulars/admins only
-                            if is_regular(player) or player.admin then
-                                --get arguments
-                                local args = mysplit(param.parameter, " ")
 
-                                --Must have arguments
-                                if args ~= {} and args[1] and args[2] then
-                                    local victim = game.players[args[1]]
-
-                                    --Quick arg combine
-                                    local reason = args[2]
-                                    for n, arg in pairs(args) do
-                                        if n > 2 and n < 100 then -- at least two words, max 100
-                                            reason = reason .. " " .. args[n]
-                                        end
-                                    end
-
-                                    if string.len(reason) < 8 then
-                                        smart_print(
-                                            player,
-                                            "You must supply a more descriptive complaint."
-                                        )
-                                    else
-                                        --Must have valid victim
-                                        if
-                                            victim and victim.valid and victim.character and
-                                                victim.character.valid
-                                         then
-                                            --Victim must be new or member
-                                            if is_new(victim) or is_member(victim) then
-                                                --Check if we already voted against them
-                                                if global.banishvotes and global.banishvotes ~= {} then
-                                                    local votecount = 1
-                                                    for _, vote in pairs(global.banishvotes) do
-                                                        if vote and vote.voter and vote.victim then
-                                                            --Count player's total votes, cap them
-                                                            if vote.voter == player then
-                                                                votecount = votecount + 1
-                                                            end
-                                                            --Limit number of votes player gets
-                                                            if votecount >= 5 then
-                                                                smart_print(
-                                                                    player,
-                                                                    "You have exhausted your voting privlege for this map."
-                                                                )
-                                                                return
-                                                            end
-
-                                                            --Can't vote twice
-                                                            if
-                                                                vote.voter == player and
-                                                                    vote.victim == victim
-                                                             then
-                                                                smart_print(
-                                                                    player,
-                                                                    "You already voted against them!"
-                                                                )
-                                                                smart_print(
-                                                                    player,
-                                                                    "/unbanish <player> to withdraw your vote."
-                                                                )
-                                                                smart_print(
-                                                                    player,
-                                                                    "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]"
-                                                                )
-                                                                return
-                                                            end
-                                                        end
-                                                    end
-
-                                                    --Send report to discord and add to vote list
-                                                    local message =
-                                                        "[color=red](SYSTEM) " ..
-                                                        player.name ..
-                                                            " voted to banish: " ..
-                                                                victim.name ..
-                                                                    " for: " .. reason .. "[/color]"
-                                                    message_all(message)
-                                                    print("[REPORT] " .. message)
-                                                    smart_print(
-                                                        player,
-                                                        "Your vote has been added, and posted on Discord!"
-                                                    )
-                                                    smart_print(
-                                                        player,
-                                                        "/unbanish <player> to withdraw your vote."
-                                                    )
-                                                    smart_print(
-                                                        player,
-                                                        "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]"
-                                                    )
-                                                    smart_print(
-                                                        player,
-                                                        "You have used " ..
-                                                            votecount ..
-                                                                " of your 5 available votes."
-                                                    )
-                                                end
-
-                                                --Init if needed
-                                                if not global.banishvotes then
-                                                    global.banishvotes = {
-                                                        voter = {},
-                                                        victim = {},
-                                                        reason = {},
-                                                        tick = {},
-                                                        withdrawn = {},
-                                                        overruled = {}
-                                                    }
-                                                end
-                                                table.insert(
-                                                    global.banishvotes,
-                                                    {
-                                                        voter = player,
-                                                        victim = victim,
-                                                        reason = reason,
-                                                        tick = game.tick,
-                                                        withdrawn = false,
-                                                        overruled = false
-                                                    }
-                                                )
-                                                update_banished_votes() --Must do this to add to tally
-                                            else
-                                                smart_print(
-                                                    player,
-                                                    "You can only vote against new players, or members!"
-                                                )
-                                            end
-                                        else
-                                            smart_print(
-                                                player,
-                                                "There are no players online by that name."
-                                            )
-                                        end
-                                    end
-                                else
-                                    smart_print(
-                                        player,
-                                        "Usage: /banish <player> <reason for banishment>"
-                                    )
-                                end
-                            else
-                                smart_print(
-                                    player,
-                                    "This command is for regulars-status players and admins only!"
-                                )
-                                return
-                            end
-                        else
-                            smart_print(player, "Usage: /banish <player> <reason for banishment>")
-                        end
-                    else
-                        smart_print(nil, "The console can't vote.")
+                        --TODO, add target/reason code here
+                        g_banish(player, param.parameter)
                     end
                 end
             )
@@ -3414,6 +3449,8 @@ script.on_event(
     function(event)
         -- Automatically fix URLs, because read-only/selectable text is confusing to players --
         if event and event.element and event.player_index and event.text and event.element.name then
+            local args = mysplit(event.element.name, ",")
+
             if event.element.name == "discord_url" then
                 event.element.text = "https://discord.gg/Ps2jnm7"
             elseif event.element.name == "old_maps" then
@@ -3424,6 +3461,27 @@ script.on_event(
                 event.element.text = "https://www.patreon.com/m45sci"
             elseif event.element.name == "wube_dl" then
                 event.element.text = "https://factorio.com/download"
+            elseif args[3] and args[1] == "whisper_textbox" then
+                if string.find(event.element.text, "\n") then
+                    local target = game.players[args[3]]
+                    local player = game.players[args[2]]
+                    if target and target.valid and player and player.valid then
+                        smart_print(
+                            target,
+                            "(Whisper) " .. player.name .. ": " .. event.element.text
+                        )
+                        smart_print("(Whisper) You: "..event.element.text)
+                    end
+                    event.element.text = ""
+                end
+            elseif args[3] and args[1] == "banish_textbox" then
+                if string.find(event.element.text, "\n") then
+                    local player = game.players[args[2]]
+                    if player and player.valid then
+                        g_banish(player,args[3], event.element.text)
+                    end
+                    event.element.text = ""
+                end
             end
         end
     end
@@ -4141,9 +4199,19 @@ script.on_event(
                     --Online sun-menu root
                     player.gui.screen.m45_info_window.destroy()
                     return
-                elseif args and args[2] and args[1] == "m45_online_submenu" then
-                    --Online sun-menu gos
+                elseif event.element.name == "m45_online_submenu_close_button" then
+                    --Close online submenu
+                    if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
+                        player.gui.screen.m45_online_submenu.destroy()
+                        if global.m45_online_submenu_target then
+                            global.m45_online_submenu_target[player.index] = nil
+                        end
+                        return
+                    end
+                elseif args and args[1] == "m45_online_submenu" then
+                    --Online sub-menu
                     handle_m45_online_submenu(player, args[2])
+                    return
                 elseif event.element.name == "find_on_map" then
                     if
                         global.m45_online_submenu_target and
@@ -4152,7 +4220,7 @@ script.on_event(
                         local victim_name = global.m45_online_submenu_target[player.index]
                         local victim = game.players[victim_name]
                         if victim and victim.valid then
-                            player.open_map(victim.position, 0.25)
+                            player.zoom_to_world(victim.position, 1.0)
                         else
                             smart_print(player, "Invalid target.")
                         end
@@ -4172,7 +4240,7 @@ script.on_event(
                         make_m45_online_window(player)
                     end
                 elseif event.element.name == "m45_online_close_button" then
-                    --Patreon changetab button (info windows)
+                    --Close online window
                     if player.gui and player.gui.left and player.gui.left.m45_online then
                         player.gui.left.m45_online.destroy()
                     end
