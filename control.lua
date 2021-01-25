@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v543-1-24-2021-1158p-exp"
+local svers = "v543-1-25-2021-1226a-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -353,7 +353,7 @@ local function make_m45_online_submenu(player, target_name)
                     local whisper =
                         whisper_frame.add {
                         type = "label",
-                        caption = "[item=programmable-speaker] Message:",
+                        caption = "Whisper To:",
                         name = "whisper"
                     }
                     local whiser_textbox =
@@ -372,7 +372,7 @@ local function make_m45_online_submenu(player, target_name)
                         caption = " "
                     }
                     whiser_textbox.style.width = 500
-                    whiser_textbox.style.height = 128
+                    whiser_textbox.style.height = 64
                     whiser_textbox.word_wrap = true
                     whiser_textbox.style.horizontal_align = "left"
 
@@ -386,7 +386,7 @@ local function make_m45_online_submenu(player, target_name)
                     local banish =
                         banish_frame.add {
                         type = "label",
-                        caption = "[entity=entity-ghost]Banish Player:",
+                        caption = "Banish Player:",
                         name = "banish"
                     }
                     local banish_textbox =
@@ -397,7 +397,7 @@ local function make_m45_online_submenu(player, target_name)
                     }
 
                     banish_textbox.style.width = 500
-                    banish_textbox.style.height = 128
+                    banish_textbox.style.height = 64
                     banish_textbox.word_wrap = true
                     banish_textbox.style.horizontal_align = "left"
 
@@ -442,14 +442,16 @@ local function make_m45_online_submenu(player, target_name)
                     local find_on_map_frame =
                         online_submenu_main.add {
                         type = "flow",
-                        direction = "horizontal"
+                        direction = "vertical"
                     }
+                    find_on_map_frame.style.horizontal_align = "center"
                     local find_on_map =
                         find_on_map_frame.add {
                         type = "button",
                         caption = "[item=artillery-targeting-remote] Find On Map",
                         name = "find_on_map"
                     }
+                    find_on_map.style.horizontal_align = "center"
                 end
             end
         end
@@ -1347,6 +1349,20 @@ local function make_m45_info_window(player)
             tab5_qr_frame.style.vertically_stretchable = true
             tab5_qr_frame.style.horizontal_align = "center"
             tab5_qr_frame.style.vertical_align = "center"
+            tab5_qr_frame.add {
+                type = "sprite",
+                name = "tab1_discord_logo",
+                sprite = "file/img/discord-64.png",
+                tooltip = ""
+            }
+            tab5_qr_frame.add {
+                type = "label",
+                caption = "Discord: M45-Science"
+            }
+            tab5_qr_frame.add {
+                type = "label",
+                caption = ""
+            }
             local tab5_qr =
                 tab5_qr_frame.add {
                 type = "sprite",
@@ -3937,6 +3953,11 @@ script.on_event(
                         if victim and victim.valid then
                             local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
                             if text and string.len(text) > 0 then
+
+                                --Remove newlines if there are any
+                                if string.match (text, "\n") then
+                                    text = string.gsub(text, "\n", " ")
+                                end
                                 smart_print(player, player.name.." (whisper): "..text)
                                 smart_print(victim, player.name.." (whisper): "..text)
                             end
@@ -3961,6 +3982,10 @@ script.on_event(
                         if victim and victim.valid then
                             local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
                             if reason and string.len(reason) > 0 then
+                                --Remove newlines if there are any
+                                if string.match (reason, "\n") then
+                                    reason = string.gsub(reason, "\n", " ")
+                                end
                                 g_banish(player, victim, reason)
                             end
                             player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text = ""
