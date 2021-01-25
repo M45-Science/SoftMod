@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v544-1-25-2021-1258p-exp"
+local svers = "v544-1-25-2021-1034a-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -122,8 +122,8 @@ function dodrawlogo()
                 text = "M45-Science",
                 draw_on_ground = true,
                 surface = surf,
-                target = {cpos.x + 0, cpos.y + -6},
-                scale = 3.0,
+                target = {cpos.x + -0.125, cpos.y - 0.75},
+                scale = 1.25,
                 color = {1, 1, 1},
                 alignment = "center",
                 scale_with_zoom = false
@@ -133,8 +133,8 @@ function dodrawlogo()
                 text = global.servname,
                 draw_on_ground = true,
                 surface = surf,
-                target = {cpos.x + 0, cpos.y + 4.5},
-                scale = 2.0,
+                target = {cpos.x -0.125, cpos.y + 2.125},
+                scale = 1.0,
                 color = {1, 1, 1},
                 alignment = "center",
                 scale_with_zoom = false
