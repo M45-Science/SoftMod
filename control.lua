@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v543-1-24-2021-1135p-exp"
+local svers = "v543-1-24-2021-1158p-exp"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -631,6 +631,7 @@ local function make_m45_online_window(player)
                 elseif is_member(victim) then
                     name_label.style.font_color = {r = 0, g = 1, b = 0}
                 end
+                name_label.style.font="default-bold"
                 name_label.style.width = 200
                 local name_label =
                     pframe.add {
@@ -3940,6 +3941,10 @@ script.on_event(
                                 smart_print(victim, player.name.." (whisper): "..text)
                             end
                             player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text = ""
+
+                            if not victim.connected then
+                                smart_print(player,"They aren't online right now, but message will appear in chat history.")
+                            end
                         else
                             smart_print(player, "(SYSTEM) That player does not exist.")
                         end
