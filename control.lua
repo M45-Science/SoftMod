@@ -1889,7 +1889,7 @@ function show_players(victim)
             string.format(
                 "~%16s: - Score: %d - Online: %dm - (%s)\n",
                 target.victim.name,
-                math.floor(target.time / 60 / 60),
+                math.floor(target.score/ 60 / 60),
                 math.floor(target.time / 60 / 60),
                 target.type
             )
@@ -4209,7 +4209,7 @@ script.on_event(
             local player = game.players[event.player_index]
             if player and player.valid then
                 --Only mark active on movement if walking
-                if event == defines.events.on_player_changed_position then
+                if event.name == defines.events.on_player_changed_position then
                     if player.walking_state then
                         if
                             player.walking_state.walking == true and
