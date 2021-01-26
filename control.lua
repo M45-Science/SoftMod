@@ -1928,7 +1928,7 @@ function g_banish(player, victim, reason)
             if victim and reason then
 
                 if victim.name == player.name then
-                    smart_print(player, "You can't banish yourself.")
+                    smart_print(player, "You can't banish yourself. Have you considered therapy?")
                     return
                 end
 
@@ -2444,6 +2444,24 @@ script.on_load(
                     if param and param.player_index then
                         local player = game.players[param.player_index]
 
+                        if not param.parameter then
+                            smart_print(player,"Banish who?")
+                            return
+                        end
+                        local args = mysplit(param.parameter, " ")
+                        if not args[2] then
+                            smart_print(player,"You must specify a reason.")
+                            return
+                        end
+                        local victim = game.players[args[1]]
+                        
+                        --Quick arg combine
+                        local reason = args[2]
+                        for n, arg in pairs(args) do
+                            if n > 2 and n < 100 then -- at least two words, max 100
+                                reason = reason .. " " .. args[n]
+                            end
+                        end
                         --TODO, add target/reason code here
                         g_banish(player, victim, reason)
                     end
