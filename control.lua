@@ -1,6 +1,7 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v544-1-25-2021-1034a-exp"
+local svers = "v544-1-25-2021-1232p-exp"
+--require "darkness"
 
 --Quickly turn tables into strings
 function dump(o)
@@ -15,17 +16,6 @@ function dump(o)
         return s .. "} "
     else
         return tostring(o)
-    end
-end
-
---Calculate distance between two points
-function dist_to(pos_a, pos_b)
-    if pos_a and pos_b and pos_a.x and pos_a.y and pos_b.x and pos_b.y then
-        local axbx = pos_a.x - pos_b.x
-        local ayby = pos_a.y - pos_b.y
-        return (axbx * axbx + ayby * ayby) ^ 0.5
-    else
-        return 10000000
     end
 end
 
@@ -55,9 +45,9 @@ function round(number, precision)
 end
 
 --Add M45 Logo to spawn area
-function dodrawlogo()
-    local surf = global.psurf
-    if surf then
+local function dodrawlogo()
+
+    if game.surfaces[1] then
         --Only draw if needed
         if not global.drawlogo then
             --Destroy if already exists
@@ -81,7 +71,7 @@ function dodrawlogo()
             end
 
             --Find nice clear area for spawn
-            local newpos = global.psurf.find_non_colliding_position("crash-site-spaceship", cpos, 1000, 0.1, false)
+            local newpos = game.surfaces[1].find_non_colliding_position("crash-site-spaceship", cpos, 1000, 0.1, false)
             --Set spawn position if we found a better spot
             if newpos and newpos.x ~= 0 and newpos.y ~= 0 then
                 cpos = newpos
@@ -91,7 +81,7 @@ function dodrawlogo()
             --Clear map at start to hide everything
             if not global.map_started then
                 global.map_started = true
-                global.pforce.clear_chart()
+                game.forces["player"].clear_chart()
             end
 
             --Set drawn flag
@@ -103,7 +93,7 @@ function dodrawlogo()
                 target = cpos,
                 x_scale = 0.5,
                 y_scale = 0.5,
-                surface = surf
+                surface = game.surfaces[1]
             }
             global.m45logo_light =
                 rendering.draw_light {
@@ -111,7 +101,7 @@ function dodrawlogo()
                 render_layer = 148,
                 target = cpos,
                 scale = 8,
-                surface = surf,
+                surface = game.surfaces[1],
                 minimum_darkness = 0.5
             }
             if not global.servname then
@@ -121,7 +111,7 @@ function dodrawlogo()
                 rendering.draw_text {
                 text = "M45-Science",
                 draw_on_ground = true,
-                surface = surf,
+                surface = game.surfaces[1],
                 target = {cpos.x + -0.125, cpos.y - 0.75},
                 scale = 1.25,
                 color = {1, 1, 1},
@@ -132,8 +122,8 @@ function dodrawlogo()
                 rendering.draw_text {
                 text = global.servname,
                 draw_on_ground = true,
-                surface = surf,
-                target = {cpos.x -0.125, cpos.y + 2.125},
+                surface = game.surfaces[1],
+                target = {cpos.x - 0.125, cpos.y + 2.125},
                 scale = 1.0,
                 color = {1, 1, 1},
                 alignment = "center",
@@ -239,7 +229,7 @@ function is_banished(victim)
 end
 
 --Count online players, store
-function update_player_list()
+local function update_player_list()
     --Sort by active time
     local results = {}
     local count = 0
@@ -310,7 +300,7 @@ function update_player_list()
     global.player_list = results
 end
 
-function make_m45_online_submenu(player, target_name)
+local function make_m45_online_submenu(player, target_name)
     local target = game.players[target_name]
 
     --make online root submenu
@@ -376,7 +366,7 @@ function make_m45_online_submenu(player, target_name)
                     local whisper_frame =
                         online_submenu_main.add {
                         type = "flow",
-                        name="whisper_frame",
+                        name = "whisper_frame",
                         direction = "vertical"
                     }
                     local whisper =
@@ -487,13 +477,13 @@ function make_m45_online_submenu(player, target_name)
     end
 end
 
-function destroy_m45_online_submenu(player)
+local function destroy_m45_online_submenu(player)
     if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
         player.gui.screen.m45_online_submenu.destroy()
     end
 end
 
-function handle_m45_online_submenu(player, target_name)
+local function handle_m45_online_submenu(player, target_name)
     --init if needed
     if not global.m45_online_submenu_target then
         global.m45_online_submenu_target = {}
@@ -507,7 +497,7 @@ function handle_m45_online_submenu(player, target_name)
 end
 
 --M45 Online Players Window
-function make_m45_online_window(player)
+local function make_m45_online_window(player)
     if player.gui and player.gui.left then
         if player.gui.left.m45_online then
             player.gui.left.m45_online.destroy()
@@ -662,7 +652,7 @@ function make_m45_online_window(player)
                 elseif is_member(victim) then
                     name_label.style.font_color = {r = 0, g = 1, b = 0}
                 end
-                name_label.style.font="default-bold"
+                name_label.style.font = "default-bold"
                 name_label.style.width = 200
                 local name_label =
                     pframe.add {
@@ -709,7 +699,7 @@ function make_m45_online_window(player)
 end
 
 --M45 Info/Welcome window
-function make_m45_info_window(player)
+local function make_m45_info_window(player)
     --M45 Welcome--
     if player.gui.center then
         --Delete old ones
@@ -1497,7 +1487,7 @@ function make_m45_info_window(player)
 end
 
 --Process banish votes
-function update_banished_votes()
+local function update_banished_votes()
     --Reset banished list
     local banishedtemp = {}
 
@@ -1614,7 +1604,7 @@ function update_banished_votes()
 end
 
 --Create player groups if they don't exist, and create global links to them
-function create_groups()
+local function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
@@ -1643,7 +1633,7 @@ function create_groups()
 end
 
 --Disable some permissions for new players
-function set_perms()
+local function set_perms()
     --Auto set default group permissions
 
     if global.defaultgroup and not global.setperms then
@@ -1695,7 +1685,7 @@ function set_perms()
 end
 
 --Create globals, if needed
-function create_myglobals()
+local function create_myglobals()
     if global.restrict == nil then
         global.restrict = true
     end
@@ -1735,18 +1725,10 @@ function create_myglobals()
     if not global.no_fastreplace then
         global.no_fastreplace = false
     end
-
-    if not global.psurf then
-        global.psurf = game.surfaces[1]
-    end
-
-    if not global.pforce then
-        global.pforce = game.forces["player"]
-    end
 end
 
 --Create player globals, if needed
-function create_player_globals(player)
+local function create_player_globals(player)
     if player and player.valid then
         if global.playeractive and player and player.index then
             if not global.playeractive[player.index] then
@@ -1769,7 +1751,7 @@ function create_player_globals(player)
 end
 
 --Flag player as currently active
-function set_player_active(player)
+local function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid and global.playeractive) then
         --banished players don't get activity score
         if is_banished(player) == false then
@@ -1806,7 +1788,7 @@ function mysplit(inputstr, sep)
 end
 
 --Set our default game-settings
-function game_settings(player)
+local function game_settings(player)
     if player and player.valid and player.force and not global.gset then
         global.gset = true --Only apply these once
         player.force.friendly_fire = false --friendly fire
@@ -1816,7 +1798,7 @@ function game_settings(player)
 end
 
 --Automatically promote users to higher levels
-function get_permgroup()
+local function get_permgroup()
     if game.connected_players then
         --Check all connected players
         for _, player in pairs(game.connected_players) do
@@ -1926,7 +1908,6 @@ function g_banish(player, victim, reason)
         if is_regular(player) or player.admin then
             --Must have arguments
             if victim and reason then
-
                 if victim.name == player.name then
                     smart_print(player, "You can't banish yourself. Have you considered therapy?")
                     return
@@ -2445,16 +2426,16 @@ script.on_load(
                         local player = game.players[param.player_index]
 
                         if not param.parameter then
-                            smart_print(player,"Banish who?")
+                            smart_print(player, "Banish who?")
                             return
                         end
                         local args = mysplit(param.parameter, " ")
                         if not args[2] then
-                            smart_print(player,"You must specify a reason.")
+                            smart_print(player, "You must specify a reason.")
                             return
                         end
                         local victim = game.players[args[1]]
-                        
+
                         --Quick arg combine
                         local reason = args[2]
                         for n, arg in pairs(args) do
@@ -2781,8 +2762,8 @@ script.on_load(
                         end
                     end
 
-                    local psurface = global.psurf
-                    local pforce = global.pforce
+                    local psurface = game.surfaces[1]
+                    local pforce = game.forces["player"]
 
                     --use admin's force and position if available.
                     if victim and victim.valid then
@@ -2843,8 +2824,8 @@ script.on_load(
                     end
 
                     --Get surface and force
-                    local psurface = global.psurf
-                    local pforce = global.pforce
+                    local psurface = game.surfaces[1]
+                    local pforce = game.forces["player"]
                     --Default size
                     local size = 1024
 
@@ -2909,7 +2890,7 @@ script.on_load(
                         end
                     end
 
-                    local pforce = global.pforce
+                    local pforce = game.forces["player"]
 
                     --Use admin's force
                     if victim and victim.valid then
@@ -2971,7 +2952,7 @@ script.on_load(
                             game.speed = value
 
                             --Get default force
-                            local pforce = global.pforce
+                            local pforce = game.forces["player"]
 
                             --Use admin's force
                             if victim and victim.valid then
@@ -3156,699 +3137,785 @@ script.on_load(
 
 --EVENTS--
 --Command logging
-script.on_event(
-    defines.events.on_console_command,
-    function(event)
-        if event and event.command and event.parameters then
-            local command = ""
-            local args = ""
+local function on_console_command(event)
+    if event and event.command and event.parameters then
+        local command = ""
+        local args = ""
 
-            if event.command then
-                command = event.command
-            end
+        if event.command then
+            command = event.command
+        end
 
-            if event.parameters then
-                args = event.parameters
-            end
+        if event.parameters then
+            args = event.parameters
+        end
 
-            if event.player_index then
-                local player = game.players[event.player_index]
-                print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
-            elseif command ~= "time" and command ~= "online" and command ~= "server-save" then --Ignore spammy console commands
-                print(string.format("[CMD] NAME: CONSOLE, COMMAND: %s, ARGS: %s", command, args))
+        if event.player_index then
+            local player = game.players[event.player_index]
+            print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
+        elseif command ~= "time" and command ~= "online" and command ~= "server-save" then --Ignore spammy console commands
+            print(string.format("[CMD] NAME: CONSOLE, COMMAND: %s, ARGS: %s", command, args))
+        end
+    end
+end
+
+--Deconstuction planner warning
+local function on_player_deconstructed_area(event)
+    if event and event.player_index and event.area then
+        local player = game.players[event.player_index]
+        local area = event.area
+
+        if player and area and area.left_top then
+            --Don't bother if selection is zero.
+            if area.left_top == area.right_bottom.x and area.left_top.y == area.right_bottom.y then
+                local msg =
+                    player.name ..
+                    " decon [gps=" ..
+                        math.floor(area.left_top.x) ..
+                            "," ..
+                                math.floor(area.left_top.y) ..
+                                    "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
+                console_print(msg)
+
+                if is_new(player) or is_member(player) then --Dont bother with regulars/admins
+                    if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
+                        global.last_decon_warning = game.tick
+                        message_all("[color=red](SYSTEM)" .. msg .. "[/color]")
+                    end
+                end
             end
         end
     end
-)
+end
 
---Deconstuction planner warning
-script.on_event(
-    defines.events.on_player_deconstructed_area,
-    function(event)
-        if event and event.player_index and event.area then
-            local player = game.players[event.player_index]
-            local area = event.area
+--Player connected, make variables, draw UI, set permissions, and game settings
+local function on_player_joined_game(event)
+    update_player_list()
 
-            if player and area and area.left_top then
-                set_player_active(player)
-                --Don't bother if selection is zero.
-                if area.left_top == area.right_bottom.x and area.left_top.y == area.right_bottom.y then
-                    local msg =
+    if event and event.player_index then
+        local player = game.players[event.player_index]
+        if player then
+            create_myglobals()
+            create_player_globals(player)
+            create_groups()
+            game_settings(player)
+            set_perms()
+
+            dodrawlogo()
+
+            --Delete old UIs (migrate old saves)
+            if player.gui.top.dicon then
+                player.gui.top.dicon.destroy()
+            end
+            if player.gui.top.discordurl then
+                player.gui.top.discordurl.destroy()
+            end
+            if player.gui.top.zout then
+                player.gui.top.zout.destroy()
+            end
+            if player.gui.top.serverlist then
+                player.gui.top.serverlist.destroy()
+            end
+            if player.gui.center.dark_splash then
+                player.gui.center.dark_splash.destroy()
+            end
+
+            --Refresh open player-online windows
+            for _, victim in pairs(game.connected_players) do
+                if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
+                    make_m45_online_window(victim)
+                end
+            end
+
+            if player.gui and player.gui.top then
+                --M45 button--
+
+                if player.gui.top.m45_button then
+                    player.gui.top.m45_button.destroy()
+                end
+                if not player.gui.top.m45_button then
+                    local m45_32 =
+                        player.gui.top.add {
+                        type = "sprite-button",
+                        name = "m45_button",
+                        sprite = "file/img/m45-32.png",
+                        tooltip = "Opens the server info window"
+                    }
+                --Invalid in Factorio 1.0
+                --m45_32.style.size = {32, 32}
+                end
+
+                --Online button--
+                if player.gui.top.online_button then
+                    player.gui.top.online_button.destroy()
+                end
+                if not player.gui.top.online_button then
+                    local online_32 =
+                        player.gui.top.add {
+                        type = "sprite-button",
+                        name = "online_button",
+                        sprite = "file/img/online-32.png",
+                        tooltip = "See players online"
+                    }
+                --Invalid in Factorio 1.0
+                --online_32.style.size = {32, 32}
+                end
+            end
+
+            get_permgroup()
+            if player.gui and player.gui.screen and player.gui.screen.m45_info_window then
+                player.gui.screen.m45_info_window.destroy()
+            end
+
+            if is_new(player) then
+                make_m45_online_window(player)
+                make_m45_info_window(player)
+            end
+        end
+    end
+end
+
+--Auto-Fix text-boxes (no-edit text boxes feel odd)
+local function on_gui_text_changed(event)
+    -- Automatically fix URLs, because read-only/selectable text is confusing to players --
+    if event and event.element and event.player_index and event.text and event.element.name then
+        local args = mysplit(event.element.name, ",")
+        local player = game.players[event.player_index]
+
+        if event.element.name == "discord_url" then
+            event.element.text = "https://discord.gg/Ps2jnm7"
+        elseif event.element.name == "old_maps" then
+            event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
+        elseif event.element.name == "mod_pack" then
+            event.element.text = "http://m45sci.xyz:10001/"
+        elseif event.element.name == "patreon_url" then
+            event.element.text = "https://www.patreon.com/m45sci"
+        elseif event.element.name == "wube_dl" then
+            event.element.text = "https://factorio.com/download"
+        end
+    end
+end
+
+--Player disconnect messages, with reason (Fact >= v1.1)
+local function on_player_left_game(event)
+    update_player_list()
+
+    if event and event.player_index and event.reason then
+        local player = game.players[event.player_index]
+        if player and player.valid then
+            --Refresh open player-online windows
+            for _, victim in pairs(game.connected_players) do
+                if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
+                    make_m45_online_window(victim)
+                end
+            end
+
+            local reason = {
+                "(Quit)",
+                "(Dropped)",
+                "(Reconnecting)",
+                "(WRONG INPUT)",
+                "(TOO MANY DESYNC)",
+                "(CPU TOO SLOW!!!)",
+                "(AFK)",
+                "(KICKED)",
+                "(KICKED AND DELETED)",
+                "(BANNED)",
+                "(Switching servers)",
+                "(Unknown)"
+            }
+            message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
+        end
+    end
+end
+
+--New player created, insert items set perms, show players online, welcome to map.
+local function on_player_created(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
+        if player and player.valid then
+            player.insert {name = "iron-plate", count = 8}
+            player.insert {name = "wood", count = 1}
+            player.insert {name = "pistol", count = 1}
+            player.insert {name = "firearm-magazine", count = 10}
+            player.insert {name = "burner-mining-drill", count = 1}
+            player.insert {name = "stone-furnace", count = 1}
+
+            set_perms()
+            show_players(player)
+            message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
+        end
+    end
+end
+
+--Build stuff -- activity
+local function on_built_entity(event)
+    if event and event.player_index and event.created_entity and event.stack then
+        local player = game.players[event.player_index]
+        local created_entity = event.created_entity
+        local stack = event.stack
+
+        if player and player.valid then
+            --Blueprint safety
+            if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+                local count = stack.get_blueprint_entity_count()
+
+                --Add item to blueprint throttle, (new) 5 items a second
+                if is_new(player) and global.restrict then
+                    if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                        global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 12
+                    end
+                end
+
+                --Silently destroy blueprint items, if blueprint is too big
+                if player.admin then
+                    return
+                elseif is_new(player) and count > 500 and global.restrict then
+                    if created_entity then
+                        created_entity.destroy()
+                    end
+                    stack.clear()
+                    return
+                elseif count > 10000 then
+                    if created_entity then
+                        created_entity.destroy()
+                    end
+                    stack.clear()
+                    return
+                end
+            end
+
+            if created_entity and created_entity.valid then
+                if created_entity.name == "programmable-speaker" then
+                    console_print(
                         player.name ..
-                        " decon [gps=" ..
-                            math.floor(area.left_top.x) ..
-                                "," ..
-                                    math.floor(area.left_top.y) ..
-                                        "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
-                    console_print(msg)
+                            " placed a speaker at [gps=" ..
+                                math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+                    )
+                    global.last_speaker_warning = game.tick
 
-                    if is_new(player) or is_member(player) then --Dont bother with regulars/admins
-                        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
-                            global.last_decon_warning = game.tick
-                            message_all("[color=red](SYSTEM)" .. msg .. "[/color]")
+                    if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
+                        if player.admin == false then --Dont bother with admins
+                            message_all(
+                                "[color=red](SYSTEM) " ..
+                                    player.name ..
+                                        " placed a speaker at [gps=" ..
+                                            math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]"
+                            )
+                            global.last_speaker_warning = game.tick
                         end
                     end
                 end
             end
-        end
-    end
-)
 
---Player connected, make variables, draw UI, set permissions, and game settings
-script.on_event(
-    defines.events.on_player_joined_game,
-    function(event)
-        update_player_list()
-
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            if player and player.valid then
-                create_myglobals()
-                create_player_globals(player)
-                create_groups()
-                game_settings(player)
-                set_perms()
-
-                dodrawlogo()
-
-                --Delete old UIs (migrate old saves)
-                if player.gui.top.dicon then
-                    player.gui.top.dicon.destroy()
-                end
-                if player.gui.top.discordurl then
-                    player.gui.top.discordurl.destroy()
-                end
-                if player.gui.top.zout then
-                    player.gui.top.zout.destroy()
-                end
-                if player.gui.top.serverlist then
-                    player.gui.top.serverlist.destroy()
-                end
-                if player.gui.center.dark_splash then
-                    player.gui.center.dark_splash.destroy()
-                end
-
-                --Refresh open player-online windows
-                for _, victim in pairs(game.connected_players) do
-                    if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
-                        make_m45_online_window(victim)
-                    end
-                end
-
-                if player.gui and player.gui.top then
-                    --M45 button--
-
-                    if player.gui.top.m45_button then
-                        player.gui.top.m45_button.destroy()
-                    end
-                    if not player.gui.top.m45_button then
-                        local m45_32 =
-                            player.gui.top.add {
-                            type = "sprite-button",
-                            name = "m45_button",
-                            sprite = "file/img/m45-32.png",
-                            tooltip = "Opens the server info window"
-                        }
-                    --Invalid in Factorio 1.0
-                    --m45_32.style.size = {32, 32}
-                    end
-
-                    --Online button--
-                    if player.gui.top.online_button then
-                        player.gui.top.online_button.destroy()
-                    end
-                    if not player.gui.top.online_button then
-                        local online_32 =
-                            player.gui.top.add {
-                            type = "sprite-button",
-                            name = "online_button",
-                            sprite = "file/img/online-32.png",
-                            tooltip = "See players online"
-                        }
-                    --Invalid in Factorio 1.0
-                    --online_32.style.size = {32, 32}
-                    end
-                end
-
-                get_permgroup()
-                if player.gui and player.gui.screen and player.gui.screen.m45_info_window then
-                    player.gui.screen.m45_info_window.destroy()
-                end
-
-                if is_new(player) then
-                    make_m45_online_window(player)
-                    make_m45_info_window(player)
+            if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
+                if created_entity.name == "entity-ghost" then
+                    --Log item placement
+                    console_print(
+                        player.name ..
+                            " +ghost " ..
+                                created_entity.ghost_name ..
+                                    " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+                    )
+                else
+                    --Log item placement
+                    console_print(
+                        player.name ..
+                            " +" ..
+                                created_entity.name ..
+                                    " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+                    )
                 end
             end
         end
     end
-)
+end
 
---Auto-Fix text-boxes (no-edit text boxes feel odd)
-script.on_event(
-    defines.events.on_gui_text_changed,
-    function(event)
-        -- Automatically fix URLs, because read-only/selectable text is confusing to players --
-        if event and event.element and event.player_index and event.text and event.element.name then
-            local args = mysplit(event.element.name, ",")
-            local player = game.players[event.player_index]
+--Cursor stack, block huge blueprints
+local function on_player_cursor_stack_changed(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
 
-            if event.element.name == "discord_url" then
-                event.element.text = "https://discord.gg/Ps2jnm7"
-            elseif event.element.name == "old_maps" then
-                event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
-            elseif event.element.name == "mod_pack" then
-                event.element.text = "http://m45sci.xyz:10001/"
-            elseif event.element.name == "patreon_url" then
-                event.element.text = "https://www.patreon.com/m45sci"
-            elseif event.element.name == "wube_dl" then
-                event.element.text = "https://factorio.com/download"
-            end
-        end
-    end
-)
-
---Player disconnect messages, with reason (Fact >= v1.1)
-script.on_event(
-    defines.events.on_player_left_game,
-    function(event)
-        update_player_list()
-
-        if event and event.player_index and event.reason then
-            local player = game.players[event.player_index]
-            if player and player.valid then
-                --Refresh open player-online windows
-                for _, victim in pairs(game.connected_players) do
-                    if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
-                        make_m45_online_window(victim)
-                    end
-                end
-
-                local reason = {
-                    "(Quit)",
-                    "(Dropped)",
-                    "(Reconnecting)",
-                    "(WRONG INPUT)",
-                    "(TOO MANY DESYNC)",
-                    "(CPU TOO SLOW!!!)",
-                    "(AFK)",
-                    "(KICKED)",
-                    "(KICKED AND DELETED)",
-                    "(BANNED)",
-                    "(Switching servers)",
-                    "(Unknown)"
-                }
-                message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
-            end
-        end
-    end
-)
-
---New player created, insert items set perms, show players online, welcome to map.
-script.on_event(
-    defines.events.on_player_created,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            if player and player.valid then
-                player.insert {name = "iron-plate", count = 8}
-                player.insert {name = "wood", count = 1}
-                player.insert {name = "pistol", count = 1}
-                player.insert {name = "firearm-magazine", count = 10}
-                player.insert {name = "burner-mining-drill", count = 1}
-                player.insert {name = "stone-furnace", count = 1}
-
-                set_perms()
-                show_players(player)
-                message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
-            end
-        end
-    end
-)
-
---Build stuff -- activity
-script.on_event(
-    defines.events.on_built_entity,
-    function(event)
-        if event and event.player_index and event.created_entity and event.stack then
-            local player = game.players[event.player_index]
-            local created_entity = event.created_entity
-            local stack = event.stack
-
-            if player and player.valid then
-                --Blueprint safety
+        if player and player.valid then
+            if player.cursor_stack then
+                local stack = player.cursor_stack
                 if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                     local count = stack.get_blueprint_entity_count()
 
-                    --Add item to blueprint throttle, (new) 5 items a second
-                    if is_new(player) and global.restrict then
+                    --blueprint throttle if needed
+                    if not player.admin and global.restrict then
                         if global.blueprint_throttle and global.blueprint_throttle[player.index] then
-                            global.blueprint_throttle[player.index] = global.blueprint_throttle[player.index] + 12
+                            if global.blueprint_throttle[player.index] > 0 then
+                                console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
+                                smart_print(
+                                    player,
+                                    "[color=red](SYSTEM) You are blueprinting too quickly. You must wait " ..
+                                        round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]"
+                                )
+                                player.insert(player.cursor_stack)
+                                stack.clear()
+                                return
+                            end
                         end
                     end
-
-                    --Silently destroy blueprint items, if blueprint is too big
                     if player.admin then
                         return
-                    elseif is_new(player) and count > 500 and global.restrict then
-                        if created_entity then
-                            created_entity.destroy()
-                        end
+                    elseif is_new(player) and count > 500 and global.restrict then --new player limt
+                        console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
+                        smart_print(player, "[color=red](SYSTEM) You aren't allowed to use blueprints that large yet.[/color]")
                         stack.clear()
                         return
-                    elseif count > 10000 then
-                        if created_entity then
-                            created_entity.destroy()
-                        end
+                    elseif count > 10000 then --lag protection
+                        console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
+                        smart_print(player, "[color=red](SYSTEM) That blueprint is too large![/color]")
                         stack.clear()
                         return
-                    end
-                end
-
-                if created_entity and created_entity.valid then
-                    if created_entity.name == "programmable-speaker" then
-                        console_print(
-                            player.name ..
-                                " placed a speaker at [gps=" ..
-                                    math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                        )
-                        global.last_speaker_warning = game.tick
-
-                        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
-                            if player.admin == false then --Dont bother with admins
-                                message_all(
-                                    "[color=red](SYSTEM) " ..
-                                        player.name ..
-                                            " placed a speaker at [gps=" ..
-                                                math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]"
-                                )
-                                global.last_speaker_warning = game.tick
-                            end
-                        end
-                    end
-                end
-
-                if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
-                    if created_entity.name == "entity-ghost" then
-                        --Log item placement
-                        console_print(
-                            player.name ..
-                                " +ghost " ..
-                                    created_entity.ghost_name ..
-                                        " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                        )
-                    else
-                        --Log item placement
-                        console_print(
-                            player.name ..
-                                " +" ..
-                                    created_entity.name ..
-                                        " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                        )
                     end
                 end
             end
         end
     end
-)
-
---Cursor stack, block huge blueprints
-script.on_event(
-    defines.events.on_player_cursor_stack_changed,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-
-            if player and player.valid then
-                if player.cursor_stack then
-                    local stack = player.cursor_stack
-                    if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
-                        local count = stack.get_blueprint_entity_count()
-
-                        --blueprint throttle if needed
-                        if not player.admin and global.restrict then
-                            if global.blueprint_throttle and global.blueprint_throttle[player.index] then
-                                if global.blueprint_throttle[player.index] > 0 then
-                                    console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
-                                    smart_print(
-                                        player,
-                                        "[color=red](SYSTEM) You are blueprinting too quickly. You must wait " ..
-                                            round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]"
-                                    )
-                                    player.insert(player.cursor_stack)
-                                    stack.clear()
-                                    return
-                                end
-                            end
-                        end
-                        if player.admin then
-                            return
-                        elseif is_new(player) and count > 500 and global.restrict then --new player limt
-                            console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
-                            smart_print(player, "[color=red](SYSTEM) You aren't allowed to use blueprints that large yet.[/color]")
-                            stack.clear()
-                            return
-                        elseif count > 10000 then --lag protection
-                            console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
-                            smart_print(player, "[color=red](SYSTEM) That blueprint is too large![/color]")
-                            stack.clear()
-                            return
-                        end
-                    end
-                end
-            end
-        end
-    end
-)
+end
 
 --Pre-Mined item, block some users
-script.on_event(
-    defines.events.on_pre_player_mined_item,
-    function(event)
-        --Sanity check
-        if event and event.player_index and event.entity then
-            local player = game.players[event.player_index]
-            local obj = event.entity
+local function on_pre_player_mined_item(event)
+    --Sanity check
+    if event and event.player_index and event.entity then
+        local player = game.players[event.player_index]
+        local obj = event.entity
 
-            if global.restrict then
-                --Check player, surface and object are valid
-                if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
-                    --New players can't mine objects that they don't own!
-                    if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
-                        --Create limbo surface if needed
-                        if game.surfaces["limbo"] == nil then
-                            local my_map_gen_settings = {
-                                default_enable_all_autoplace_controls = false,
-                                property_expression_names = {cliffiness = 0},
-                                autoplace_settings = {
-                                    tile = {
-                                        settings = {
-                                            ["sand-1"] = {
-                                                frequency = "normal",
-                                                size = "normal",
-                                                richness = "normal"
-                                            }
+        if global.restrict then
+            --Check player, surface and object are valid
+            if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
+                --New players can't mine objects that they don't own!
+                if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
+                    --Create limbo surface if needed
+                    if game.surfaces["limbo"] == nil then
+                        local my_map_gen_settings = {
+                            default_enable_all_autoplace_controls = false,
+                            property_expression_names = {cliffiness = 0},
+                            autoplace_settings = {
+                                tile = {
+                                    settings = {
+                                        ["sand-1"] = {
+                                            frequency = "normal",
+                                            size = "normal",
+                                            richness = "normal"
                                         }
                                     }
-                                },
-                                starting_area = "none"
-                            }
-                            game.create_surface("limbo", my_map_gen_settings)
-                        end
+                                }
+                            },
+                            starting_area = "none"
+                        }
+                        game.create_surface("limbo", my_map_gen_settings)
+                    end
 
-                        --Get surface
-                        local surf = game.surfaces["limbo"]
+                    --Get surface
+                    local surf = game.surfaces["limbo"]
 
-                        --Check if surface is valid
-                        if surf and surf.valid then
-                            --Clone object to limbo
-                            local saveobj = obj.clone({position = obj.position, surface = surf, force = obj.force})
+                    --Check if surface is valid
+                    if surf and surf.valid then
+                        --Clone object to limbo
+                        local saveobj = obj.clone({position = obj.position, surface = surf, force = obj.force})
 
-                            --Check that object was able to be cloned
-                            if saveobj and saveobj.valid then
-                                local signal_wires
-                                local copper_wires
+                        --Check that object was able to be cloned
+                        if saveobj and saveobj.valid then
+                            local signal_wires
+                            local copper_wires
 
-                                --Fix wires... grr
-                                signal_wires = obj.circuit_connection_definitions
-                                if obj.type == "electric-pole" then
-                                    copper_wires = obj.neighbours["copper"]
-                                end
-                                --game.print("SIGNALS: "..dump(signal_wires))
-                                --game.print("COPPER: "..dump(copper_wires))
-
-                                --Destroy orignal object.
-                                obj.destroy()
-
-                                --Create list if needed
-                                if not global.repobj then
-                                    global.repobj = {
-                                        obj = {},
-                                        victim = {},
-                                        surface = {},
-                                        swires = {},
-                                        cwires = {}
-                                    }
-                                end
-
-                                --Add obj to list
-                                table.insert(
-                                    global.repobj,
-                                    {
-                                        obj = saveobj,
-                                        victim = player,
-                                        surface = player.surface,
-                                        swires = signal_wires,
-                                        cwires = copper_wires
-                                    }
-                                )
-                            else
-                                console_print("pre_player_mined_item: unable to clone object.")
+                            --Fix wires... grr
+                            signal_wires = obj.circuit_connection_definitions
+                            if obj.type == "electric-pole" then
+                                copper_wires = obj.neighbours["copper"]
                             end
+                            --game.print("SIGNALS: "..dump(signal_wires))
+                            --game.print("COPPER: "..dump(copper_wires))
+
+                            --Destroy orignal object.
+                            obj.destroy()
+
+                            --Create list if needed
+                            if not global.repobj then
+                                global.repobj = {
+                                    obj = {},
+                                    victim = {},
+                                    surface = {},
+                                    swires = {},
+                                    cwires = {}
+                                }
+                            end
+
+                            --Add obj to list
+                            table.insert(
+                                global.repobj,
+                                {
+                                    obj = saveobj,
+                                    victim = player,
+                                    surface = player.surface,
+                                    swires = signal_wires,
+                                    cwires = copper_wires
+                                }
+                            )
                         else
-                            console_print("pre_player_mined_item: unable to get limbo-surface.")
+                            console_print("pre_player_mined_item: unable to clone object.")
                         end
                     else
-                        --Normal player, just log it
-                        console_print(
-                            player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
-                        )
-                        set_player_active(player) --Set player as active
+                        console_print("pre_player_mined_item: unable to get limbo-surface.")
                     end
                 else
-                    console_print("pre_player_mined_item: invalid player, obj or surface.")
+                    --Normal player, just log it
+                    console_print(
+                        player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
+                    )
                 end
+            else
+                console_print("pre_player_mined_item: invalid player, obj or surface.")
             end
         end
     end
-)
+end
 
 --Rotated item, block some users
-script.on_event(
-    defines.events.on_player_rotated_entity,
-    function(event)
-        --Sanity check
-        if event and event.player_index and event.previous_direction then
-            local player = game.players[event.player_index]
-            local obj = event.entity
-            local prev_dir = event.previous_direction
+local function on_player_rotated_entity(event)
+    --Sanity check
+    if event and event.player_index and event.previous_direction then
+        local player = game.players[event.player_index]
+        local obj = event.entity
+        local prev_dir = event.previous_direction
 
-            if global.restrict then
-                --If player and object are valid
-                if player and player.valid and obj and obj.valid then
-                    --Don't let new players rotate other players items, unrotate and untouch the item.
-                    if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
-                        --Unrotate
-                        obj.direction = prev_dir
+        if global.restrict then
+            --If player and object are valid
+            if player and player.valid and obj and obj.valid then
+                --Don't let new players rotate other players items, unrotate and untouch the item.
+                if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
+                    --Unrotate
+                    obj.direction = prev_dir
 
-                        --Create untouch list if needed
-                        if not global.untouchobj then
-                            global.untouchobj = {object = {}, prev = {}}
-                        end
-
-                        --Add to list
-                        table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-                        smart_print(
-                            player,
-                            "[color=red](SYSTEM) You are a new player, and are not allowed to rotate other people's objects yet![/color]"
-                        )
-
-                        if player and player.valid and player.character and player.character.valid then
-                            player.character.damage(15, "enemy") --Little discouragement
-                        end
-                    else
-                        --Normal player, just log it
-                        console_print(
-                            player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
-                        )
+                    --Create untouch list if needed
+                    if not global.untouchobj then
+                        global.untouchobj = {object = {}, prev = {}}
                     end
-                    set_player_active(player) --Sey player active
+
+                    --Add to list
+                    table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
+                    smart_print(player, "[color=red](SYSTEM) You are a new player, and are not allowed to rotate other people's objects yet![/color]")
+
+                    if player and player.valid and player.character and player.character.valid then
+                        player.character.damage(15, "enemy") --Little discouragement
+                    end
+                else
+                    --Normal player, just log it
+                    console_print(
+                        player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
+                    )
                 end
             end
         end
     end
-)
-
---Mine tiles -- activity
-script.on_event(
-    defines.events.on_player_mined_tile,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-
-            set_player_active(player)
-        end
-    end
-)
-
---Repair entity -- activity
-script.on_event(
-    defines.events.on_player_repaired_entity,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-
-            set_player_active(player)
-        end
-    end
-)
-
---Chatting -- activity
-script.on_event(
-    defines.events.on_console_chat,
-    function(event)
-        --Can be triggered by console, so check for nil
-        if event and event.player_index and event.message and event.message ~= "" then
-            local player = game.players[event.player_index]
-            set_player_active(player)
-        end
-    end
-)
-
---Walking -- activity
-script.on_event(
-    defines.events.on_player_changed_position,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-
-            --Only count if actually walking...
-            if player and player.valid and player.walking_state then
-                if
-                    player.walking_state.walking == true and
-                        (player.walking_state.direction == defines.direction.north or player.walking_state.direction == defines.direction.northeast or
-                            player.walking_state.direction == defines.direction.east or
-                            player.walking_state.direction == defines.direction.southeast or
-                            player.walking_state.direction == defines.direction.south or
-                            player.walking_state.direction == defines.direction.southwest or
-                            player.walking_state.direction == defines.direction.west or
-                            player.walking_state.direction == defines.direction.northwest)
-                 then
-                    set_player_active(player)
-                end
-            end
-        end
-    end
-)
+end
 
 --Create map tag -- log
-script.on_event(
-    defines.events.on_chart_tag_added,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
+local function on_chart_tag_added(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
 
-            if player and player.valid and event.tag then
-                console_print(
-                    player.name ..
-                        " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
-                )
-            end
+        if player and player.valid and event.tag then
+            console_print(
+                player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+            )
         end
     end
-)
+end
 
 --Edit map tag -- log
-script.on_event(
-    defines.events.on_chart_tag_modified,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            if player and player.valid and event.tag then
-                console_print(
-                    player.name ..
-                        " -+ tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
-                )
-            end
+local function on_chart_tag_modified(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
+        if player and player.valid and event.tag then
+            console_print(
+                player.name ..
+                    " -+ tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+            )
         end
     end
-)
+end
 
 --Delete map tag -- log
-script.on_event(
-    defines.events.on_chart_tag_removed,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
+local function on_chart_tag_removed(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
 
-            if player and player.valid and event.tag then
-                console_print(
-                    player.name ..
-                        "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+        if player and player.valid and event.tag then
+            console_print(
+                player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+            )
+        end
+    end
+end
+
+--Banned -- kill player to return items
+local function on_player_banned(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
+        if player and player.valid and player.character then
+            if global.cspawnpos then
+                player.teleport(global.cspawnpos)
+            else
+                player.teleport({0, 0})
+            end
+            player.character.die("player")
+        end
+    end
+end
+
+--Corpse Map Marker
+local function on_pre_player_died(event)
+    if event and event.player_index then
+        local player = game.players[event.player_index]
+        --Sanity check
+        if player and player.valid and player.character then
+            --Make map pin
+            local centerPosition = player.position
+            local label = ("Body of: " .. player.name)
+            local chartTag = {position = centerPosition, icon = nil, text = label}
+            local qtag = player.force.add_chart_tag(player.surface, chartTag)
+
+            create_myglobals()
+            create_player_globals(player)
+
+            --Add to list of pins
+            table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+
+            --Log to discord
+            if event.cause and event.cause.valid then
+                cause = event.cause.name
+                message_all(
+                    "[color=red](SYSTEM) " ..
+                        player.name ..
+                            " was killed by " ..
+                                cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]"
+                )
+            else
+                message_all(
+                    "[color=red](SYSTEM) " ..
+                        player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]"
                 )
             end
         end
     end
-)
-
---Banned -- kill player to return items
-script.on_event(
-    defines.events.on_player_banned,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            if player and player.valid and player.character then
-                if global.cspawnpos then
-                    player.teleport(global.cspawnpos)
-                else
-                    player.teleport({0, 0})
-                end
-                player.character.die("player")
-            end
-        end
-    end
-)
-
---Corpse Map Marker
-script.on_event(
-    defines.events.on_pre_player_died,
-    function(event)
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            --Sanity check
-            if player and player.valid and player.character then
-                --Make map pin
-                local centerPosition = player.position
-                local label = ("Body of: " .. player.name)
-                local chartTag = {position = centerPosition, icon = nil, text = label}
-                local qtag = player.force.add_chart_tag(player.surface, chartTag)
-
-                create_myglobals()
-                create_player_globals(player)
-
-                --Add to list of pins
-                table.insert(global.corpselist, {tag = qtag, tick = game.tick})
-
-                --Log to discord
-                if event.cause and event.cause.valid then
-                    cause = event.cause.name
-                    message_all(
-                        "[color=red](SYSTEM) " ..
-                            player.name ..
-                                " was killed by " ..
-                                    cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]"
-                    )
-                else
-                    message_all(
-                        "[color=red](SYSTEM) " ..
-                            player.name ..
-                                " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]"
-                    )
-                end
-            end
-        end
-    end
-)
+end
 
 --Research Finished -- discord
-script.on_event(
-    defines.events.on_research_finished,
-    function(event)
-        if event and event.research then
-            message_alld("Research " .. event.research.name .. " completed.")
+local function on_research_finished(event)
+    if event and event.research then
+        message_alld("Research " .. event.research.name .. " completed.")
+    end
+end
+
+--GUI clicks
+local function on_gui_click(event)
+    if event and event.element and event.element.valid and event.player_index then
+        local player = game.players[event.player_index]
+
+        local args = mysplit(event.element.name, ",")
+
+        if player and player.valid then
+            --Grab target if we have one
+            local victim_name
+            local victim
+            if global.m45_online_submenu_target and global.m45_online_submenu_target[player.index] then
+                victim_name = global.m45_online_submenu_target[player.index]
+                victim = game.players[victim_name]
+            end
+
+            --debug
+            console_print("GUI_CLICK: " .. player.name .. ": " .. event.element.name)
+
+            --Info window close
+            if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                --Online sun-menu root
+                player.gui.screen.m45_info_window.destroy()
+                return
+            elseif event.element.name == "m45_online_submenu_close_button" then
+                --Close online submenu
+                if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
+                    player.gui.screen.m45_online_submenu.destroy()
+                    if global.m45_online_submenu_target then
+                        global.m45_online_submenu_target[player.index] = nil
+                    end
+                    return
+                end
+            elseif args and args[1] == "m45_online_submenu_open" then
+                --Online sub-menu
+                handle_m45_online_submenu(player, args[2])
+                return
+            elseif event.element.name == "send_whisper" then
+                if
+                    player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and
+                        player.gui.screen.m45_online_submenu.main.whisper_frame and
+                        player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox
+                 then
+                    if victim and victim.valid then
+                        local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
+                        if text and string.len(text) > 0 then
+                            --Remove newlines if there are any
+                            if string.match(text, "\n") then
+                                text = string.gsub(text, "\n", " ")
+                            end
+                            smart_print(player, player.name .. " (whisper): " .. text)
+                            smart_print(victim, player.name .. " (whisper): " .. text)
+                        end
+                        player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text = ""
+
+                        if not victim.connected then
+                            smart_print(player, "They aren't online right now, but message will appear in chat history.")
+                        end
+                    else
+                        smart_print(player, "(SYSTEM) That player does not exist.")
+                    end
+                else
+                    console_print("send_whisper: text-box not found")
+                end
+            elseif event.element.name == "banish_player" then
+                if
+                    player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and
+                        player.gui.screen.m45_online_submenu.main.banish_frame and
+                        player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox
+                 then
+                    if victim and victim.valid then
+                        local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
+                        if reason and string.len(reason) > 0 then
+                            --Remove newlines if there are any
+                            if string.match(reason, "\n") then
+                                reason = string.gsub(reason, "\n", " ")
+                            end
+                            g_banish(player, victim, reason)
+                        end
+                        player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text = ""
+                    else
+                        smart_print(player, "(SYSTEM) That player does not exist.")
+                    end
+                else
+                    console_print("send_whisper: text-box not found")
+                end
+            elseif event.element.name == "find_on_map" then
+                if victim and victim.valid then
+                    player.zoom_to_world(victim.position, 1.0)
+                else
+                    smart_print(player, "Invalid target.")
+                end
+            elseif event.element.name == "m45_button" then
+                --Online window toggle
+                if player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                    player.gui.screen.m45_info_window.destroy()
+                else
+                    make_m45_info_window(player)
+                end
+            elseif event.element.name == "online_button" then
+                --Online window close
+                if player.gui and player.gui.left and player.gui.left.m45_online then
+                    player.gui.left.m45_online.destroy()
+                else
+                    make_m45_online_window(player)
+                end
+            elseif event.element.name == "m45_online_close_button" then
+                --Close online window
+                if player.gui and player.gui.left and player.gui.left.m45_online then
+                    player.gui.left.m45_online.destroy()
+                end
+            elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                --QR changetab button (info window)
+                player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 6
+            elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+                player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 5
+            end
         end
     end
-)
+end
+
+--Handle killing ,and teleporting users to other surfaces
+local function on_player_respawned(event)
+    --Anything queued?
+    if global.send_to_surface then
+        --Event and player?
+        if event and event.player_index then
+            local player = game.players[event.player_index]
+
+            --Valid player?
+            if player and player.valid and player.character and player.character.valid then
+                local index = nil
+                --Check list
+                for i, item in pairs(global.send_to_surface) do
+                    --Check if item is valid
+                    if
+                        item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and item.position and
+                            item.surface
+                     then
+                        --Check if names match
+                        if item.victim.name == player.name then
+                            --If surface is valid
+                            local surf = game.surfaces[item.surface]
+                            if surf and surf.valid then
+                                local newpos = surf.find_non_colliding_position("character", item.position, 100, 0.1, false)
+                                if newpos then
+                                    player.teleport(newpos, surf)
+                                else
+                                    player.teleport(item.position, surf) -- screw it
+                                    console_print("error: send_to_surface(respawn): unable to find non_colliding_position.")
+                                end
+                                index = i
+                                break
+                            end
+                        end
+                    end
+                end
+                --Remove item we processed
+                if index then
+                    game.print("item removed: " .. index)
+                    table.remove(global.send_to_surface, index)
+                end
+            end
+        end
+    end
+
+    if event and event.player_index then
+        local player = game.players[event.player_index]
+        if player and player.valid then
+            player.insert {name = "firearm-magazine", count = 10}
+            player.insert {name = "pistol", count = 1}
+        end
+    end
+end
+
+--Replace an item with a clone, from limbo
+function replace_with_clone(item)
+    local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force})
+
+    if rep then
+        if item.cwires then
+            for ind, pole in pairs(item.cwires) do
+                rep.connect_neighbour(pole)
+            end
+        end
+
+        --If we saved signal wire data, reconnect them now
+        if item.swires then
+            for ind, pole in pairs(item.swires) do
+                rep.connect_neighbour(pole)
+            end
+        end
+
+        if rep then
+            smart_print(
+                item.victim,
+                "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]"
+            )
+            if item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+                item.victim.character.damage(15, "enemy") --Little discouragement
+            end
+        end
+    end
+end
 
 --Looping timer, 30 seconds
 --delete old corpse map pins
@@ -3918,8 +3985,8 @@ script.on_nth_tick(
                 icon = {type = "item", name = "heavy-armor"},
                 text = label
             }
-            local pforce = global.pforce
-            local psurface = global.psurf
+            local pforce = game.forces["player"]
+            local psurface = game.surfaces[1]
 
             if pforce and psurface then
                 global.servertag = pforce.add_chart_tag(psurface, chartTag)
@@ -3951,225 +4018,12 @@ script.on_nth_tick(
     end
 )
 
---GUI clicks
-script.on_event(
-    defines.events.on_gui_click,
-    function(event)
-        if event and event.element and event.element.valid and event.player_index then
-            local player = game.players[event.player_index]
-
-            local args = mysplit(event.element.name, ",")
-
-            if player and player.valid then
-                --Grab target if we have one
-                local victim_name
-                local victim
-                if global.m45_online_submenu_target and global.m45_online_submenu_target[player.index] then
-                    victim_name = global.m45_online_submenu_target[player.index]
-                    victim = game.players[victim_name]
-                end
-
-                --debug
-                console_print("GUI_CLICK: " .. player.name .. ": " .. event.element.name)
-
-                --Info window close
-                if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
-                    --Online sun-menu root
-                    player.gui.screen.m45_info_window.destroy()
-                    return
-                elseif event.element.name == "m45_online_submenu_close_button" then
-                    --Close online submenu
-                    if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
-                        player.gui.screen.m45_online_submenu.destroy()
-                        if global.m45_online_submenu_target then
-                            global.m45_online_submenu_target[player.index] = nil
-                        end
-                        return
-                    end
-                elseif args and args[1] == "m45_online_submenu_open" then
-                    --Online sub-menu
-                    handle_m45_online_submenu(player, args[2])
-                    return
-                elseif event.element.name == "send_whisper" then
-                    if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
-                        player.gui.screen.m45_online_submenu.main and 
-                        player.gui.screen.m45_online_submenu.main.whisper_frame and 
-                        player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
-    
-
-                        if victim and victim.valid then
-                            local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
-                            if text and string.len(text) > 0 then
-
-                                --Remove newlines if there are any
-                                if string.match (text, "\n") then
-                                    text = string.gsub(text, "\n", " ")
-                                end
-                                smart_print(player, player.name.." (whisper): "..text)
-                                smart_print(victim, player.name.." (whisper): "..text)
-                            end
-                            player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text = ""
-
-                            if not victim.connected then
-                                smart_print(player,"They aren't online right now, but message will appear in chat history.")
-                            end
-                        else
-                            smart_print(player, "(SYSTEM) That player does not exist.")
-                        end
-                    else
-                        console_print("send_whisper: text-box not found")
-                    end
-                elseif event.element.name == "banish_player" then
-                    if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
-                        player.gui.screen.m45_online_submenu.main and 
-                        player.gui.screen.m45_online_submenu.main.banish_frame and 
-                        player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
-    
-
-                        if victim and victim.valid then
-                            local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
-                            if reason and string.len(reason) > 0 then
-                                --Remove newlines if there are any
-                                if string.match (reason, "\n") then
-                                    reason = string.gsub(reason, "\n", " ")
-                                end
-                                g_banish(player, victim, reason)
-                            end
-                            player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text = ""
-                        else
-                            smart_print(player, "(SYSTEM) That player does not exist.")
-                        end
-                    else
-                        console_print("send_whisper: text-box not found")
-                    end
-                elseif event.element.name == "find_on_map" then
-                    if victim and victim.valid then
-                        player.zoom_to_world(victim.position, 1.0)
-                    else
-                        smart_print(player, "Invalid target.")
-                    end
-                elseif event.element.name == "m45_button" then
-                    --Online window toggle
-                    if player.gui and player.gui.center and player.gui.screen.m45_info_window then
-                        player.gui.screen.m45_info_window.destroy()
-                    else
-                        make_m45_info_window(player)
-                    end
-                elseif event.element.name == "online_button" then
-                    --Online window close
-                    if player.gui and player.gui.left and player.gui.left.m45_online then
-                        player.gui.left.m45_online.destroy()
-                    else
-                        make_m45_online_window(player)
-                    end
-                elseif event.element.name == "m45_online_close_button" then
-                    --Close online window
-                    if player.gui and player.gui.left and player.gui.left.m45_online then
-                        player.gui.left.m45_online.destroy()
-                    end
-                elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
-                    --QR changetab button (info window)
-                    player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 6
-                elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
-                    player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 5
-                end
-            end
-        end
-    end
-)
-
---Handle killing ,and teleporting users to other surfaces
-script.on_event(
-    defines.events.on_player_respawned,
-    function(event)
-        --Anything queued?
-        if global.send_to_surface then
-            --Event and player?
-            if event and event.player_index then
-                local player = game.players[event.player_index]
-
-                --Valid player?
-                if player and player.valid and player.character and player.character.valid then
-                    local index = nil
-                    --Check list
-                    for i, item in pairs(global.send_to_surface) do
-                        --Check if item is valid
-                        if
-                            item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and item.position and
-                                item.surface
-                         then
-                            --Check if names match
-                            if item.victim.name == player.name then
-                                --If surface is valid
-                                local surf = game.surfaces[item.surface]
-                                if surf and surf.valid then
-                                    local newpos = surf.find_non_colliding_position("character", item.position, 100, 0.1, false)
-                                    if newpos then
-                                        player.teleport(newpos, surf)
-                                    else
-                                        player.teleport(item.position, surf) -- screw it
-                                        console_print("error: send_to_surface(respawn): unable to find non_colliding_position.")
-                                    end
-                                    index = i
-                                    break
-                                end
-                            end
-                        end
-                    end
-                    --Remove item we processed
-                    if index then
-                        game.print("item removed: " .. index)
-                        table.remove(global.send_to_surface, index)
-                    end
-                end
-            end
-        end
-
-        if event and event.player_index then
-            local player = game.players[event.player_index]
-            if player and player.valid then
-                player.insert {name = "firearm-magazine", count = 10}
-                player.insert {name = "pistol", count = 1}
-            end
-        end
-    end
-)
-
---Replace an item with a clone, from limbo
-function replace_with_clone(item)
-    local rep = item.obj.clone({position = item.obj.position, surface = item.surface, force = item.obj.force})
-
-    if rep then
-        if item.cwires then
-            for ind, pole in pairs(item.cwires) do
-                rep.connect_neighbour(pole)
-            end
-        end
-
-        --If we saved signal wire data, reconnect them now
-        if item.swires then
-            for ind, pole in pairs(item.swires) do
-                rep.connect_neighbour(pole)
-            end
-        end
-
-        if rep then
-            smart_print(
-                item.victim,
-                "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]"
-            )
-            if item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
-                item.victim.character.damage(15, "enemy") --Little discouragement
-            end
-        end
-    end
-end
-
 --Blueprint throttle countdown
 script.on_nth_tick(
     1,
     function(event)
         --game.force_crc()
+        --testing only, host server does not trigger join
 
         if global.restrict then
             if global.blueprint_throttle then
@@ -4311,6 +4165,110 @@ script.on_nth_tick(
                 --Done with list, invalidate it
                 global.untouchonj = nil
             end
+        end
+    end
+)
+
+--Main event handler
+script.on_event(
+    {
+        defines.events.on_player_respawned,
+        defines.events.on_gui_click,
+        defines.events.on_research_finished,
+        defines.events.on_pre_player_died,
+        defines.events.on_player_banned,
+        defines.events.on_chart_tag_removed,
+        defines.events.on_chart_tag_modified,
+        defines.events.on_chart_tag_added,
+        defines.events.on_player_changed_position,
+        defines.events.on_console_chat,
+        defines.events.on_player_repaired_entity,
+        defines.events.on_player_mined_tile,
+        defines.events.on_player_rotated_entity,
+        defines.events.on_pre_player_mined_item,
+        defines.events.on_player_cursor_stack_changed,
+        defines.events.on_built_entity,
+        defines.events.on_player_created,
+        defines.events.on_player_left_game,
+        defines.events.on_gui_text_changed,
+        defines.events.on_player_joined_game,
+        defines.events.on_player_deconstructed_area,
+        defines.events.on_console_command,
+        --darkness
+        defines.events.on_chunk_charted,
+        defines.events.on_player_dropped_item
+    },
+    function(event)
+        if not event then
+            return
+        end
+        --dark_event_handler(event)
+
+        --Mark player active
+        if event.player_index then
+            local player = game.players[event.player_index]
+            if player and player.valid then
+                --Only mark active on movement if walking
+                if event == defines.events.on_player_changed_position then
+                    if player.walking_state then
+                        if
+                            player.walking_state.walking == true and
+                                (player.walking_state.direction == defines.direction.north or
+                                    player.walking_state.direction == defines.direction.northeast or
+                                    player.walking_state.direction == defines.direction.east or
+                                    player.walking_state.direction == defines.direction.southeast or
+                                    player.walking_state.direction == defines.direction.south or
+                                    player.walking_state.direction == defines.direction.southwest or
+                                    player.walking_state.direction == defines.direction.west or
+                                    player.walking_state.direction == defines.direction.northwest)
+                         then
+                            set_player_active(player)
+                        end
+                    end
+                else
+                    set_player_active(player)
+                end
+            end
+        end
+
+        if event.name == defines.events.on_player_respawned then
+            on_player_respawned(event)
+        elseif event.name == defines.events.on_gui_click then
+            on_gui_click(event)
+        elseif event.name == defines.events.on_research_finished then
+            on_research_finished(event)
+        elseif event.name == defines.events.on_pre_player_died then
+            on_pre_player_died(event)
+        elseif event.name == defines.events.on_player_banned then
+            on_player_banned(event)
+        elseif event.name == defines.events.on_chart_tag_removed then
+            on_chart_tag_removed(event)
+        elseif event.name == defines.events.on_chart_tag_modified then
+            on_chart_tag_modified(event)
+        elseif event.name == defines.events.on_chart_tag_added then
+            on_chart_tag_added(event)
+        elseif event.name == defines.events.on_player_mined_tile then
+            on_player_mined_tile(event)
+        elseif event.name == defines.events.on_player_rotated_entity then
+            on_player_rotated_entity(event)
+        elseif event.name == defines.events.on_pre_player_mined_item then
+            on_pre_player_mined_item(event)
+        elseif event.name == defines.events.on_player_cursor_stack_changed then
+            on_player_cursor_stack_changed(event)
+        elseif event.name == defines.events.on_built_entity then
+            on_built_entity(event)
+        elseif event.name == defines.events.on_player_created then
+            on_player_created(event)
+        elseif event.name == defines.events.on_player_left_game then
+            on_player_left_game(event)
+        elseif event.name == defines.events.on_gui_text_changed then
+            on_gui_text_changed(event)
+        elseif event.name == defines.events.on_player_joined_game then
+            on_player_joined_game(event)
+        elseif event.name == defines.events.on_player_deconstructed_area then
+            on_player_deconstructed_area(event)
+        elseif event.name == defines.events.on_console_command then
+            on_console_command(event)
         end
     end
 )
