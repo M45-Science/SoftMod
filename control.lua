@@ -1,11 +1,7 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "v544-1-25-2021-1232p-exp"
+local svers = "v544-1-27-2021-1255p-exp"
 --require "darkness"
-local handler = require("event_handler")
-handler.add_lib(require("freeplay"))
-handler.add_lib(require("silo-script"))
-
 
 --Quickly turn tables into strings
 function dump(o)
@@ -50,7 +46,6 @@ end
 
 --Add M45 Logo to spawn area
 local function dodrawlogo()
-
     if game.surfaces[1] then
         --Only draw if needed
         if not global.drawlogo then
@@ -366,6 +361,21 @@ local function make_m45_online_submenu(player, target_name)
                     }
                     online_submenu_main.style.horizontal_align = "center"
 
+                    --FIND ON MAP
+                    local find_on_map_frame =
+                        online_submenu_main.add {
+                        type = "flow",
+                        direction = "vertical"
+                    }
+                    find_on_map_frame.style.horizontal_align = "center"
+                    local find_on_map =
+                        find_on_map_frame.add {
+                        type = "button",
+                        caption = "[item=artillery-targeting-remote] Find On Map",
+                        name = "find_on_map"
+                    }
+                    find_on_map.style.horizontal_align = "center"
+
                     --WHISPER
                     local whisper_frame =
                         online_submenu_main.add {
@@ -373,10 +383,11 @@ local function make_m45_online_submenu(player, target_name)
                         name = "whisper_frame",
                         direction = "vertical"
                     }
+                    whisper_frame.style.horizontal_align = "center"
                     local whisper =
                         whisper_frame.add {
                         type = "label",
-                        caption = "Whisper To:",
+                        caption = "[font=default-large-bold]Whisper To:[/font]",
                         name = "whisper"
                     }
                     local whiser_textbox =
@@ -388,7 +399,8 @@ local function make_m45_online_submenu(player, target_name)
                     whisper_frame.add {
                         type = "button",
                         caption = "Send",
-                        name = "send_whisper"
+                        name = "send_whisper",
+                        style = "green_button"
                     }
                     whisper_frame.add {
                         type = "label",
@@ -399,6 +411,50 @@ local function make_m45_online_submenu(player, target_name)
                     whiser_textbox.word_wrap = true
                     whiser_textbox.style.horizontal_align = "left"
 
+                    --REPORT
+                    local report_frame =
+                        online_submenu_main.add {
+                        type = "flow",
+                        direction = "vertical",
+                        name = "report_frame"
+                    }
+                    report_frame.style.horizontal_align = "center"
+                    local report =
+                        report_frame.add {
+                        type = "label",
+                        caption = "[font=default-large-bold]Report player:[/font]",
+                        name = "report"
+                    }
+                    local report_textbox =
+                        report_frame.add {
+                        type = "text-box",
+                        text = "",
+                        name = "report_textbox"
+                    }
+                    report_frame.add {
+                        type = "label",
+                        caption = "(Posts to #moderation on Discord)",
+                        name = "report_note"
+                    }
+
+                    report_textbox.style.width = 500
+                    report_textbox.style.height = 64
+                    report_textbox.word_wrap = true
+                    report_textbox.style.horizontal_align = "left"
+
+                    local report_button =
+                        report_frame.add {
+                        type = "button",
+                        caption = "REPORT",
+                        style = "red_button",
+                        name = "report_player"
+                    }
+
+                    report_frame.add {
+                        type = "label",
+                        caption = " "
+                    }
+
                     --BANISH
                     local banish_frame =
                         online_submenu_main.add {
@@ -406,10 +462,11 @@ local function make_m45_online_submenu(player, target_name)
                         direction = "vertical",
                         name = "banish_frame"
                     }
+                    banish_frame.style.horizontal_align = "center"
                     local banish =
                         banish_frame.add {
                         type = "label",
-                        caption = "Banish Player:",
+                        caption = "[font=default-large-bold]Banish Player:[/font]",
                         name = "banish"
                     }
                     local banish_textbox =
@@ -422,12 +479,12 @@ local function make_m45_online_submenu(player, target_name)
                     banish_textbox.style.width = 500
                     banish_textbox.style.height = 64
                     banish_textbox.word_wrap = true
-                    banish_textbox.style.horizontal_align = "left"
+                    banish_textbox.style.horizontal_align = "center"
 
                     local banish_button =
                         banish_frame.add {
                         type = "button",
-                        caption = "Vote To Banish",
+                        caption = "VOTE TO BANISH",
                         style = "red_button",
                         name = "banish_player"
                     }
@@ -460,21 +517,6 @@ local function make_m45_online_submenu(player, target_name)
                         type = "label",
                         caption = " "
                     }
-
-                    --FIND ON MAP
-                    local find_on_map_frame =
-                        online_submenu_main.add {
-                        type = "flow",
-                        direction = "vertical"
-                    }
-                    find_on_map_frame.style.horizontal_align = "center"
-                    local find_on_map =
-                        find_on_map_frame.add {
-                        type = "button",
-                        caption = "[item=artillery-targeting-remote] Find On Map",
-                        name = "find_on_map"
-                    }
-                    find_on_map.style.horizontal_align = "center"
                 end
             end
         end
@@ -759,7 +801,7 @@ local function make_m45_info_window(player)
             }
 
             local info_pane = main_flow.add {type = "tabbed-pane", name = "m45_info_window_tabs"}
-            info_pane.style.minimal_width = 700
+            info_pane.style.minimal_width = 800
 
             local tab1 = info_pane.add {type = "tab", caption = "[entity=character] Welcome"}
             local tab2 = info_pane.add {type = "tab", caption = "[item=automation-science-pack] Membership"}
@@ -869,6 +911,34 @@ local function make_m45_info_window(player)
                 type = "flow",
                 direction = "vertical"
             }
+            --Tab 1 Center -- Info
+            local tab1_info_center =
+                tab1_main_frame.add {
+                type = "flow",
+                direction = "vertical"
+            }
+            tab1_info_center.style.horizontal_align = "center"
+
+            tab1_info_center.style.horizontally_stretchable = true
+            tab1_info_center.add {
+                type = "label",
+                caption = "[color=orange][font=default-large-bold]Issues, trolls or griefers?[/font][/color]"
+            }
+            tab1_info_center.add {
+                type = "sprite",
+                sprite = "file/img/tips/onetwothree.png"
+            }
+            tab1_info_center.add {
+                type = "label",
+                caption = "[color=orange][font=default-large-bold]Report or banish them![/font][/color]"
+            }
+
+            local tab1_cframe = {
+                tab1_main_frame.add {
+                    type = "flow",
+                    direction = "vertical"
+                }
+            }
             tab1_rframe.style.horizontal_align = "right"
             tab1_rframe.style.vertical_align = "bottom"
             tab1_rframe.style.padding = 4
@@ -886,7 +956,7 @@ local function make_m45_info_window(player)
             }
             tab1_info_top.add {
                 type = "label",
-                caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some RESTRICTIONS![/font][/color]"
+                caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
             }
             tab1_info_top.add {
                 type = "label",
@@ -902,33 +972,13 @@ local function make_m45_info_window(player)
             }
             tab1_info_top.add {
                 type = "label",
-                caption = "[recipe=combat-shotgun] Friendly fire is off, for players and buildings."
+                caption = "[recipe=combat-shotgun] [font=default-large]Friendly fire is off, for players and buildings.[/font]"
             }
             tab1_info_top.add {
                 type = "label",
-                caption = "Click the '[item=automation-science-pack] Membership' tab above, to find out how to become a member."
+                caption = "[font=default-large]Click the '[item=automation-science-pack] Membership' tab above, to find out how to become a member.[/font]"
             }
             tab1_info_top.add {
-                type = "label",
-                caption = ""
-            }
-
-            --Tab 1 Main -- Reporting
-            local tab1_info_center =
-                tab1_rframe.add {
-                type = "flow",
-                direction = "vertical"
-            }
-            tab1_info_center.style.horizontally_stretchable = true
-            tab1_info_center.add {
-                type = "label",
-                caption = "[color=orange][font=default-large-bold]Issues or griefers?[/font][/color]"
-            }
-            tab1_info_center.add {
-                type = "label",
-                caption = "[font=default-game]/report <name> <problem>[/font]"
-            }
-            tab1_info_center.add {
                 type = "label",
                 caption = ""
             }
@@ -1017,8 +1067,7 @@ local function make_m45_info_window(player)
             tab2_main_frame.add {
                 type = "label",
                 name = "tab2_score",
-                caption = "[color=red][font=default-large-bold]Your Activity Score: " ..
-                    math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
+                caption = "[color=red][font=default-large-bold]Your Activity Score: " .. math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -1211,7 +1260,7 @@ local function make_m45_info_window(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]4: [item=repair-pack] Use [/font][font=default-game]/report <name> <problem>[/font] [font=default-large-bold]if there are problem-players.[/font]"
+                caption = "[font=default-large-bold]4: [item=repair-pack] Use [/font][font=default-game]report or banish[/font] [font=default-large-bold]if there are problem-players.[/font]"
             }
             tab3_main_frame.add {
                 type = "label",
@@ -1257,22 +1306,6 @@ local function make_m45_info_window(player)
             tab4_main_frame.style.padding = 4
 
             tab4_main_frame.style.horizontally_stretchable = true
-            tab4_main_frame.add {
-                type = "label",
-                caption = "[font=default-large]Auto-complete:[/font]"
-            }
-            tab4_main_frame.add {
-                type = "label",
-                caption = "[font=default-game]/whis[TAB] NameOf[TAB][/font]"
-            }
-            tab4_main_frame.add {
-                type = "label",
-                caption = "[font=default-large]Becomes[/font]"
-            }
-            tab4_main_frame.add {
-                type = "label",
-                caption = "[font=default-game]/whisper NameOfPlayer[/font]"
-            }
             tab4_main_frame.add {
                 type = "label",
                 caption = ""
@@ -1811,63 +1844,29 @@ local function get_permgroup()
                 if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
                     if player.permission_group then
                         --(ADMINS) Check if they are in the right group, including se-remote-view
-                        if
-                            (player.admin and player.permission_group.name ~= global.adminsgroup.name and
-                                player.permission_group.name ~= global.adminsgroup.name .. "_satellite")
-                         then
+                        if (player.admin and player.permission_group.name ~= global.adminsgroup.name and player.permission_group.name ~= global.adminsgroup.name .. "_satellite") then
                             --(REGULARS) Check if they are in the right group, including se-remote-view
                             global.adminsgroup.add_player(player)
                             message_all(player.name .. " moved to Admins group")
-                        elseif
-                            (global.active_playtime and global.active_playtime[player.index] and
-                                global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
-                                not player.admin)
-                         then
+                        elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
                             --Check if player has hours for regulars status, but isn't a in regulars group.
-                            if
-                                (player.permission_group.name ~= global.regularsgroup.name and
-                                    player.permission_group.name ~= global.regularsgroup.name .. "_satellite")
-                             then
+                            if (player.permission_group.name ~= global.regularsgroup.name and player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
                                 global.regularsgroup.add_player(player)
                                 message_all(player.name .. " is now a regular!")
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]"
-                                )
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]"
-                                )
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]"
-                                )
-                                smart_print(
-                                    player,
-                                    "[[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]"
-                                )
+                                smart_print(player, "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
+                                smart_print(player, "[color=red](SYSTEM) You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
+                                smart_print(player, "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                                smart_print(player, "[[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
-                        elseif
-                            (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and
-                                not player.admin)
-                         then
+                        elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
                             --Check if player has hours for members status, but isn't a in member group.
                             if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                                 global.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]"
-                                )
+                                smart_print(player, "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]")
                                 smart_print(player, "[color=red](SYSTEM) You now have access to our 'Members' Discord role![/color]")
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]"
-                                )
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]"
-                                )
+                                smart_print(player, "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
+                                smart_print(player, "[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
                             end
                         end
                     end
@@ -1888,21 +1887,39 @@ function show_players(victim)
 
     --Cleaned up 12-2020
     for i, target in pairs(global.player_list) do
-        buf =
-            buf ..
-            string.format(
-                "~%16s: - Score: %d - Online: %dm - (%s)\n",
-                target.victim.name,
-                math.floor(target.score/ 60 / 60),
-                math.floor(target.time / 60 / 60),
-                target.type
-            )
+        buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
     end
     --No one is online
     if global.player_count == 0 then
         smart_print(victim, "No players online.")
     else
         smart_print(victim, "Players Online: " .. global.player_count .. "\n" .. buf)
+    end
+end
+
+function g_report(player, report)
+    if player and player.valid and report then
+        --Init limit list if needed
+        if not global.reportlimit then
+            global.reportlimit = {}
+        end
+
+        --Add or init player's limit
+        if global.reportlimit[player.index] then
+            global.reportlimit[player.index] = global.reportlimit[player.index] + 1
+        else
+            global.reportlimit[player.index] = 1
+        end
+
+        --Limit and list number of reports
+        if global.reportlimit[player.index] <= 5 then
+            print("[REPORT] " .. player.name .. " " .. report)
+            smart_print(player, "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports.")
+        else
+            smart_print("You are not allowed to send any more reports.")
+        end
+    else
+        smart_print(player, "Usage: /report (your message to moderators here)")
     end
 end
 
@@ -1951,8 +1968,7 @@ function g_banish(player, victim, reason)
                                 end
 
                                 --Send report to discord and add to vote list
-                                local message =
-                                    "[color=red](SYSTEM) " .. player.name .. " voted to banish: " .. victim.name .. " for: " .. reason .. "[/color]"
+                                local message = "[color=red](SYSTEM) " .. player.name .. " voted to banish: " .. victim.name .. " for: " .. reason .. "[/color]"
                                 message_all(message)
                                 print("[REPORT] " .. message)
                                 smart_print(player, "(SYSTEM): Your vote has been added, and posted on Discord!")
@@ -2310,11 +2326,7 @@ script.on_load(
                                         notes = "(OVERRULED) "
                                     end
                                     pcount = pcount + 1
-                                    smart_print(
-                                        player,
-                                        notes ..
-                                            "plaintiff: " .. vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason
-                                    )
+                                    smart_print(player, notes .. "plaintiff: " .. vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason)
                                 end
                             end
 
@@ -2325,10 +2337,7 @@ script.on_load(
                             if global.thebanished then
                                 for _, victim in pairs(game.players) do
                                     if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
-                                        smart_print(
-                                            player,
-                                            victim.name .. " has had " .. global.thebanished[victim.index] .. " complaints agianst them."
-                                        )
+                                        smart_print(player, victim.name .. " has had " .. global.thebanished[victim.index] .. " complaints agianst them.")
                                         pcount = pcount + 1
                                     end
                                 end
@@ -2388,9 +2397,7 @@ script.on_load(
                                                 if vote and vote.voter and vote.victim then
                                                     if vote.voter == player and vote.victim == victim then
                                                         --Send report to discord and withdraw vote
-                                                        local message =
-                                                            "[color=red](SYSTEM) " ..
-                                                            player.name .. " WITHDREW their vote to banish: " .. victim.name .. "[/color]"
+                                                        local message = "[color=red](SYSTEM) " .. player.name .. " WITHDREW their vote to banish: " .. victim.name .. "[/color]"
                                                         message_all(message)
                                                         print("[REPORT] " .. message)
                                                         smart_print(player, "Your vote has been withdrawn, and posted on Discord.")
@@ -2460,32 +2467,7 @@ script.on_load(
                 function(param)
                     if param and param.player_index then
                         local player = game.players[param.player_index]
-                        if player and player.valid and param.parameter then
-                            --Init limit list if needed
-                            if not global.reportlimit then
-                                global.reportlimit = {}
-                            end
-
-                            --Add or init player's limit
-                            if global.reportlimit[player.index] then
-                                global.reportlimit[player.index] = global.reportlimit[player.index] + 1
-                            else
-                                global.reportlimit[player.index] = 1
-                            end
-
-                            --Limit and list number of reports
-                            if global.reportlimit[player.index] <= 5 then
-                                print("[REPORT] " .. player.name .. " " .. param.parameter)
-                                smart_print(
-                                    player,
-                                    "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports."
-                                )
-                            else
-                                smart_print("You are not allowed to send any more reports.")
-                            end
-                        else
-                            smart_print(player, "Usage: /report (your message to moderators here)")
-                        end
+                        g_report(player, param.parameter)
                     else
                         smart_print(nil, "The console doesn't need to send in reports this way.")
                     end
@@ -3172,13 +3154,7 @@ local function on_player_deconstructed_area(event)
         if player and area and area.left_top then
             --Don't bother if selection is zero.
             if area.left_top == area.right_bottom.x and area.left_top.y == area.right_bottom.y then
-                local msg =
-                    player.name ..
-                    " decon [gps=" ..
-                        math.floor(area.left_top.x) ..
-                            "," ..
-                                math.floor(area.left_top.y) ..
-                                    "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
+                local msg = player.name .. " decon [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
                 console_print(msg)
 
                 if is_new(player) or is_member(player) then --Dont bother with regulars/admins
@@ -3245,8 +3221,8 @@ local function on_player_joined_game(event)
                         sprite = "file/img/m45-32.png",
                         tooltip = "Opens the server info window"
                     }
-                --Invalid in Factorio 1.0
-                --m45_32.style.size = {32, 32}
+                    --Invalid in Factorio 1.0
+                    m45_32.style.size = {32, 32}
                 end
 
                 --Online button--
@@ -3261,8 +3237,8 @@ local function on_player_joined_game(event)
                         sprite = "file/img/online-32.png",
                         tooltip = "See players online"
                     }
-                --Invalid in Factorio 1.0
-                --online_32.style.size = {32, 32}
+                    --Invalid in Factorio 1.0
+                    online_32.style.size = {32, 32}
                 end
             end
 
@@ -3391,21 +3367,12 @@ local function on_built_entity(event)
 
             if created_entity and created_entity.valid then
                 if created_entity.name == "programmable-speaker" then
-                    console_print(
-                        player.name ..
-                            " placed a speaker at [gps=" ..
-                                math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                    )
+                    console_print(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                     global.last_speaker_warning = game.tick
 
                     if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
                         if player.admin == false then --Dont bother with admins
-                            message_all(
-                                "[color=red](SYSTEM) " ..
-                                    player.name ..
-                                        " placed a speaker at [gps=" ..
-                                            math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]"
-                            )
+                            message_all("[color=red](SYSTEM) " .. player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]")
                             global.last_speaker_warning = game.tick
                         end
                     end
@@ -3415,20 +3382,10 @@ local function on_built_entity(event)
             if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
                 if created_entity.name == "entity-ghost" then
                     --Log item placement
-                    console_print(
-                        player.name ..
-                            " +ghost " ..
-                                created_entity.ghost_name ..
-                                    " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                    )
+                    console_print(player.name .. " +ghost " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                 else
                     --Log item placement
-                    console_print(
-                        player.name ..
-                            " +" ..
-                                created_entity.name ..
-                                    " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
-                    )
+                    console_print(player.name .. " +" .. created_entity.name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
                 end
             end
         end
@@ -3451,11 +3408,7 @@ local function on_player_cursor_stack_changed(event)
                         if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                             if global.blueprint_throttle[player.index] > 0 then
                                 console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
-                                smart_print(
-                                    player,
-                                    "[color=red](SYSTEM) You are blueprinting too quickly. You must wait " ..
-                                        round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]"
-                                )
+                                smart_print(player, "[color=red](SYSTEM) You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
                                 player.insert(player.cursor_stack)
                                 stack.clear()
                                 return
@@ -3568,9 +3521,7 @@ local function on_pre_player_mined_item(event)
                     end
                 else
                     --Normal player, just log it
-                    console_print(
-                        player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
-                    )
+                    console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                 end
             else
                 console_print("pre_player_mined_item: invalid player, obj or surface.")
@@ -3609,9 +3560,7 @@ local function on_player_rotated_entity(event)
                     end
                 else
                     --Normal player, just log it
-                    console_print(
-                        player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
-                    )
+                    console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
                 end
             end
         end
@@ -3624,9 +3573,7 @@ local function on_chart_tag_added(event)
         local player = game.players[event.player_index]
 
         if player and player.valid and event.tag then
-            console_print(
-                player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
-            )
+            console_print(player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
         end
     end
 end
@@ -3636,10 +3583,7 @@ local function on_chart_tag_modified(event)
     if event and event.player_index then
         local player = game.players[event.player_index]
         if player and player.valid and event.tag then
-            console_print(
-                player.name ..
-                    " -+ tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
-            )
+            console_print(player.name .. " -+ tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
         end
     end
 end
@@ -3650,9 +3594,7 @@ local function on_chart_tag_removed(event)
         local player = game.players[event.player_index]
 
         if player and player.valid and event.tag then
-            console_print(
-                player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
-            )
+            console_print(player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
         end
     end
 end
@@ -3693,17 +3635,9 @@ local function on_pre_player_died(event)
             --Log to discord
             if event.cause and event.cause.valid then
                 cause = event.cause.name
-                message_all(
-                    "[color=red](SYSTEM) " ..
-                        player.name ..
-                            " was killed by " ..
-                                cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]"
-                )
+                message_all("[color=red](SYSTEM) " .. player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
             else
-                message_all(
-                    "[color=red](SYSTEM) " ..
-                        player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]"
-                )
+                message_all("[color=red](SYSTEM) " .. player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
             end
         end
     end
@@ -3754,11 +3688,7 @@ local function on_gui_click(event)
                 handle_m45_online_submenu(player, args[2])
                 return
             elseif event.element.name == "send_whisper" then
-                if
-                    player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and
-                        player.gui.screen.m45_online_submenu.main.whisper_frame and
-                        player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox
-                 then
+                if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.whisper_frame and player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
                     if victim and victim.valid then
                         local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
                         if text and string.len(text) > 0 then
@@ -3781,11 +3711,7 @@ local function on_gui_click(event)
                     console_print("send_whisper: text-box not found")
                 end
             elseif event.element.name == "banish_player" then
-                if
-                    player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and
-                        player.gui.screen.m45_online_submenu.main.banish_frame and
-                        player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox
-                 then
+                if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.banish_frame and player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
                     if victim and victim.valid then
                         local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
                         if reason and string.len(reason) > 0 then
@@ -3796,6 +3722,24 @@ local function on_gui_click(event)
                             g_banish(player, victim, reason)
                         end
                         player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text = ""
+                    else
+                        smart_print(player, "(SYSTEM) That player does not exist.")
+                    end
+                else
+                    console_print("send_whisper: text-box not found")
+                end
+            elseif event.element.name == "report_player" then
+                if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.report_frame and player.gui.screen.m45_online_submenu.main.report_frame.report_textbox then
+                    if victim and victim.valid then
+                        local reason = player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text
+                        if reason and string.len(reason) > 0 then
+                            --Remove newlines if there are any
+                            if string.match(reason, "\n") then
+                                reason = string.gsub(reason, "\n", " ")
+                            end
+                            g_report(player, ": " .. victim.name .. ": " .. reason)
+                        end
+                        player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text = ""
                     else
                         smart_print(player, "(SYSTEM) That player does not exist.")
                     end
@@ -3851,10 +3795,7 @@ local function on_player_respawned(event)
                 --Check list
                 for i, item in pairs(global.send_to_surface) do
                     --Check if item is valid
-                    if
-                        item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and item.position and
-                            item.surface
-                     then
+                    if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and item.position and item.surface then
                         --Check if names match
                         if item.victim.name == player.name then
                             --If surface is valid
@@ -3910,10 +3851,7 @@ function replace_with_clone(item)
         end
 
         if rep then
-            smart_print(
-                item.victim,
-                "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]"
-            )
+            smart_print(item.victim, "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]")
             if item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
                 item.victim.character.damage(15, "enemy") --Little discouragement
             end
@@ -4051,12 +3989,7 @@ script.on_nth_tick(
                                 if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                                     if global.blueprint_throttle[player.index] > 0 then
                                         console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
-                                        smart_print(
-                                            player,
-                                            "[color=red](SYSTEM) You must wait " ..
-                                                round(global.blueprint_throttle[player.index] / 60, 2) ..
-                                                    " seconds before blueprinting again.[/color]"
-                                        )
+                                        smart_print(player, "[color=red](SYSTEM) You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
                                         player.insert(player.cursor_stack)
                                         stack.clear()
                                     end
@@ -4176,34 +4109,43 @@ script.on_nth_tick(
 --Main event handler
 script.on_event(
     {
-        defines.events.on_player_respawned,
-        defines.events.on_gui_click,
-        defines.events.on_research_finished,
+        --Player join/leave respawn
+        defines.events.on_player_created,
         defines.events.on_pre_player_died,
-        defines.events.on_player_banned,
-        defines.events.on_chart_tag_removed,
-        defines.events.on_chart_tag_modified,
-        defines.events.on_chart_tag_added,
+        defines.events.on_player_respawned,
+        --
+        defines.events.on_player_joined_game,
+        defines.events.on_player_left_game,
+        --activity
         defines.events.on_player_changed_position,
         defines.events.on_console_chat,
         defines.events.on_player_repaired_entity,
-        defines.events.on_player_mined_tile,
+        --gui
+        defines.events.on_gui_click,
+        defines.events.on_gui_text_changed,
+        --log
+        defines.events.on_console_command,
+        defines.events.on_chart_tag_removed,
+        defines.events.on_chart_tag_modified,
+        defines.events.on_chart_tag_added,
+        defines.events.on_research_finished,
+        -- anti-grief
+        defines.events.on_player_deconstructed_area,
+        defines.events.on_player_banned,
         defines.events.on_player_rotated_entity,
         defines.events.on_pre_player_mined_item,
         defines.events.on_player_cursor_stack_changed,
-        defines.events.on_built_entity,
-        defines.events.on_player_created,
-        defines.events.on_player_left_game,
-        defines.events.on_gui_text_changed,
-        defines.events.on_player_joined_game,
-        defines.events.on_player_deconstructed_area,
-        defines.events.on_console_command,
         --darkness
         defines.events.on_chunk_charted,
-        defines.events.on_player_dropped_item
+        defines.events.on_player_dropped_item,
+        defines.events.on_built_entity,
+        defines.events.on_post_entity_died,
+        defines.events.on_robot_mined,
+        defines.events.on_sector_scanned
     },
     function(event)
-        if not event then
+        --If no event, or event is a tick
+        if not event or (event and event.name == defines.events.on_tick) then
             return
         end
         --dark_event_handler(event)
@@ -4215,17 +4157,7 @@ script.on_event(
                 --Only mark active on movement if walking
                 if event.name == defines.events.on_player_changed_position then
                     if player.walking_state then
-                        if
-                            player.walking_state.walking == true and
-                                (player.walking_state.direction == defines.direction.north or
-                                    player.walking_state.direction == defines.direction.northeast or
-                                    player.walking_state.direction == defines.direction.east or
-                                    player.walking_state.direction == defines.direction.southeast or
-                                    player.walking_state.direction == defines.direction.south or
-                                    player.walking_state.direction == defines.direction.southwest or
-                                    player.walking_state.direction == defines.direction.west or
-                                    player.walking_state.direction == defines.direction.northwest)
-                         then
+                        if player.walking_state.walking == true and (player.walking_state.direction == defines.direction.north or player.walking_state.direction == defines.direction.northeast or player.walking_state.direction == defines.direction.east or player.walking_state.direction == defines.direction.southeast or player.walking_state.direction == defines.direction.south or player.walking_state.direction == defines.direction.southwest or player.walking_state.direction == defines.direction.west or player.walking_state.direction == defines.direction.northwest) then
                             set_player_active(player)
                         end
                     end
@@ -4235,44 +4167,56 @@ script.on_event(
             end
         end
 
-        if event.name == defines.events.on_player_respawned then
-            on_player_respawned(event)
-        elseif event.name == defines.events.on_gui_click then
-            on_gui_click(event)
-        elseif event.name == defines.events.on_research_finished then
-            on_research_finished(event)
+        --Player join/leave respawn
+        if event.name == defines.events.on_player_created then
+            on_player_created(event)
         elseif event.name == defines.events.on_pre_player_died then
             on_pre_player_died(event)
-        elseif event.name == defines.events.on_player_banned then
-            on_player_banned(event)
+        elseif event.name == defines.events.on_player_respawned then
+            --
+            on_player_respawned(event)
+        elseif event.name == defines.events.on_player_joined_game then
+            on_player_joined_game(event)
+        elseif event.name == defines.events.on_player_left_game then
+            --activity
+            --changed-position
+            --console_chat
+            --repaired_entity
+            --
+            --gui
+            on_player_left_game(event)
+        elseif event.name == defines.events.on_gui_click then
+            on_gui_click(event)
+        elseif event.name == defines.events.on_gui_text_changed then
+            --log
+            on_gui_text_changed(event)
+        elseif event.name == defines.events.on_console_command then
+            on_console_command(event)
         elseif event.name == defines.events.on_chart_tag_removed then
             on_chart_tag_removed(event)
         elseif event.name == defines.events.on_chart_tag_modified then
             on_chart_tag_modified(event)
         elseif event.name == defines.events.on_chart_tag_added then
             on_chart_tag_added(event)
-        elseif event.name == defines.events.on_player_mined_tile then
-            on_player_mined_tile(event)
+        elseif event.name == defines.events.on_research_finished then
+            --anti-grief
+            on_research_finished(event)
+        elseif event.name == defines.events.on_player_deconstructed_area then
+            on_player_deconstructed_area(event)
+        elseif event.name == defines.events.on_player_banned then
+            on_player_banned(event)
         elseif event.name == defines.events.on_player_rotated_entity then
             on_player_rotated_entity(event)
         elseif event.name == defines.events.on_pre_player_mined_item then
             on_pre_player_mined_item(event)
         elseif event.name == defines.events.on_player_cursor_stack_changed then
             on_player_cursor_stack_changed(event)
-        elseif event.name == defines.events.on_built_entity then
-            on_built_entity(event)
-        elseif event.name == defines.events.on_player_created then
-            on_player_created(event)
-        elseif event.name == defines.events.on_player_left_game then
-            on_player_left_game(event)
-        elseif event.name == defines.events.on_gui_text_changed then
-            on_gui_text_changed(event)
-        elseif event.name == defines.events.on_player_joined_game then
-            on_player_joined_game(event)
-        elseif event.name == defines.events.on_player_deconstructed_area then
-            on_player_deconstructed_area(event)
-        elseif event.name == defines.events.on_console_command then
-            on_console_command(event)
         end
+
+        --darkness--
+        --chunk_charted
+        --player_dropped_item
+        --built_entity
+        --entity_died
     end
 )
