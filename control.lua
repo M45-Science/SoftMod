@@ -2,6 +2,10 @@
 --carlotto81@gmail.com
 local svers = "v544-1-25-2021-1232p-exp"
 --require "darkness"
+local handler = require("event_handler")
+handler.add_lib(require("freeplay"))
+handler.add_lib(require("silo-script"))
+
 
 --Quickly turn tables into strings
 function dump(o)
