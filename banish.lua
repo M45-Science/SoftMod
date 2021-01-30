@@ -14,6 +14,32 @@ function make_banish_globals()
   end
 end
 
+function g_report(player, report)
+  if player and player.valid and report then
+    --Init limit list if needed
+    if not global.reportlimit then
+      global.reportlimit = {}
+    end
+
+    --Add or init player's limit
+    if global.reportlimit[player.index] then
+      global.reportlimit[player.index] = global.reportlimit[player.index] + 1
+    else
+      global.reportlimit[player.index] = 1
+    end
+
+    --Limit and list number of reports
+    if global.reportlimit[player.index] <= 5 then
+      print("[REPORT] " .. player.name .. " " .. report)
+      smart_print(player, "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports.")
+    else
+      smart_print("You are not allowed to send any more reports.")
+    end
+  else
+    smart_print(player, "Usage: /report (your message to moderators here)")
+  end
+end
+
 --Process banish votes
 function update_banished_votes()
   --Reset banished list
