@@ -1,8 +1,11 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
 local svers = "547-1-30-2021-0254p-exp"
 
 --Create globals, if needed
 function create_myglobals()
   global.svers = svers --Version number
+
   if global.restrict == nil then
     global.restrict = true
   end

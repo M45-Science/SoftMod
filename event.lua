@@ -1,3 +1,5 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
 require "antigrief"
 require "info"
 require "log"

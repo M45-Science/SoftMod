@@ -1,3 +1,7 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
+require "util"
+
 --Create player groups if they don't exist, and create global links to them
 function create_groups()
   global.defaultgroup = game.permissions.get_group("Default")

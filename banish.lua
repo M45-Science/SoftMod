@@ -1,3 +1,7 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
+require "util"
+
 function make_banish_globals()
   if not global.banishvotes then
     global.banishvotes = {

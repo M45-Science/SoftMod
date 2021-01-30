@@ -1,4 +1,8 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
 require "util"
+
+
 
 --Build stuff -- activity
 function on_built_entity(event)

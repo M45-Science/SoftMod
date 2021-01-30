@@ -1,3 +1,5 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
 require "util"
 require "banish"
 require "logo"

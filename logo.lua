@@ -1,3 +1,6 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
+
 --Add M45 Logo to spawn area
 function dodrawlogo()
   if game.surfaces[1] then
