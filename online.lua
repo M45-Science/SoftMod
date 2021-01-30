@@ -1,5 +1,22 @@
 require "util"
 
+function make_online_button(player)
+  --Online button--
+  if player.gui.top.online_button then
+    player.gui.top.online_button.destroy()
+  end
+  if not player.gui.top.online_button then
+    local online_32 =
+      player.gui.top.add {
+      type = "sprite-button",
+      name = "online_button",
+      sprite = "file/img/buttons/online-32.png",
+      tooltip = "See players online"
+    }
+    online_32.style.size = {32, 32}
+  end
+end
+
 --Count online players, store
 function update_player_list()
   --Sort by active time
@@ -86,6 +103,10 @@ function make_m45_online_submenu(player, target_name)
   --make online root submenu
   if player and target and target.valid then
     if player.gui and player.gui.screen then
+      if player.gui and player.gui.screen and player.gui.screen.m45_info_window then
+        player.gui.screen.m45_info_window.destroy()
+      end
+
       if not player.gui.screen.m45_online_submenu then
         if not player.gui.screen.m45_online_submenu then
           local main_flow =
