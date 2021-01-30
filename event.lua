@@ -96,7 +96,6 @@ script.on_nth_tick(
   end
 )
 
-
 --Main event handler
 script.on_event(
   {
@@ -220,116 +219,113 @@ script.on_event(
   end
 )
 
-
 --Handle killing ,and teleporting users to other surfaces
 function on_player_respawned(event)
- 
-    send_to_surface(event) --banish.lua
-  
-    if event and event.player_index then
-      local player = game.players[event.player_index]
-      if player and player.valid then
-        player.insert {name = "firearm-magazine", count = 10}
-        player.insert {name = "pistol", count = 1}
-      end
+  send_to_surface(event) --banish.lua
+
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+    if player and player.valid then
+      player.insert {name = "firearm-magazine", count = 10}
+      player.insert {name = "pistol", count = 1}
     end
   end
+end
 
-
-  --Player connected, make variables, draw UI, set permissions, and game settings
+--Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-    update_player_list() --online.lua
-  
-    --Gui stuff
-    if event and event.player_index then
-      local player = game.players[event.player_index]
-      if player then
-        create_myglobals()
-        create_player_globals(player)
-        create_groups()
-        game_settings(player)
-        set_perms()
-        get_permgroup()
-  
-        --Delete old UIs (migrate old saves)
-        if player.gui.top.dicon then
-          player.gui.top.dicon.destroy()
-        end
-        if player.gui.top.discordurl then
-          player.gui.top.discordurl.destroy()
-        end
-        if player.gui.top.zout then
-          player.gui.top.zout.destroy()
-        end
-        if player.gui.top.serverlist then
-          player.gui.top.serverlist.destroy()
-        end
-        if player.gui.center.dark_splash then
-          player.gui.center.dark_splash.destroy()
-        end
-        if player.gui.center.splash_screen then
-          player.gui.center.splash_screen.destroy()
-        end
-  
-        dodrawlogo() --logo.lua
-  
-        if player.gui and player.gui.top then
-          make_info_button(player) --info.lua
-          make_online_button(player) --online.lua
-        end
-  
-        if is_new(player) then
-          make_m45_online_window(player) --online.lua
-          make_m45_info_window(player) --info.lua
-        end
+  update_player_list() --online.lua
+
+  --Gui stuff
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+    if player then
+      create_myglobals()
+      create_player_globals(player)
+      create_groups()
+      game_settings(player)
+      set_perms()
+      get_permgroup()
+
+      --Delete old UIs (migrate old saves)
+      if player.gui.top.dicon then
+        player.gui.top.dicon.destroy()
+      end
+      if player.gui.top.discordurl then
+        player.gui.top.discordurl.destroy()
+      end
+      if player.gui.top.zout then
+        player.gui.top.zout.destroy()
+      end
+      if player.gui.top.serverlist then
+        player.gui.top.serverlist.destroy()
+      end
+      if player.gui.center.dark_splash then
+        player.gui.center.dark_splash.destroy()
+      end
+      if player.gui.center.splash_screen then
+        player.gui.center.splash_screen.destroy()
+      end
+
+      dodrawlogo() --logo.lua
+
+      if player.gui and player.gui.top then
+        make_info_button(player) --info.lua
+        make_online_button(player) --online.lua
+      end
+
+      if is_new(player) then
+        make_m45_online_window(player) --online.lua
+        make_m45_info_window(player) --info.lua
       end
     end
   end
-  
-  --New player created, insert items set perms, show players online, welcome to map.
-  function on_player_created(event)
-    if event and event.player_index then
-      local player = game.players[event.player_index]
-      if player and player.valid then
-        player.insert {name = "iron-plate", count = 8}
-        player.insert {name = "wood", count = 1}
-        player.insert {name = "pistol", count = 1}
-        player.insert {name = "firearm-magazine", count = 10}
-        player.insert {name = "burner-mining-drill", count = 1}
-        player.insert {name = "stone-furnace", count = 1}
-  
-        set_perms()
-        show_players(player)
-        message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
+end
+
+--New player created, insert items set perms, show players online, welcome to map.
+function on_player_created(event)
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+    if player and player.valid then
+      player.insert {name = "iron-plate", count = 8}
+      player.insert {name = "wood", count = 1}
+      player.insert {name = "pistol", count = 1}
+      player.insert {name = "firearm-magazine", count = 10}
+      player.insert {name = "burner-mining-drill", count = 1}
+      player.insert {name = "stone-furnace", count = 1}
+
+      set_perms()
+      show_players(player)
+      message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
+    end
+  end
+end
+
+--Corpse Map Marker
+function on_pre_player_died(event)
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+    --Sanity check
+    if player and player.valid and player.character then
+      --Make map pin
+      local centerPosition = player.position
+      local label = ("Body of: " .. player.name)
+      local chartTag = {position = centerPosition, icon = nil, text = label}
+      local qtag = player.force.add_chart_tag(player.surface, chartTag)
+
+      create_myglobals()
+      create_player_globals(player)
+
+      --Add to list of pins
+      table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+
+      --Log to discord
+      if event.cause and event.cause.valid then
+        cause = event.cause.name
+        message_all("[color=red](SYSTEM) " .. player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
+      else
+        message_all("[color=red](SYSTEM) " .. player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
       end
     end
   end
-  
-  --Corpse Map Marker
-  function on_pre_player_died(event)
-    if event and event.player_index then
-      local player = game.players[event.player_index]
-      --Sanity check
-      if player and player.valid and player.character then
-        --Make map pin
-        local centerPosition = player.position
-        local label = ("Body of: " .. player.name)
-        local chartTag = {position = centerPosition, icon = nil, text = label}
-        local qtag = player.force.add_chart_tag(player.surface, chartTag)
-  
-        create_myglobals()
-        create_player_globals(player)
-  
-        --Add to list of pins
-        table.insert(global.corpselist, {tag = qtag, tick = game.tick})
-  
-        --Log to discord
-        if event.cause and event.cause.valid then
-          cause = event.cause.name
-          message_all("[color=red](SYSTEM) " .. player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
-        else
-          message_all("[color=red](SYSTEM) " .. player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
-        end
-      end
-    end
-  end
+end

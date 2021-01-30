@@ -20,7 +20,6 @@ end
 function make_m45_info_window(player)
   --M45 Welcome--
   if player.gui.center then
-
     if player.gui.screen.m45_info_window then
       player.gui.screen.m45_info_window.destroy()
     end

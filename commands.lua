@@ -2,15 +2,13 @@ require "util"
 require "banish"
 require "logo"
 
-
 --Custom commands
 script.on_load(
   function()
     --Only add if no commands yet
     if (not commands.commands.server_interface) then
-
-
-      add_banish_commands()--banish.lua
+      add_banish_commands()
+       --banish.lua
 
       --adjust run speed
       commands.add_command(
