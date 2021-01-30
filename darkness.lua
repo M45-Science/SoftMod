@@ -748,7 +748,7 @@ local function on_player_dropped_item(event)
 
         local fireimg =
           rendering.draw_sprite {
-          sprite = "file/dark/fire.png",
+          sprite = "file/img/ftd/fire.png",
           target = logobj,
           render_layer = 122,
           surface = game.surfaces[1],
