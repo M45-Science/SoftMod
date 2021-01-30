@@ -1,7 +1,7 @@
 require "antigrief"
 require "info"
 require "log"
-requite "todo"
+require "todo"
 
 --Looping timer, 30 seconds
 --delete old corpse map pins

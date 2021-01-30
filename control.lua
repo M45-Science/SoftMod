@@ -1,6 +1,5 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "546-1-30-2021-0202p-exp"
 require "antigrief" --Mine/rotate/fast-replace/bp throttle
 require "banish" --Banish system
 require "commands" --Slash commands
