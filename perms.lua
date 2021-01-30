@@ -1,5 +1,5 @@
 --Create player groups if they don't exist, and create global links to them
-local function create_groups()
+ function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
@@ -28,7 +28,7 @@ local function create_groups()
   end
 
   --Disable some permissions for new players
-local function set_perms()
+function set_perms()
     --Auto set default group permissions
   
     if global.defaultgroup and not global.setperms then
@@ -80,7 +80,7 @@ local function set_perms()
   end
 
 --Flag player as currently active
-local function set_player_active(player)
+function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid and global.playeractive) then
       --banished players don't get activity score
       if is_banished(player) == false then
@@ -90,7 +90,7 @@ local function set_player_active(player)
   end
 
   --Set our default game-settings
-local function game_settings(player)
+function game_settings(player)
     if player and player.valid and player.force and not global.gset then
       global.gset = true --Only apply these once
       player.force.friendly_fire = false --friendly fire
@@ -100,7 +100,7 @@ local function game_settings(player)
   end
 
   --Automatically promote users to higher levels
-local function get_permgroup()
+function get_permgroup()
     if game.connected_players then
       --Check all connected players
       for _, player in pairs(game.connected_players) do

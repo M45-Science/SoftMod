@@ -1,7 +1,7 @@
 require "util"
 
 --Build stuff -- activity
-local function on_built_entity(event)
+function on_built_entity(event)
     if event and event.player_index and event.created_entity and event.stack then
       local player = game.players[event.player_index]
       local created_entity = event.created_entity
@@ -65,7 +65,7 @@ local function on_built_entity(event)
   end
   
   --Cursor stack, block huge blueprints
-  local function on_player_cursor_stack_changed(event)
+function on_player_cursor_stack_changed(event)
     if event and event.player_index then
       local player = game.players[event.player_index]
   
@@ -107,7 +107,7 @@ local function on_built_entity(event)
   end
   
   --Pre-Mined item, block some users
-  local function on_pre_player_mined_item(event)
+function on_pre_player_mined_item(event)
     --Sanity check
     if event and event.player_index and event.entity then
       local player = game.players[event.player_index]
@@ -203,7 +203,7 @@ local function on_built_entity(event)
   end
 
   --Rotated item, block some users
-local function on_player_rotated_entity(event)
+on_player_rotated_entity(event)
     --Sanity check
     if event and event.player_index and event.previous_direction then
       local player = game.players[event.player_index]
@@ -240,7 +240,7 @@ local function on_player_rotated_entity(event)
   end
 
   --Banned -- kill player to return items
-local function on_player_banned(event)
+function on_player_banned(event)
     if event and event.player_index then
       local player = game.players[event.player_index]
       if player and player.valid and player.character then

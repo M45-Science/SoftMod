@@ -1,7 +1,7 @@
 require "util"
 
 --Create map tag -- log
-local function on_chart_tag_added(event)
+function on_chart_tag_added(event)
     if event and event.player_index then
       local player = game.players[event.player_index]
   
@@ -12,7 +12,7 @@ local function on_chart_tag_added(event)
   end
   
   --Edit map tag -- log
-  local function on_chart_tag_modified(event)
+  function on_chart_tag_modified(event)
     if event and event.player_index then
       local player = game.players[event.player_index]
       if player and player.valid and event.tag then
@@ -22,7 +22,7 @@ local function on_chart_tag_added(event)
   end
   
   --Delete map tag -- log
-  local function on_chart_tag_removed(event)
+  function on_chart_tag_removed(event)
     if event and event.player_index then
       local player = game.players[event.player_index]
   
@@ -33,7 +33,7 @@ local function on_chart_tag_added(event)
   end
 
   --Player disconnect messages, with reason (Fact >= v1.1)
-local function on_player_left_game(event)
+function on_player_left_game(event)
     update_player_list() --online.lua
   
     if event and event.player_index and event.reason then
@@ -59,7 +59,7 @@ local function on_player_left_game(event)
   end
 
   --Deconstruction planner warning
-local function on_player_deconstructed_area(event)
+function on_player_deconstructed_area(event)
     if event and event.player_index and event.area then
       local player = game.players[event.player_index]
       local area = event.area
@@ -83,7 +83,7 @@ local function on_player_deconstructed_area(event)
 
   --EVENTS--
 --Command logging
-local function on_console_command(event)
+function on_console_command(event)
     if event and event.command and event.parameters then
       local command = ""
       local args = ""
@@ -102,5 +102,12 @@ local function on_console_command(event)
       elseif command ~= "time" and command ~= "online" and command ~= "server-save" then --Ignore spammy console commands
         print(string.format("[CMD] NAME: CONSOLE, COMMAND: %s, ARGS: %s", command, args))
       end
+    end
+  end
+
+  --Research Finished -- discord
+function on_research_finished(event)
+    if event and event.research then
+      message_alld("Research " .. event.research.name .. " completed.")
     end
   end
