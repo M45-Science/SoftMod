@@ -1,0 +1,144 @@
+
+----
+START
+----
+Loop chunks, store as global.chunks[x-y]
+Store chunk.pos, make local chunk.lit_lights, chunk.active_radars
+
+Find lights in chunks, save as: global.lights[x-y].state
+Find radars in chunks, save as: global.radars[x-y].state
+Store chunk[x-y] in lights/radars
+
+For light/radar: (use light/radar create handler?)
+Find objects in light's range, store in light.objects[x-y]
+Find objects in radar's range, store in radar.objects[x-y]
+(so we can write/erase ourself from objects in our range)
+
+Store self (light/radar) in obj's obj.lights/obj.lights_unlit / obj.radars/obj.radars_unlit
+(so it can remove itself from us,
+we need list of objects in our range so we can write to them,
+and add/remove them from global.unlit_objects)
+
+Write ourself (light/radar) into global.chunk[x-y].lit_lights if we are lit.
+
+----
+LOOP
+----
+Loop lights, check state against light.lit, if changed:
+Store new state
+
+Add/Remove self from chunk.lit_lights
+Add/Remove self from light.objects: obj.lights/obj.unlit_lights / obj.radars/obj.unlit_radars
+Check light.objects for lit/unlit, add/remove from global.unlit_objects
+
+Loop global.objects_unlit, damage
+Loop global.radars, refresh radar's chunk
+
+----
+OBJ CREATE
+----
+Scan for lights in range, add self to light.objects
+Add light to obj.lights[x-y] or obj.unlit_lights (so we can delete ourself)
+
+After, if we are not lit, add ourself to global.unlit_objects
+
+----
+LIGHT/RADAR CREATE
+----
+Get power state, store in self.
+Scan for objects in range, add self to obj.lights/obj.radars / obj.unlit_lights, obj.unlit_radars
+(unlit lists needed so we don't have to scan for objects on power state change)
+
+Add objects to self light.objects[x-y]
+
+If lit:
+Check if any lights/radars.objects became lit, remove them from global.unlit_objects
+Add self to global.chunks[pos/32].lit_lights
+
+
+----
+OBJ DESTROY/DELETE/MINE
+----
+Remove self from obj.lights: light.objects[x-y]
+If not lit, remove self from global.unlit_objects (damage list)
+
+----
+LIGHT DESTROY/DELETE/MINE
+----
+Remove self from global.chunks.lit_lights and light/radar.objects
+
+----
+ON MAP LOAD
+----
+Rebuild everything, rebuild occasionally ( probably not needed )
+
+----
+MAP CHART EVENT
+---
+check chunk.lit_lights, if not found unchart, else continue
+
+---
+MAP CHARTING
+---
+When light/radar writes itself to our lit_lights/lit_radars, if first entry, and not charted, chart it.
+When light/radar deletes itself from our lit_lights/lit_radars, if lit_lights & lit_radars is empty, unchart.
+
+------------
+make global.pforce
+and global.psurface
+
+
+
+make fire list, don't need to check their state (exists, get chunk from x/y)
+make radar list, ping on separate loop.
+make chunk list, with previous state, make used and unused lists to avoid cycles?
+don't chart unless state change (unused/unit->lit->radar) "level" ?
+
+make near-by object lists for lights/radars, add to when items created (exclude bp/ghost?),
+delete items on failed write, objects should delete selves from nearby lights.
+scan for lights, or store in object?
+
+all lights should store previous state
+
+light check on separate loop than MAP
+
+light check on separate loop than map!!! (map should only loop for radars)
+
+(eventually plan if/how fires should protect buildings)
+Make object list, MOVE lit objects to lit list so only unlit buildings remain in the main list.
+damage without cycles needed.
+
+** PUT PLAYERS ON VISION LIST **
+
+cache player and fire chunks before Looping
+
+------------------------------------------------------
+cycle objects, check for empty lit-lights, damage
+cache fires into chunks
+
+ideas: player vision reveals map for X amount of time?
+power poles don't take damage when powered (possibly other items, make a list)
+
+
+TODO
+store light/radar/fire positions so we can deal with deleted items even if event misses
+add/remove lights/radars and fires from cache
+add/remove lights objects from each other as needed
+start damage code
+
+
+possibly make throttled rebuild
+
+fix map vision command:
+turn off chart blocking, chart all, turn on chart blocking, dechart blocks not used?
+also try: delete all radars, tick, replace?
+
+-
+check if scenarios can use settings.lua?
+fire brightness/flicker based on time left?
+limited number of lives?
+--
+when light returns, some of the materials drop?
+corpses get damaged, spill items onto ground
+energies poles/objects are damaged less quickly
+--
