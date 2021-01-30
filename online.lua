@@ -1,0 +1,652 @@
+require "util"
+
+--Count online players, store
+function update_player_list()
+  --Sort by active time
+  local results = {}
+  local count = 0
+
+  --Init if needed
+  if not global.active_playtime then
+    global.active_playtime = {}
+  end
+
+  --Make a table with active time, handle missing data
+  for i, victim in pairs(game.connected_players) do
+    local utag
+
+    --Catch all
+    if victim.permission_group then
+      local gname = victim.permission_group.name
+      utag = gname
+    else
+      utag = "none"
+    end
+
+    --Normal groups
+    if is_new(victim) then
+      utag = "NEW"
+    end
+    if is_member(victim) then
+      utag = "Members"
+    end
+    if is_regular(victim) then
+      utag = "Regulars"
+    end
+    if is_banished(victim) then
+      utag = "BANISHED"
+    end
+    if victim.admin then
+      utag = "ADMINS"
+    end
+
+    if global.active_playtime[victim.index] then
+      table.insert(
+        results,
+        {
+          victim = victim,
+          score = global.active_playtime[victim.index],
+          time = victim.online_time,
+          type = utag
+        }
+      )
+    else
+      table.insert(results, {victim = victim, score = 0, time = victim.online_time, type = utag})
+    end
+
+    count = i
+  end
+  table.sort(
+    results,
+    function(k1, k2)
+      return k1.time > k2.time
+    end
+  )
+
+  for _, item in pairs(results) do
+    if item.victim.gui and item.victim.gui.top and item.victim.gui.top.online_button then
+      item.victim.gui.top.online_button.number = count
+    end
+  end
+  global.player_count = count
+  global.player_list = results
+
+  --Refresh open player-online windows
+  for _, victim in pairs(game.connected_players) do
+    if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
+      make_m45_online_window(victim) --online.lua
+    end
+  end
+end
+
+--Global, called from control.lua
+function make_m45_online_submenu(player, target_name)
+  local target = game.players[target_name]
+
+  --make online root submenu
+  if player and target and target.valid then
+    if player.gui and player.gui.screen then
+      if not player.gui.screen.m45_online_submenu then
+        if not player.gui.screen.m45_online_submenu then
+          local main_flow =
+            player.gui.screen.add {
+            type = "frame",
+            name = "m45_online_submenu",
+            direction = "vertical"
+          }
+          main_flow.force_auto_center()
+          main_flow.style.horizontal_align = "center"
+          main_flow.style.vertical_align = "center"
+
+          --Online Title Bar--
+          local online_submenu_titlebar =
+            main_flow.add {
+            type = "frame",
+            direction = "horizontal"
+          }
+          online_submenu_titlebar.drag_target = main_flow
+          online_submenu_titlebar.style.horizontal_align = "center"
+          online_submenu_titlebar.style.horizontally_stretchable = true
+
+          if not global.player_count or not global.player_list then
+            update_player_list()
+          end
+
+          online_submenu_titlebar.add {
+            type = "label",
+            style = "frame_title",
+            caption = "Player: " .. target_name
+          }
+          local pusher =
+            online_submenu_titlebar.add {
+            type = "empty-widget",
+            style = "draggable_space_header"
+          }
+          pusher.style.vertically_stretchable = true
+          pusher.style.horizontally_stretchable = true
+          pusher.drag_target = main_flow
+
+          online_submenu_titlebar.add {
+            type = "sprite-button",
+            name = "m45_online_submenu_close_button",
+            sprite = "utility/close_white",
+            style = "frame_action_button",
+            tooltip = "Close this window"
+          }
+
+          local online_submenu_main =
+            main_flow.add {
+            type = "frame",
+            name = "main",
+            direction = "vertical"
+          }
+          online_submenu_main.style.horizontal_align = "center"
+
+          --FIND ON MAP
+          local find_on_map_frame =
+            online_submenu_main.add {
+            type = "flow",
+            direction = "vertical"
+          }
+          find_on_map_frame.style.horizontal_align = "center"
+          local find_on_map =
+            find_on_map_frame.add {
+            type = "button",
+            caption = "[item=artillery-targeting-remote] Find On Map",
+            name = "find_on_map"
+          }
+          find_on_map.style.horizontal_align = "center"
+
+          --WHISPER
+          local whisper_frame =
+            online_submenu_main.add {
+            type = "flow",
+            name = "whisper_frame",
+            direction = "vertical"
+          }
+          whisper_frame.style.horizontal_align = "center"
+          local whisper =
+            whisper_frame.add {
+            type = "label",
+            caption = "[font=default-large-bold]Whisper To:[/font]",
+            name = "whisper"
+          }
+          local whisper_textbox =
+            whisper_frame.add {
+            type = "text-box",
+            text = "",
+            name = "whisper_textbox"
+          }
+          whisper_frame.add {
+            type = "button",
+            caption = "Send",
+            name = "send_whisper",
+            style = "green_button"
+          }
+          whisper_frame.add {
+            type = "label",
+            caption = " "
+          }
+          whisper_textbox.style.width = 500
+          whisper_textbox.style.height = 64
+          whisper_textbox.word_wrap = true
+          whisper_textbox.style.horizontal_align = "left"
+
+          --REPORT
+          local report_frame =
+            online_submenu_main.add {
+            type = "flow",
+            direction = "vertical",
+            name = "report_frame"
+          }
+          report_frame.style.horizontal_align = "center"
+          local report =
+            report_frame.add {
+            type = "label",
+            caption = "[font=default-large-bold]Report player:[/font]",
+            name = "report"
+          }
+          local report_textbox =
+            report_frame.add {
+            type = "text-box",
+            text = "",
+            name = "report_textbox"
+          }
+          report_frame.add {
+            type = "label",
+            caption = "(Posts to #moderation on Discord)",
+            name = "report_note"
+          }
+
+          report_textbox.style.width = 500
+          report_textbox.style.height = 64
+          report_textbox.word_wrap = true
+          report_textbox.style.horizontal_align = "left"
+
+          local report_button =
+            report_frame.add {
+            type = "button",
+            caption = "REPORT",
+            style = "red_button",
+            name = "report_player"
+          }
+
+          report_frame.add {
+            type = "label",
+            caption = " "
+          }
+
+          --BANISH
+          local banish_frame =
+            online_submenu_main.add {
+            type = "flow",
+            direction = "vertical",
+            name = "banish_frame"
+          }
+          banish_frame.style.horizontal_align = "center"
+          local banish =
+            banish_frame.add {
+            type = "label",
+            caption = "[font=default-large-bold]Banish Player:[/font]",
+            name = "banish"
+          }
+          local banish_textbox =
+            banish_frame.add {
+            type = "text-box",
+            text = "",
+            name = "banish_textbox"
+          }
+
+          banish_textbox.style.width = 500
+          banish_textbox.style.height = 64
+          banish_textbox.word_wrap = true
+          banish_textbox.style.horizontal_align = "center"
+
+          local banish_button =
+            banish_frame.add {
+            type = "button",
+            caption = "VOTE TO BANISH",
+            style = "red_button",
+            name = "banish_player"
+          }
+
+          if is_regular(player) or player.admin then
+            if is_regular(target) or target.admin then
+              local banish_note =
+                banish_frame.add {
+                type = "label",
+                caption = "(regulars and admins cannot be banished)"
+              }
+              banish_note.enabled = false
+              banish.enabled = false
+              banish_textbox.enabled = false
+              banish_button.enabled = false
+            end
+          else
+            local banish_note =
+              banish_frame.add {
+              type = "label",
+              caption = "(only regulars and admins have banish privleges)"
+            }
+            banish_note.enabled = false
+            banish.enabled = false
+            banish_textbox.enabled = false
+            banish_button.enabled = false
+          end
+
+          banish_frame.add {
+            type = "label",
+            caption = " "
+          }
+        end
+      end
+    end
+  end
+end
+
+local function destroy_m45_online_submenu(player)
+  if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
+    player.gui.screen.m45_online_submenu.destroy()
+  end
+end
+
+local function handle_m45_online_submenu(player, target_name)
+  --init if needed
+  if not global.m45_online_submenu_target then
+    global.m45_online_submenu_target = {}
+  end
+
+  if player and player.valid and target_name then
+    global.m45_online_submenu_target[player.index] = target_name
+    destroy_m45_online_submenu(player)
+    make_m45_online_submenu(player, target_name)
+  end
+end
+
+--M45 Online Players Window
+function make_m45_online_window(player)
+  if player.gui and player.gui.left then
+    if player.gui.left.m45_online then
+      player.gui.left.m45_online.destroy()
+    end
+    if not player.gui.left.m45_online then
+      local main_flow =
+        player.gui.left.add {
+        type = "frame",
+        name = "m45_online",
+        direction = "vertical"
+      }
+      main_flow.style.horizontal_align = "left"
+      main_flow.style.vertical_align = "top"
+      main_flow.style.vertically_squashable = true
+      main_flow.style.vertically_stretchable = true
+      main_flow.style.horizontally_squashable = true
+      main_flow.style.horizontally_stretchable = true
+
+      --Online Title Bar--
+      local online_titlebar =
+        main_flow.add {
+        type = "flow",
+        direction = "horizontal"
+      }
+      online_titlebar.style.horizontal_align = "center"
+      online_titlebar.style.horizontally_stretchable = true
+
+      if not global.player_count or not global.player_list then
+        update_player_list()
+      end
+
+      online_titlebar.add {
+        type = "label",
+        name = "online_title",
+        style = "frame_title",
+        caption = "Players Online: " .. global.player_count
+      }
+
+      --CLOSE BUTTON--
+      local online_close_button =
+        online_titlebar.add {
+        type = "flow",
+        direction = "horizontal"
+      }
+      online_close_button.style.horizontal_align = "right"
+      online_close_button.style.horizontally_stretchable = true
+      online_close_button.add {
+        type = "sprite-button",
+        name = "m45_online_close_button",
+        sprite = "utility/close_white",
+        style = "frame_action_button",
+        tooltip = "Close this window"
+      }
+
+      local online_main =
+        main_flow.add {
+        type = "scroll-pane",
+        direction = "vertical"
+      }
+
+      local pframe =
+        online_main.add {
+        type = "frame",
+        direction = "horizontal"
+      }
+
+      local submenu =
+        pframe.add {
+        type = "label",
+        caption = "MENU"
+      }
+      submenu.style.width = 45
+
+      pframe.add {
+        type = "label",
+        caption = "  "
+      }
+      pframe.add {
+        type = "line",
+        direction = "vertical"
+      }
+      local name_label =
+        pframe.add {
+        type = "label",
+        caption = "  Name:"
+      }
+      name_label.style.width = 200
+      pframe.add {
+        type = "line",
+        direction = "vertical"
+      }
+      local time_label =
+        pframe.add {
+        type = "label",
+        caption = " Time:"
+      }
+      time_label.style.width = 100
+      pframe.add {
+        type = "line",
+        direction = "vertical"
+      }
+      local score_label =
+        pframe.add {
+        type = "label",
+        caption = "  Level:"
+      }
+      score_label.style.width = 100
+
+      --for x = 0, 100, 1 do
+      for i, target in pairs(global.player_list) do
+        local victim = target.victim
+
+        local pframe =
+          online_main.add {
+          type = "frame",
+          direction = "horizontal"
+        }
+        local submenu
+        --Yeah don't need this menu for ourself
+        if victim.name == player.name then
+          submenu =
+            pframe.add {
+            type = "sprite-button",
+            sprite = "utility/player_force_icon",
+            name = "m45_online_submenu_open," .. victim.name --Pass name
+          }
+          submenu.enabled = false
+        else
+          submenu =
+            pframe.add {
+            type = "sprite-button",
+            sprite = "utility/expand",
+            name = "m45_online_submenu_open," .. victim.name --Pass name
+          }
+        end
+        submenu.style.size = {24, 24}
+
+        local gps_spacer =
+          pframe.add {
+          type = "empty-widget"
+        }
+        gps_spacer.style.width = 16
+
+        pframe.add {
+          type = "label",
+          caption = "  "
+        }
+        pframe.add {
+          type = "line",
+          direction = "vertical"
+        }
+        local name_label =
+          pframe.add {
+          type = "label",
+          caption = "  " .. victim.name
+        }
+        if victim.admin then
+          name_label.style.font_color = {r = 1, g = 0, b = 0}
+        elseif is_regular(victim) then
+          name_label.style.font_color = {r = 1, g = 1, b = 0}
+        elseif is_member(victim) then
+          name_label.style.font_color = {r = 0, g = 1, b = 0}
+        end
+        name_label.style.font = "default-bold"
+        name_label.style.width = 200
+        local name_label =
+          pframe.add {
+          type = "line",
+          direction = "vertical"
+        }
+        local time_label =
+          pframe.add {
+          type = "label",
+          caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
+        }
+        time_label.style.width = 100
+        local name_label =
+          pframe.add {
+          type = "line",
+          direction = "vertical"
+        }
+        local utag = ""
+        if is_new(victim) then
+          utag = "NEW"
+        end
+        if is_member(victim) then
+          utag = "Members"
+        end
+        if is_regular(victim) then
+          utag = "Regulars"
+        end
+        if is_banished(victim) then
+          utag = "BANISHED"
+        end
+        if victim.admin then
+          utag = "ADMINS"
+        end
+        local score_label =
+          pframe.add {
+          type = "label",
+          caption = "  " .. utag
+        }
+        score_label.style.width = 100
+      end
+    --end
+    end
+  end
+end
+
+--GUI clicks
+function online_on_gui_click(event)
+  if event and event.element and event.element.valid and event.player_index then
+    local player = game.players[event.player_index]
+
+    local args = mysplit(event.element.name, ",")
+
+    if player and player.valid then
+      --Grab target if we have one
+      local victim_name
+      local victim
+      if global.m45_online_submenu_target and global.m45_online_submenu_target[player.index] then
+        victim_name = global.m45_online_submenu_target[player.index]
+        victim = game.players[victim_name]
+      end
+
+      if args and args[1] == "m45_online_submenu_open" then
+        ----------------------------------------------------------------
+        --Online sub-menu
+        handle_m45_online_submenu(player, args[2])
+      elseif event.element.name == "m45_online_submenu_close_button" then
+        ----------------------------------------------------------------
+        --Close online submenu
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
+          player.gui.screen.m45_online_submenu.destroy()
+          if global.m45_online_submenu_target then
+            global.m45_online_submenu_target[player.index] = nil
+          end
+        end
+      elseif event.element.name == "send_whisper" then
+        ----------------------------------------------------------------
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.whisper_frame and player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
+          if victim and victim.valid then
+            local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
+            if text and string.len(text) > 0 then
+              --Remove newlines if there are any
+              if string.match(text, "\n") then
+                text = string.gsub(text, "\n", " ")
+              end
+              smart_print(player, player.name .. " (whisper): " .. text)
+              smart_print(victim, player.name .. " (whisper): " .. text)
+            end
+            player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text = ""
+
+            if not victim.connected then
+              smart_print(player, "They aren't online right now, but message will appear in chat history.")
+            end
+          else
+            smart_print(player, "(SYSTEM) That player does not exist.")
+          end
+        else
+          console_print("send_whisper: text-box not found")
+        end
+      elseif event.element.name == "banish_player" then
+        ----------------------------------------------------------------
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.banish_frame and player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
+          if victim and victim.valid then
+            local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
+            if reason and string.len(reason) > 0 then
+              --Remove newlines if there are any
+              if string.match(reason, "\n") then
+                reason = string.gsub(reason, "\n", " ")
+              end
+              g_banish(player, victim, reason)
+            end
+            player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text = ""
+          else
+            smart_print(player, "(SYSTEM) That player does not exist.")
+          end
+        else
+          console_print("send_whisper: text-box not found")
+        end
+      elseif event.element.name == "report_player" then
+        ----------------------------------------------------------------
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.report_frame and player.gui.screen.m45_online_submenu.main.report_frame.report_textbox then
+          if victim and victim.valid then
+            local reason = player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text
+            if reason and string.len(reason) > 0 then
+              --Remove newlines if there are any
+              if string.match(reason, "\n") then
+                reason = string.gsub(reason, "\n", " ")
+              end
+              g_report(player, ": " .. victim.name .. ": " .. reason)
+            end
+            player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text = ""
+          else
+            smart_print(player, "(SYSTEM) That player does not exist.")
+          end
+        else
+          console_print("send_whisper: text-box not found")
+        end
+      elseif event.element.name == "find_on_map" then
+        ----------------------------------------------------------------
+        if victim and victim.valid then
+          player.zoom_to_world(victim.position, 1.0)
+        else
+          smart_print(player, "Invalid target.")
+        end
+      elseif event.element.name == "online_button" then
+        ----------------------------------------------------------------
+        --Online window close
+        if player.gui and player.gui.left and player.gui.left.m45_online then
+          player.gui.left.m45_online.destroy()
+        else
+          make_m45_online_window(player)
+        end
+      elseif event.element.name == "m45_online_close_button" then
+        ----------------------------------------------------------------
+        --Close online window
+        if player.gui and player.gui.left and player.gui.left.m45_online then
+          player.gui.left.m45_online.destroy()
+        end
+      end
+    end
+  end
+end
