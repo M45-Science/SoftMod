@@ -30,21 +30,33 @@ function on_built_entity(event)
           if created_entity then
             created_entity.destroy()
           end
-          stack.clear()
+          --stack.clear()
+          player.clear_cursor()
           return
         elseif count > 10000 then
           if created_entity then
             created_entity.destroy()
           end
-          stack.clear()
+          --stack.clear()
+          player.clear_cursor()
           return
         end
       end
 
+      --Block direct from blueprint book
+      if created_entity.name == "entity-ghost" then
+        if global.restrict and is_new(player) then
+          --player.clear_cursor()
+        end
+      end
+
       if created_entity and created_entity.valid then
+        if not global.last_speaker_warning then
+          global.last_speaker_warning = 0
+        end
+
         if created_entity.name == "programmable-speaker" then
           console_print(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
-          global.last_speaker_warning = game.tick
 
           if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
             if player.admin == false then --Don't bother with admins
@@ -84,9 +96,10 @@ function on_player_cursor_stack_changed(event)
             if global.blueprint_throttle and global.blueprint_throttle[player.index] then
               if global.blueprint_throttle[player.index] > 0 then
                 console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
-                smart_print(player, "[color=red](SYSTEM) You are blueprinting too quickly. You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
-                player.insert(player.cursor_stack)
-                stack.clear()
+                smart_print(player, "[color=red](SYSTEM) You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
+                --player.insert(player.cursor_stack)
+                --stack.clear()
+                player.clear_cursor()
                 return
               end
             end
@@ -96,12 +109,14 @@ function on_player_cursor_stack_changed(event)
           elseif is_new(player) and count > 500 and global.restrict then --new player limit
             console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
             smart_print(player, "[color=red](SYSTEM) You aren't allowed to use blueprints that large yet.[/color]")
-            stack.clear()
+            --stack.clear()
+            player.clear_cursor()
             return
           elseif count > 10000 then --lag protection
             console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
             smart_print(player, "[color=red](SYSTEM) That blueprint is too large![/color]")
-            stack.clear()
+            --stack.clear()
+            player.clear_cursor()
             return
           end
         end
@@ -290,7 +305,6 @@ script.on_nth_tick(
   1,
   function(event)
     --game.force_crc()
-    --testing only, host server does not trigger join
 
     if global.restrict then
       if global.blueprint_throttle then
@@ -315,8 +329,9 @@ script.on_nth_tick(
                   if global.blueprint_throttle[player.index] > 0 then
                     console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
                     smart_print(player, "[color=red](SYSTEM) You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
-                    player.insert(player.cursor_stack)
-                    stack.clear()
+                    --player.insert(player.cursor_stack)
+                    --stack.clear()
+                    player.clear_cursor()
                   end
                 end
               end
