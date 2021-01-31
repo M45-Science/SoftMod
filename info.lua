@@ -219,25 +219,28 @@ function make_m45_info_window(player)
         type = "label",
         caption = ""
       }
-      tab1_info_top.add {
+      local restrictions = tab1_info_top.add {
         type = "label",
         caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
-      tab1_info_top.add {
+      local items_limit =
+        tab1_info_top.add {
         type = "label",
         caption = "[entity=inserter]  [font=default-large]You can only remove or modify your own items![/font]"
       }
-      tab1_info_top.add {
+      local perms_limit =
+        tab1_info_top.add {
         type = "label",
         caption = "[item=locomotive]  [font=default-large]You will also not be allowed to modify trains or logistics.[/font]"
+      }
+      local friendly_fire =
+        tab1_info_top.add {
+        type = "label",
+        caption = "[recipe=combat-shotgun] [font=default-large]Friendly fire is off, for players and buildings.[/font]"
       }
       tab1_info_top.add {
         type = "label",
         caption = ""
-      }
-      tab1_info_top.add {
-        type = "label",
-        caption = "[recipe=combat-shotgun] [font=default-large]Friendly fire is off, for players and buildings.[/font]"
       }
       tab1_info_top.add {
         type = "label",
@@ -247,6 +250,17 @@ function make_m45_info_window(player)
         type = "label",
         caption = ""
       }
+
+      --Contextual editing
+      if not global.restrict then
+        items_limit.caption = "New users are currently allowed to mine other player's objects (normally off)."
+      end
+      if player.force.friendly_fire then
+        friendly_fire.caption = "Friendly fire is currently ON (normally off)."
+      end
+      if global.defaultgroup and global.defaultgroup.allows_action(defines.input_action.drag_train_schedule) then
+        perms_limit.caption = "New players are currently allowed to use trains and logistics (normally off)."
+      end
 
       --Tab 1 Main -- Discord
       local tab1_discord_frame =
