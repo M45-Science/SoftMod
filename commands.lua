@@ -10,7 +10,38 @@ script.on_load(
     --Only add if no commands yet
     if (not commands.commands.server_interface) then
       add_banish_commands()
-       --banish.lua
+      --banish.lua
+
+      --adjust run speed
+      commands.add_command(
+        "friendlyfire",
+        "on/off",
+        function(param)
+          local player
+          local victim
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+          local pforce = game.forces["player"]
+
+          if pforce then
+            if pforce.friendly_fire then
+              pforce.friendly_fire = false
+              smart_print(player, "friendly fire disabled.")
+            else
+              pforce.friendly_fire = true
+              smart_print(player, "friendly fire enabled.")
+            end
+          end
+        end
+      )
 
       --adjust run speed
       commands.add_command(
