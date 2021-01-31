@@ -55,7 +55,7 @@ function on_built_entity(event)
           global.last_speaker_warning = 0
         end
 
-        if created_entity.name == "programmable-speaker" then
+        if created_entity.name == "programmable-speaker"  or ( created_entity.name == "entity-ghost" and created_entity.ghost_name == "programmable-speaker" ) then
           console_print(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
 
           if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
