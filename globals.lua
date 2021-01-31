@@ -20,10 +20,10 @@ function create_myglobals()
   end
 
   if not global.last_speaker_warning then
-    global.last_speaker_warning = 0
+    global.last_speaker_warning = 1
   end
   if not global.last_decon_warning then
-    global.last_decon_warning = 0
+    global.last_decon_warning = 1
   end
 
   if not global.corpselist then

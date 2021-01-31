@@ -67,15 +67,18 @@ function on_player_deconstructed_area(event)
     local area = event.area
 
     if player and area and area.left_top then
+
+      local decon_size = dist_to(area.left_top, area.right_bottom )
+      
       --Don't bother if selection is zero.
-      if area.left_top == area.right_bottom.x and area.left_top.y == area.right_bottom.y then
-        local msg = player.name .. " decon [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "]"
+      if decon_size >= 1 then
+        local msg = player.name .. " deconstructing [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "] AREA: "..math.floor(decon_size*decon_size).."sq"
         console_print(msg)
 
         if is_new(player) or is_member(player) then --Dont bother with regulars/admins
           if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
             global.last_decon_warning = game.tick
-            message_all("[color=red](SYSTEM)" .. msg .. "[/color]")
+            message_all("[color=red](SYSTEM) " .. msg.."[/color]")
           end
         end
       end
