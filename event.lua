@@ -288,6 +288,9 @@ end
 function on_player_created(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
+
+    update_player_list() --online.lua
+    
     if player and player.valid then
       player.insert {name = "iron-plate", count = 8}
       player.insert {name = "wood", count = 1}
