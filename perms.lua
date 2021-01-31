@@ -124,8 +124,9 @@ function get_permgroup()
                 message_all(player.name .. " is now a regular!")
                 smart_print(player, "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
                 smart_print(player, "[color=red](SYSTEM) You now have access to our 'Regulars' Discord role, and can get access to regulars-only Factorio servers, and Discord channels.[/color]")
-                smart_print(player, "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
-                smart_print(player, "[[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
+                smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
+                
+                player.character.damage(1, "enemy") --Grab attention
               end
             elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
               --Check if player has hours for members status, but isn't a in member group.
@@ -133,9 +134,9 @@ function get_permgroup()
                 global.membersgroup.add_player(player)
                 message_all(player.name .. " is now a member!")
                 smart_print(player, "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]")
-                smart_print(player, "[color=red](SYSTEM) You now have access to our 'Members' Discord role![/color]")
-                smart_print(player, "[color=red](SYSTEM) Find out more on our Discord server, the link can be copied from the text in the top-left of your screen.[/color]")
-                smart_print(player, "[color=red](SYSTEM) Select text with mouse, then press control-c. Or, just visit https://m45sci.xyz/[/color]")
+                smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
+
+                player.character.damage(1, "enemy") --Grab attention
               end
             end
           end
