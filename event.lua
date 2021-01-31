@@ -5,6 +5,20 @@ require "info"
 require "log"
 require "todo"
 
+local function insert_weapons(player, ammo_amount)
+  if player.force.technologies["military-2"].researched then
+    player.insert {name = "piercing-rounds-magazine", count = ammo_amount}
+  else
+    player.insert {name = "firearm-magazine", count = ammo_amount}
+  end
+
+  if player.force.technologies["military"].researched then
+    player.insert {name = "submachine-gun", count = 1}
+  else
+    player.insert {name = "pistol", count = 1}
+  end
+end
+
 --Looping timer, 30 seconds
 --delete old corpse map pins
 --Check spawn area map pin
@@ -203,6 +217,8 @@ script.on_event(
       on_pre_player_mined_item(event)
     elseif event.name == defines.events.on_player_cursor_stack_changed then
       on_player_cursor_stack_changed(event)
+    elseif event.name == defines.events.on_built_entity then
+      on_built_entity(event)
     end
 
     --darkness--
@@ -227,9 +243,10 @@ function on_player_respawned(event)
 
   if event and event.player_index then
     local player = game.players[event.player_index]
-    if player and player.valid then
-      player.insert {name = "firearm-magazine", count = 10}
-      player.insert {name = "pistol", count = 1}
+
+    --Cutoff-point, just becomes annoying.
+    if not player.force.technologies["military-science-pack"].researched then
+      insert_weapons(player, 10)
     end
   end
 end
@@ -290,14 +307,21 @@ function on_player_created(event)
     local player = game.players[event.player_index]
 
     update_player_list() --online.lua
-    
+
     if player and player.valid then
-      player.insert {name = "iron-plate", count = 8}
-      player.insert {name = "wood", count = 1}
-      player.insert {name = "pistol", count = 1}
-      player.insert {name = "firearm-magazine", count = 10}
-      player.insert {name = "burner-mining-drill", count = 1}
-      player.insert {name = "stone-furnace", count = 1}
+
+      --Cutoff-point, just becomes annoying.
+      if not player.force.technologies["military-2"].researched then
+        player.insert {name = "iron-plate", count = 50}
+        player.insert {name = "copper-plate", count = 50}
+        player.insert {name = "wood", count = 50}
+        player.insert {name = "burner-mining-drill", count = 2}
+        player.insert {name = "stone-furnace", count = 2}
+        player.insert {name = "iron-chest", count = 1}
+      end
+      player.insert {name = "light-armor", count = 1}
+
+      insert_weapons(player, 50) --research-based
 
       set_perms()
       show_players(player)
