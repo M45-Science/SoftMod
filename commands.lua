@@ -14,6 +14,29 @@ script.on_load(
 
       --adjust run speed
       commands.add_command(
+        "resetint",
+        "on/off",
+        function(param)
+          local player
+          local victim
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+            if param.parameter then
+              global.resetint = param.parameter
+            end
+        end
+      )
+
+      --adjust run speed
+      commands.add_command(
         "friendlyfire",
         "on/off",
         function(param)
@@ -32,10 +55,10 @@ script.on_load(
           local pforce = game.forces["player"]
 
           if pforce then
-            if pforce.friendly_fire then
+            if string.lower(param.parameter == "off") then
               pforce.friendly_fire = false
               smart_print(player, "friendly fire disabled.")
-            else
+            elseif string.lower(param.parameter == "on") then
               pforce.friendly_fire = true
               smart_print(player, "friendly fire enabled.")
             end
@@ -153,25 +176,25 @@ script.on_load(
           if not param.parameter then
             smart_print(player, "options: on, off, perms, fast, nofast")
             return
-          elseif param.parameter == "perms" then
+          elseif string.lower(param.parameter == "perms") then
             global.setperms = false
             set_perms()
 
             smart_print(player, "New player perms-restrictions set.")
             return
-          elseif param.parameter == "off" then
+          elseif string.lower(param.parameter == "off") then
             global.restrict = false
             smart_print(player, "New player restrictions disabled.")
             return
-          elseif param.parameter == "on" then
+          elseif string.lower(param.parameter == "on") then
             global.restrict = true
             smart_print(player, "New player restrictions enabled.")
             return
-          elseif param.parameter == "fast" then
+          elseif string.lower(param.parameter == "fast") then
             global.no_fastreplace = false
             smart_print(player, "New player fast-replace is now allowed.")
             return
-          elseif param.parameter == "nofast" then
+          elseif string.lower(param.parameter == "nofast") then
             global.no_fastreplace = true
             smart_print(player, "New player fast-replace is no longer allowed.")
             return

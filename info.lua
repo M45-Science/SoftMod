@@ -219,6 +219,12 @@ function make_m45_info_window(player)
         type = "label",
         caption = ""
       }
+      if global.resetint then
+        local reset_warning = tab1_info_top.add {
+          type = "label",
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS "..string.upper(global.resetint).."[/font][/color]"
+        }
+      end
       local restrictions = tab1_info_top.add {
         type = "label",
         caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
