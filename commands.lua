@@ -55,10 +55,10 @@ script.on_load(
           local pforce = game.forces["player"]
 
           if pforce then
-            if string.lower(param.parameter == "off") then
+            if string.lower(param.parameter) == "off" then
               pforce.friendly_fire = false
               smart_print(player, "friendly fire disabled.")
-            elseif string.lower(param.parameter == "on") then
+            elseif string.lower(param.parameter) == "on" then
               pforce.friendly_fire = true
               smart_print(player, "friendly fire enabled.")
             end
