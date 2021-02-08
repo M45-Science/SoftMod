@@ -176,25 +176,25 @@ script.on_load(
           if not param.parameter then
             smart_print(player, "options: on, off, perms, fast, nofast")
             return
-          elseif string.lower(param.parameter == "perms") then
+          elseif string.lower(param.parameter) == "perms" then
             global.setperms = false
             set_perms()
 
             smart_print(player, "New player perms-restrictions set.")
             return
-          elseif string.lower(param.parameter == "off") then
+          elseif string.lower(param.parameter) == "off" then
             global.restrict = false
             smart_print(player, "New player restrictions disabled.")
             return
-          elseif string.lower(param.parameter == "on") then
+          elseif string.lower(param.parameter) == "on" then
             global.restrict = true
             smart_print(player, "New player restrictions enabled.")
             return
-          elseif string.lower(param.parameter == "fast") then
+          elseif string.lower(param.parameter) == "fast" then
             global.no_fastreplace = false
             smart_print(player, "New player fast-replace is now allowed.")
             return
-          elseif string.lower(param.parameter == "nofast") then
+          elseif string.lower(param.parameter) == "nofast" then
             global.no_fastreplace = true
             smart_print(player, "New player fast-replace is no longer allowed.")
             return
