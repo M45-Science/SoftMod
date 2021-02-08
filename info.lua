@@ -444,11 +444,11 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Blueprint size/speed limits increase."
+        caption = "Blueprint size/speed limits increase, and access to members-only servers."
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[font=default-bold]Discord Role available[/font] (Members)."
+        caption = "[font=default-bold]Discord Role available[/font] (Members)"
       }
 
       tab2_main_frame.add {
@@ -482,7 +482,7 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[font=default-bold]Discord role available[/font] (Regulars), gain access to regulars-only Discord channels, and private Factorio servers."
+        caption = "[font=default-bold]Discord role available[/font] (Regulars), gain access to regulars-only Discord channels."
       }
       --Close Button Frame
       local tab2_close_frame =
