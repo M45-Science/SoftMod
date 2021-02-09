@@ -135,6 +135,8 @@ script.on_event(
     defines.events.on_chart_tag_modified,
     defines.events.on_chart_tag_added,
     defines.events.on_research_finished,
+    --clean up corpse tags
+    defines.events.on_player_mined_entity,
     -- anti-grief
     defines.events.on_player_deconstructed_area,
     defines.events.on_player_banned,
@@ -205,6 +207,9 @@ script.on_event(
     elseif event.name == defines.events.on_chart_tag_added then
       on_chart_tag_added(event)
     elseif event.name == defines.events.on_research_finished then
+      --clean up corspe tags
+    elseif event.name == defines.events.on_player_mined_entity then
+      on_player_mined_entity(event)
       --anti-grief
       on_research_finished(event)
     elseif event.name == defines.events.on_player_deconstructed_area then
@@ -236,6 +241,47 @@ script.on_event(
     --dark_event_handler(event)
   end
 )
+
+function clear_corpse_tag(event)
+  if event and event.entity then
+    local ent = event.entity
+
+    if ent and event.player_index then
+      player = game.players[event.player_index]
+      victim = game.players[ent.character_corpse_player_index]
+
+      if victim.name ~= player.name then
+        message_all(player.name.." looted body of "..victim.name..", at [gps="..math.floor(player.position.x)..","..math.floor(player.position.y).."]")
+      end
+    end
+
+    if ent.type == "character-corpse" then
+      local index
+      for i, ctag in pairs (global.corpselist) do
+        if ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and
+        ctag.pindex == ent.character_corpse_player_index then
+          ctag.tag.destroy()
+          index = i
+          break
+        end
+      end
+
+      --Properly remove items
+      if global.corpselist and index then
+        table.remove(global.corpselist, index)
+      end
+    end
+  end
+end
+
+--Clean up corpse tags
+function on_player_mined_entity(event)
+  clear_corpse_tag(event)
+end
+
+function on_character_corpse_expired(event)
+  clear_corpse_tag(event)
+end
 
 --Handle killing ,and teleporting users to other surfaces
 function on_player_respawned(event)
@@ -348,14 +394,14 @@ function on_pre_player_died(event)
       create_player_globals(player)
 
       --Add to list of pins
-      table.insert(global.corpselist, {tag = qtag, tick = game.tick})
+      table.insert(global.corpselist, {tag = qtag, tick = game.tick + 600, pos = player.position, pindex=player.index})
 
       --Log to discord
       if event.cause and event.cause.valid then
         cause = event.cause.name
-        message_all("[color=red](SYSTEM) " .. player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
+        gsysmsg(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
       else
-        message_all("[color=red](SYSTEM) " .. player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "][/color]")
+        gsysmsg(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
       end
     end
   end
