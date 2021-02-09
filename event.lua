@@ -251,7 +251,7 @@ function clear_corpse_tag(event)
       victim = game.players[ent.character_corpse_player_index]
 
       if victim.name ~= player.name then
-        message_all(player.name.." looted the body of "..victim.name..", at [gps="..math.floor(player.position.x)..","..math.floor(player.position.y).."]")
+        gsysmsg(player.name.." looted the body of "..victim.name..", at [gps="..math.floor(player.position.x)..","..math.floor(player.position.y).."]")
       end
     end
 
