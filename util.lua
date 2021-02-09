@@ -23,6 +23,14 @@ function console_print(message)
       print("[MSG] " .. message)
     end
   end
+
+    --System messages (game/discord)
+    function gsysmsg(message)
+      if message then
+        game.print("[color=orange](SYSTEM)[/color] [color=red]"..message.."[/color]")
+        print("[MSG] " .. message)
+      end
+    end
   
   --Global messages (game only)
   function message_allp(message)

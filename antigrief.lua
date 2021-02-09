@@ -60,7 +60,7 @@ function on_built_entity(event)
 
           if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
             if player.admin == false then --Don't bother with admins
-              message_all("[color=red](SYSTEM) " .. player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "][/color]")
+              gsysmsg(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
               global.last_speaker_warning = game.tick
             end
           end
