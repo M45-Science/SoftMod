@@ -293,10 +293,10 @@ function on_player_joined_game(event)
         make_online_button(player) --online.lua
       end
 
-      if is_new(player) then
-        make_m45_online_window(player) --online.lua
-        make_m45_info_window(player) --info.lua
-      end
+      --if is_new(player) then
+      make_m45_online_window(player) --online.lua
+      make_m45_info_window(player) --info.lua
+    --end
     end
   end
 end
@@ -309,7 +309,6 @@ function on_player_created(event)
     update_player_list() --online.lua
 
     if player and player.valid then
-
       --Cutoff-point, just becomes annoying.
       if not player.force.technologies["military-2"].researched then
         player.insert {name = "iron-plate", count = 50}

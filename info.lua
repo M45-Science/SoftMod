@@ -46,12 +46,21 @@ function make_m45_info_window(player)
       info_titlebar.style.horizontal_align = "center"
       info_titlebar.style.horizontally_stretchable = true
 
-      info_titlebar.add {
-        type = "label",
-        name = "online_title",
-        style = "frame_title",
-        caption = "M45 Science, a gaming community."
-      }
+      if global.servname == "" then
+        info_titlebar.add {
+          type = "label",
+          name = "online_title",
+          style = "frame_title",
+          caption = "M45 Science, a gaming community."
+        }
+      else
+        info_titlebar.add {
+          type = "label",
+          name = "online_title",
+          style = "frame_title",
+          caption = "Server Name: " .. global.servname
+        }
+      end
       local pusher = info_titlebar.add {type = "empty-widget", style = "draggable_space_header"}
       pusher.style.vertically_stretchable = true
       pusher.style.horizontally_stretchable = true
@@ -220,12 +229,14 @@ function make_m45_info_window(player)
         caption = ""
       }
       if global.resetint then
-        local reset_warning = tab1_info_top.add {
+        local reset_warning =
+          tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS "..string.upper(global.resetint).."[/font][/color]"
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS " .. string.upper(global.resetint) .. "[/font][/color]"
         }
       end
-      local restrictions = tab1_info_top.add {
+      local restrictions =
+        tab1_info_top.add {
         type = "label",
         caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
