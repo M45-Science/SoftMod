@@ -293,10 +293,13 @@ function on_player_joined_game(event)
         make_online_button(player) --online.lua
       end
 
-      --if is_new(player) then
-      make_m45_online_window(player) --online.lua
-      make_m45_info_window(player) --info.lua
-    --end
+      --Always show to new players, everyone else at least once per map
+      if is_new(player) or not global.info_shown[player.index] then
+        global.info_shown[player.index] = true
+        make_m45_online_window(player) --online.lua
+        make_m45_info_window(player) --info.lua
+        make_m45_todo_window(player)
+      end
     end
   end
 end

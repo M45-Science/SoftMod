@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "550-2-9-2021-0134p-exp"
+local svers = "551-2-9-2021-0225p-exp"
 
 --Create globals, if needed
 function create_myglobals()
@@ -32,6 +32,10 @@ function create_myglobals()
   make_banish_globals()
   if not global.no_fastreplace then
     global.no_fastreplace = false
+  end
+
+  if not global.info_shown then
+    global.info_shown = {}
   end
 end
 

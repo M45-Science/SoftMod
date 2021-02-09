@@ -242,7 +242,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
 end
 
 --M45 ToDo Window
-local function make_m45_todo_window(player)
+function make_m45_todo_window(player)
   if player.gui and player.gui.screen then
     if player.gui.screen.m45_todo then
       player.gui.screen.m45_todo.destroy()
@@ -345,14 +345,14 @@ local function make_m45_todo_window(player)
         caption = " Notes"
       }
 
-      if global.vis_todo_count <= 0 then
+      if not global.vis_todo or (global.vis_todo and global.vis_todo_count <= 0) then
         pframe.add {
           type = "label",
           caption = "Nothing here."
         }
       end
 
-      if global.vis_todo_count > 0 then
+      if global.vis_todo and global.vis_todo_count > 0 then
         for i, target in pairs(global.todo_list) do
           --Skip hidden items
           if not target.hidden then
