@@ -29,9 +29,9 @@ script.on_load(
             end
           end
 
-            if param.parameter then
-              global.resetint = param.parameter
-            end
+          if param.parameter then
+            global.resetint = param.parameter
+          end
         end
       )
 
@@ -52,16 +52,20 @@ script.on_load(
             end
           end
 
-          local pforce = game.forces["player"]
+          if param and param.parameter then
+            local pforce = game.forces["player"]
 
-          if pforce then
-            if string.lower(param.parameter) == "off" then
-              pforce.friendly_fire = false
-              smart_print(player, "friendly fire disabled.")
-            elseif string.lower(param.parameter) == "on" then
-              pforce.friendly_fire = true
-              smart_print(player, "friendly fire enabled.")
+            if pforce then
+              if string.lower(param.parameter) == "off" then
+                pforce.friendly_fire = false
+                smart_print(player, "friendly fire disabled.")
+              elseif string.lower(param.parameter) == "on" then
+                pforce.friendly_fire = true
+                smart_print(player, "friendly fire enabled.")
+              end
             end
+          else
+            smart_print(player,"on or off?")
           end
         end
       )
