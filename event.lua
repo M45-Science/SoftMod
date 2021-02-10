@@ -40,7 +40,9 @@ script.on_nth_tick(
           rendering.destroy(corpse.corpse_lamp)
           
           --Destory map tag
-          corpse.tag.destroy()
+          if corpse.tag and corpse.tag.valid then
+            corpse.tag.destroy()
+          end
           
           index = i
           break
@@ -439,13 +441,15 @@ function clear_corpse_tag(event)
 
       local index
       for i, ctag in pairs(global.corpselist) do
-        if ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex == ent.character_corpse_player_index then
+        if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex == ent.character_corpse_player_index then
 
           --Destroy corpse lamp
           rendering.destroy(ctag.corpse_lamp)
           
           --Destory map tag
-          ctag.tag.destroy()
+          if ctag and ctag.tag and ctag.tag.valid then
+            ctag.tag.destroy()
+          end
 
           index = i
           break
