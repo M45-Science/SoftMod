@@ -689,7 +689,7 @@ script.on_load(
               local pforce = game.forces["player"]
 
               --Use admin's force
-              if victim and victim.valid then
+              if player and player.valid then
                 pforce = player.force
               end
 
