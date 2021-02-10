@@ -34,12 +34,14 @@ function on_chart_tag_removed(event)
 
       --Delete corpse map tag and corpse_lamp
       for i, ctag in pairs(global.corpselist) do
-        if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y == event.tag.position.y then
-          --Destroy corpse lamp
-          rendering.destroy(ctag.corpse_lamp)
+        if ctag.tag and ctag.tag.valid then
+          if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y == event.tag.position.y then
+            --Destroy corpse lamp
+            rendering.destroy(ctag.corpse_lamp)
 
-          index = i
-          break
+            index = i
+            break
+          end
         end
       end
 
