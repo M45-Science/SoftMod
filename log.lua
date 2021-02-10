@@ -10,7 +10,6 @@ function on_chart_tag_added(event)
     if player and player.valid and event.tag then
       console_print(player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
     end
-    table.insert(global.chart_tags, {tag=event.tag, pos=event.tag.position, text=event.tag.text, rtext = rtext, ricon = ricon})
   end
 end
 
