@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-require "util"
+require "utility"
 
 --Create map tag -- log
 function on_chart_tag_added(event)
@@ -10,6 +10,7 @@ function on_chart_tag_added(event)
     if player and player.valid and event.tag then
       console_print(player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
     end
+    table.insert(global.chart_tags, {tag=event.tag, pos=event.tag.position, text=event.tag.text, rtext = rtext, ricon = ricon})
   end
 end
 
@@ -31,6 +32,24 @@ function on_chart_tag_removed(event)
     if player and player.valid and event.tag then
       console_print(player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
     end
+
+    --Delete corpse map tag and corpse_lamp
+    for i, ctag in pairs(global.corpselist) do
+      if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y == event.tag.position.y then
+
+        --Destroy corpse lamp
+        rendering.destroy(ctag.corpse_lamp)
+
+        index = i
+        break
+      end
+    end
+
+    --Properly remove items
+    if global.corpselist and index then
+      table.remove(global.corpselist, index)
+    end
+
   end
 end
 

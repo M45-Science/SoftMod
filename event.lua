@@ -32,14 +32,16 @@ script.on_nth_tick(
 
     --Remove old corpse tags
     if (global.corpselist) then
-      local toremove = nil
       local index = nil
       for i, corpse in pairs(global.corpselist) do
         if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
-          if (corpse.tag and corpse.tag.valid) then
-            corpse.tag.destroy()
-          end
-          toremove = corpse
+
+          --Destroy corpse lamp
+          rendering.destroy(corpse.corpse_lamp)
+          
+          --Destory map tag
+          corpse.tag.destroy()
+          
           index = i
           break
         end
@@ -112,6 +114,157 @@ script.on_nth_tick(
   end
 )
 
+--Clean up corpse tags
+function on_player_mined_entity(event)
+  clear_corpse_tag(event)
+end
+
+function on_character_corpse_expired(event)
+  clear_corpse_tag(event)
+end
+
+--Idea stolen from redmew corpse_tuil.lua, because it is clever
+--https://github.com/Refactorio/RedMew/blob/7350e8721d8c5b5cd952e8beb084f33485761234/features/corpse_utility.lua#L147
+function on_gui_opened(event)
+  clear_corpse_tag(event)
+end
+
+--Handle killing ,and teleporting users to other surfaces
+function on_player_respawned(event)
+  send_to_surface(event) --banish.lua
+
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+
+    --Cutoff-point, just becomes annoying.
+    if not player.force.technologies["military-science-pack"].researched then
+      insert_weapons(player, 10)
+    end
+  end
+end
+
+--Player connected, make variables, draw UI, set permissions, and game settings
+function on_player_joined_game(event)
+  update_player_list() --online.lua
+
+  --Gui stuff
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+    if player then
+      create_myglobals()
+      create_player_globals(player)
+      create_groups()
+      game_settings(player)
+      set_perms()
+      get_permgroup()
+
+      --Delete old UIs (migrate old saves)
+      if player.gui.top.dicon then
+        player.gui.top.dicon.destroy()
+      end
+      if player.gui.top.discordurl then
+        player.gui.top.discordurl.destroy()
+      end
+      if player.gui.top.zout then
+        player.gui.top.zout.destroy()
+      end
+      if player.gui.top.serverlist then
+        player.gui.top.serverlist.destroy()
+      end
+      if player.gui.center.dark_splash then
+        player.gui.center.dark_splash.destroy()
+      end
+      if player.gui.center.splash_screen then
+        player.gui.center.splash_screen.destroy()
+      end
+
+      dodrawlogo() --logo.lua
+
+      if player.gui and player.gui.top then
+        make_info_button(player) --info.lua
+        make_online_button(player) --online.lua
+      end
+
+      --Always show to new players, everyone else at least once per map
+      if is_new(player) or not global.info_shown[player.index] then
+        global.info_shown[player.index] = true
+        make_m45_online_window(player) --online.lua
+        make_m45_info_window(player) --info.lua
+        make_m45_todo_window(player) --todo.lua
+      end
+    end
+  end
+end
+
+--New player created, insert items set perms, show players online, welcome to map.
+function on_player_created(event)
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+
+    update_player_list() --online.lua
+
+    if player and player.valid then
+      --Cutoff-point, just becomes annoying.
+      if not player.force.technologies["military-2"].researched then
+        player.insert {name = "iron-plate", count = 50}
+        player.insert {name = "copper-plate", count = 50}
+        player.insert {name = "wood", count = 50}
+        player.insert {name = "burner-mining-drill", count = 2}
+        player.insert {name = "stone-furnace", count = 2}
+        player.insert {name = "iron-chest", count = 1}
+      end
+      player.insert {name = "light-armor", count = 1}
+
+      insert_weapons(player, 50) --research-based
+
+      set_perms()
+      show_players(player)
+      message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
+    end
+  end
+end
+
+--Corpse Map Marker
+function on_pre_player_died(event)
+  if event and event.player_index then
+    local player = game.players[event.player_index]
+    --Sanity check
+    if player and player.valid and player.character then
+      --Make map pin
+      local centerPosition = player.position
+      local label = ("Body of: " .. player.name)
+      local chartTag = {position = centerPosition, icon = nil, text = label}
+      local qtag = player.force.add_chart_tag(player.surface, chartTag)
+
+      create_myglobals()
+      create_player_globals(player)
+
+      --Add a light, so it is easier to see
+      local clight =
+      rendering.draw_light {
+      sprite = "utility/light_medium",
+      target = centerPosition,
+      render_layer = 148,
+      surface = player.surface,
+      color = {0.5, 0.25, 0},
+      scale = 1,
+      target_offset = {0,0}
+    }
+
+      --Add to list of pins
+      table.insert(global.corpselist, {tag = qtag, tick = game.tick + 600, pos = player.position, pindex = player.index, corpse_lamp = clight})
+
+      --Log to discord
+      if event.cause and event.cause.valid then
+        cause = event.cause.name
+        gsysmsg(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+      else
+        gsysmsg(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+      end
+    end
+  end
+end
+
 --Main event handler
 script.on_event(
   {
@@ -137,6 +290,7 @@ script.on_event(
     defines.events.on_research_finished,
     --clean up corpse tags
     defines.events.on_player_mined_entity,
+    defines.events.on_gui_opened,
     -- anti-grief
     defines.events.on_player_deconstructed_area,
     defines.events.on_player_banned,
@@ -210,6 +364,8 @@ script.on_event(
       --clean up corspe tags
     elseif event.name == defines.events.on_player_mined_entity then
       on_player_mined_entity(event)
+    elseif event.name == defines.events.on_gui_opened then
+      on_gui_opened(event)
       --anti-grief
       on_research_finished(event)
     elseif event.name == defines.events.on_player_deconstructed_area then
@@ -243,24 +399,31 @@ script.on_event(
 )
 
 function clear_corpse_tag(event)
-  if event and event.entity then
+  if event and event.entity and event.entity.valid then
     local ent = event.entity
 
-    if ent and event.player_index then
-      player = game.players[event.player_index]
-      victim = game.players[ent.character_corpse_player_index]
-
-      if victim.name ~= player.name then
-        gsysmsg(player.name.." looted the body of "..victim.name..", at [gps="..math.floor(player.position.x)..","..math.floor(player.position.y).."]")
-      end
-    end
-
     if ent.type == "character-corpse" then
+      if ent and event.player_index then
+        player = game.players[event.player_index]
+        victim = game.players[ent.character_corpse_player_index]
+
+        if victim and victim.valid and player and player.valid then
+          if victim.name ~= player.name then
+            gsysmsg(player.name .. " looted the body of " .. victim.name .. ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+          end
+        end
+      end
+
       local index
-      for i, ctag in pairs (global.corpselist) do
-        if ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and
-        ctag.pindex == ent.character_corpse_player_index then
+      for i, ctag in pairs(global.corpselist) do
+        if ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex == ent.character_corpse_player_index then
+
+          --Destroy corpse lamp
+          rendering.destroy(ctag.corpse_lamp)
+          
+          --Destory map tag
           ctag.tag.destroy()
+
           index = i
           break
         end
@@ -269,139 +432,6 @@ function clear_corpse_tag(event)
       --Properly remove items
       if global.corpselist and index then
         table.remove(global.corpselist, index)
-      end
-    end
-  end
-end
-
---Clean up corpse tags
-function on_player_mined_entity(event)
-  clear_corpse_tag(event)
-end
-
-function on_character_corpse_expired(event)
-  clear_corpse_tag(event)
-end
-
---Handle killing ,and teleporting users to other surfaces
-function on_player_respawned(event)
-  send_to_surface(event) --banish.lua
-
-  if event and event.player_index then
-    local player = game.players[event.player_index]
-
-    --Cutoff-point, just becomes annoying.
-    if not player.force.technologies["military-science-pack"].researched then
-      insert_weapons(player, 10)
-    end
-  end
-end
-
---Player connected, make variables, draw UI, set permissions, and game settings
-function on_player_joined_game(event)
-  update_player_list() --online.lua
-
-  --Gui stuff
-  if event and event.player_index then
-    local player = game.players[event.player_index]
-    if player then
-      create_myglobals()
-      create_player_globals(player)
-      create_groups()
-      game_settings(player)
-      set_perms()
-      get_permgroup()
-
-      --Delete old UIs (migrate old saves)
-      if player.gui.top.dicon then
-        player.gui.top.dicon.destroy()
-      end
-      if player.gui.top.discordurl then
-        player.gui.top.discordurl.destroy()
-      end
-      if player.gui.top.zout then
-        player.gui.top.zout.destroy()
-      end
-      if player.gui.top.serverlist then
-        player.gui.top.serverlist.destroy()
-      end
-      if player.gui.center.dark_splash then
-        player.gui.center.dark_splash.destroy()
-      end
-      if player.gui.center.splash_screen then
-        player.gui.center.splash_screen.destroy()
-      end
-
-      dodrawlogo() --logo.lua
-
-      if player.gui and player.gui.top then
-        make_info_button(player) --info.lua
-        make_online_button(player) --online.lua
-      end
-
-      --Always show to new players, everyone else at least once per map
-      if is_new(player) or not global.info_shown[player.index] then
-        global.info_shown[player.index] = true
-        make_m45_online_window(player) --online.lua
-        make_m45_info_window(player) --info.lua
-        make_m45_todo_window(player)
-      end
-    end
-  end
-end
-
---New player created, insert items set perms, show players online, welcome to map.
-function on_player_created(event)
-  if event and event.player_index then
-    local player = game.players[event.player_index]
-
-    update_player_list() --online.lua
-
-    if player and player.valid then
-      --Cutoff-point, just becomes annoying.
-      if not player.force.technologies["military-2"].researched then
-        player.insert {name = "iron-plate", count = 50}
-        player.insert {name = "copper-plate", count = 50}
-        player.insert {name = "wood", count = 50}
-        player.insert {name = "burner-mining-drill", count = 2}
-        player.insert {name = "stone-furnace", count = 2}
-        player.insert {name = "iron-chest", count = 1}
-      end
-      player.insert {name = "light-armor", count = 1}
-
-      insert_weapons(player, 50) --research-based
-
-      set_perms()
-      show_players(player)
-      message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
-    end
-  end
-end
-
---Corpse Map Marker
-function on_pre_player_died(event)
-  if event and event.player_index then
-    local player = game.players[event.player_index]
-    --Sanity check
-    if player and player.valid and player.character then
-      --Make map pin
-      local centerPosition = player.position
-      local label = ("Body of: " .. player.name)
-      local chartTag = {position = centerPosition, icon = nil, text = label}
-      local qtag = player.force.add_chart_tag(player.surface, chartTag)
-
-      create_myglobals()
-      create_player_globals(player)
-
-      --Add to list of pins
-      table.insert(global.corpselist, {tag = qtag, tick = game.tick + 600, pos = player.position, pindex=player.index})
-
-      --Log to discord
-      if event.cause and event.cause.valid then
-        cause = event.cause.name
-        gsysmsg(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
-      else
-        gsysmsg(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
       end
     end
   end
