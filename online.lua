@@ -24,6 +24,7 @@ function update_player_list()
   --Sort by active time
   local results = {}
   local count = 0
+  local tcount = 0
 
   --Init if needed
   if not global.active_playtime then
@@ -31,7 +32,7 @@ function update_player_list()
   end
 
   --Make a table with active time, handle missing data
-  for i, victim in pairs(game.connected_players) do
+  for i, victim in pairs(game.players) do
     local utag
 
     --Catch all
@@ -73,12 +74,16 @@ function update_player_list()
       table.insert(results, {victim = victim, score = 0, time = victim.online_time, type = utag})
     end
 
-    count = i
+    tcount = tcount + 1
+    if victim.connected then
+      count = count + 1
+    end
   end
+
   table.sort(
     results,
     function(k1, k2)
-      return k1.time > k2.time
+      return k1.score > k2.score
     end
   )
 
@@ -88,6 +93,7 @@ function update_player_list()
     end
   end
   global.player_count = count
+  global.tplayer_count = tcount
   global.player_list = results
 
   --Refresh open player-online windows
@@ -383,7 +389,34 @@ function make_m45_online_window(player)
         type = "label",
         name = "online_title",
         style = "frame_title",
-        caption = "Players Online: " .. global.player_count
+        caption = "Players Online: " .. global.player_count .. ", Total: " .. global.tplayer_count
+      }
+
+      if not global.show_offline_state then
+        global.show_offline_state = {}
+      end
+
+      local checkstate = false
+      if global.show_offline_state[player.index] then
+        if global.show_offline_state[player.index] == true then
+          checkstate = true
+        else
+          checkstate = false
+        end
+      else
+        global.show_offline_state[player.index] = false
+      end
+
+      online_titlebar.add {
+        type = "label",
+        caption = "  "
+      }
+      local show_offline =
+        online_titlebar.add {
+        type = "checkbox",
+        caption = "show offline",
+        name = "m45_online_show_offline",
+        state = checkstate
       }
 
       --CLOSE BUTTON--
@@ -449,6 +482,16 @@ function make_m45_online_window(player)
         type = "line",
         direction = "vertical"
       }
+      local time_label =
+        pframe.add {
+        type = "label",
+        caption = " Score:"
+      }
+      time_label.style.width = 100
+      pframe.add {
+        type = "line",
+        direction = "vertical"
+      }
       local score_label =
         pframe.add {
         type = "label",
@@ -458,101 +501,136 @@ function make_m45_online_window(player)
 
       --for x = 0, 100, 1 do
       for i, target in pairs(global.player_list) do
-        local victim = target.victim
+        local skip = false
+        local is_offline = false
 
-        local pframe =
-          online_main.add {
-          type = "frame",
-          direction = "horizontal"
-        }
-        local submenu
-        --Yeah don't need this menu for ourself
-        if victim.name == player.name then
-          submenu =
-            pframe.add {
-            type = "sprite-button",
-            sprite = "utility/player_force_icon",
-            name = "m45_online_submenu_open," .. victim.name --Pass name
+        if not target.victim.connected then
+          skip = true
+        end
+
+        if skip and global.show_offline_state and global.show_offline_state[player.index] then
+          skip = false
+          is_offline = true
+        end
+
+        if not skip then
+          local victim = target.victim
+
+          local pframe =
+            online_main.add {
+            type = "frame",
+            direction = "horizontal"
           }
-          submenu.enabled = false
-        else
-          submenu =
+          local submenu
+          --Yeah don't need this menu for ourself
+          if victim.name == player.name then
+            submenu =
+              pframe.add {
+              type = "sprite-button",
+              sprite = "utility/player_force_icon",
+              name = "m45_online_submenu_open," .. victim.name --Pass name
+            }
+            submenu.enabled = false
+          else
+            submenu =
+              pframe.add {
+              type = "sprite-button",
+              sprite = "utility/expand",
+              name = "m45_online_submenu_open," .. victim.name --Pass name
+            }
+          end
+          submenu.style.size = {24, 24}
+
+          local gps_spacer =
             pframe.add {
-            type = "sprite-button",
-            sprite = "utility/expand",
-            name = "m45_online_submenu_open," .. victim.name --Pass name
+            type = "empty-widget"
           }
-        end
-        submenu.style.size = {24, 24}
+          gps_spacer.style.width = 16
 
-        local gps_spacer =
           pframe.add {
-          type = "empty-widget"
-        }
-        gps_spacer.style.width = 16
+            type = "label",
+            caption = "  "
+          }
+          pframe.add {
+            type = "line",
+            direction = "vertical"
+          }
+          local name_label
+          name_label =
+            pframe.add {
+            type = "label",
+            caption = "  " .. victim.name
+          }
+          local newcolor = {r = 1, g = 1, b = 1}
+          if victim.admin then
+            newcolor = {r = 1, g = 0, b = 0}
+          elseif is_regular(victim) then
+            newcolor = {r = 1, g = 1, b = 0}
+          elseif is_member(victim) then
+            newcolor = {r = 0, g = 1, b = 0}
+          end
+          name_label.style.font = "default-bold"
+          name_label.style.width = 200
 
-        pframe.add {
-          type = "label",
-          caption = "  "
-        }
-        pframe.add {
-          type = "line",
-          direction = "vertical"
-        }
-        local name_label =
-          pframe.add {
-          type = "label",
-          caption = "  " .. victim.name
-        }
-        if victim.admin then
-          name_label.style.font_color = {r = 1, g = 0, b = 0}
-        elseif is_regular(victim) then
-          name_label.style.font_color = {r = 1, g = 1, b = 0}
-        elseif is_member(victim) then
-          name_label.style.font_color = {r = 0, g = 1, b = 0}
+          --Darker if offline
+          if is_offline then
+            newcolor = {r = (newcolor.r / 4) + 0.15, g = (newcolor.g / 4) + 0.15, b = (newcolor.b / 4) + 0.15}
+          end
+
+          --Set font color
+          name_label.style.font_color = newcolor
+
+          local name_label =
+            pframe.add {
+            type = "line",
+            direction = "vertical"
+          }
+          local time_label =
+            pframe.add {
+            type = "label",
+            caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
+          }
+          time_label.style.width = 100
+          local name_label =
+            pframe.add {
+            type = "line",
+            direction = "vertical"
+          }
+          local time_label =
+            pframe.add {
+            type = "label",
+            caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m"
+          }
+          time_label.style.width = 100
+          local name_label =
+            pframe.add {
+            type = "line",
+            direction = "vertical"
+          }
+          local utag = ""
+          if is_new(victim) then
+            utag = "NEW"
+          end
+          if is_member(victim) then
+            utag = "Members"
+          end
+          if is_regular(victim) then
+            utag = "Regulars"
+          end
+          if is_banished(victim) then
+            utag = "BANISHED"
+          end
+          if victim.admin then
+            utag = "ADMINS"
+          end
+          local score_label =
+            pframe.add {
+            type = "label",
+            caption = "  " .. utag
+          }
+          score_label.style.width = 100
         end
-        name_label.style.font = "default-bold"
-        name_label.style.width = 200
-        local name_label =
-          pframe.add {
-          type = "line",
-          direction = "vertical"
-        }
-        local time_label =
-          pframe.add {
-          type = "label",
-          caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
-        }
-        time_label.style.width = 100
-        local name_label =
-          pframe.add {
-          type = "line",
-          direction = "vertical"
-        }
-        local utag = ""
-        if is_new(victim) then
-          utag = "NEW"
-        end
-        if is_member(victim) then
-          utag = "Members"
-        end
-        if is_regular(victim) then
-          utag = "Regulars"
-        end
-        if is_banished(victim) then
-          utag = "BANISHED"
-        end
-        if victim.admin then
-          utag = "ADMINS"
-        end
-        local score_label =
-          pframe.add {
-          type = "label",
-          caption = "  " .. utag
-        }
-        score_label.style.width = 100
       end
-    --end
     end
   end
 end
@@ -669,6 +747,12 @@ function online_on_gui_click(event)
         if player.gui and player.gui.left and player.gui.left.m45_online then
           player.gui.left.m45_online.destroy()
         end
+      elseif event.element.name == "m45_online_show_offline" then
+        if not global.show_offline_state then
+          global.show_offline_state = {}
+        end
+        global.show_offline_state[player.index] = event.element.state
+        make_m45_online_window(player)
       end
     end
   end
