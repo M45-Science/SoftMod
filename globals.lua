@@ -27,7 +27,7 @@ function create_myglobals()
   end
 
   if not global.corpselist then
-    global.corpselist = {tag = {}, tick = {}}
+    global.corpselist = {}
   end
   make_banish_globals()
   if not global.no_fastreplace then

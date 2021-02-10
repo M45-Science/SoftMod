@@ -2,7 +2,7 @@
 --carlotto81@gmail.com
 --Fear The Dark scenario
 local sdvers = "v004-1-28-2021-0104p-dm2"
-require "util"
+require "utility"
 
 --TODO
 local function auto_add_light()
@@ -162,13 +162,13 @@ function d_ckey_to_xy(chunk)
   return {x = 0, y = 0}
 end
 
---DARK-- UTIL
---DARK-- UTIL -- Object keys
+--DARK-- utility
+--DARK-- utility -- Object keys
 function d_objkey(obj)
   return obj.position.x .. "," .. obj.position.y .. "," .. obj.name
 end
 
---DARK-- UTIL --Chunk keys
+--DARK-- utility --Chunk keys
 function d_ckey(chunk)
   return chunk.x .. "," .. chunk.y
 end

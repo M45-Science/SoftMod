@@ -1,6 +1,6 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-require "util"
+require "utility"
 
 function make_info_button(player)
   if player.gui.top.m45_button then

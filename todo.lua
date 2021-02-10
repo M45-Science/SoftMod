@@ -1,4 +1,4 @@
-require "util"
+require "utility"
 
 local loremipsum = "Lorem ipsum dolor sit amet"
 

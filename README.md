@@ -42,7 +42,7 @@ and players move up with activity
 todo.lua
 simple todo list
 
-util.lua
+utility.lua
 commonly needed utility functions
 (could use cleanup, some code should be moved in/out)
 

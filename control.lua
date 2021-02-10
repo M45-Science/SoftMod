@@ -11,5 +11,5 @@ require "logo" --Spawn logo
 require "online" --Players online window
 require "perms" --Permissions system
 require "todo" --To-Do-list
-require "util" --Widely used general utility
+require "utility" --Widely used general utility
 --require "darkness" --Fear The Dark scenario
