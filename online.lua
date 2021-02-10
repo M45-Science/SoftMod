@@ -392,6 +392,13 @@ function make_m45_online_window(player)
         caption = "Players Online: " .. global.player_count .. ", Total: " .. global.tplayer_count
       }
 
+
+      --CLOSE BUTTON--
+      local online_close_button =
+        online_titlebar.add {
+        type = "flow",
+        direction = "horizontal"
+      }
       if not global.show_offline_state then
         global.show_offline_state = {}
       end
@@ -407,24 +414,15 @@ function make_m45_online_window(player)
         global.show_offline_state[player.index] = false
       end
 
-      online_titlebar.add {
-        type = "label",
-        caption = "  "
-      }
+  
       local show_offline =
-        online_titlebar.add {
+      online_close_button.add {
         type = "checkbox",
-        caption = "show offline",
+        caption = "show offline  ",
         name = "m45_online_show_offline",
         state = checkstate
       }
 
-      --CLOSE BUTTON--
-      local online_close_button =
-        online_titlebar.add {
-        type = "flow",
-        direction = "horizontal"
-      }
       online_close_button.style.horizontal_align = "right"
       online_close_button.style.horizontally_stretchable = true
       online_close_button.add {
