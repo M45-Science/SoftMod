@@ -35,15 +35,14 @@ script.on_nth_tick(
       local index = nil
       for i, corpse in pairs(global.corpselist) do
         if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
-
           --Destroy corpse lamp
           rendering.destroy(corpse.corpse_lamp)
-          
+
           --Destory map tag
           if corpse.tag and corpse.tag.valid then
             corpse.tag.destroy()
           end
-          
+
           index = i
           break
         end
@@ -149,28 +148,28 @@ end
 function on_player_joined_game(event)
   update_player_list() --online.lua
 
-    --If player is in list and alive, kill them (offline banish/damn)
-    if global.send_to_surface then
-      --Event and player?
-      if event and event.player_index then
-        local player = game.players[event.player_index]
-  
-        --Valid player?
-        if player and player.valid and player.character and player.character.valid then
-          local index = nil
-          --Check list
-          for i, item in pairs(global.send_to_surface) do
-            --Check if item is valid
-            if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
-              --Check if names match
-              if item.victim.name == player.name then
-                player.character.die()
-              end
+  --If player is in list and alive, kill them (offline banish/damn)
+  if global.send_to_surface then
+    --Event and player?
+    if event and event.player_index then
+      local player = game.players[event.player_index]
+
+      --Valid player?
+      if player and player.valid and player.character and player.character.valid then
+        local index = nil
+        --Check list
+        for i, item in pairs(global.send_to_surface) do
+          --Check if item is valid
+          if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+            --Check if names match
+            if item.victim.name == player.name then
+              player.character.die()
             end
           end
         end
       end
     end
+  end
 
   --Gui stuff
   if event and event.player_index then
@@ -253,31 +252,43 @@ end
 function on_pre_player_died(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
+
+    --Disable corpse map markers if another similar mod is loaded
+    local disable_corpsemap = false
+    for name, version in pairs(game.active_mods) do
+      if name == "space-exploration" or name == "CorpseFlare" or name == "some-corpsemarker" or name == "WhereIsMyBody" then
+        disable_corpsemap = true
+        break
+      end
+    end
+
     --Sanity check
-    if player and player.valid and player.character then
-      --Make map pin
-      local centerPosition = player.position
-      local label = ("Body of: " .. player.name)
-      local chartTag = {position = centerPosition, icon = nil, text = label}
-      local qtag = player.force.add_chart_tag(player.surface, chartTag)
+    if not disable_corpsemap then
+      if player and player.valid and player.character then
+        --Make map pin
+        local centerPosition = player.position
+        local label = ("Body of: " .. player.name)
+        local chartTag = {position = centerPosition, icon = nil, text = label}
+        local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-      create_myglobals()
-      create_player_globals(player)
+        create_myglobals()
+        create_player_globals(player)
 
-      --Add a light, so it is easier to see
-      local clight =
-      rendering.draw_light {
-      sprite = "utility/light_medium",
-      target = centerPosition,
-      render_layer = 148,
-      surface = player.surface,
-      color = {0.5, 0.25, 0},
-      scale = 1,
-      target_offset = {0,0}
-    }
+        --Add a light, so it is easier to see
+        local clight =
+          rendering.draw_light {
+          sprite = "utility/light_medium",
+          target = centerPosition,
+          render_layer = 148,
+          surface = player.surface,
+          color = {0.5, 0.25, 0},
+          scale = 1,
+          target_offset = {0, 0}
+        }
 
-      --Add to list of pins
-      table.insert(global.corpselist, {tag = qtag, tick = game.tick + 600, pos = player.position, pindex = player.index, corpse_lamp = clight})
+        --Add to list of pins
+        table.insert(global.corpselist, {tag = qtag, tick = game.tick + 600, pos = player.position, pindex = player.index, corpse_lamp = clight})
+      end
 
       --Log to discord
       if event.cause and event.cause.valid then
@@ -442,10 +453,9 @@ function clear_corpse_tag(event)
       local index
       for i, ctag in pairs(global.corpselist) do
         if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex == ent.character_corpse_player_index then
-
           --Destroy corpse lamp
           rendering.destroy(ctag.corpse_lamp)
-          
+
           --Destory map tag
           if ctag and ctag.tag and ctag.tag.valid then
             ctag.tag.destroy()
