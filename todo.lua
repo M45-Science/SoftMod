@@ -278,6 +278,14 @@ function make_m45_todo_window(player)
       local pusher = todo_titlebar.add {type = "empty-widget"}
       pusher.style.horizontally_stretchable = true
 
+      local show_hidden =
+      todo_titlebar.add {
+        type = "checkbox",
+        caption = "show deleted  ",
+        name = "m45_todo_show_deleted",
+        state = false
+      }
+
       --CLOSE BUTTON--
       local todo_close_button =
         todo_titlebar.add {
@@ -607,6 +615,12 @@ local function on_player_joined_game(event)
       }
       todo_32.style.size = {32, 32}
     end
+
+    --Refresh window if open
+    if player.gui.screen.m45_todo then
+      player.gui.screen.m45_todo.destroy()
+      make_m45_todo_window(player)
+    end
   end
 end
 
@@ -635,6 +649,12 @@ local function on_gui_click(event)
             global.todo_player_editing_id[player.index] = nil
           end
         end
+      elseif args and args[2] and args[1] == "m45_todo_show_deleted" then
+        if not global.show_deleted_notes then
+          global.show_deleted_notes = {}
+        end
+        global.show_deleted_notes[player.index] = event.element.state
+        make_m45_todo_winodw(player)
       elseif args and args[2] and args[1] == "m45_todo_moveup" then
         ----------------------------------------------------------------
         local i = tonumber(args[2])
@@ -705,9 +725,9 @@ local function on_gui_click(event)
 
         --edit/create throttle
         if global.todo_throttle[player.index] then
-          if game.tick - global.todo_throttle[player.index] < (60 * 10) then --10 seconds
-            smart_print(player, "(SYSTEM) Please wait 10 seconds before attempting to make a new item.")
-            global.todo_throttle[player.index] = game.tick --Reset timer, prevent spamming
+          if game.tick - global.todo_throttle[player.index] < (60 * 5) then --10 seconds
+            smart_print(player, "(SYSTEM) Please wait 5 seconds before attempting to make a new item.")
+            --global.todo_throttle[player.index] = game.tick --Reset timer, prevent spamming
             return
           end
         end
@@ -744,11 +764,11 @@ local function on_gui_click(event)
               global.todo_throttle = {}
             end
             if global.todo_throttle[player.index] then
-              if game.tick - global.todo_throttle[player.index] < (60 * 10) then --10 seconds
-                smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
+              if game.tick - global.todo_throttle[player.index] < (60 * 5) then --10 seconds
+                smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                --global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
                 return
               end
             else
@@ -804,11 +824,11 @@ local function on_gui_click(event)
                 global.todo_throttle = {}
               end
               if global.todo_throttle[player.index] then
-                if game.tick - global.todo_throttle[player.index] < (60 * 10) then --10 seconds
-                  smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
+                if game.tick - global.todo_throttle[player.index] < (60 * 5) then --5 seconds
+                  smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  --global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
                   return
                 end
               else
