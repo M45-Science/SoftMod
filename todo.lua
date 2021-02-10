@@ -345,14 +345,14 @@ function make_m45_todo_window(player)
         caption = " Notes"
       }
 
-      if not global.vis_todo or (global.vis_todo and global.vis_todo_count <= 0) then
+      if not global.vis_todo_count or (global.vis_todo_count and global.vis_todo_count <= 0) then
         pframe.add {
           type = "label",
           caption = "Nothing here."
         }
       end
 
-      if global.vis_todo and global.vis_todo_count > 0 then
+      if global.vis_todo_count and global.vis_todo_count > 0 then
         for i, target in pairs(global.todo_list) do
           --Skip hidden items
           if not target.hidden then
@@ -583,6 +583,8 @@ local function todo_create_myglobals()
   if not global.vis_todo_count then
     global.vis_todo_count = 1
   end
+
+  update_vis_todo_count()
 end
 
 local function on_player_joined_game(event)
