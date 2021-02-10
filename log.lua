@@ -28,27 +28,26 @@ function on_chart_tag_removed(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
 
+    --Because factorio will hand us an nil event... nice.
     if player and player.valid and event.tag then
       console_print(player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
-    end
 
-    --Delete corpse map tag and corpse_lamp
-    for i, ctag in pairs(global.corpselist) do
-      if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y == event.tag.position.y then
+      --Delete corpse map tag and corpse_lamp
+      for i, ctag in pairs(global.corpselist) do
+        if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y == event.tag.position.y then
+          --Destroy corpse lamp
+          rendering.destroy(ctag.corpse_lamp)
 
-        --Destroy corpse lamp
-        rendering.destroy(ctag.corpse_lamp)
+          index = i
+          break
+        end
+      end
 
-        index = i
-        break
+      --Properly remove items
+      if global.corpselist and index then
+        table.remove(global.corpselist, index)
       end
     end
-
-    --Properly remove items
-    if global.corpselist and index then
-      table.remove(global.corpselist, index)
-    end
-
   end
 end
 
@@ -85,12 +84,11 @@ function on_player_deconstructed_area(event)
     local area = event.area
 
     if player and area and area.left_top then
+      local decon_size = dist_to(area.left_top, area.right_bottom)
 
-      local decon_size = dist_to(area.left_top, area.right_bottom )
-      
       --Don't bother if selection is zero.
       if decon_size >= 1 then
-        local msg = player.name .. " deconstructing [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "] AREA: "..math.floor(decon_size*decon_size).."sq"
+        local msg = player.name .. " deconstructing [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) .. "sq"
         console_print(msg)
 
         if is_new(player) or is_member(player) then --Dont bother with regulars/admins
