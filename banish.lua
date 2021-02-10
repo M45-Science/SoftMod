@@ -177,7 +177,7 @@ function g_banish(player, victim, reason)
           return
         else
           --Must have valid victim
-          if victim and victim.valid and victim.character and victim.character.valid then
+          if victim and victim.valid then
             --Victim must be new or member
             if is_new(victim) or is_member(victim) then
               --Check if we already voted against them
@@ -242,7 +242,7 @@ function g_banish(player, victim, reason)
               smart_print(player, "You can only vote against new players, or members!")
             end
           else
-            smart_print(player, "There are no players online by that name.")
+            smart_print(player, "There are no players by that name.")
           end
         end
       else
@@ -344,7 +344,7 @@ function add_banish_commands()
         if param.parameter then
           local victim = game.players[param.parameter]
 
-          if (victim and victim.valid and victim.character and victim.character.valid) then
+          if (victim and victim.valid) then
             --If they have a character, kill it to release items
             if victim.character and victim.character.valid then
               victim.character.die("player")
@@ -387,7 +387,7 @@ function add_banish_commands()
               local victim = game.players[args[1]]
 
               --If victim found
-              if victim and victim.valid and victim.character and victim.character.valid then
+              if victim and victim.valid then
                 local count = 0
                 for _, vote in pairs(global.banishvotes) do
                   if vote and vote.victim and vote.victim.valid then

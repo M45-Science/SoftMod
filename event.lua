@@ -147,6 +147,29 @@ end
 function on_player_joined_game(event)
   update_player_list() --online.lua
 
+    --If player is in list and alive, kill them (offline banish/damn)
+    if global.send_to_surface then
+      --Event and player?
+      if event and event.player_index then
+        local player = game.players[event.player_index]
+  
+        --Valid player?
+        if player and player.valid and player.character and player.character.valid then
+          local index = nil
+          --Check list
+          for i, item in pairs(global.send_to_surface) do
+            --Check if item is valid
+            if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
+              --Check if names match
+              if item.victim.name == player.name then
+                player.character.die()
+              end
+            end
+          end
+        end
+      end
+    end
+
   --Gui stuff
   if event and event.player_index then
     local player = game.players[event.player_index]
