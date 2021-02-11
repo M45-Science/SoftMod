@@ -13,7 +13,7 @@ function make_online_button(player)
       type = "sprite-button",
       name = "online_button",
       sprite = "file/img/buttons/online-32.png",
-      tooltip = "See players online"
+      tooltip = "See players online!"
     }
     online_32.style.size = {32, 32}
   end
@@ -182,7 +182,8 @@ function make_m45_online_submenu(player, target_name)
             find_on_map_frame.add {
             type = "button",
             caption = "[item=artillery-targeting-remote] Find On Map",
-            name = "find_on_map"
+            name = "find_on_map",
+            tooltip = "This shows the player on the map!"
           }
           find_on_map.style.horizontal_align = "center"
 
@@ -210,7 +211,8 @@ function make_m45_online_submenu(player, target_name)
             type = "button",
             caption = "Send",
             name = "send_whisper",
-            style = "green_button"
+            style = "green_button",
+            tooltip = "Sends a private message to this player."
           }
           whisper_frame.add {
             type = "label",
@@ -257,7 +259,8 @@ function make_m45_online_submenu(player, target_name)
             type = "button",
             caption = "REPORT",
             style = "red_button",
-            name = "report_player"
+            name = "report_player",
+            tooltip = "Send this report to the moderators, on Discord."
           }
 
           report_frame.add {
@@ -296,7 +299,8 @@ function make_m45_online_submenu(player, target_name)
             type = "button",
             caption = "VOTE TO BANISH",
             style = "red_button",
-            name = "banish_player"
+            name = "banish_player",
+            tooltip = "Vote to banish this player!"
           }
 
           if is_regular(player) or player.admin then
@@ -418,9 +422,10 @@ function make_m45_online_window(player)
       local show_offline =
       online_close_button.add {
         type = "checkbox",
-        caption = "show offline  ",
+        caption = "Show offline  ",
         name = "m45_online_show_offline",
-        state = checkstate
+        state = checkstate,
+        tooltip = "Toggle show offline players"
       }
 
       online_close_button.style.horizontal_align = "right"
@@ -526,7 +531,7 @@ function make_m45_online_window(player)
               pframe.add {
               type = "sprite-button",
               sprite = "utility/player_force_icon",
-              name = "m45_online_submenu_open," .. victim.name --Pass name
+              tooltip = "This is you!"
             }
             submenu.enabled = false
           else
@@ -534,7 +539,8 @@ function make_m45_online_window(player)
               pframe.add {
               type = "sprite-button",
               sprite = "utility/expand",
-              name = "m45_online_submenu_open," .. victim.name --Pass name
+              name = "m45_online_submenu_open," .. victim.name, --Pass name
+              tooltip = "Additional options, such as whisper, banish and find-on-map."
             }
           end
           submenu.style.size = {24, 24}
@@ -586,7 +592,8 @@ function make_m45_online_window(player)
           local time_label =
             pframe.add {
             type = "label",
-            caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m"
+            caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m",
+            tooltip = "Total time player has been connected on this map."
           }
           time_label.style.width = 100
           local name_label =
@@ -597,7 +604,8 @@ function make_m45_online_window(player)
           local time_label =
             pframe.add {
             type = "label",
-            caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m"
+            caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
+            tooltip = "Total time player has been active on this map."
           }
           time_label.style.width = 100
           local name_label =
@@ -624,7 +632,8 @@ function make_m45_online_window(player)
           local score_label =
             pframe.add {
             type = "label",
-            caption = "  " .. utag
+            caption = "  " .. utag,
+            tooltip = "Current level, see membership tab for more info."
           }
           score_label.style.width = 100
         end
