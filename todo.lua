@@ -278,12 +278,18 @@ function make_m45_todo_window(player)
       local pusher = todo_titlebar.add {type = "empty-widget"}
       pusher.style.horizontally_stretchable = true
 
+
+      local state = false
+      if global.show_deleted_notes and global.show_deleted_notes[player.index] then
+        state = true
+      end
+
       local show_hidden =
       todo_titlebar.add {
         type = "checkbox",
         caption = "show deleted  ",
         name = "m45_todo_show_deleted",
-        state = false
+        state = state
       }
 
       --CLOSE BUTTON--
@@ -363,7 +369,7 @@ function make_m45_todo_window(player)
       if global.vis_todo_count and global.vis_todo_count > 0 then
         for i, target in pairs(global.todo_list) do
           --Skip hidden items
-          if not target.hidden then
+          if not target.hidden or (global.show_deleted_notes and global.show_deleted_notes[player.index]) then
             todo_main.add {
               type = "line",
               direction = "horizontal"
@@ -649,12 +655,12 @@ local function on_gui_click(event)
             global.todo_player_editing_id[player.index] = nil
           end
         end
-      elseif args and args[2] and args[1] == "m45_todo_show_deleted" then
+      elseif event.element.name == "m45_todo_show_deleted" then
         if not global.show_deleted_notes then
           global.show_deleted_notes = {}
         end
         global.show_deleted_notes[player.index] = event.element.state
-        make_m45_todo_winodw(player)
+        make_m45_todo_window(player)
       elseif args and args[2] and args[1] == "m45_todo_moveup" then
         ----------------------------------------------------------------
         local i = tonumber(args[2])
