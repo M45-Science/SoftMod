@@ -142,14 +142,21 @@ local function make_m45_todo_submenu(player, i, edit_mode)
               type = "empty-widget"
             }
             lock_spacer.style.width = 32
+
+            local is_owner = false
+            if target and target.owner and target.owner == player.name then
+              is_owner = true
+            end
+
             local todo_lock =
               todo_submenu_main.add {
               type = "checkbox",
               caption = "Protected",
               name = "todo_protected",
-              state = (not target.can_edit)
+              state = (not target.can_edit),
+              tooltip = "Toggles if other players can edit your todo item."
             }
-            if no_edit then
+            if (no_edit or not is_owner) and not player.admin then
               todo_lock.enabled = false
             end
 
@@ -209,13 +216,23 @@ local function make_m45_todo_submenu(player, i, edit_mode)
                 }
                 lock_spacer.style.width = 32
               end
-              local delete_button =
-                todo_save_frame.add {
-                type = "button",
-                caption = "Delete",
-                style = "red_button",
-                name = "m45_todo_hide," .. global.todo_player_editing_id[player.index]
-              }
+              if target.hidden then
+                local delete_button =
+                  todo_save_frame.add {
+                  type = "button",
+                  caption = "Unhide",
+                  style = "red_button",
+                  name = "m45_todo_hide," .. global.todo_player_editing_id[player.index]
+                }
+              else
+                local delete_button =
+                  todo_save_frame.add {
+                  type = "button",
+                  caption = "Hide",
+                  style = "red_button",
+                  name = "m45_todo_hide," .. global.todo_player_editing_id[player.index]
+                }
+              end
               local lock_spacer =
                 todo_save_frame.add {
                 type = "empty-widget"
@@ -277,6 +294,20 @@ function make_m45_todo_window(player)
       }
       local pusher = todo_titlebar.add {type = "empty-widget"}
       pusher.style.horizontally_stretchable = true
+
+      local state = false
+      if global.show_hidden_notes and global.show_hidden_notes[player.index] then
+        state = true
+      end
+
+      local show_hidden =
+        todo_titlebar.add {
+        type = "checkbox",
+        caption = "Show hidden  ",
+        name = "m45_todo_show_hidden",
+        state = state,
+        tooltip = "Toggle show hidden notes."
+      }
 
       --CLOSE BUTTON--
       local todo_close_button =
@@ -345,17 +376,17 @@ function make_m45_todo_window(player)
         caption = " Notes"
       }
 
-      if not global.vis_todo or (global.vis_todo and global.vis_todo_count <= 0) then
+      if not global.vis_todo_count or (global.vis_todo_count and global.vis_todo_count <= 0) then
         pframe.add {
           type = "label",
           caption = "Nothing here."
         }
       end
 
-      if global.vis_todo and global.vis_todo_count > 0 then
+      if global.vis_todo_count and global.vis_todo_count > 0 then
         for i, target in pairs(global.todo_list) do
           --Skip hidden items
-          if not target.hidden then
+          if not target.hidden or (global.show_hidden_notes and global.show_hidden_notes[player.index]) then
             todo_main.add {
               type = "line",
               direction = "horizontal"
@@ -373,7 +404,8 @@ function make_m45_todo_window(player)
               type = "sprite-button",
               sprite = "utility/search_white",
               style = "frame_action_button",
-              name = "m45_todo_submenu_view," .. i --pass-item
+              name = "m45_todo_submenu_view," .. i, --pass-item
+              tooltip = "View this item"
             }
             submenu_view.style.size = {36, 36}
             submenu_view.style.padding = 4
@@ -383,13 +415,16 @@ function make_m45_todo_window(player)
               type = "sprite-button",
               sprite = "utility/rename_icon_small_white",
               style = "frame_action_button",
-              name = "m45_todo_submenu_edit," .. i --pass-item
+              name = "m45_todo_submenu_edit," .. i, --pass-item
+              tooltip = "Edit this item"
             }
             submenu_edit.style.size = {36, 36}
             submenu_edit.style.padding = 4
+            local can_edit = true
             --Disable button if we can't edit
             if is_new(player) or (not player.admin and player.name ~= target.owner and not target.can_edit) then
               submenu_edit.enabled = false
+              can_edit = false
             end
 
             local gps_spacer =
@@ -427,12 +462,21 @@ function make_m45_todo_window(player)
               caption = "  " .. target.text .. "  ",
               tooltip = "Last User: " .. target.last_user .. ", Owner: " .. target.owner .. locked
             }
+            local hidden = ""
+            if target.hidden then
+              local grayed = { r = 0.66, g = 0.66, b = 0.66 }
+              id_label.style.font_color = grayed
+              pri_label.style.font_color = grayed
+              name_label.style.font_color = grayed
+              notes_label.style.font_color = grayed
+            end
 
             gps_button =
               pframe.add {
               type = "sprite-button",
               sprite = "utility/spawn_flag",
-              name = "m45_todo_gps," .. i --Pass name
+              name = "m45_todo_gps," .. i, --Pass name
+              tooltip = "View location on map."
             }
             gps_button.style.size = {38, 38}
             if not target.gps then
@@ -583,6 +627,8 @@ local function todo_create_myglobals()
   if not global.vis_todo_count then
     global.vis_todo_count = 1
   end
+
+  update_vis_todo_count()
 end
 
 local function on_player_joined_game(event)
@@ -604,6 +650,12 @@ local function on_player_joined_game(event)
         tooltip = "Read or edit the To-Do list."
       }
       todo_32.style.size = {32, 32}
+    end
+
+    --Refresh window if open
+    if player.gui.screen.m45_todo then
+      player.gui.screen.m45_todo.destroy()
+      make_m45_todo_window(player)
     end
   end
 end
@@ -633,6 +685,12 @@ local function on_gui_click(event)
             global.todo_player_editing_id[player.index] = nil
           end
         end
+      elseif event.element.name == "m45_todo_show_hidden" then
+        if not global.show_hidden_notes then
+          global.show_hidden_notes = {}
+        end
+        global.show_hidden_notes[player.index] = event.element.state
+        make_m45_todo_window(player)
       elseif args and args[2] and args[1] == "m45_todo_moveup" then
         ----------------------------------------------------------------
         local i = tonumber(args[2])
@@ -703,9 +761,9 @@ local function on_gui_click(event)
 
         --edit/create throttle
         if global.todo_throttle[player.index] then
-          if game.tick - global.todo_throttle[player.index] < (60 * 10) then --10 seconds
-            smart_print(player, "(SYSTEM) Please wait 10 seconds before attempting to make a new item.")
-            global.todo_throttle[player.index] = game.tick --Reset timer, prevent spamming
+          if game.tick - global.todo_throttle[player.index] < (60 * 5) then --10 seconds
+            smart_print(player, "(SYSTEM) Please wait 5 seconds before attempting to make a new item.")
+            --global.todo_throttle[player.index] = game.tick --Reset timer, prevent spamming
             return
           end
         end
@@ -742,11 +800,11 @@ local function on_gui_click(event)
               global.todo_throttle = {}
             end
             if global.todo_throttle[player.index] then
-              if game.tick - global.todo_throttle[player.index] < (60 * 10) then --10 seconds
-                smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
+              if game.tick - global.todo_throttle[player.index] < (60 * 5) then --10 seconds
+                smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                --global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
                 return
               end
             else
@@ -756,7 +814,7 @@ local function on_gui_click(event)
 
             --Set timer, hide, update count
             global.todo_throttle[player.index] = game.tick
-            global.todo_list[i].hidden = true
+            global.todo_list[i].hidden = (not global.todo_list[i].hidden)
             update_vis_todo_count()
 
             --Log action
@@ -802,11 +860,11 @@ local function on_gui_click(event)
                 global.todo_throttle = {}
               end
               if global.todo_throttle[player.index] then
-                if game.tick - global.todo_throttle[player.index] < (60 * 10) then --10 seconds
-                  smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 10 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
+                if game.tick - global.todo_throttle[player.index] < (60 * 5) then --5 seconds
+                  smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  --global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
                   return
                 end
               else
