@@ -80,6 +80,9 @@ function set_perms()
     global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
     global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, true)
     global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
+
+    --Added 2-2020
+    global.defaultgroup.set_allows_action(defines.input_action.drop_item, false)
   end
 end
 
