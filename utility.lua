@@ -62,14 +62,16 @@ function show_players(victim)
   local buf = ""
   local count = 0
 
-  --Cleaned up 12-2020
+  --Cleaned up 12-
+  if global.player_list then
   for i, target in pairs(global.player_list) do
     if target and target.victim and target.victim.connected then
       buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
     end
   end
+end
   --No one is online
-  if global.player_count == 0 then
+  if not global.player_count or global.player_count == 0 then
     smart_print(victim, "No players online.")
   else
     smart_print(victim, "Players Online: " .. global.player_count .. "\n" .. buf)
