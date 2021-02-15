@@ -80,6 +80,9 @@ function set_perms()
     global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
     global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, true)
     global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
+
+    --Added 2-2020
+    global.defaultgroup.set_allows_action(defines.input_action.drop_item, false)
   end
 end
 
@@ -126,7 +129,9 @@ function get_permgroup()
                 smart_print(player, "[color=red](SYSTEM) You now have access to our 'Regulars' Discord role.[/color]")
                 smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
                 
-                player.character.damage(0.001, "enemy") --Grab attention
+                if player.character then
+                  player.character.damage(0.001, "enemy") --Grab attention
+                end
               end
             elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
               --Check if player has hours for members status, but isn't a in member group.
@@ -137,7 +142,9 @@ function get_permgroup()
                 smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
                 smart_print(player, "[color=red](SYSTEM) You now have access to our members-only servers![/color]")
 
-                player.character.damage(0.001, "enemy") --Grab attention
+                if player.character then
+                  player.character.damage(0.001, "enemy") --Grab attention
+                end
               end
             end
           end
