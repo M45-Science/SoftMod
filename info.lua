@@ -26,6 +26,13 @@ function make_m45_info_window(player)
       player.gui.screen.m45_info_window.destroy()
     end
     if not player.gui.screen.m45_info_window then
+      if not global.info_window_timer then
+        global.info_window_timer = {}
+      end
+      if not global.info_window_timer[player.index] then
+        global.info_window_timer[player.index] = game.tick
+      end
+
       local main_flow =
         player.gui.screen.add {
         type = "frame",
@@ -836,8 +843,20 @@ function on_gui_click(event)
 
       --Info window close
       if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+        if not global.info_window_timer then
+          global.info_window_timer = {}
+        end
+        if not global.info_window_timer[player.index] then
+          global.info_window_timer[player.index] = game.tick
+        end
         ----------------------------------------------------------------
-        player.gui.screen.m45_info_window.destroy()
+        if is_member(player) or is_regular(player) or player.admin or ( is_new(player) and game.tick - global.info_window_timer[player.index] > ( 60 * 10 ) ) then
+          player.gui.screen.m45_info_window.destroy()
+        else
+          smart_print(player,"[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
+          smart_print(player,"[color=green](SYSTEM) **** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ****[/color]")
+          smart_print(player,"[color=blue](SYSTEM) ***** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! *****[/color]")
+        end
       elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
         ----------------------------------------------------------------
         --QR changetab button (info window)
