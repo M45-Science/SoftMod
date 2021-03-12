@@ -397,13 +397,13 @@ script.on_event(
     elseif event.name == defines.events.on_chart_tag_added then
       on_chart_tag_added(event)
     elseif event.name == defines.events.on_research_finished then
+      on_research_finished(event)
       --clean up corspe tags
     elseif event.name == defines.events.on_player_mined_entity then
       on_player_mined_entity(event)
     elseif event.name == defines.events.on_gui_opened then
       on_gui_opened(event)
       --anti-grief
-      on_research_finished(event)
     elseif event.name == defines.events.on_player_deconstructed_area then
       on_player_deconstructed_area(event)
     elseif event.name == defines.events.on_player_banned then
