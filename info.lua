@@ -171,6 +171,10 @@ function make_m45_info_window(player)
         type = "label",
         caption = "[color=purple]Livedeath[/color]"
       }
+      tab1_lframe.add {
+        type = "label",
+        caption = "[color=purple]HanBai[/color]"
+      }
 
       tab1_lframe.add {
         type = "label",
