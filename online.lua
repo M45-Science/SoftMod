@@ -389,12 +389,36 @@ function make_m45_online_window(player)
         update_player_list()
       end
 
-      online_titlebar.add {
-        type = "label",
-        name = "online_title",
-        style = "frame_title",
-        caption = "Players Online: " .. global.player_count .. ", Total: " .. global.tplayer_count
-      }
+      if not global.online_brief then
+        global.online_brief = {}
+      end
+
+      local bcheckstate = false
+      if global.online_brief[player.index] then
+        if global.online_brief[player.index] == true then
+          bcheckstate = true
+        else
+          bcheckstate = false
+        end
+      else
+        global.online_brief[player.index] = false
+      end
+
+      if not global.online_brief[player.index] then
+        online_titlebar.add {
+          type = "label",
+          name = "online_title",
+          style = "frame_title",
+          caption = "Players Online: " .. global.player_count .. ", Total: " .. global.tplayer_count
+        }
+      else
+        online_titlebar.add {
+          type = "label",
+          name = "online_title",
+          style = "frame_title",
+          caption = "Players:"
+        }
+      end
 
       --CLOSE BUTTON--
       local online_close_button =
@@ -417,28 +441,15 @@ function make_m45_online_window(player)
         global.show_offline_state[player.index] = false
       end
 
-      local show_offline =
-        online_close_button.add {
-        type = "checkbox",
-        caption = "Show offline  ",
-        name = "m45_online_show_offline",
-        state = checkstate,
-        tooltip = "Toggle show offline players"
-      }
-
-      if not global.online_brief then
-        global.online_brief = {}
-      end
-
-      local bcheckstate = false
-      if global.online_brief[player.index] then
-        if global.online_brief[player.index] == true then
-          bcheckstate = true
-        else
-          bcheckstate = false
-        end
-      else
-        global.online_brief[player.index] = false
+      if not global.online_brief[player.index] then
+        local show_offline =
+          online_close_button.add {
+          type = "checkbox",
+          caption = "Show offline  ",
+          name = "m45_online_show_offline",
+          state = checkstate,
+          tooltip = "Toggle show offline players"
+        }
       end
 
       local brief =
