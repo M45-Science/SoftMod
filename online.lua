@@ -396,7 +396,6 @@ function make_m45_online_window(player)
         caption = "Players Online: " .. global.player_count .. ", Total: " .. global.tplayer_count
       }
 
-
       --CLOSE BUTTON--
       local online_close_button =
         online_titlebar.add {
@@ -418,14 +417,37 @@ function make_m45_online_window(player)
         global.show_offline_state[player.index] = false
       end
 
-  
       local show_offline =
-      online_close_button.add {
+        online_close_button.add {
         type = "checkbox",
         caption = "Show offline  ",
         name = "m45_online_show_offline",
         state = checkstate,
         tooltip = "Toggle show offline players"
+      }
+
+      if not global.online_brief then
+        global.online_brief = {}
+      end
+
+      local bcheckstate = false
+      if global.online_brief[player.index] then
+        if global.online_brief[player.index] == true then
+          bcheckstate = true
+        else
+          bcheckstate = false
+        end
+      else
+        global.online_brief[player.index] = false
+      end
+
+      local brief =
+        online_close_button.add {
+        type = "checkbox",
+        caption = "Brief  ",
+        name = "m45_online_brief",
+        state = bcheckstate,
+        tooltip = "Show names only."
       }
 
       online_close_button.style.horizontal_align = "right"
@@ -444,63 +466,64 @@ function make_m45_online_window(player)
         direction = "vertical"
       }
 
-      local pframe =
-        online_main.add {
-        type = "frame",
-        direction = "horizontal"
-      }
+      if not global.online_brief[player.index] then
+        local pframe =
+          online_main.add {
+          type = "frame",
+          direction = "horizontal"
+        }
+        local submenu =
+          pframe.add {
+          type = "label",
+          caption = "MENU"
+        }
+        submenu.style.width = 45
 
-      local submenu =
         pframe.add {
-        type = "label",
-        caption = "MENU"
-      }
-      submenu.style.width = 45
-
-      pframe.add {
-        type = "label",
-        caption = "  "
-      }
-      pframe.add {
-        type = "line",
-        direction = "vertical"
-      }
-      local name_label =
+          type = "label",
+          caption = "  "
+        }
         pframe.add {
-        type = "label",
-        caption = "  Name:"
-      }
-      name_label.style.width = 200
-      pframe.add {
-        type = "line",
-        direction = "vertical"
-      }
-      local time_label =
+          type = "line",
+          direction = "vertical"
+        }
+        local name_label =
+          pframe.add {
+          type = "label",
+          caption = "  Name:"
+        }
+        name_label.style.width = 200
         pframe.add {
-        type = "label",
-        caption = " Time:"
-      }
-      time_label.style.width = 100
-      pframe.add {
-        type = "line",
-        direction = "vertical"
-      }
-      local time_label =
+          type = "line",
+          direction = "vertical"
+        }
+        local time_label =
+          pframe.add {
+          type = "label",
+          caption = " Time:"
+        }
+        time_label.style.width = 100
         pframe.add {
-        type = "label",
-        caption = " Score:"
-      }
-      time_label.style.width = 100
-      pframe.add {
-        type = "line",
-        direction = "vertical"
-      }
-      local score_label =
+          type = "line",
+          direction = "vertical"
+        }
+        local time_label =
+          pframe.add {
+          type = "label",
+          caption = " Score:"
+        }
+        time_label.style.width = 100
         pframe.add {
-        type = "label",
-        caption = "  Level:"
-      }
-      score_label.style.width = 100
+          type = "line",
+          direction = "vertical"
+        }
+        local score_label =
+          pframe.add {
+          type = "label",
+          caption = "  Level:"
+        }
+        score_label.style.width = 100
+      end
 
       --for x = 0, 100, 1 do
       for i, target in pairs(global.player_list) do
@@ -519,46 +542,58 @@ function make_m45_online_window(player)
         if not skip then
           local victim = target.victim
 
-          local pframe =
-            online_main.add {
-            type = "frame",
-            direction = "horizontal"
-          }
-          local submenu
-          --Yeah don't need this menu for ourself
-          if victim.name == player.name then
-            submenu =
-              pframe.add {
-              type = "sprite-button",
-              sprite = "utility/player_force_icon",
-              tooltip = "This is you!"
+          local pframe
+          if not global.online_brief[player.index] then
+            pframe =
+              online_main.add {
+              type = "frame",
+              direction = "horizontal"
             }
-            submenu.enabled = false
           else
-            submenu =
-              pframe.add {
-              type = "sprite-button",
-              sprite = "utility/expand",
-              name = "m45_online_submenu_open," .. victim.name, --Pass name
-              tooltip = "Additional options, such as whisper, banish and find-on-map."
+            pframe =
+              online_main.add {
+              type = "flow",
+              direction = "horizontal"
             }
           end
-          submenu.style.size = {24, 24}
 
-          local gps_spacer =
+          if not global.online_brief[player.index] then
+            local submenu
+            --Yeah don't need this menu for ourself
+            if victim.name == player.name then
+              submenu =
+                pframe.add {
+                type = "sprite-button",
+                sprite = "utility/player_force_icon",
+                tooltip = "This is you!"
+              }
+              submenu.enabled = false
+            else
+              submenu =
+                pframe.add {
+                type = "sprite-button",
+                sprite = "utility/expand",
+                name = "m45_online_submenu_open," .. victim.name, --Pass name
+                tooltip = "Additional options, such as whisper, banish and find-on-map."
+              }
+            end
+            submenu.style.size = {24, 24}
+
+            local gps_spacer =
+              pframe.add {
+              type = "empty-widget"
+            }
+            gps_spacer.style.width = 16
+
             pframe.add {
-            type = "empty-widget"
-          }
-          gps_spacer.style.width = 16
-
-          pframe.add {
-            type = "label",
-            caption = "  "
-          }
-          pframe.add {
-            type = "line",
-            direction = "vertical"
-          }
+              type = "label",
+              caption = "  "
+            }
+            pframe.add {
+              type = "line",
+              direction = "vertical"
+            }
+          end
           local name_label
           name_label =
             pframe.add {
@@ -573,8 +608,11 @@ function make_m45_online_window(player)
           elseif is_member(victim) then
             newcolor = {r = 0, g = 1, b = 0}
           end
-          name_label.style.font = "default-bold"
-          name_label.style.width = 200
+
+          if not global.online_brief[player.index] then
+            name_label.style.font = "default-bold"
+            name_label.style.width = 200
+          end
 
           --Darker if offline
           if is_offline then
@@ -584,60 +622,63 @@ function make_m45_online_window(player)
           --Set font color
           name_label.style.font_color = newcolor
 
-          local name_label =
-            pframe.add {
-            type = "line",
-            direction = "vertical"
-          }
-          local time_label =
-            pframe.add {
-            type = "label",
-            caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m",
-            tooltip = "Total time player has been connected on this map."
-          }
-          time_label.style.width = 100
-          local name_label =
-            pframe.add {
-            type = "line",
-            direction = "vertical"
-          }
-          local time_label =
-            pframe.add {
-            type = "label",
-            caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
-            tooltip = "Total time player has been active on this map."
-          }
-          time_label.style.width = 100
-          local name_label =
-            pframe.add {
-            type = "line",
-            direction = "vertical"
-          }
-          local utag = ""
-          if is_new(victim) then
-            utag = "NEW"
+          if not global.online_brief[player.index] then
+            local name_label =
+              pframe.add {
+              type = "line",
+              direction = "vertical"
+            }
+            local time_label =
+              pframe.add {
+              type = "label",
+              caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m",
+              tooltip = "Total time player has been connected on this map."
+            }
+            time_label.style.width = 100
+            local name_label =
+              pframe.add {
+              type = "line",
+              direction = "vertical"
+            }
+            local time_label =
+              pframe.add {
+              type = "label",
+              caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
+              tooltip = "Total time player has been active on this map."
+            }
+            time_label.style.width = 100
+            local name_label =
+              pframe.add {
+              type = "line",
+              direction = "vertical"
+            }
+            local utag = ""
+            if is_new(victim) then
+              utag = "NEW"
+            end
+            if is_member(victim) then
+              utag = "Members"
+            end
+            if is_regular(victim) then
+              utag = "Regulars"
+            end
+            if is_banished(victim) then
+              utag = "BANISHED"
+            end
+            if victim.admin then
+              utag = "ADMINS"
+            end
+            local score_label =
+              pframe.add {
+              type = "label",
+              caption = "  " .. utag,
+              tooltip = "Current level, see membership tab for more info."
+            }
+            score_label.style.width = 100
           end
-          if is_member(victim) then
-            utag = "Members"
-          end
-          if is_regular(victim) then
-            utag = "Regulars"
-          end
-          if is_banished(victim) then
-            utag = "BANISHED"
-          end
-          if victim.admin then
-            utag = "ADMINS"
-          end
-          local score_label =
-            pframe.add {
-            type = "label",
-            caption = "  " .. utag,
-            tooltip = "Current level, see membership tab for more info."
-          }
-          score_label.style.width = 100
         end
       end
+    --end
     end
   end
 end
@@ -673,7 +714,12 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "send_whisper" then
         ----------------------------------------------------------------
-        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.whisper_frame and player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
+        if
+          player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
+            player.gui.screen.m45_online_submenu.main and
+            player.gui.screen.m45_online_submenu.main.whisper_frame and
+            player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox
+         then
           if victim and victim.valid then
             local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
             if text and string.len(text) > 0 then
@@ -697,7 +743,12 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "banish_player" then
         ----------------------------------------------------------------
-        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.banish_frame and player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
+        if
+          player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
+            player.gui.screen.m45_online_submenu.main and
+            player.gui.screen.m45_online_submenu.main.banish_frame and
+            player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox
+         then
           if victim and victim.valid then
             local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
             if reason and string.len(reason) > 0 then
@@ -716,7 +767,12 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "report_player" then
         ----------------------------------------------------------------
-        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.report_frame and player.gui.screen.m45_online_submenu.main.report_frame.report_textbox then
+        if
+          player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
+            player.gui.screen.m45_online_submenu.main and
+            player.gui.screen.m45_online_submenu.main.report_frame and
+            player.gui.screen.m45_online_submenu.main.report_frame.report_textbox
+         then
           if victim and victim.valid then
             local reason = player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text
             if reason and string.len(reason) > 0 then
@@ -759,6 +815,12 @@ function online_on_gui_click(event)
           global.show_offline_state = {}
         end
         global.show_offline_state[player.index] = event.element.state
+        make_m45_online_window(player)
+      elseif event.element.name == "m45_online_brief" then
+        if not global.online_brief then
+          global.online_brief = {}
+        end
+        global.online_brief[player.index] = event.element.state
         make_m45_online_window(player)
       end
     end
