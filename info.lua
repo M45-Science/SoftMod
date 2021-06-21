@@ -137,6 +137,10 @@ function make_m45_info_window(player)
       }
       tab1_lframe.add {
         type = "label",
+        caption = "[color=purple]Hawkeey[/color]"
+      }
+      tab1_lframe.add {
+        type = "label",
         caption = "[color=purple]BigDogTV[/color]"
       }
       tab1_lframe.add {
