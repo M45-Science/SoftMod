@@ -214,7 +214,7 @@ function on_player_joined_game(event)
         global.info_shown[player.index] = true
         make_m45_online_window(player) --online.lua
         make_m45_info_window(player) --info.lua
-        make_m45_todo_window(player) --todo.lua
+        --make_m45_todo_window(player) --todo.lua
       end
     end
   end
@@ -404,10 +404,10 @@ script.on_event(
     elseif event.name == defines.events.on_gui_opened then
       on_gui_opened(event)
       --anti-grief
-    --elseif event.name == defines.events.on_player_deconstructed_area then
-      --on_player_deconstructed_area(event)
-    --elseif event.name == defines.events.on_player_banned then
-      --on_player_banned(event)
+    elseif event.name == defines.events.on_player_deconstructed_area then
+      on_player_deconstructed_area(event)
+    elseif event.name == defines.events.on_player_banned then
+      on_player_banned(event)
     --elseif event.name == defines.events.on_player_rotated_entity then
       --on_player_rotated_entity(event)
     --elseif event.name == defines.events.on_pre_player_mined_item then
