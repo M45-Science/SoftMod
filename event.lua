@@ -404,18 +404,18 @@ script.on_event(
     elseif event.name == defines.events.on_gui_opened then
       on_gui_opened(event)
       --anti-grief
-    elseif event.name == defines.events.on_player_deconstructed_area then
-      on_player_deconstructed_area(event)
-    elseif event.name == defines.events.on_player_banned then
-      on_player_banned(event)
-    elseif event.name == defines.events.on_player_rotated_entity then
-      on_player_rotated_entity(event)
-    elseif event.name == defines.events.on_pre_player_mined_item then
-      on_pre_player_mined_item(event)
-    elseif event.name == defines.events.on_player_cursor_stack_changed then
-      on_player_cursor_stack_changed(event)
-    elseif event.name == defines.events.on_built_entity then
-      on_built_entity(event)
+    --elseif event.name == defines.events.on_player_deconstructed_area then
+      --on_player_deconstructed_area(event)
+    --elseif event.name == defines.events.on_player_banned then
+      --on_player_banned(event)
+    --elseif event.name == defines.events.on_player_rotated_entity then
+      --on_player_rotated_entity(event)
+    --elseif event.name == defines.events.on_pre_player_mined_item then
+      --on_pre_player_mined_item(event)
+    --elseif event.name == defines.events.on_player_cursor_stack_changed then
+      --on_player_cursor_stack_changed(event)
+    --elseif event.name == defines.events.on_built_entity then
+      --on_built_entity(event)
     end
 
     --darkness--
