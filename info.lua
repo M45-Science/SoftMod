@@ -451,7 +451,7 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Level 3 players (regulars) can banish you with two votes."
+        caption = "Level 3 players (regulars) can banish you with 1 vote."
       }
       tab2_main_frame.add {
         type = "line",
@@ -461,12 +461,12 @@ function make_m45_info_window(player)
       if is_member(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[color=red][font=default-bold]Level 2:[/font] Members[/color] (Score: 30)"
+          caption = "[color=red][font=default-bold]Level 2:[/font] Members[/color] (Score: 60)"
         }
       else
         tab2_main_frame.add {
           type = "label",
-          caption = "[font=default-bold]Level 2:[/font] Members (Score: 30)"
+          caption = "[font=default-bold]Level 2:[/font] Members (Score: 60)"
         }
       end
       tab2_main_frame.add {
@@ -479,7 +479,7 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Votes needed to banish you increases to 3. Access to deconstruction planner (warns other players, with location)."
+        caption = "Votes needed to banish you increases to 2. Access to deconstruction planner (warns other players, with location)."
       }
       tab2_main_frame.add {
         type = "label",
