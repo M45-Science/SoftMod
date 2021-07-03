@@ -268,11 +268,6 @@ function make_m45_info_window(player)
         type = "label",
         caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
-      local items_limit =
-        tab1_info_top.add {
-        type = "label",
-        caption = "[entity=inserter]  [font=default-large]You can only remove or modify your own items![/font]"
-      }
       local perms_limit =
         tab1_info_top.add {
         type = "label",
@@ -297,9 +292,6 @@ function make_m45_info_window(player)
       }
 
       --Contextual editing
-      if not global.restrict then
-        items_limit.caption = "New users are currently allowed to mine other player's objects (normally off)."
-      end
       if player.force.friendly_fire then
         friendly_fire.caption = "Friendly fire is currently ON (normally off)."
       end
@@ -414,10 +406,6 @@ function make_m45_info_window(player)
         caption = ""
       }
       tab2_main_frame.add {
-        type = "label",
-        caption = "[font=default-bold]Logged:[/font] Rotating, picking up, placing, and add/remove/edit map pins."
-      }
-      tab2_main_frame.add {
         type = "line",
         direction = "horizontal"
       }
@@ -439,15 +427,11 @@ function make_m45_info_window(player)
 
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=inserter]   [font=default-bold]New players can not pick-up or rotate other people's objects,[/font] and have these permissions limitations:"
+        caption = "[recipe=inserter]   [font=default-bold]New players have these permissions limitations:[/font]"
       }
       tab2_main_frame.add {
         type = "label",
         caption = "Modify wires, trains, combinators, signals, speakers, launch rockets or edit logistics."
-      }
-      tab2_main_frame.add {
-        type = "label",
-        caption = "Blueprints are limited to 500 items, and throttled ( rate/speed limited )."
       }
       tab2_main_frame.add {
         type = "label",
@@ -475,7 +459,7 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=fast-inserter]   Ability to pick-up and rotate other's objects, and permissions restrictions are lifted."
+        caption = "[recipe=fast-inserter]   Permissions restrictions are lifted."
       }
       tab2_main_frame.add {
         type = "label",
