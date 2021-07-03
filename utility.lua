@@ -193,7 +193,7 @@ function is_banished(victim)
     if is_regular(victim) or victim.admin then
       return false
     elseif global.thebanished and global.thebanished[victim.index] then
-      if (is_new(victim) and global.thebanished[victim.index] >= 2) or (is_member(victim) and global.thebanished[victim.index] >= 3) then
+      if (is_new(victim) and global.thebanished[victim.index] >= 1) or (is_member(victim) and global.thebanished[victim.index] >= 2) then
         return true
       end
     end
