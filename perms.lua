@@ -133,7 +133,7 @@ function get_permgroup()
                   player.character.damage(0.001, "enemy") --Grab attention
                 end
               end
-            elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
+            elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (60 * 60 * 60) and not player.admin) then
               --Check if player has hours for members status, but isn't a in member group.
               if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                 global.membersgroup.add_player(player)
