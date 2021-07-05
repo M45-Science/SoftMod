@@ -1,5 +1,5 @@
 # M45-Factorio-Lua
-LUA scripts for M45's factorio servers.
+LUA scripts (softmod/scenario) for M45's factorio servers.
 
 antigrief.lua
 active system that prevents mining/rotating and fast-replace of entites new players do not own
