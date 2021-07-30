@@ -409,13 +409,13 @@ script.on_event(
     elseif event.name == defines.events.on_player_banned then
       on_player_banned(event)
     --elseif event.name == defines.events.on_player_rotated_entity then
-      --on_player_rotated_entity(event)
+      on_player_rotated_entity(event)
     --elseif event.name == defines.events.on_pre_player_mined_item then
-      --on_pre_player_mined_item(event)
+      on_pre_player_mined_item(event)
     --elseif event.name == defines.events.on_player_cursor_stack_changed then
-      --on_player_cursor_stack_changed(event)
+      on_player_cursor_stack_changed(event)
     --elseif event.name == defines.events.on_built_entity then
-      --on_built_entity(event)
+      on_built_entity(event)
     end
 
     --darkness--

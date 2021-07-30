@@ -12,4 +12,3 @@ require "online" --Players online window
 require "perms" --Permissions system
 require "todo" --To-Do-list
 require "utility" --Widely used general utility
---require "darkness" --Fear The Dark scenario

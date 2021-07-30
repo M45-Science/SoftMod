@@ -2,8 +2,6 @@
 --carlotto81@gmail.com
 require "utility"
 
-
-
 --Build stuff -- activity
 function on_built_entity(event)
   if event and event.player_index and event.created_entity and event.stack then
@@ -13,7 +11,7 @@ function on_built_entity(event)
 
     if player and player.valid then
       --Blueprint safety
-      if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+      if 1 == 2 and stack and stack.valid and stack.valid_for_read and stack.is_blueprint then -- DISABLED
         local count = stack.get_blueprint_entity_count()
 
         --Add item to blueprint throttle, (new) 5 items a second
@@ -44,9 +42,9 @@ function on_built_entity(event)
       end
 
       --Block direct from blueprint book
-      if created_entity.name == "entity-ghost" then
+      if 1== 2 and created_entity.name == "entity-ghost" then -- DISABLED
         if global.restrict and is_new(player) then
-          --player.clear_cursor()
+        player.clear_cursor()
         end
       end
 
@@ -55,12 +53,23 @@ function on_built_entity(event)
           global.last_speaker_warning = 0
         end
 
-        if created_entity.name == "programmable-speaker"  or ( created_entity.name == "entity-ghost" and created_entity.ghost_name == "programmable-speaker" ) then
-          console_print(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+        if
+          created_entity.name == "programmable-speaker" or
+            (created_entity.name == "entity-ghost" and created_entity.ghost_name == "programmable-speaker")
+         then
+          console_print(
+            player.name ..
+              " placed a speaker at [gps=" ..
+                math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+          )
 
           if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
             if player.admin == false then --Don't bother with admins
-              gsysmsg(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+              gsysmsg(
+                player.name ..
+                  " placed a speaker at [gps=" ..
+                    math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+              )
               global.last_speaker_warning = game.tick
             end
           end
@@ -70,10 +79,22 @@ function on_built_entity(event)
       if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
         if created_entity.name == "entity-ghost" then
           --Log item placement
-          console_print(player.name .. " +ghost " .. created_entity.ghost_name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+          console_print(
+            player.name ..
+              " +ghost " ..
+                created_entity.ghost_name ..
+                  " [gps=" ..
+                    math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+          )
         else
           --Log item placement
-          console_print(player.name .. " +" .. created_entity.name .. " [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
+          console_print(
+            player.name ..
+              " +" ..
+                created_entity.name ..
+                  " [gps=" ..
+                    math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]"
+          )
         end
       end
     end
@@ -82,42 +103,51 @@ end
 
 --Cursor stack, block huge blueprints
 function on_player_cursor_stack_changed(event)
-  if event and event.player_index then
-    local player = game.players[event.player_index]
+  if 1 == 2 then -- DISABLED
+    if event and event.player_index then
+      local player = game.players[event.player_index]
 
-    if player and player.valid then
-      if player.cursor_stack then
-        local stack = player.cursor_stack
-        if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
-          local count = stack.get_blueprint_entity_count()
+      if player and player.valid then
+        if player.cursor_stack then
+          local stack = player.cursor_stack
+          if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
+            local count = stack.get_blueprint_entity_count()
 
-          --blueprint throttle if needed
-          if not player.admin and global.restrict then
-            if global.blueprint_throttle and global.blueprint_throttle[player.index] then
-              if global.blueprint_throttle[player.index] > 0 then
-                console_print(player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp")
-                smart_print(player, "[color=red](SYSTEM) You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
-                --player.insert(player.cursor_stack)
-                --stack.clear()
-                player.clear_cursor()
-                return
+            --blueprint throttle if needed
+            if not player.admin and global.restrict then
+              if global.blueprint_throttle and global.blueprint_throttle[player.index] then
+                if global.blueprint_throttle[player.index] > 0 then
+                  console_print(
+                    player.name .. " wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp"
+                  )
+                  smart_print(
+                    player,
+                    "[color=red](SYSTEM) You must wait " ..
+                      round(global.blueprint_throttle[player.index] / 60, 2) ..
+                        " seconds before blueprinting again.[/color]"
+                  )
+                  --player.insert(player.cursor_stack)
+                  --stack.clear()
+                  player.clear_cursor()
+                  return
+                end
               end
             end
-          end
-          if player.admin then
-            return
-          elseif is_new(player) and count > 500 and global.restrict then --new player limit
-            console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
-            smart_print(player, "[color=red](SYSTEM) You aren't allowed to use blueprints that large yet.[/color]")
-            --stack.clear()
-            player.clear_cursor()
-            return
-          elseif count > 10000 then --lag protection
-            console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
-            smart_print(player, "[color=red](SYSTEM) That blueprint is too large![/color]")
-            --stack.clear()
-            player.clear_cursor()
-            return
+            if player.admin then
+              return
+            elseif is_new(player) and count > 500 and global.restrict then --new player limit
+              console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
+              smart_print(player, "[color=red](SYSTEM) You aren't allowed to use blueprints that large yet.[/color]")
+              --stack.clear()
+              player.clear_cursor()
+              return
+            elseif count > 10000 then --lag protection
+              console_print(player.name .. " tried to bp " .. count .. " items (DELETED).")
+              smart_print(player, "[color=red](SYSTEM) That blueprint is too large![/color]")
+              --stack.clear()
+              player.clear_cursor()
+              return
+            end
           end
         end
       end
@@ -132,9 +162,13 @@ function on_pre_player_mined_item(event)
     local player = game.players[event.player_index]
     local obj = event.entity
 
-    if global.restrict then
-      --Check player, surface and object are valid
-      if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
+    --Check player, surface and object are valid
+    if player and player.valid and player.index and player.surface and player.surface.valid and obj and obj.valid then
+      console_print(
+        player.name ..
+          " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
+      )
+      if 1 == 2 and global.restrict then
         --New players can't mine objects that they don't own!
         if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
           --Create limbo surface if needed
@@ -212,11 +246,11 @@ function on_pre_player_mined_item(event)
           end
         else
           --Normal player, just log it
-          console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+          --console_print(player.name .. " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
         end
-      else
-        console_print("pre_player_mined_item: invalid player, obj or surface.")
       end
+    else
+      console_print("pre_player_mined_item: invalid player, obj or surface.")
     end
   end
 end
@@ -229,10 +263,14 @@ function on_player_rotated_entity(event)
     local obj = event.entity
     local prev_dir = event.previous_direction
 
-    if global.restrict then
-      --If player and object are valid
-      if player and player.valid and obj and obj.valid then
-        --Don't let new players rotate other players items, unrotate and untouch the item.
+    --If player and object are valid
+    if player and player.valid and obj and obj.valid then
+      --Don't let new players rotate other players items, unrotate and untouch the item.
+      console_print(
+        player.name ..
+          " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
+      )
+      if 1 == 2 and global.restrict then
         if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
           --Unrotate
           obj.direction = prev_dir
@@ -244,14 +282,17 @@ function on_player_rotated_entity(event)
 
           --Add to list
           table.insert(global.untouchobj, {object = obj, prev = obj.last_user})
-          smart_print(player, "[color=red](SYSTEM) You are a new player, and are not allowed to rotate other people's objects yet![/color]")
+          smart_print(
+            player,
+            "[color=red](SYSTEM) You are a new player, and are not allowed to rotate other people's objects yet![/color]"
+          )
 
           if player and player.valid and player.character and player.character.valid then
             player.character.damage(15, "enemy") --Little discouragement
           end
         else
           --Normal player, just log it
-          console_print(player.name .. " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+          --console_print(player.name .." *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
         end
       end
     end
@@ -292,7 +333,10 @@ function replace_with_clone(item)
     end
 
     if rep then
-      smart_print(item.victim, "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]")
+      smart_print(
+        item.victim,
+        "[color=red](SYSTEM) You are a new player, and are not allowed to mine or replace other people's objects yet![/color]"
+      )
       if item.victim and item.victim.valid and item.victim.character and item.victim.character.valid then
         item.victim.character.damage(15, "enemy") --Little discouragement
       end
@@ -302,11 +346,11 @@ end
 
 --Blueprint throttle countdown
 script.on_nth_tick(
-  1,
+  1800, -- Every 30 seconds
   function(event)
-    --game.force_crc()
+    game.force_crc() --Force a CRC check
 
-    if global.restrict then
+    if 1 == 2 and global.restrict then
       if global.blueprint_throttle then
         --Loop through players, countdown blueprint throttle
         for _, player in pairs(game.connected_players) do
@@ -327,8 +371,15 @@ script.on_nth_tick(
               if stack and stack.valid and stack.valid_for_read and stack.is_blueprint then
                 if global.blueprint_throttle and global.blueprint_throttle[player.index] then
                   if global.blueprint_throttle[player.index] > 0 then
-                    console_print(player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp.")
-                    smart_print(player, "[color=red](SYSTEM) You must wait " .. round(global.blueprint_throttle[player.index] / 60, 2) .. " seconds before blueprinting again.[/color]")
+                    console_print(
+                      player.name .. " wait" .. round(global.blueprint_throttle[player.index] / 60, 2) .. "s to bp."
+                    )
+                    smart_print(
+                      player,
+                      "[color=red](SYSTEM) You must wait " ..
+                        round(global.blueprint_throttle[player.index] / 60, 2) ..
+                          " seconds before blueprinting again.[/color]"
+                    )
                     --player.insert(player.cursor_stack)
                     --stack.clear()
                     player.clear_cursor()
