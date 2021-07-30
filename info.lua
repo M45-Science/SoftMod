@@ -125,8 +125,13 @@ function make_m45_info_window(player)
       }
       tab1_lframe.add {
         type = "label",
+        caption = "vers:" .. global.svers
+      }
+      tab1_lframe.add {
+        type = "label",
         caption = ""
       }
+      
       tab1_lframe.add {
         type = "label",
         caption = "[color=purple]PATREONS:[/color]"
