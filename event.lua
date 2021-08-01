@@ -130,7 +130,7 @@ function on_gui_opened(event)
   clear_corpse_tag(event)
 end
 
---Handle killing ,and teleporting users to other surfaces
+--Handle killing, and teleporting users to other surfaces
 function on_player_respawned(event)
   send_to_surface(event) --banish.lua
 
