@@ -62,7 +62,6 @@ function show_players(victim)
   local buf = ""
   local count = 0
 
-  --Cleaned up 12-
   if global.player_list then
   for i, target in pairs(global.player_list) do
     if target and target.victim and target.victim.connected then

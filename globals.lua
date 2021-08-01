@@ -1,12 +1,11 @@
 --Carl Frank Otto III
 --carlotto81@gmail.com
-local svers = "562-7-31-2021-0416p-exp"
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = svers --Version number
+  global.svers = "563-08012021-1059a-exp"
 
-  if global.restrict == nil then
+  if not global.restrict == nil then
     global.restrict = true
   end
   if not global.playeractive then

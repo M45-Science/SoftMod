@@ -168,7 +168,7 @@ function on_pre_player_mined_item(event)
         player.name ..
           " -" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
       )
-      if 1 == 2 and global.restrict then
+      if 1 == 2 and global.restrict then --Disabled
         --New players can't mine objects that they don't own!
         if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
           --Create limbo surface if needed
@@ -270,7 +270,7 @@ function on_player_rotated_entity(event)
         player.name ..
           " *" .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]"
       )
-      if 1 == 2 and global.restrict then
+      if 1 == 2 and global.restrict then --Disabled
         if is_new(player) and obj.last_user ~= nil and obj.last_user.name ~= player.name then
           --Unrotate
           obj.direction = prev_dir
@@ -350,7 +350,7 @@ script.on_nth_tick(
   function(event)
     game.force_crc() --Force a CRC check
 
-    if 1 == 2 and global.restrict then
+    if 1 == 2 and global.restrict then --Disabled
       if global.blueprint_throttle then
         --Loop through players, countdown blueprint throttle
         for _, player in pairs(game.connected_players) do

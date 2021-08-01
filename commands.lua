@@ -12,7 +12,7 @@ script.on_load(
       add_banish_commands()
       --banish.lua
 
-      --adjust run speed
+      --Reset interval message
       commands.add_command(
         "resetint",
         "on/off",
@@ -35,7 +35,7 @@ script.on_load(
         end
       )
 
-      --adjust run speed
+      --Enable / disable friendly fire
       commands.add_command(
         "friendlyfire",
         "on/off",
