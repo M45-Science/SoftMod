@@ -118,11 +118,6 @@ function make_m45_info_window(player)
         sprite = "file/img/info-win/m45-128.png",
         tooltip = ""
       }
-
-      tab1_lframe.add {
-        type = "label",
-        caption = "[font=default-bold]M45-Science[/font]"
-      }
       tab1_lframe.add {
         type = "label",
         caption = "vers:" .. global.svers

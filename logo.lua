@@ -57,17 +57,6 @@ function dodrawlogo()
       if not global.servname then
         global.servname = ""
       end
-      global.m45text =
-        rendering.draw_text {
-        text = "M45-Science",
-        draw_on_ground = true,
-        surface = game.surfaces[1],
-        target = {cpos.x + -0.125, cpos.y - 0.75},
-        scale = 1.25,
-        color = {1, 1, 1},
-        alignment = "center",
-        scale_with_zoom = false
-      }
       global.servtext =
         rendering.draw_text {
         text = global.servname,
