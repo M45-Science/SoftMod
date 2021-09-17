@@ -472,11 +472,7 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Blueprint size/speed limits increase, and access to members-only servers."
-      }
-      tab2_main_frame.add {
-        type = "label",
-        caption = "[font=default-bold]Discord Role available[/font] (Members)"
+        caption = "Access to members-only servers."
       }
 
       tab2_main_frame.add {
@@ -502,15 +498,11 @@ function make_m45_info_window(player)
 
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=stack-inserter]   Access to /banish command (5 votes per map), other players can not banish you."
+        caption = "[recipe=stack-inserter]   Allowed to vote-banish other players."
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Deconstruction planner warning removed, blueprint size/speed limits removed."
-      }
-      tab2_main_frame.add {
-        type = "label",
-        caption = "[font=default-bold]Discord role available[/font] (Regulars), gain access to regulars-only Discord channels."
+        caption = "Deconstruction planner warning removed."
       }
       --Close Button Frame
       local tab2_close_frame =
@@ -654,23 +646,6 @@ function make_m45_info_window(player)
       }
       tab4_main_frame.old_maps.style.font = "default-large"
       tab4_main_frame.old_maps.style.minimal_width = 350
-      tab4_main_frame.add {
-        type = "label",
-        caption = ""
-      }
-
-      tab4_main_frame.add {
-        type = "label",
-        caption = "[font=default-large]Mod portal down, or slow? Download modpacks here:[/font]"
-      }
-      tab4_main_frame.add {
-        type = "text-box",
-        name = "mod_pack",
-        text = "http://m45sci.xyz:10001/",
-        tooltip = "drag-select with mouse, control-c to copy."
-      }
-      tab4_main_frame.mod_pack.style.font = "default-large"
-      tab4_main_frame.mod_pack.style.minimal_width = 250
       tab4_main_frame.add {
         type = "label",
         caption = ""
@@ -894,8 +869,6 @@ function on_gui_text_changed(event)
       event.element.text = "https://discord.gg/Ps2jnm7"
     elseif event.element.name == "old_maps" then
       event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
-    elseif event.element.name == "mod_pack" then
-      event.element.text = "http://m45sci.xyz:10001/"
     elseif event.element.name == "patreon_url" then
       event.element.text = "https://www.patreon.com/m45sci"
     elseif event.element.name == "wube_dl" then
