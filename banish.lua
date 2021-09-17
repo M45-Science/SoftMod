@@ -178,8 +178,8 @@ function g_banish(player, victim, reason)
         else
           --Must have valid victim
           if victim and victim.valid then
-            --Victim must be new or member
-            if is_new(victim) or is_member(victim) then
+            --Victim can not be an admin
+            if not victim.admin then
               --Check if we already voted against them
               if global.banishvotes and global.banishvotes ~= {} then
                 local votecount = 1
@@ -239,7 +239,7 @@ function g_banish(player, victim, reason)
               )
               update_banished_votes() --Must do this to add to tally
             else
-              smart_print(player, "You can only vote against new players, or members!")
+              smart_print(player, "Admins can not be banished.")
             end
           else
             smart_print(player, "There are no players by that name.")

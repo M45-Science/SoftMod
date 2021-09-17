@@ -188,11 +188,13 @@ end
 --Check if player should be considered banished
 function is_banished(victim)
   if victim and victim.valid and not victim.admin then
-    --Admins and regulars can not be marked as banished
-    if is_regular(victim) or victim.admin then
+    --Admins can not be marked as banished
+    if victim.admin then
       return false
     elseif global.thebanished and global.thebanished[victim.index] then
-      if (is_new(victim) and global.thebanished[victim.index] >= 1) or (is_member(victim) and global.thebanished[victim.index] >= 2) then
+      if (is_new(victim) and global.thebanished[victim.index] >= 1) or
+      (is_member(victim) and global.thebanished[victim.index] >= 2) or
+      (is_regular(victim) and global.thebanished[victim.index] >= 2) then
         return true
       end
     end
