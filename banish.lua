@@ -151,6 +151,7 @@ function update_banished_votes()
 
       --Kill them, so items are left behind
       if victim.character and victim.character.valid then
+        send_to_default_spawn(victim)
         victim.character.die("player")
       end
 
