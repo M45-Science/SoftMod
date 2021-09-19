@@ -301,23 +301,12 @@ script.on_load(
             end
           end
 
-          --
-          --Clear limbo surfaces on reboot, just in case
-          --Could actually cause desync if run by admin with very bad timing.
-          --
           if param.parameter then
-            --Get limbo surface
-            local surf = game.surfaces["limbo"]
-
-            --Check if surface is valid
-            if surf and surf.valid then
-              --Clear surface
-              surf.clear()
-              console_print("Limbo surface cleared.")
-            end
-
             global.servname = param.parameter
+
+            --Set logo to be redrawn
             global.drawlogo = false
+            --Redraw
             dodrawlogo()
 
             global.servers = nil
@@ -526,10 +515,6 @@ script.on_load(
             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
             smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
             smart_print(victim, string.format("Force: %s", pforce.name))
-            global.cspawnpos = {
-              x = (math.floor(new_pos_x) + 0.5),
-              y = (math.floor(new_pos_y) + 0.5)
-            }
 
             --Set logo to be redrawn
             global.drawlogo = false
