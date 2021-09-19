@@ -130,7 +130,7 @@ end
 
 --Research Finished -- discord
 function on_research_finished(event)
-  if event and event.research and not event.research.by_script then
+  if event and event.research and not event.by_script then
     message_alld("Research " .. event.research.name .. " completed.")
   end
 end
