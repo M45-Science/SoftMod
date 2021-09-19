@@ -72,13 +72,10 @@ script.on_nth_tick(
         label = global.servname
       end
 
-      if global.cspawnpos and global.cspawnpos.x then
-        xpos = global.cspawnpos.x
-        ypos = global.cspawnpos.y
-      end
+      
 
       local chartTag = {
-        position = {xpos, ypos},
+        position = get_default_spawn(),
         icon = {type = "item", name = "heavy-armor"},
         text = label
       }
@@ -214,7 +211,7 @@ function on_player_joined_game(event)
         global.info_shown[player.index] = true
         make_m45_online_window(player) --online.lua
         make_m45_info_window(player) --info.lua
-        --make_m45_todo_window(player) --todo.lua
+      --make_m45_todo_window(player) --todo.lua
       end
     end
   end
@@ -225,9 +222,15 @@ function on_player_created(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
 
-    update_player_list() --online.lua
-
     if player and player.valid then
+
+      global.drawlogo = false --set logo to be redrawn
+      dodrawlogo() --redraw logo
+      send_to_default_spawn(player) --incase spawn moved
+
+
+      update_player_list() --online.lua
+
       --Cutoff-point, just becomes annoying.
       if not player.force.technologies["military-2"].researched then
         player.insert {name = "iron-plate", count = 50}
@@ -287,15 +290,25 @@ function on_pre_player_died(event)
         }
 
         --Add to list of pins
-        table.insert(global.corpselist, {tag = qtag, tick = game.tick + 600, pos = player.position, pindex = player.index, corpse_lamp = clight})
+        table.insert(
+          global.corpselist,
+          {tag = qtag, tick = game.tick + 600, pos = player.position, pindex = player.index, corpse_lamp = clight}
+        )
       end
 
       --Log to discord
       if event.cause and event.cause.valid then
         cause = event.cause.name
-        gsysmsg(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+        gsysmsg(
+          player.name ..
+            " was killed by " ..
+              cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+        )
       else
-        gsysmsg(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+        gsysmsg(
+          player.name ..
+            " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+        )
       end
     end
   end
@@ -354,7 +367,17 @@ script.on_event(
         --Only mark active on movement if walking
         if event.name == defines.events.on_player_changed_position then
           if player.walking_state then
-            if player.walking_state.walking == true and (player.walking_state.direction == defines.direction.north or player.walking_state.direction == defines.direction.northeast or player.walking_state.direction == defines.direction.east or player.walking_state.direction == defines.direction.southeast or player.walking_state.direction == defines.direction.south or player.walking_state.direction == defines.direction.southwest or player.walking_state.direction == defines.direction.west or player.walking_state.direction == defines.direction.northwest) then
+            if
+              player.walking_state.walking == true and
+                (player.walking_state.direction == defines.direction.north or
+                  player.walking_state.direction == defines.direction.northeast or
+                  player.walking_state.direction == defines.direction.east or
+                  player.walking_state.direction == defines.direction.southeast or
+                  player.walking_state.direction == defines.direction.south or
+                  player.walking_state.direction == defines.direction.southwest or
+                  player.walking_state.direction == defines.direction.west or
+                  player.walking_state.direction == defines.direction.northwest)
+             then
               set_player_active(player)
             end
           end
@@ -397,13 +420,13 @@ script.on_event(
     elseif event.name == defines.events.on_chart_tag_added then
       on_chart_tag_added(event)
     elseif event.name == defines.events.on_research_finished then
-      on_research_finished(event)
       --clean up corspe tags
+      on_research_finished(event)
     elseif event.name == defines.events.on_player_mined_entity then
       on_player_mined_entity(event)
     elseif event.name == defines.events.on_gui_opened then
-      on_gui_opened(event)
       --anti-grief
+      on_gui_opened(event)
     elseif event.name == defines.events.on_player_deconstructed_area then
       on_player_deconstructed_area(event)
     elseif event.name == defines.events.on_player_banned then
@@ -445,14 +468,22 @@ function clear_corpse_tag(event)
 
         if victim and victim.valid and player and player.valid then
           if victim.name ~= player.name then
-            gsysmsg(player.name .. " looted the body of " .. victim.name .. ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+            gsysmsg(
+              player.name ..
+                " looted the body of " ..
+                  victim.name ..
+                    ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+            )
           end
         end
       end
 
       local index
       for i, ctag in pairs(global.corpselist) do
-        if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex == ent.character_corpse_player_index then
+        if
+          ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and
+            ctag.pindex == ent.character_corpse_player_index
+         then
           --Destroy corpse lamp
           rendering.destroy(ctag.corpse_lamp)
 
