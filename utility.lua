@@ -63,12 +63,20 @@ function show_players(victim)
   local count = 0
 
   if global.player_list then
-  for i, target in pairs(global.player_list) do
-    if target and target.victim and target.victim.connected then
-      buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
+    for i, target in pairs(global.player_list) do
+      if target and target.victim and target.victim.connected then
+        buf =
+          buf ..
+          string.format(
+            "~%16s: - Score: %d - Online: %dm - (%s)\n",
+            target.victim.name,
+            math.floor(target.score / 60 / 60),
+            math.floor(target.time / 60 / 60),
+            target.type
+          )
+      end
     end
   end
-end
   --No one is online
   if not global.player_count or global.player_count == 0 then
     smart_print(victim, "No players online.")
@@ -151,7 +159,10 @@ function is_regular(victim)
   if victim and victim.valid and not victim.admin then
     --If in group
     if victim.permission_group and global.regularsgroup then
-      if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name == global.regularsgroup.name .. "_satellite" then
+      if
+        victim.permission_group.name == global.regularsgroup.name or
+          victim.permission_group.name == global.regularsgroup.name .. "_satellite"
+       then
         return true
       end
     end
@@ -165,7 +176,10 @@ function is_member(victim)
   if victim and victim.valid and not victim.admin then
     --If in group
     if victim.permission_group and global.membersgroup then
-      if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name == global.membersgroup.name .. "_satellite" then
+      if
+        victim.permission_group.name == global.membersgroup.name or
+          victim.permission_group.name == global.membersgroup.name .. "_satellite"
+       then
         return true
       end
     end
@@ -192,13 +206,65 @@ function is_banished(victim)
     if victim.admin then
       return false
     elseif global.thebanished and global.thebanished[victim.index] then
-      if (is_new(victim) and global.thebanished[victim.index] >= 1) or
-      (is_member(victim) and global.thebanished[victim.index] >= 2) or
-      (is_regular(victim) and global.thebanished[victim.index] >= 2) then
+      if
+        (is_new(victim) and global.thebanished[victim.index] >= 1) or
+          (is_member(victim) and global.thebanished[victim.index] >= 2) or
+          (is_regular(victim) and global.thebanished[victim.index] >= 2)
+       then
         return true
       end
     end
   end
 
   return false
+end
+
+function send_to_default_spawn(victim)
+  if victim and victim.valid and victim.character then
+    local nsurf = game.surfaces["nauvis"] --Find default surface
+
+    if nsurf then
+      local spawnpos = get_spawn_position(nsurf)
+      local newpos = nsurf.find_non_colliding_position("character", spawnpos, 4096, 1, false)
+      if newpos then
+        victim.teleport(newpos, nsurf)
+      else
+        victim.teleport({0, 0}, nsurf)
+      end
+    else
+      console_print("send_to_default_spawn: The surface nauvis does not exist, could not teleport victim.")
+    end
+  else
+    console_print("send_to_default_spawn: victim invalid or dead")
+  end
+end
+
+function send_to_surface_spawn(victim)
+  if victim and victim.valid and victim.character then
+    local nsurf = victim.surface
+    if nsurf then
+      local spawnpos = get_spawn_position(nsurf)
+      local newpos = nsurf.find_non_colliding_position("character", spawnpos, 4096, 1, false)
+      if newpos then
+        victim.teleport(newpos, nsurf)
+      else
+        victim.teleport({0, 0}, nsurf)
+      end
+    else
+      console_print("send_to_surface_spawn: The surface does not exist, could not teleport victim.")
+    end
+  else
+    console_print("send_to_surface_spawn: victim invalid or dead")
+  end
+end
+
+function get_default_spawn()
+    local nsurf = game.surfaces["nauvis"] 
+    if nsurf then
+      local spawnpos = get_spawn_position(nsurf)
+      return spawnpos
+    else
+      console_print("get_default_spawn: Couldn't find default spawn position.")
+      return{0,0}
+    end
 end
