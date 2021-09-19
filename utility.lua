@@ -224,7 +224,13 @@ function send_to_default_spawn(victim)
     local nsurf = game.surfaces["nauvis"] --Find default surface
 
     if nsurf then
-      local spawnpos = get_spawn_position(nsurf)
+      local pforce = victim.force
+      local spawnpos = {0, 0}
+      if pforce then
+        spawnpos = pforce.get_spawn_position(nsurf)
+      else
+        console_print("send_to_default_spawn: victim does not have a valid force.")
+      end
       local newpos = nsurf.find_non_colliding_position("character", spawnpos, 4096, 1, false)
       if newpos then
         victim.teleport(newpos, nsurf)
@@ -243,7 +249,13 @@ function send_to_surface_spawn(victim)
   if victim and victim.valid and victim.character then
     local nsurf = victim.surface
     if nsurf then
-      local spawnpos = get_spawn_position(nsurf)
+      local pforce = victim.force
+      local spawnpos = {0, 0}
+      if pforce then
+        spawnpos = pforce.get_spawn_position(nsurf)
+      else
+        console_print("send_to_surface_spawn: victim force invalid")
+      end
       local newpos = nsurf.find_non_colliding_position("character", spawnpos, 4096, 1, false)
       if newpos then
         victim.teleport(newpos, nsurf)
@@ -259,12 +271,18 @@ function send_to_surface_spawn(victim)
 end
 
 function get_default_spawn()
-    local nsurf = game.surfaces["nauvis"] 
-    if nsurf then
-      local spawnpos = get_spawn_position(nsurf)
+  local nsurf = game.surfaces["nauvis"]
+  if nsurf then
+    local pforce = game.forces["player"]
+    if pforce then
+      local spawnpos = pforce.get_spawn_position(nsurf)
       return spawnpos
     else
-      console_print("get_default_spawn: Couldn't find default spawn position.")
-      return{0,0}
+      console_print("get_default_spawn: Couldn't find force 'player'")
+      return {0, 0}
     end
+  else
+    console_print("get_default_spawn: Couldn't find default surface nauvis.")
+    return {0, 0}
+  end
 end
