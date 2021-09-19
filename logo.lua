@@ -3,7 +3,8 @@
 
 --Add M45 Logo to spawn area
 function dodrawlogo()
-  if game.surfaces[1] then
+  local msurf = game.surfaces["nauvis"]
+  if msurf then
     --Only draw if needed
     if not global.drawlogo then
       --Destroy if already exists
@@ -21,17 +22,19 @@ function dodrawlogo()
       end
 
       --Get spawn position
-      local cpos = {x = 0, y = 0}
-      if global.cspawnpos and global.cspawnpos.x then
-        cpos = global.cspawnpos
-      end
+      local cpos = get_default_spawn()
 
       --Find nice clear area for spawn
-      local newpos = game.surfaces[1].find_non_colliding_position("crash-site-spaceship", cpos, 1000, 0.1, false)
+      local newpos = msurf.find_non_colliding_position("crash-site-spaceship", cpos, 4096, 1, false)
       --Set spawn position if we found a better spot
-      if newpos and newpos.x ~= 0 and newpos.y ~= 0 then
+      if newpos then
         cpos = newpos
-        global.cspawnpos = newpos
+        local pforce = game.forces["player"]
+        if pforce then
+          pforce.set_spawn_position(cpos, msurf)
+        else
+          console_print("dodrawlogo: Player force not found.")
+        end
       end
 
       --Set drawn flag
@@ -43,7 +46,7 @@ function dodrawlogo()
         target = cpos,
         x_scale = 0.5,
         y_scale = 0.5,
-        surface = game.surfaces[1]
+        surface = msurf
       }
       global.m45logo_light =
         rendering.draw_light {
@@ -51,7 +54,7 @@ function dodrawlogo()
         render_layer = 148,
         target = cpos,
         scale = 8,
-        surface = game.surfaces[1],
+        surface = msurf,
         minimum_darkness = 0.5
       }
       if not global.servname then
@@ -61,7 +64,7 @@ function dodrawlogo()
         rendering.draw_text {
         text = global.servname,
         draw_on_ground = true,
-        surface = game.surfaces[1],
+        surface = msurf,
         target = {cpos.x - 0.125, cpos.y + 2.125},
         scale = 1.0,
         color = {1, 1, 1},
