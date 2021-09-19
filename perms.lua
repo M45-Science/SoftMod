@@ -126,7 +126,6 @@ function get_permgroup()
                 global.regularsgroup.add_player(player)
                 message_all(player.name .. " is now a regular!")
                 smart_print(player, "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
-                smart_print(player, "[color=red](SYSTEM) You now have access to our 'Regulars' Discord role.[/color]")
                 smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
                 
                 if player.character then
