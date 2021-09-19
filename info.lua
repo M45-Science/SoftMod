@@ -120,7 +120,7 @@ function make_m45_info_window(player)
       }
       tab1_lframe.add {
         type = "label",
-        caption = "vers:" .. global.svers
+        caption = global.svers
       }
       tab1_lframe.add {
         type = "label",
