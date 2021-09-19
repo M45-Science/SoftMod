@@ -72,8 +72,6 @@ script.on_nth_tick(
         label = global.servname
       end
 
-      
-
       local chartTag = {
         position = get_default_spawn(),
         icon = {type = "item", name = "heavy-armor"},
@@ -223,11 +221,9 @@ function on_player_created(event)
     local player = game.players[event.player_index]
 
     if player and player.valid then
-
       global.drawlogo = false --set logo to be redrawn
       dodrawlogo() --redraw logo
       send_to_default_spawn(player) --incase spawn moved
-
 
       update_player_list() --online.lua
 
@@ -255,6 +251,9 @@ end
 function on_pre_player_died(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
+
+    global.drawlogo = false --set logo to be redrawn
+    dodrawlogo() --redraw logo
 
     --Disable corpse map markers if another similar mod is loaded
     local disable_corpsemap = false
