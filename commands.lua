@@ -227,6 +227,7 @@ script.on_load(
         "register",
         "<code>\n(Requires a registration code)",
         function(param)
+          return --disabled
           if param and param.player_index then
             local player = game.players[param.player_index]
 
