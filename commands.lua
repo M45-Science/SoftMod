@@ -65,7 +65,7 @@ script.on_load(
               end
             end
           else
-            smart_print(player,"on or off?")
+            smart_print(player, "on or off?")
           end
         end
       )
@@ -227,7 +227,8 @@ script.on_load(
         "register",
         "<code>\n(Requires a registration code)",
         function(param)
-          if param and param.player_index then
+          --This command is disabled
+          if 1==2 and param and param.player_index then
             local player = game.players[param.player_index]
 
             --Only if arguments
@@ -513,7 +514,10 @@ script.on_load(
           --Set new spawn spot
           if pforce and psurface and new_pos_x and new_pos_y then
             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
+            smart_print(
+              victim,
+              string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y))
+            )
             smart_print(victim, string.format("Force: %s", pforce.name))
 
             --Set logo to be redrawn
@@ -682,7 +686,10 @@ script.on_load(
               if pforce then
                 --Calculate walk speed for UPS
                 pforce.character_running_speed_modifier = ((1.0 / value) - 1.0)
-                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier)
+                smart_print(
+                  player,
+                  "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier
+                )
 
                 --Don't show message if run via console (ChatWire)
                 if (player) then
@@ -783,8 +790,7 @@ script.on_load(
               end
 
               --Find x/y from argument
-              xpos,
-                ypos = str:match("([^,]+),([^,]+)")
+              xpos, ypos = str:match("([^,]+),([^,]+)")
               if tonumber(xpos) and tonumber(ypos) then
                 local position = {x = xpos, y = ypos}
 
