@@ -228,7 +228,7 @@ script.on_load(
         "<code>\n(Requires a registration code)",
         function(param)
           --This command is disabled
-          if 1==2 and param and param.player_index then
+          if 1 == 2 and param and param.player_index then
             local player = game.players[param.player_index]
 
             --Only if arguments
