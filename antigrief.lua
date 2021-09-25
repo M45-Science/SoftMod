@@ -304,7 +304,7 @@ function on_player_banned(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
     if player and player.valid and player.character then
-      send_to_default_spawn(player)
+      --send_to_default_spawn(player)
       player.character.die("player")
     end
   end
