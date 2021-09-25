@@ -304,11 +304,11 @@ function make_m45_online_submenu(player, target_name)
           }
 
           if is_regular(player) or player.admin then
-            if is_regular(target) or target.admin then
+            if target.admin then
               local banish_note =
                 banish_frame.add {
                 type = "label",
-                caption = "(regulars and admins cannot be banished)"
+                caption = "(admins cannot be banished)"
               }
               banish_note.enabled = false
               banish.enabled = false
