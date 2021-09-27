@@ -7,7 +7,6 @@ require "todo"
 
 local function insert_weapons(player, ammo_amount)
   if player.force.technologies["military"].researched then
-    player.can_insert{name = "submachine-gun", count = 1}
     player.insert {name = "submachine-gun", count = 1}
   else
     player.insert {name = "pistol", count = 1}
