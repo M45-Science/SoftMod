@@ -6,16 +6,17 @@ require "log"
 require "todo"
 
 local function insert_weapons(player, ammo_amount)
+  if player.force.technologies["military"].researched then
+    player.can_insert{name = "submachine-gun", count = 1}
+    player.insert {name = "submachine-gun", count = 1}
+  else
+    player.insert {name = "pistol", count = 1}
+  end
+
   if player.force.technologies["military-2"].researched then
     player.insert {name = "piercing-rounds-magazine", count = ammo_amount}
   else
     player.insert {name = "firearm-magazine", count = ammo_amount}
-  end
-
-  if player.force.technologies["military"].researched then
-    player.insert {name = "submachine-gun", count = 1}
-  else
-    player.insert {name = "pistol", count = 1}
   end
 end
 
