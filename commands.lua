@@ -427,6 +427,7 @@ script.on_load(
               if victim and victim.valid and global.membersgroup then
                 smart_print(player, "Player given members status.")
                 global.membersgroup.add_player(victim)
+                update_player_list() --online.lua
                 return
               end
             end
@@ -459,6 +460,7 @@ script.on_load(
               if victim and victim.valid and global.regularsgroup then
                 smart_print(player, "Player given regulars status.")
                 global.regularsgroup.add_player(victim)
+                update_player_list() --online.lua
                 return
               end
             end
@@ -495,6 +497,7 @@ script.on_load(
                 if not global.patreons[player.index] then
                   global.patreons.index = true
                   smart_print(player, "Player given patreon status.")
+                  update_player_list() --online.lua
                 else
                   smart_print(player, "Player already has patreon status.")
                 end
@@ -535,9 +538,11 @@ script.on_load(
                 if not global.nitros[player.index] then
                   global.nitros.index = true
                   smart_print(player, "Player given nitro status.")
+                  update_player_list() --online.lua
                 else
                   smart_print(player, "Player already has nitro status.")
                 end
+
 
                 return
               end
