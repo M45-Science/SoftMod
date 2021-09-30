@@ -467,6 +467,87 @@ script.on_load(
         end
       )
 
+      --Set player to patreon
+      commands.add_command(
+        "patreon",
+        "<player>\n(Makes the player a patreon)",
+        function(param)
+          local player
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+          --Argument required
+          if param.parameter then
+            local victim = game.players[param.parameter]
+
+            if (victim) then
+              if victim and victim.valid then
+                if not global.patreons then
+                  global.patreons = {}
+                end
+                if not global.patreons[player.index] then
+                  global.patreons.index = true
+                  smart_print(player, "Player given patreon status.")
+                else
+                  smart_print(player, "Player already has patreon status.")
+                end
+
+                return
+              end
+            end
+          end
+          smart_print(player, "Player not found.")
+        end
+      )
+
+      --Set player to nitro
+      commands.add_command(
+        "nitro",
+        "<player>\n(Makes the player a nitro booster)",
+        function(param)
+          local player
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+          --Argument required
+          if param.parameter then
+            local victim = game.players[param.parameter]
+
+            if (victim) then
+              if victim and victim.valid then
+                if not global.nitros then
+                  global.nitros = {}
+                end
+                if not global.nitros[player.index] then
+                  global.nitros.index = true
+                  smart_print(player, "Player given nitro status.")
+                else
+                  smart_print(player, "Player already has nitro status.")
+                end
+
+                return
+              end
+            end
+          end
+          smart_print(player, "Player not found.")
+        end
+      )
+
+
       --Change default spawn point
       commands.add_command(
         "cspawn",
