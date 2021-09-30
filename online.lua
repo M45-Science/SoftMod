@@ -612,7 +612,11 @@ function make_m45_online_window(player)
             caption = "  " .. victim.name
           }
           local newcolor = {r = 1, g = 1, b = 1}
-          if victim.admin then
+          if is_patreon(victim) then
+            newcolor = {r = 1.0, g = 0.0, b = 1.0}
+          elseif is_nitro(victim) then
+            newcolor = {r = 0.0, g = 0.5, b = 1.0}
+          elseif victim.admin then
             newcolor = {r = 1, g = 0, b = 0}
           elseif is_regular(victim) then
             newcolor = {r = 1, g = 1, b = 0}
@@ -679,6 +683,15 @@ function make_m45_online_window(player)
             if victim.admin then
               utag = "ADMINS"
             end
+
+            
+            if is_nitro(victim) then
+              utag = utag .. " (NITRO)"
+            end
+            if is_patreon(victim) then
+              utag = utag .. " (PATREON)"
+            end
+
             local score_label =
               pframe.add {
               type = "label",
