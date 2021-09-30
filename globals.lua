@@ -3,7 +3,7 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "566-09302021-129-exp"
+  global.svers = "567-09302021-0459p-exp"
 
   if not global.restrict == nil then
     global.restrict = true
@@ -16,6 +16,13 @@ function create_myglobals()
   end
   if not global.blueprint_throttle then
     global.blueprint_throttle = {}
+  end
+
+  if not global.patreons then
+    global.patreons = {}
+  end
+  if not global.nitros then
+    global.nitros = {}
   end
 
   if not global.last_speaker_warning then
