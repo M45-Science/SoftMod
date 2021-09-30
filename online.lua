@@ -533,7 +533,7 @@ function make_m45_online_window(player)
           type = "label",
           caption = "  Level:"
         }
-        score_label.style.width = 100
+        score_label.style.width = 200
       end
 
       --for x = 0, 100, 1 do
@@ -698,7 +698,7 @@ function make_m45_online_window(player)
               caption = "  " .. utag,
               tooltip = "Current level, see membership tab for more info."
             }
-            score_label.style.width = 250
+            score_label.style.width = 200
           end
         end
       end
