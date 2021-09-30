@@ -153,6 +153,35 @@ function is_sameobj(obj_a, obj_b)
   return false
 end
 
+
+--Check if player is flagged patreon
+function is_patreon(victim)
+  if victim and victim.valid then
+    if global.patreons and global.patreons[victim.index] then
+      return global.patreons[victim.index]
+    else
+      global.patreons[victim.index] = false
+      return false
+    end
+  end
+
+  return false
+end
+
+--Check if player is flagged nitro
+function is_nitro(victim)
+  if victim and victim.valid then
+    if global.nitros and global.nitros[victim.index] then
+      return global.nitros[victim.index]
+    else
+      global.nitros[victim.index] = false
+      return false
+    end
+  end
+
+  return false
+end
+
 --permissions system
 --Check if player should be considered a regular
 function is_regular(victim)
