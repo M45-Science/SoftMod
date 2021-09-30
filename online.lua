@@ -626,7 +626,7 @@ function make_m45_online_window(player)
 
           if not global.online_brief[player.index] then
             name_label.style.font = "default-bold"
-            name_label.style.width = 200
+            name_label.style.width = 400
           end
 
           --Darker if offline
