@@ -626,7 +626,7 @@ function make_m45_online_window(player)
 
           if not global.online_brief[player.index] then
             name_label.style.font = "default-bold"
-            name_label.style.width = 400
+            name_label.style.width = 200
           end
 
           --Darker if offline
@@ -698,7 +698,7 @@ function make_m45_online_window(player)
               caption = "  " .. utag,
               tooltip = "Current level, see membership tab for more info."
             }
-            score_label.style.width = 100
+            score_label.style.width = 250
           end
         end
       end
