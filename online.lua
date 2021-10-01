@@ -60,6 +60,13 @@ function update_player_list()
       utag = "ADMINS"
     end
 
+    if is_patron(victim) then
+      utag = utag .. " (PATREON)"
+    end
+    if is_nitro(victim) then
+      utag = utag .. " (NITRO)"
+    end
+
     if global.active_playtime[victim.index] then
       table.insert(
         results,
