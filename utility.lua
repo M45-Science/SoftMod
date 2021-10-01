@@ -157,6 +157,9 @@ end
 --Check if player is flagged patreon
 function is_patreon(victim)
   if victim and victim.valid then
+    if not global.patreons then
+      global.patreons = {}
+    end
     if global.patreons and global.patreons[victim.index] then
       return global.patreons[victim.index]
     else
@@ -171,6 +174,9 @@ end
 --Check if player is flagged nitro
 function is_nitro(victim)
   if victim and victim.valid then
+    if not global.nitros then
+      global.nitros = {}
+    end
     if global.nitros and global.nitros[victim.index] then
       return global.nitros[victim.index]
     else
