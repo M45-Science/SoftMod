@@ -187,6 +187,10 @@ function make_m45_info_window(player)
         type = "label",
         caption = "[color=purple]Lionheart[/color]"
       }
+      tab1_lframe.add {
+        type = "label",
+        caption = "[color=purple]CM42[/color]"
+      }
       
 
       tab1_lframe.add {
