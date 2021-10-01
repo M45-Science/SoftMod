@@ -494,8 +494,8 @@ script.on_load(
                 if not global.patreons then
                   global.patreons = {}
                 end
-                if not global.patreons[player.index] then
-                  global.patreons[player.index] = true
+                if not global.patreons[victim.index] then
+                  global.patreons[victim.index] = true
                   smart_print(player, "Player given patreon status.")
                   update_player_list() --online.lua
                 else
@@ -535,8 +535,8 @@ script.on_load(
                 if not global.nitros then
                   global.nitros = {}
                 end
-                if not global.nitros[player.index] then
-                  global.nitros[player.index] = true
+                if not global.nitros[victim.index] then
+                  global.nitros[victim.index] = true
                   smart_print(player, "Player given nitro status.")
                   update_player_list() --online.lua
                 else
