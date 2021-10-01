@@ -445,12 +445,12 @@ function make_m45_info_window(player)
       if is_member(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[color=red][font=default-bold]Level 2:[/font] Members[/color] (Score: 60)"
+          caption = "[color=red][font=default-bold]Level 2:[/font] Members[/color] (Score: 30)"
         }
       else
         tab2_main_frame.add {
           type = "label",
-          caption = "[font=default-bold]Level 2:[/font] Members (Score: 60)"
+          caption = "[font=default-bold]Level 2:[/font] Members (Score: 30)"
         }
       end
       tab2_main_frame.add {
