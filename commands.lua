@@ -876,7 +876,7 @@ script.on_load(
               end
 
               --Find x/y from argument
-              xpos, ypos = str:match("([^,]+),([^,]+)")
+              xpos, ypos = str:match("([%-%d]+),([%-%d]+)")
               if tonumber(xpos) and tonumber(ypos) then
                 local position = {x = xpos, y = ypos}
 
