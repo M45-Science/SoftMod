@@ -348,7 +348,7 @@ function make_m45_info_window(player)
       }
       --URL Style
       tab1_discord_sub2_frame.discord_url.style.font = "default-large"
-      tab1_discord_sub2_frame.discord_url.style.minimal_width = 250
+      tab1_discord_sub2_frame.discord_url.style.minimal_width = 350
 
       tab1_discord_sub2_frame.add {
         type = "label",
