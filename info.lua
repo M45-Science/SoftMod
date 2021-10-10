@@ -343,7 +343,7 @@ function make_m45_info_window(player)
       tab1_discord_sub2_frame.add {
         type = "text-box",
         name = "discord_url",
-        text = "https://discord.gg/Ps2jnm7",
+        text = "https://discord.gg/rQANzBheVh",
         tooltip = "(if not selected), drag-select with mouse, control-c to copy."
       }
       --URL Style
@@ -718,7 +718,7 @@ function make_m45_info_window(player)
       }
       tab5_qr_frame.add {
         type = "label",
-        caption = "(links to: https://discord.gg/Ps2jnm7)"
+        caption = "(links to: https://discord.gg/rQANzBheVh)"
       }
 
       info_pane.add_tab(tab5, tab5_frame)
@@ -865,7 +865,7 @@ function on_gui_text_changed(event)
     local player = game.players[event.player_index]
 
     if event.element.name == "discord_url" then
-      event.element.text = "https://discord.gg/Ps2jnm7"
+      event.element.text = "https://discord.gg/rQANzBheVh"
     elseif event.element.name == "old_maps" then
       event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
     elseif event.element.name == "patreon_url" then
