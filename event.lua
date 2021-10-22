@@ -35,8 +35,10 @@ script.on_nth_tick(
       local index = nil
       for i, corpse in pairs(global.corpselist) do
         if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
-          --Destroy corpse lamp
-          rendering.destroy(corpse.corpse_lamp)
+          if corpse.corpse_lamp then
+            --Destroy corpse lamp
+            rendering.destroy(corpse.corpse_lamp)
+          end
 
           --Destory map tag
           if corpse.tag and corpse.tag.valid then
@@ -110,11 +112,6 @@ script.on_nth_tick(
   end
 )
 
---Clean up corpse tags
-function on_player_mined_entity(event)
-  clear_corpse_tag(event)
-end
-
 function on_character_corpse_expired(event)
   clear_corpse_tag(event)
 end
@@ -141,7 +138,6 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-  
   global.drawlogo = false --set logo to be redrawn
   dodrawlogo() --redraw logo
 
@@ -256,9 +252,6 @@ function on_pre_player_died(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
 
-    global.drawlogo = false --set logo to be redrawn
-    dodrawlogo() --redraw logo
-
     --Disable corpse map markers if another similar mod is loaded
     local disable_corpsemap = false
     for name, version in pairs(game.active_mods) do
@@ -295,7 +288,7 @@ function on_pre_player_died(event)
         --Add to list of pins
         table.insert(
           global.corpselist,
-          {tag = qtag, tick = game.tick + 600, pos = player.position, pindex = player.index, corpse_lamp = clight}
+          {tag = qtag, tick = game.tick + 590, pos = player.position, pindex = player.index, corpse_lamp = clight}
         )
       end
 
@@ -341,7 +334,6 @@ script.on_event(
     defines.events.on_chart_tag_added,
     defines.events.on_research_finished,
     --clean up corpse tags
-    defines.events.on_player_mined_entity,
     defines.events.on_gui_opened,
     -- anti-grief
     defines.events.on_player_deconstructed_area,
@@ -425,8 +417,6 @@ script.on_event(
     elseif event.name == defines.events.on_research_finished then
       --clean up corspe tags
       on_research_finished(event)
-    elseif event.name == defines.events.on_player_mined_entity then
-      on_player_mined_entity(event)
     elseif event.name == defines.events.on_gui_opened then
       --anti-grief
       on_gui_opened(event)
@@ -464,8 +454,8 @@ function clear_corpse_tag(event)
   if event and event.entity and event.entity.valid then
     local ent = event.entity
 
-    if ent.type == "character-corpse" then
-      if ent and event.player_index then
+    if ent and ent.type and ent.type == "character-corpse" then
+      if ent and ent.character_corpse_player_index and event.player_index then
         player = game.players[event.player_index]
         victim = game.players[ent.character_corpse_player_index]
 
@@ -488,9 +478,11 @@ function clear_corpse_tag(event)
             ctag.pindex == ent.character_corpse_player_index
          then
           --Destroy corpse lamp
-          rendering.destroy(ctag.corpse_lamp)
+          if ctag and ctag.corpse_lamp then
+            rendering.destroy(ctag.corpse_lamp)
+          end
 
-          --Destory map tag
+          --Destroy map tag
           if ctag and ctag.tag and ctag.tag.valid then
             ctag.tag.destroy()
           end
