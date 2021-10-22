@@ -173,6 +173,10 @@ function g_banish(player, victim, reason)
           smart_print(player, "You can't banish yourself. Have you considered therapy?")
           return
         end
+        if is_banished(player) then
+          smart_print(player, "You are banished, you can't vote.")
+          return
+        end
 
         if string.len(reason) < 4 then
           smart_print(player, "You must supply a more descriptive complaint.")
