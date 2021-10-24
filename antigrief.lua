@@ -344,7 +344,7 @@ end
 script.on_nth_tick(
   1800, -- Every 30 seconds
   function(event)
-    game.force_crc() --Force a CRC check
+    --game.force_crc() --Force a CRC check
 
     if 1 == 2 and global.restrict then --Disabled
       if global.blueprint_throttle then
