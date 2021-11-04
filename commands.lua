@@ -543,7 +543,6 @@ script.on_load(
                   smart_print(player, "Player already has nitro status.")
                 end
 
-
                 return
               end
             end
@@ -551,7 +550,6 @@ script.on_load(
           smart_print(player, "Player not found.")
         end
       )
-
 
       --Change default spawn point
       commands.add_command(
@@ -726,6 +724,45 @@ script.on_load(
             victim = game.players[param.player_index]
           end
           show_players(victim)
+        end
+      )
+      
+      --Game speed, without walk speed mod
+      commands.add_command(
+        "aspeed",
+        "<x.x>\n(Changes game speed)\nDefault speed: 1.0 (60 UPS), Min 0.1 (6 UPS), Max  10.0 (600 UPS)",
+        function(param)
+          local player
+
+          if param and param.player_index then
+            player = game.players[param.player_index]
+          end
+
+          --Admins only
+          if player and player.admin == false then
+            smart_print(player, "Admins only.")
+            return
+          end
+
+          --Need argument
+          if (not param.parameter) then
+            smart_print(player, "But what speed? 0.1 to 10")
+            return
+          end
+
+          --Decode arg
+          if tonumber(param.parameter) then
+            local value = tonumber(param.parameter)
+
+            --Limit speed range
+            if (value >= 0.1 and value <= 10.0) then
+              game.speed = value
+            else
+              smart_print(player, "That doesn't seem like a good idea...")
+            end
+          else
+            smart_print(player, "Numbers only.")
+          end
         end
       )
 
