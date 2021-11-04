@@ -730,7 +730,7 @@ script.on_load(
       --Game speed, without walk speed mod
       commands.add_command(
         "aspeed",
-        "<x.x>\n(Changes game speed)\nDefault speed: 1.0 (60 UPS), Min 0.1 (6 UPS), Max  10.0 (600 UPS)",
+        "<x.x>\nSet game UPS, and do not adjust walk speed.",
         function(param)
           local player
 
@@ -746,7 +746,7 @@ script.on_load(
 
           --Need argument
           if (not param.parameter) then
-            smart_print(player, "But what speed? 0.1 to 10")
+            smart_print(player, "But what speed? 4 to 1000")
             return
           end
 
@@ -755,8 +755,8 @@ script.on_load(
             local value = tonumber(param.parameter)
 
             --Limit speed range
-            if (value >= 0.1 and value <= 10.0) then
-              game.speed = value
+            if (value >= 4 and value <= 1000) then
+              game.speed = (value / 60.0)
             else
               smart_print(player, "That doesn't seem like a good idea...")
             end
