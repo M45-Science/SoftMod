@@ -70,6 +70,45 @@ script.on_load(
         end
       )
 
+      --Enable / disable friendly fire
+      commands.add_command(
+        "blueprints",
+        "on/off",
+        function(param)
+          local player
+          local victim
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+          if param and param.parameter then
+            local pforce = game.forces["player"]
+
+            if pforce then
+              if string.lower(param.parameter) == "off" then
+                set_blueprints_enabled(global.defaultgroup,false)
+                set_blueprints_enabled(global.membersgroup,false)
+                set_blueprints_enabled(global.regularsgroup,false)
+                smart_print(player, "blueprints disabled...")
+              elseif string.lower(param.parameter) == "on" then
+                set_blueprints_enabled(global.defaultgroup,true)
+                set_blueprints_enabled(global.membersgroup,true)
+                set_blueprints_enabled(global.regularsgroup,true)
+                smart_print(player, "blueprints enabled...")
+              end
+            end
+          else
+            smart_print(player, "on or off?")
+          end
+        end
+      )
+
       --adjust run speed
       commands.add_command(
         "run",
