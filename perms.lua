@@ -31,9 +31,7 @@ function create_groups()
   global.adminsgroup = game.permissions.get_group("Admins")
 end
 
-function set_blueprints_enabled(enabled, group)
-  if group ~= nil and group.valid then
-    group.set_allows_action(defines.input_action.blueprint, enabled)
+function set_blueprints_enabled(group, enabled)
     group.set_allows_action(defines.input_action.alt_select_blueprint_entities, enabled)
     group.set_allows_action(defines.input_action.cancel_new_blueprint, enabled)
     group.set_allows_action(defines.input_action.copy_opened_blueprint, enabled)
@@ -56,7 +54,6 @@ function set_blueprints_enabled(enabled, group)
     group.set_allows_action(defines.input_action.setup_single_blueprint_record, enabled)
     group.set_allows_action(defines.input_action.upgrade_opened_blueprint_by_item, enabled)
     group.set_allows_action(defines.input_action.upgrade_opened_blueprint_by_record, enabled)
-  end
 end
 
 --Disable some permissions for new players
