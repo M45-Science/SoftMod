@@ -96,7 +96,7 @@ script.on_nth_tick(
 
             if global.active_playtime[player.index] then
               --Compensate for game speed
-              global.active_playtime[player.index] = global.active_playtime[player.index] + (game.speed * 1800.0) --Same as loop time
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
             else
               --INIT
               global.active_playtime[player.index] = 0
