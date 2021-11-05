@@ -87,6 +87,8 @@ script.on_load(
             end
           end
 
+          create_groups()
+          
           if param and param.parameter then
             local pforce = game.forces["player"]
 
