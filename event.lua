@@ -341,14 +341,9 @@ script.on_event(
     defines.events.on_player_banned,
     defines.events.on_player_rotated_entity,
     defines.events.on_pre_player_mined_item,
-    defines.events.on_player_cursor_stack_changed,
-    --darkness
-    defines.events.on_chunk_charted,
-    defines.events.on_player_dropped_item,
     defines.events.on_built_entity,
-    defines.events.on_post_entity_died,
-    defines.events.on_robot_mined,
-    defines.events.on_sector_scanned
+    defines.events.on_robot_built_entity,
+    defines.events.on_robot_pre_mined
   },
   function(event)
     --If no event, or event is a tick
@@ -431,21 +426,16 @@ script.on_event(
       on_pre_player_mined_item(event)
     elseif event.name == defines.events.on_built_entity then
       on_built_entity(event)
+    elseif event.name == defines.events.on_robot_built_entity then
+      on_robot_built_entity(event)
+    elseif event.name == defines.events.on_robot_pre_mined then
+      on_robot_pre_mined(event)
     end
-
-    --darkness--
-    --chunk_charted
-    --player_dropped_item
-    --built_entity
-    --entity_died
 
     --To-Do--
     --player_joined_game
     --on_gui_click
     todo_event_handler(event)
-
-    --External module event send
-    --dark_event_handler(event)
   end
 )
 
