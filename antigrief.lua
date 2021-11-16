@@ -7,24 +7,24 @@ function on_robot_built_entity(event)
     local entity = event.created_entity
     local name = "bot"
 
-    if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
-      if created_entity.name == "entity-ghost" then
+    if entity.name ~= "tile-ghost" and entity.name ~= "tile" then
+      if entity.name == "entity-ghost" then
         --Log item placement
         console_print(
           name ..
             " +ghost " ..
-              created_entity.ghost_name ..
+            entity.ghost_name ..
                 " [gps=" ..
-                  created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction
+                entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction
         )
       else
         --Log item placement
         console_print(
           name ..
             " +" ..
-              created_entity.name ..
+            entity.name ..
                 " [gps=" ..
-                  created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction
+                entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction
         )
       end
     end
@@ -107,9 +107,27 @@ function on_pre_player_mined_item(event)
 
     --Check player, surface and object are valid
     if obj and obj.valid then
-      console_print(
-        name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
-      )
+      if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+        if obj.name == "entity-ghost" then
+          --Log item placement
+          console_print(
+            name ..
+              " -ghost " ..
+              obj.ghost_name ..
+                  " [gps=" ..
+                  obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
+          )
+        else
+          --Log item placement
+          console_print(
+            name ..
+              " -" ..
+              obj.name ..
+                  " [gps=" ..
+                  obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
+          )
+        end
+      end
     else
       console_print("pre_player_mined_item: invalid obj")
     end
@@ -124,7 +142,7 @@ function on_robot_pre_mined(event)
     --Check player, surface and object are valid
     if obj and obj.valid then
       console_print(
-        "robot -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
+        "bot -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
       )
     else
       console_print("on_robot_pre_mined: invalid obj")
