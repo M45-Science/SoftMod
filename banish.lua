@@ -118,7 +118,6 @@ function update_banished_votes()
         global.send_to_surface = {}
       end
 
-      
       table.insert(global.send_to_surface, {victim = victim, surface = "nauvis", position = get_default_spawn()})
     elseif is_banished(victim) == true and prevstate == false then
       --Was not banished, but is now.

@@ -166,7 +166,8 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             }
             todo_submenu_body.add {
               type = "label",
-              caption = "[font=default-large-bold]Notes:   [/font]" .. "Owner: " .. target.owner .. ",  Last Edit: " .. target.last_user
+              caption = "[font=default-large-bold]Notes:   [/font]" ..
+                "Owner: " .. target.owner .. ",  Last Edit: " .. target.last_user
             }
 
             local notes_textbox =
@@ -196,7 +197,10 @@ local function make_m45_todo_submenu(player, i, edit_mode)
               local whoedit = ""
               local c = 0
               for _, victim in pairs(game.players) do
-                if victim.name ~= player.name and global.todo_player_editing_id[victim.index] == global.todo_player_editing_id[player.index] then
+                if
+                  victim.name ~= player.name and
+                    global.todo_player_editing_id[victim.index] == global.todo_player_editing_id[player.index]
+                 then
                   c = c + 1
                   if c > 1 then
                     whoedit = whoedit .. ", "
@@ -208,7 +212,8 @@ local function make_m45_todo_submenu(player, i, edit_mode)
                 local edit_note =
                   todo_save_frame.add {
                   type = "label",
-                  caption = "[font=default-large-bold][color=red]CURRENTLY BEING EDITED BY: " .. whoedit .. "[/color][/font]"
+                  caption = "[font=default-large-bold][color=red]CURRENTLY BEING EDITED BY: " ..
+                    whoedit .. "[/color][/font]"
                 }
                 local lock_spacer =
                   todo_save_frame.add {
@@ -464,7 +469,7 @@ function make_m45_todo_window(player)
             }
             local hidden = ""
             if target.hidden then
-              local grayed = { r = 0.66, g = 0.66, b = 0.66 }
+              local grayed = {r = 0.66, g = 0.66, b = 0.66}
               id_label.style.font_color = grayed
               pri_label.style.font_color = grayed
               name_label.style.font_color = grayed
@@ -616,7 +621,18 @@ local function todo_create_myglobals()
   --For layout testing
   if not global.todo_list then
     global.todo_list = {
-      {priority = 9001, subject = "Main Objective", text = "Destroy All Trees", time = 0, last_user = "Nemaster", can_edit = false, owner = "Nemaster", gps = {x = 0, y = 0}, id = 0, hidden = false}
+      {
+        priority = 9001,
+        subject = "Main Objective",
+        text = "Destroy All Trees",
+        time = 0,
+        last_user = "Nemaster",
+        can_edit = false,
+        owner = "Nemaster",
+        gps = {x = 0, y = 0},
+        id = 0,
+        hidden = false
+      }
     }
   end
 
@@ -784,7 +800,20 @@ local function on_gui_click(event)
         end
 
         global.todo_list_id = global.todo_list_id + 1
-        table.insert(global.todo_list, {priority = 0, subject = "new", text = loremipsum, time = game.tick, owner = player.name, last_user = player.name, can_edit = true, id = global.todo_list_id, hidden = false})
+        table.insert(
+          global.todo_list,
+          {
+            priority = 0,
+            subject = "new",
+            text = loremipsum,
+            time = game.tick,
+            owner = player.name,
+            last_user = player.name,
+            can_edit = true,
+            id = global.todo_list_id,
+            hidden = false
+          }
+        )
 
         update_vis_todo_count()
         update_todo_windows()
@@ -795,15 +824,30 @@ local function on_gui_click(event)
         local i = todo_id_to_index(id) --Find by ID, index can change
         if i > 0 then --If we found the note
           --Sanity check
-          if global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and player.gui.screen.m45_todo_submenu and player.gui.screen.m45_todo_submenu.todo_body and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox.text then
+          if
+            global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and
+              player.gui.screen.m45_todo_submenu and
+              player.gui.screen.m45_todo_submenu.todo_body and
+              player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and
+              player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox.text
+           then
             if not global.todo_throttle then
               global.todo_throttle = {}
             end
             if global.todo_throttle[player.index] then
               if game.tick - global.todo_throttle[player.index] < (60 * 5) then --10 seconds
-                smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                smart_print(
+                  player,
+                  "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]"
+                )
+                smart_print(
+                  player,
+                  "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]"
+                )
+                smart_print(
+                  player,
+                  "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]"
+                )
                 --global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
                 return
               end
@@ -841,7 +885,13 @@ local function on_gui_click(event)
         local i = todo_id_to_index(id) --Find by ID, index can change
         if i > 0 then --If we found the note
           --Sanity check
-          if global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and player.gui.screen.m45_todo_submenu and player.gui.screen.m45_todo_submenu.todo_body and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox.text then
+          if
+            global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and
+              player.gui.screen.m45_todo_submenu and
+              player.gui.screen.m45_todo_submenu.todo_body and
+              player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and
+              player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox.text
+           then
             --Store current state
             local prev_priority = global.todo_list[i].priority
             local prev_subject = global.todo_list[i].subject
@@ -861,9 +911,18 @@ local function on_gui_click(event)
               end
               if global.todo_throttle[player.index] then
                 if game.tick - global.todo_throttle[player.index] < (60 * 5) then --5 seconds
-                  smart_print(player, "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  smart_print(player, "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
-                  smart_print(player, "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]")
+                  smart_print(
+                    player,
+                    "[color=red](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]"
+                  )
+                  smart_print(
+                    player,
+                    "[color=cyan](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]"
+                  )
+                  smart_print(
+                    player,
+                    "[color=white](SYSTEM) CHANGES NOT SAVED, PLEASE WAIT 5 SECONDS BEFORE TRYING TO SAVE AGAIN.[/color]"
+                  )
                   --global.todo_throttle[player.index] = game.tick --Reset timer so you can't spam.
                   return
                 end
@@ -877,7 +936,16 @@ local function on_gui_click(event)
                 global.todo_list[i].history = {}
               end
               --Save previous version
-              table.insert(global.todo_list[i].history, {priority = global.todo_list[i].priority, subject = global.todo_list[i].subject, text = global.todo_list[i].text, last_user = global.todo_list[i].last_user, time = global.todo_list[i].time})
+              table.insert(
+                global.todo_list[i].history,
+                {
+                  priority = global.todo_list[i].priority,
+                  subject = global.todo_list[i].subject,
+                  text = global.todo_list[i].text,
+                  last_user = global.todo_list[i].last_user,
+                  time = global.todo_list[i].time
+                }
+              )
 
               --Update & save
               global.todo_list[i].priority = priority

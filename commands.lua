@@ -88,20 +88,20 @@ script.on_load(
           end
 
           create_groups()
-          
+
           if param and param.parameter then
             local pforce = game.forces["player"]
 
             if pforce then
               if string.lower(param.parameter) == "off" then
-                set_blueprints_enabled(global.defaultgroup,false)
-                set_blueprints_enabled(global.membersgroup,false)
-                set_blueprints_enabled(global.regularsgroup,false)
+                set_blueprints_enabled(global.defaultgroup, false)
+                set_blueprints_enabled(global.membersgroup, false)
+                set_blueprints_enabled(global.regularsgroup, false)
                 smart_print(player, "blueprints disabled...")
               elseif string.lower(param.parameter) == "on" then
-                set_blueprints_enabled(global.defaultgroup,true)
-                set_blueprints_enabled(global.membersgroup,true)
-                set_blueprints_enabled(global.regularsgroup,true)
+                set_blueprints_enabled(global.defaultgroup, true)
+                set_blueprints_enabled(global.membersgroup, true)
+                set_blueprints_enabled(global.regularsgroup, true)
                 smart_print(player, "blueprints enabled...")
               end
             end
@@ -767,7 +767,7 @@ script.on_load(
           show_players(victim)
         end
       )
-      
+
       --Game speed, without walk speed mod
       commands.add_command(
         "aspeed",

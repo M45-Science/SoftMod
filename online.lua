@@ -691,7 +691,6 @@ function make_m45_online_window(player)
               utag = "ADMINS"
             end
 
-            
             if is_nitro(victim) then
               utag = utag .. " (NITRO)"
             end

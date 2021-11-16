@@ -153,7 +153,6 @@ function is_sameobj(obj_a, obj_b)
   return false
 end
 
-
 --Check if player is flagged patreon
 function is_patreon(victim)
   if victim and victim.valid then
