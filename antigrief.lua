@@ -2,10 +2,10 @@
 --carlotto81@gmail.com
 require "utility"
 
-function findobj(name, position, ghost)
+function findobj(name, position)
   for pos, obj in pairs(global.objmap) do
-    if obj.name == name and obj.position == position and obj.ghost == ghost then
-      return obj
+    if obj.oname == name and obj.pos.x == position.x and obj.pos.y == position.y then
+      return pos
     end
   end
 
@@ -28,7 +28,6 @@ function on_robot_built_entity(event)
                 " [gps=" ..
                 entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction
         )
-        table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=true})
       else
         --Log item placement
         console_print(
@@ -38,7 +37,7 @@ function on_robot_built_entity(event)
                 " [gps=" ..
                 entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction
         )
-        table.insert(global.objmap, {name=name, obj=entity.name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
+        table.insert(global.objmap, {name=name, oname=entity.name, pos=entity.position, dir=entity.direction, tick=game.tick})
       end
     end
   else
@@ -89,7 +88,7 @@ function on_built_entity(event)
                   " [gps=" ..
                     created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction
           )
-          table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=true})
+          table.insert(global.objmap, {name=name, oname=created_entity.ghost_name, pos=created_entity.position, dir=created_entity.direction, tick=game.tick, ghost=true})
         else
           --Log item placement
           console_print(
@@ -99,7 +98,7 @@ function on_built_entity(event)
                   " [gps=" ..
                     created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction
           )
-          table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
+          table.insert(global.objmap, {name=name, oname=created_entity.name, pos=created_entity.position, dir=created_entity.direction, tick=game.tick, ghost=false})
         end
       end
     end
@@ -132,7 +131,7 @@ function on_pre_player_mined_item(event)
                   " [gps=" ..
                   obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
           )
-          local opos = findobj(obj.ghost_name, obj.position, obj.direction, true)
+          local opos = findobj(obj.ghost_name, obj.position)
           if opos then
             table.remove(global.objmap, opos)
             console_print("Removed " .. opos .. " from objmap")
@@ -146,7 +145,11 @@ function on_pre_player_mined_item(event)
                   " [gps=" ..
                   obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
           )
-          table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
+          local opos = findobj(obj.name, obj.position)
+          if opos then
+            table.remove(global.objmap, opos)
+            console_print("Removed " .. opos .. " from objmap")
+          end
         end
       end
     else
@@ -165,7 +168,11 @@ function on_robot_pre_mined(event)
       console_print(
         "bot -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
       )
-      table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
+      local opos = findobj(obj.name, obj.position)
+          if opos then
+            table.remove(global.objmap, opos)
+            console_print("Removed " .. opos .. " from objmap")
+          end
     else
       console_print("on_robot_pre_mined: invalid obj")
     end
@@ -192,7 +199,6 @@ function on_player_rotated_entity(event)
       console_print(
         name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
       )
-      table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=true})
     end
   end
 end
