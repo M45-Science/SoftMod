@@ -4,6 +4,10 @@
 --Create globals, if needed
 function create_myglobals()
   global.svers = "574-1162021-0201p-exp"
+  
+  if not global.objmap then
+    global.objmap = {}
+  end
 
   if not global.restrict == nil then
     global.restrict = true
