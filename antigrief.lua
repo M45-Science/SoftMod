@@ -2,6 +2,17 @@
 --carlotto81@gmail.com
 require "utility"
 
+function findobj(name, position, ghost)
+  for pos, obj in pairs(global.objmap) do
+    if obj.name == name and obj.position == position and obj.ghost == ghost then
+      return obj
+    end
+  end
+
+  console_print("Could not find object " .. name .. " at " .. position.x .. "," .. position.y)
+  return nil
+end
+
 function on_robot_built_entity(event)
   if event and event.created_entity then
     local entity = event.created_entity
@@ -11,12 +22,13 @@ function on_robot_built_entity(event)
       if entity.name == "entity-ghost" then
         --Log item placement
         console_print(
-          name ..
+          name .. 
             " +ghost " ..
             entity.ghost_name ..
                 " [gps=" ..
                 entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction
         )
+        table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=true})
       else
         --Log item placement
         console_print(
@@ -26,6 +38,7 @@ function on_robot_built_entity(event)
                 " [gps=" ..
                 entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction
         )
+        table.insert(global.objmap, {name=name, obj=entity.name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
       end
     end
   else
@@ -76,6 +89,7 @@ function on_built_entity(event)
                   " [gps=" ..
                     created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction
           )
+          table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=true})
         else
           --Log item placement
           console_print(
@@ -85,6 +99,7 @@ function on_built_entity(event)
                   " [gps=" ..
                     created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction
           )
+          table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
         end
       end
     end
@@ -109,7 +124,7 @@ function on_pre_player_mined_item(event)
     if obj and obj.valid then
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name == "entity-ghost" then
-          --Log item placement
+          --Log item removal
           console_print(
             name ..
               " -ghost " ..
@@ -117,8 +132,13 @@ function on_pre_player_mined_item(event)
                   " [gps=" ..
                   obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
           )
+          local opos = findobj(obj.ghost_name, obj.position, obj.direction, true)
+          if opos then
+            table.remove(global.objmap, opos)
+            console_print("Removed " .. opos .. " from objmap")
+          end
         else
-          --Log item placement
+          --Log item removal
           console_print(
             name ..
               " -" ..
@@ -126,6 +146,7 @@ function on_pre_player_mined_item(event)
                   " [gps=" ..
                   obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
           )
+          table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
         end
       end
     else
@@ -144,6 +165,7 @@ function on_robot_pre_mined(event)
       console_print(
         "bot -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
       )
+      table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=false})
     else
       console_print("on_robot_pre_mined: invalid obj")
     end
@@ -170,6 +192,7 @@ function on_player_rotated_entity(event)
       console_print(
         name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction
       )
+      table.insert(global.objmap, {name=name, obj=entity.ghost_name, pos=entity.position, dir=entity.direction, tick=game.tick, ghost=true})
     end
   end
 end
