@@ -286,7 +286,7 @@ function make_m45_online_submenu(player, target_name)
           local banish =
             banish_frame.add {
             type = "label",
-            caption = "[font=default-large-bold]Banish Player:[/font]",
+            caption = "[font=default-large-bold]Banish Player: (REASON REQUIRED BELOW)[/font]",
             name = "banish"
           }
           local banish_textbox =
@@ -787,6 +787,8 @@ function online_on_gui_click(event)
                 reason = string.gsub(reason, "\n", " ")
               end
               g_banish(player, victim, reason)
+            else
+              smart_print(player, "(SYSTEM) You must enter a reason!")
             end
             player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text = ""
           else
