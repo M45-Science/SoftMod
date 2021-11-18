@@ -28,7 +28,7 @@ function on_robot_built_entity(event)
 
           --Map data export
           local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = true}
-          game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+          game.write_file("mapdata.dat", game.table_to_json(olog), true, 0)
         end
       end
     else
@@ -66,7 +66,7 @@ function on_built_entity(event)
 
           --Map data export
           local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = false}
-          game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+          game.write_file("mapdata.dat", game.table_to_json(olog), true, 0)
 
         --Save to db
         --table.insert(global.objmap, olog)
@@ -98,7 +98,7 @@ function on_pre_player_mined_item(event)
 
           --Map data export
           local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
-          game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+          game.write_file("mapdata.dat", game.table_to_json(olog), true, 0)
         end
       end
     else
@@ -126,7 +126,7 @@ function on_robot_pre_mined(event)
 
             --Map data export
             local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
-            game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+            game.write_file("mapdata.dat", game.table_to_json(olog), true, 0)
           end
         end
       else
@@ -159,7 +159,7 @@ function on_player_rotated_entity(event)
 
             --Map data export
             local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = true, mined = false, robot = false}
-            game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+            game.write_file("mapdata.dat", game.table_to_json(olog), true, 0)
           end
         end
       else
