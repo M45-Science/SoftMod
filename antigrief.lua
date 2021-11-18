@@ -2,14 +2,14 @@
 --carlotto81@gmail.com
 require "utility"
 
-function findobj(name, position)
+function findobj(name, position, surface)
   for pos, obj in pairs(global.objmap) do
-    if obj.object_name == name and obj.position.x == position.x and obj.position.y == position.y then
+    if obj.name == name and obj.position == position and obj.surface == surface then
       return pos
     end
   end
 
-  console_print("Could not find object " .. name .. " at " .. position.x .. "," .. position.y)
+  --console_print("error: findobj: obj not found: " .. name .. " [gps=" .. position.x .. "," .. position.y .. "]")
   return nil
 end
 
@@ -17,26 +17,22 @@ function on_robot_built_entity(event)
   local obj = event.created_entity
   local bot = event.robot
 
-  if obj and obj.valid and bot and bot.valid then
-    if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
-      if obj.name == "entity-ghost" then
-        --Log item placement
-        --console_print(name .. " +ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-      else
-        --Log item placement
-        console_print(bot.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction, ", bot" )
-        table.insert(
-            global.objmap,
-            {
-              creator = bot.name,
-              object_name = obj.name,
-              position = obj.position,
-              direction = obj.direction,
-              tick = game.tick,
-              was_bot = "true"
-            }
-          )
+  if obj and obj.valid then
+    if bot and bot.valid then
+      if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+        if obj.name == "entity-ghost" then
+          --Save to db
+          --table.insert(global.objmap, olog)
+          --log
+          --console_print(bot.name.." +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."]")
+
+          --Map data export
+          local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = true}
+          game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+        end
       end
+    else
+      console_print("on_robot_built_entity: invalid bot")
     end
   else
     console_print("on_robot_built_entity: invalid obj")
@@ -64,23 +60,16 @@ function on_built_entity(event)
       end
 
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
-        if obj.name == "entity-ghost" then
-          --Log item placement
-          console_print(player.name .. " +ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-        else
-          --Log item placement
-          console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-          table.insert(
-            global.objmap,
-            {
-              creator = player.name,
-              object_name = obj.name,
-              position = obj.position,
-              direction = obj.direction,
-              tick = game.tick,
-              was_bot = false
-            }
-          )
+        if obj.name ~= "entity-ghost" then
+          --log
+          console_print(player.name.." +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."]")
+
+          --Map data export
+          local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = false}
+          game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+
+        --Save to db
+        --table.insert(global.objmap, olog)
         end
       end
     else
@@ -100,17 +89,16 @@ function on_pre_player_mined_item(event)
 
     if obj and obj.valid and player and player.valid then
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
-        if obj.name == "entity-ghost" then
-          --Log item removal
-          console_print(player.name .. " -ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-        else
-          --Log item removal
-          console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-          local opos = findobj(obj.name, obj.position)
-          if opos then
-            table.remove(global.objmap, opos)
-          --console_print("Removed " .. opos .. " from objmap")
-          end
+        if obj.name ~= "entity-ghost" then
+          --Remove from db
+          --deleteobj(obj.name, obj.position, obj.surface)
+
+          --log
+          console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+
+          --Map data export
+          local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
+          game.write_file("mapdata.dat", table_to_json(olog), true, 0)
         end
       end
     else
@@ -123,23 +111,30 @@ function on_robot_pre_mined(event)
   --Sanity check
   if event and event.entity then
     local obj = event.entity
+    local bot = event.robot
 
     --Check player, surface and object are valid
     if obj and obj.valid then
-      if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
-        if obj.name == "entity-ghost" then
-          --console_print("bot -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-        else
-          local opos = findobj(obj.name, obj.position)
-          if opos then
-            table.remove(global.objmap, opos)
-          --console_print("Removed " .. opos .. " from objmap")
+      if bot and bot.valid then
+        if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+          if obj.name ~= "entity-ghost" then
+            --Remove from db
+            --deleteobj(obj.name, obj.position, obj.surface)
+
+            --log
+            --console_print("bot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+
+            --Map data export
+            local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
+            game.write_file("mapdata.dat", table_to_json(olog), true, 0)
           end
         end
+      else
+        console_print("on_robot_pre_mined: invalid bot")
       end
-    else
-      console_print("on_robot_pre_mined: invalid obj")
     end
+  else
+    console_print("on_robot_pre_mined: invalid obj")
   end
 end
 
@@ -149,20 +144,29 @@ function on_player_rotated_entity(event)
   if event and event.player_index and event.previous_direction then
     local player = game.players[event.player_index]
     local obj = event.entity
-    local prev_dir = event.previous_direction
-
-    local name = "unknown"
-
-    if player and player.valid then
-      name = player.name
-    end
-
-    --TODO: UPDATE ROTATE IN MEMORY
 
     --If player and object are valid
-    if obj and obj.valid then
-      --Don't let new players rotate other players items, unrotate and untouch the item.
-      console_print(name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
+    if player and player.valid then
+      if obj and obj.valid then
+        if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+          if obj.name ~= "entity-ghost" then
+            --update in storage
+            --local pos = findobj(obj.name, obj.position, obj.surface)
+            --global.objmap[pos].direction = obj.direction
+
+            --log
+            console_print(player.name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+
+            --Map data export
+            local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = true, mined = false, robot = false}
+            game.write_file("mapdata.dat", table_to_json(olog), true, 0)
+          end
+        end
+      else
+        console_print("on_player_rotated_entity: invalid obj")
+      end
+    else
+      console_print("on_player_rotated_entity: invalid player")
     end
   end
 end
