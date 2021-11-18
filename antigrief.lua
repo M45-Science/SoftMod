@@ -14,11 +14,10 @@ function findobj(name, position)
 end
 
 function on_robot_built_entity(event)
-  if event and event.created_entity then
-    local entity = event.created_entity
-    local name = "bot"
+  local entity = event.created_entity
+  local name = "bot"
 
-    if obj and obj.valid then
+  if obj and obj.valid then
     if entity.name ~= "tile-ghost" and entity.name ~= "tile" then
       if entity.name == "entity-ghost" then
         --Log item placement
@@ -40,10 +39,8 @@ function on_built_entity(event)
     local player = game.players[event.player_index]
     local created_entity = event.created_entity
 
-
     if player and player.valid then
-    if created_entity and created_entity.valid then
-
+      if created_entity and created_entity.valid then
         if not global.last_speaker_warning then
           global.last_speaker_warning = 0
         end
@@ -57,23 +54,24 @@ function on_built_entity(event)
           end
         end
 
-      if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
-        if created_entity.name == "entity-ghost" then
-          --Log item placement
-          console_print(player.name .. " +ghost " .. created_entity.ghost_name .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
-        else
-          --Log item placement
-          console_print(player.name .. " +" .. created_entity.name .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
-          table.insert(
-            global.objmap,
-            {
-              name = player.name,
-              oname = created_entity.name,
-              pos = created_entity.position,
-              dir = created_entity.direction,
-              tick = game.tick
-            }
-          )
+        if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
+          if created_entity.name == "entity-ghost" then
+            --Log item placement
+            console_print(player.name .. " +ghost " .. created_entity.ghost_name .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
+          else
+            --Log item placement
+            console_print(player.name .. " +" .. created_entity.name .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
+            table.insert(
+              global.objmap,
+              {
+                name = player.name,
+                oname = created_entity.name,
+                pos = created_entity.position,
+                dir = created_entity.direction,
+                tick = game.tick
+              }
+            )
+          end
         end
       end
     end
@@ -130,7 +128,7 @@ function on_robot_pre_mined(event)
           local opos = findobj(obj.name, obj.position)
           if opos then
             table.remove(global.objmap, opos)
-            --console_print("Removed " .. opos .. " from objmap")
+          --console_print("Removed " .. opos .. " from objmap")
           end
         end
       end
