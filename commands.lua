@@ -35,6 +35,22 @@ script.on_load(
         end
       )
 
+      commands.add_command(
+        "mapreplay",
+        "",
+        function(param)
+          --Console only
+          if param and param.player_index then
+            smart_print(player, "This command is for console use only.")
+          --return
+          end
+
+          for _, obj in pairs(global.objmap) do
+            console_print(obj.name .. " +" .. obj.oname .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
+          end
+        end
+      )
+
       --Enable / disable friendly fire
       commands.add_command(
         "friendlyfire",
@@ -639,10 +655,7 @@ script.on_load(
           --Set new spawn spot
           if pforce and psurface and new_pos_x and new_pos_y then
             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-            smart_print(
-              victim,
-              string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y))
-            )
+            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
             smart_print(victim, string.format("Force: %s", pforce.name))
 
             --Set logo to be redrawn
@@ -850,10 +863,7 @@ script.on_load(
               if pforce then
                 --Calculate walk speed for UPS
                 pforce.character_running_speed_modifier = ((1.0 / value) - 1.0)
-                smart_print(
-                  player,
-                  "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier
-                )
+                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier)
 
                 --Don't show message if run via console (ChatWire)
                 if (player) then

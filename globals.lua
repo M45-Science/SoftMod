@@ -4,7 +4,7 @@
 --Create globals, if needed
 function create_myglobals()
   global.svers = "574-1162021-0201p-exp"
-  
+
   if not global.objmap then
     global.objmap = {}
   end

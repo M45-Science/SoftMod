@@ -65,15 +65,7 @@ function show_players(victim)
   if global.player_list then
     for i, target in pairs(global.player_list) do
       if target and target.victim and target.victim.connected then
-        buf =
-          buf ..
-          string.format(
-            "~%16s: - Score: %d - Online: %dm - (%s)\n",
-            target.victim.name,
-            math.floor(target.score / 60 / 60),
-            math.floor(target.time / 60 / 60),
-            target.type
-          )
+        buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
       end
     end
   end
@@ -193,10 +185,7 @@ function is_regular(victim)
   if victim and victim.valid and not victim.admin then
     --If in group
     if victim.permission_group and global.regularsgroup then
-      if
-        victim.permission_group.name == global.regularsgroup.name or
-          victim.permission_group.name == global.regularsgroup.name .. "_satellite"
-       then
+      if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name == global.regularsgroup.name .. "_satellite" then
         return true
       end
     end
@@ -210,10 +199,7 @@ function is_member(victim)
   if victim and victim.valid and not victim.admin then
     --If in group
     if victim.permission_group and global.membersgroup then
-      if
-        victim.permission_group.name == global.membersgroup.name or
-          victim.permission_group.name == global.membersgroup.name .. "_satellite"
-       then
+      if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name == global.membersgroup.name .. "_satellite" then
         return true
       end
     end
@@ -240,11 +226,7 @@ function is_banished(victim)
     if victim.admin then
       return false
     elseif global.thebanished and global.thebanished[victim.index] then
-      if
-        (is_new(victim) and global.thebanished[victim.index] >= 1) or
-          (is_member(victim) and global.thebanished[victim.index] >= 2) or
-          (is_regular(victim) and global.thebanished[victim.index] >= 2)
-       then
+      if (is_new(victim) and global.thebanished[victim.index] >= 1) or (is_member(victim) and global.thebanished[victim.index] >= 2) or (is_regular(victim) and global.thebanished[victim.index] >= 2) then
         return true
       end
     end

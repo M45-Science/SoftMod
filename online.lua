@@ -744,12 +744,7 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "send_whisper" then
         ----------------------------------------------------------------
-        if
-          player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
-            player.gui.screen.m45_online_submenu.main and
-            player.gui.screen.m45_online_submenu.main.whisper_frame and
-            player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox
-         then
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.whisper_frame and player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
           if victim and victim.valid then
             local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
             if text and string.len(text) > 0 then
@@ -773,12 +768,7 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "banish_player" then
         ----------------------------------------------------------------
-        if
-          player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
-            player.gui.screen.m45_online_submenu.main and
-            player.gui.screen.m45_online_submenu.main.banish_frame and
-            player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox
-         then
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.banish_frame and player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
           if victim and victim.valid then
             local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
             if reason and string.len(reason) > 0 then
@@ -799,12 +789,7 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "report_player" then
         ----------------------------------------------------------------
-        if
-          player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
-            player.gui.screen.m45_online_submenu.main and
-            player.gui.screen.m45_online_submenu.main.report_frame and
-            player.gui.screen.m45_online_submenu.main.report_frame.report_textbox
-         then
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.report_frame and player.gui.screen.m45_online_submenu.main.report_frame.report_textbox then
           if victim and victim.valid then
             local reason = player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text
             if reason and string.len(reason) > 0 then

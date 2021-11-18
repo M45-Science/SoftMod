@@ -35,10 +35,7 @@ function g_report(player, report)
     --Limit and list number of reports
     if global.reportlimit[player.index] <= 5 then
       print("[REPORT] " .. player.name .. " " .. report)
-      smart_print(
-        player,
-        "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports."
-      )
+      smart_print(player, "Report sent! You have now used " .. global.reportlimit[player.index] .. " of your 5 available reports.")
     else
       smart_print("You are not allowed to send any more reports.")
     end
@@ -204,10 +201,7 @@ function g_banish(player, victim, reason)
                     if vote.voter == player and vote.victim == victim then
                       smart_print(player, "You already voted against them!")
                       smart_print(player, "/unbanish <player> to withdraw your vote.")
-                      smart_print(
-                        player,
-                        "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]"
-                      )
+                      smart_print(player, "[color=red](WARNING) If you withdraw a vote, you CAN NOT reintroduce it.[/color]")
                       return
                     end
                   end
@@ -278,11 +272,7 @@ function send_to_surface(event)
         --Check list
         for i, item in pairs(global.send_to_surface) do
           --Check if item is valid
-          if
-            item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and
-              item.position and
-              item.surface
-           then
+          if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and item.position and item.surface then
             --Check if names match
             if item.victim.name == player.name then
               --If surface is valid
@@ -428,10 +418,7 @@ function add_banish_commands()
                 smart_print(player, "Couldn't find a player by that name.")
               end
             else
-              smart_print(
-                player,
-                "Who do you want to overrule votes against? <player> or <clear> (clears/unbanishes all)"
-              )
+              smart_print(player, "Who do you want to overrule votes against? <player> or <clear> (clears/unbanishes all)")
             end
           else
             smart_print(player, "There are no votes to overrule.")
@@ -465,12 +452,7 @@ function add_banish_commands()
                 notes = "(OVERRULED) "
               end
               pcount = pcount + 1
-              smart_print(
-                player,
-                notes ..
-                  "plaintiff: " ..
-                    vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason
-              )
+              smart_print(player, notes .. "plaintiff: " .. vote.voter.name .. ", defendant: " .. vote.victim.name .. ", complaint:\n" .. vote.reason)
             end
           end
 
@@ -481,10 +463,7 @@ function add_banish_commands()
           if global.thebanished then
             for _, victim in pairs(game.players) do
               if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
-                smart_print(
-                  player,
-                  victim.name .. " has had " .. global.thebanished[victim.index] .. " complaints against them."
-                )
+                smart_print(player, victim.name .. " has had " .. global.thebanished[victim.index] .. " complaints against them.")
                 pcount = pcount + 1
               end
             end
