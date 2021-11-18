@@ -4,7 +4,7 @@ require "utility"
 
 function findobj(name, position)
   for pos, obj in pairs(global.objmap) do
-    if obj.oname == name and obj.pos.x == position.x and obj.pos.y == position.y then
+    if obj.object_name == name and obj.position.x == position.x and obj.position.y == position.y then
       return pos
     end
   end
