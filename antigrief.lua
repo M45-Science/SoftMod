@@ -14,18 +14,18 @@ function findobj(name, position)
 end
 
 function on_robot_built_entity(event)
-  local entity = event.created_entity
+  local obj = event.created_entity
   local name = "bot"
 
   if obj and obj.valid then
-    if entity.name ~= "tile-ghost" and entity.name ~= "tile" then
-      if entity.name == "entity-ghost" then
+    if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+      if obj.name == "entity-ghost" then
         --Log item placement
-        --console_print(name .. " +ghost " .. entity.ghost_name .. " [gps=" .. entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction)
+        --console_print(name .. " +ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
       else
         --Log item placement
-        console_print(name .. " +" .. entity.name .. " [gps=" .. entity.position.x .. "," .. entity.position.y .. "]," .. entity.direction)
-        table.insert(global.objmap, {name = name, oname = entity.name, pos = entity.position, dir = entity.direction, tick = game.tick})
+        console_print(name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
+        table.insert(global.objmap, {name = name, oname = obj.name, pos = obj.position, dir = obj.direction, tick = game.tick, bot = true})
       end
     end
   else
@@ -35,76 +35,71 @@ end
 
 --Build stuff -- activity
 function on_built_entity(event)
-  if event and event.created_entity then
-    local player = game.players[event.player_index]
-    local created_entity = event.created_entity
+  local player = game.players[event.player_index]
+  local obj = event.created_entity
 
-    if player and player.valid then
-      if created_entity and created_entity.valid then
-        if not global.last_speaker_warning then
-          global.last_speaker_warning = 0
-        end
+  if player and player.valid then
+    if obj and obj.valid then
+      if not global.last_speaker_warning then
+        global.last_speaker_warning = 0
+      end
 
-        if created_entity.name == "programmable-speaker" or (created_entity.name == "entity-ghost" and created_entity.ghost_name == "programmable-speaker") then
-          if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
-            if player.admin == false then --Don't bother with admins
-              gsysmsg(player.name .. " placed a speaker at [gps=" .. math.floor(created_entity.position.x) .. "," .. math.floor(created_entity.position.y) .. "]")
-              global.last_speaker_warning = game.tick
-            end
-          end
-        end
-
-        if created_entity.name ~= "tile-ghost" and created_entity.name ~= "tile" then
-          if created_entity.name == "entity-ghost" then
-            --Log item placement
-            console_print(player.name .. " +ghost " .. created_entity.ghost_name .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
-          else
-            --Log item placement
-            console_print(player.name .. " +" .. created_entity.name .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
-            table.insert(
-              global.objmap,
-              {
-                name = player.name,
-                oname = created_entity.name,
-                pos = created_entity.position,
-                dir = created_entity.direction,
-                tick = game.tick
-              }
-            )
+      if obj.name == "programmable-speaker" or (obj.name == "entity-ghost" and obj.ghost_name == "programmable-speaker") then
+        if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 30) then
+          if player.admin == false then --Don't bother with admins
+            gsysmsg(player.name .. " placed a speaker at [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+            global.last_speaker_warning = game.tick
           end
         end
       end
+
+      if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+        if obj.name == "entity-ghost" then
+          --Log item placement
+          console_print(player.name .. " +ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
+        else
+          --Log item placement
+          console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
+          table.insert(
+            global.objmap,
+            {
+              name = player.name,
+              oname = obj.name,
+              pos = obj.position,
+              dir = obj.direction,
+              tick = game.tick,
+              bot = false
+            }
+          )
+        end
+      end
+    else
+      console_print("on_built_entity: invalid obj")
     end
   else
-    console_print("on_built_entity: invalid obj")
+    console_print("on_built_entity: invalid player")
   end
 end
 
 --Pre-Mined item
 function on_pre_player_mined_item(event)
   --Sanity check
-  if event and event.entity then
+  if event and event.entity and event.player_index then
     local player = game.players[event.player_index]
     local obj = event.entity
 
-    local name = "unknown"
-    if player and player.valid then
-      name = player.name
-    end
-
-    --Check player, surface and object are valid
-    if obj and obj.valid then
+    if obj and obj.valid and player and player.valid then
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name == "entity-ghost" then
           --Log item removal
-          console_print(name .. " -ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
+          console_print(player.name .. " -ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
         else
           --Log item removal
-          console_print(name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
+          console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
           local opos = findobj(obj.name, obj.position)
           if opos then
             table.remove(global.objmap, opos)
-            console_print("Removed " .. opos .. " from objmap")
+          --console_print("Removed " .. opos .. " from objmap")
           end
         end
       end
@@ -151,6 +146,8 @@ function on_player_rotated_entity(event)
     if player and player.valid then
       name = player.name
     end
+
+    --TODO: UPDATE ROTATE IN MEMORY
 
     --If player and object are valid
     if obj and obj.valid then

@@ -46,7 +46,7 @@ script.on_load(
           end
 
           for _, obj in pairs(global.objmap) do
-            console_print(obj.name .. " +" .. obj.oname .. " [gps=" .. created_entity.position.x .. "," .. created_entity.position.y .. "]," .. created_entity.direction)
+            console_print(obj.name .. " +" .. obj.oname .. " [gps=" .. obj.pos.x .. "," .. obj.pos.y .. "]," .. obj.direction)
           end
         end
       )
