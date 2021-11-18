@@ -49,7 +49,8 @@ function on_robot_built_entity(event)
           --console_print(bot.name.." +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."]")
 
           --Map data export
-          --local olog = {tick = game.tick, creator = bot.name, name = obj.name, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = true}
+          --local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = true}
+          --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
 
           local str = math.floor(game.tick/3600) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "0," .. "1\n"
           game.write_file("mapdata.dat", str, true, 0)
@@ -93,7 +94,9 @@ function on_built_entity(event)
           console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
           --Map data export
-          --local olog = {tick = game.tick, creator = player.name, name = obj.name, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = false}
+          --local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = false}
+          --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+
           local str = math.floor(game.tick/3600) .. ","..player.name.."," .. obj.name .. ",".. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "0," .. "0\n"
           game.write_file("mapdata.dat", str, true, 0)
         else
@@ -133,7 +136,9 @@ function on_pre_player_mined_item(event)
           console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
           --Map data export
-          --local olog = {tick = game.tick, creator = player.name, name = obj.name, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
+          --local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
+          --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+          
           local str = math.floor(game.tick/3600) .. "," .. player.name .. "," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "0\n"
           game.write_file("mapdata.dat", str, true, 0)
         else
@@ -164,7 +169,9 @@ function on_robot_pre_mined(event)
             --console_print("bot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
             --Map data export
-            --local olog = {tick = game.tick, creator = bot.name, name = obj.name, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
+            --local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
+            --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+
             local str = math.floor(game.tick/3600) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "1\n"
             game.write_file("mapdata.dat", str, true, 0)
           else
@@ -201,6 +208,8 @@ function on_player_rotated_entity(event)
 
             --Map data export
             --local olog = {tick = game.tick, creator = player.name, name = obj.name, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = true, mined = false, robot = false}
+            --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+
             local str = math.floor(game.tick/3600) .. "," .. player.name .. "," .. obj.name .. ",".. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "1," .. "0," .. "0\n"
             game.write_file("mapdata.dat", str, true, 0)
           else
