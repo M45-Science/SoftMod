@@ -15,17 +15,27 @@ end
 
 function on_robot_built_entity(event)
   local obj = event.created_entity
-  local name = "bot"
+  local bot = event.robot
 
-  if obj and obj.valid then
+  if obj and obj.valid and bot and bot.valid then
     if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
       if obj.name == "entity-ghost" then
         --Log item placement
         --console_print(name .. " +ghost " .. obj.ghost_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
       else
         --Log item placement
-        console_print(name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction)
-        table.insert(global.objmap, {name = name, oname = obj.name, pos = obj.position, dir = obj.direction, tick = game.tick, bot = true})
+        console_print(bot.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction, ", bot" )
+        table.insert(
+            global.objmap,
+            {
+              creator = bot.name,
+              object_name = obj.name,
+              position = obj.position,
+              direction = obj.direction,
+              tick = game.tick,
+              was_bot = "true"
+            }
+          )
       end
     end
   else
@@ -63,12 +73,12 @@ function on_built_entity(event)
           table.insert(
             global.objmap,
             {
-              name = player.name,
-              oname = obj.name,
-              pos = obj.position,
-              dir = obj.direction,
+              creator = player.name,
+              object_name = obj.name,
+              position = obj.position,
+              direction = obj.direction,
               tick = game.tick,
-              bot = false
+              was_bot = false
             }
           )
         end

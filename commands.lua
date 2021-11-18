@@ -45,9 +45,17 @@ script.on_load(
           --return
           end
 
+          console_print("Map replay started.")
+          local was_bot = ""
           for _, obj in pairs(global.objmap) do
-            console_print(obj.name .. " +" .. obj.oname .. " [gps=" .. obj.pos.x .. "," .. obj.pos.y .. "]," .. obj.dir)
+            if obj.was_bot then
+            was_bot = ", bot"
+          else
+            was_bot = ""
           end
+            console_print(obj.creator .. " +" .. obj.object_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction .. was_bot)
+          end
+          console_print("Map replay ended.")
         end
       )
 
