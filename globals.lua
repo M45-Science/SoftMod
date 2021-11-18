@@ -5,10 +5,16 @@
 function create_myglobals()
   global.svers = "575-11182021-0451p-exp"
 
+  if not global.levelstart then
+    global.levelstart = true
+    
+    --Overwrite logfile
+    game.write_file("mapdata.dat", "", false, 0)
+  end
+
   if not global.objmap then
     global.objmap = {}
   end
-
   if not global.restrict == nil then
     global.restrict = true
   end
