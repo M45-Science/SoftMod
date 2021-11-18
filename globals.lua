@@ -35,6 +35,9 @@ function create_myglobals()
   if not global.last_decon_warning then
     global.last_decon_warning = 1
   end
+  if not global.last_ghost_log then
+    global.last_decon_warning = 1
+  end
 
   if not global.corpselist then
     global.corpselist = {}

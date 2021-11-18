@@ -27,8 +27,10 @@ function on_robot_built_entity(event)
           --console_print(bot.name.." +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."]")
 
           --Map data export
-          local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = true}
-          game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+          --local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = true}
+
+          local str = game.tick .. ",," .. obj.name .. "," .. obj.type .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. obj.surface .. "," .. obj.force .. "," .. "0," .. "0," .. "1\n"
+          game.write_file("mapdata.dat", str, true, 0)
         else
           --console_print("bot +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."] ", obj.ghost_name)
         end
@@ -63,17 +65,25 @@ function on_built_entity(event)
 
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
+          --Save to db
+          --table.insert(global.objmap, olog)
           --log
-          console_print(player.name.." +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."]")
+          console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
           --Map data export
-          local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = false}
-          game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
-
-        --Save to db
-        --table.insert(global.objmap, olog)
+          --local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = false, robot = false}
+          local str = game.tick .. ","..player.name.."," .. obj.name .. "," .. obj.type .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. obj.surface .. "," .. obj.force .. "," .. "0," .. "0," .. "0\n"
+          game.write_file("mapdata.dat", str, true, 0)
         else
-          console_print(player.name.." +"..obj.name.." [gps="..obj.position.x..","..obj.position.y.."] " .. obj.ghost_name)
+          if not global.last_ghost_log then
+            global.last_ghost_log = {}
+          end
+          if global.last_ghost_log[player.index] then
+            if game.tick - global.last_ghost_log[player.index] < (60 * 5) then --10 seconds
+              console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+            end
+          end
+          global.last_ghost_log[player.index] = game.tick
         end
       end
     else
@@ -101,8 +111,9 @@ function on_pre_player_mined_item(event)
           console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
           --Map data export
-          local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
-          game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+          --local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
+          local str = game.tick .. "," .. player.name .. "," .. obj.name .. "," .. obj.type .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. obj.surface .. "," .. obj.force .. "," .. "0," .. "1," .. "0\n"
+          game.write_file("mapdata.dat", str, true, 0)
         else
           console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
         end
@@ -131,8 +142,9 @@ function on_robot_pre_mined(event)
             --console_print("bot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
             --Map data export
-            local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
-            game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+            --local olog = {tick = game.tick, creator = bot.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
+            local str = game.tick .. ",," .. obj.name .. "," .. obj.type .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. obj.surface .. "," .. obj.force .. "," .. "0," .. "1," .. "1\n"
+            game.write_file("mapdata.dat", str, true, 0)
           else
             --console_print("robot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
           end
@@ -166,8 +178,9 @@ function on_player_rotated_entity(event)
             console_print(player.name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
             --Map data export
-            local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = true, mined = false, robot = false}
-            game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+            --local olog = {tick = game.tick, creator = player.name, name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = true, mined = false, robot = false}
+            local str = game.tick .. "," .. player.name .. "," .. obj.name .. "," .. obj.type .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. obj.surface .. "," .. obj.force .. "," .. "1," .. "0," .. "0\n"
+            game.write_file("mapdata.dat", str, true, 0)
           else
             console_print(player.name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
           end
