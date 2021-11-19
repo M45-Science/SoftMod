@@ -104,7 +104,7 @@ function on_built_entity(event)
             global.last_ghost_log = {}
           end
           if global.last_ghost_log[player.index] then
-            if game.tick - global.last_ghost_log[player.index] > (60 * 10) then
+            if game.tick - global.last_ghost_log[player.index] > (60 * 2) then
               console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
             end
           end
