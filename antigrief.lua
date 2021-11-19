@@ -148,28 +148,25 @@ end
 
 function on_robot_pre_mined(event)
   --Sanity check
-  if event and event.entity then
-    local obj = event.entity
+  local obj = event.entity
+  --Check player, surface and object are valid
+  if obj and obj.valid then
+    if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+      if obj.name ~= "entity-ghost" then
+        --Remove from db
+        --deleteobj(obj.name, obj.position, obj.surface)
 
-    --Check player, surface and object are valid
-    if obj and obj.valid then
-      if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
-        if obj.name ~= "entity-ghost" then
-          --Remove from db
-          --deleteobj(obj.name, obj.position, obj.surface)
+        --log
+        --console_print("bot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
-          --log
-          --console_print("bot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+        --Map data export
+        --local olog = {tick = game.tick, creator = "bot"", name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
+        --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
 
-          --Map data export
-          --local olog = {tick = game.tick, creator = "bot"", name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
-          --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
-
-          local str = math.floor(game.tick / 60) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "1\n"
-          game.write_file("mapdata.dat", str, true, 0)
-        else
-          --console_print("robot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
-        end
+        local str = math.floor(game.tick / 60) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "1\n"
+        game.write_file("mapdata.dat", str, true, 0)
+      else
+        --console_print("robot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
       end
     end
   else
