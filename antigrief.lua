@@ -151,7 +151,8 @@ function on_robot_pre_mined(event)
   local obj = event.entity
   --Check player, surface and object are valid
   if obj and obj.valid then
-    if obj.name ~= "tile" then
+    if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+      if obj.name ~= "entity-ghost" then
         --Remove from db
         --deleteobj(obj.name, obj.position, obj.surface)
 
@@ -164,6 +165,9 @@ function on_robot_pre_mined(event)
 
         local str = math.floor(game.tick / 60) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "1\n"
         game.write_file("mapdata.dat", str, true, 0)
+      else
+        --console_print("robot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+      end
     end
   else
     console_print("on_robot_pre_mined: invalid obj")
