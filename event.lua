@@ -334,7 +334,8 @@ script.on_event(
     defines.events.on_built_entity,
     defines.events.on_robot_built_entity,
     defines.events.on_robot_pre_mined,
-    defines.events.on_entity_destroyed
+    defines.events.on_entity_destroyed,
+    defines.events.on_entity_died
   },
   function(event)
     --If no event, or event is a tick
@@ -418,7 +419,8 @@ script.on_event(
       on_robot_built_entity(event)
     elseif event.name == defines.events.on_robot_pre_mined then
       on_robot_pre_mined(event)
-    elseif event.name == defines.events.on_entity_destroyed then
+    elseif event.name == defines.events.on_entity_destroyed or
+    event.name == defines.events.on_entity_died then
       on_entity_destroyed(event)
     end
 
