@@ -39,7 +39,7 @@ function on_robot_built_entity(event)
   local obj = event.created_entity
 
   if obj and obj.valid then
-    if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" and obj.prototype.has_flag("placeable-player") then
+    if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" then
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
           --Save to db
@@ -124,7 +124,7 @@ function on_pre_player_mined_item(event)
     local obj = event.entity
 
     if obj and obj.valid and player and player.valid then
-      if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" and obj.prototype.has_flag("placeable-player") then
+      if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" then
         if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
           if obj.name ~= "entity-ghost" then
             --Remove from db
@@ -155,7 +155,7 @@ function on_robot_pre_mined(event)
   local obj = event.entity
   --Check player, surface and object are valid
   if obj and obj.valid then
-    if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" and obj.prototype.has_flag("placeable-player") then
+    if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" then
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
           --Remove from db
@@ -224,7 +224,7 @@ function on_entity_destroyed(event)
     local obj = event.entity
 
     --This event seems overly broad
-    if obj.force.name ~= "enemy" and obj.prototype.has_flag("placeable-player") then
+    if obj.force.name ~= "enemy" and obj.force.name ~= "neutral" then
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
           --Remove from db
