@@ -160,7 +160,7 @@ function on_robot_pre_mined(event)
         --console_print("bot " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
 
         --Map data export
-        --local olog = {tick = game.tick, creator = "bot"", name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
+        --local olog = {tick = game.tick, creator = "bot", name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = true}
         --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
 
         local str = math.floor(game.tick / 60) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "1\n"
@@ -209,6 +209,32 @@ function on_player_rotated_entity(event)
     else
       console_print("on_player_rotated_entity: invalid player")
     end
+  end
+end
+
+function on_entity_destroyed(event)
+  --Sanity check
+  if event and event.entity and event.entity.valid then
+    local obj = event.entity
+
+    if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
+      if obj.name ~= "entity-ghost" then
+        --Remove from db
+        --deleteobj(obj.name, obj.position, obj.surface)
+
+        --log
+        --console_print("destroyed " .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+
+        --Map data export
+        --local olog = {tick = game.tick, creator = "", name = obj.name, type = obj.type, position = obj.position, direction = obj.direction, surface = obj.surface.name, force = obj.force.name, rotated = false, mined = true, robot = false}
+        --game.write_file("mapdata.dat", game.table_to_json(olog).."\n", true, 0)
+
+        local str = math.floor(game.tick / 60) .. ",," .. obj.name .. "," .. obj.position.x .. "," .. obj.position.y .. "," .. obj.direction .. "," .. surfnum(obj.surface) .. "," .. forcenum(obj.force) .. "," .. "0," .. "1," .. "0\n"
+        game.write_file("mapdata.dat", str, true, 0)
+      end
+    end
+  else
+    console_print("on_entity_destroyed: invalid obj")
   end
 end
 
