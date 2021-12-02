@@ -493,7 +493,6 @@ function make_m45_info_window(player)
         type = "label",
         caption = ""
       }
-
       tab2_main_frame.add {
         type = "label",
         caption = "[recipe=stack-inserter]   Allowed to vote-banish other players."
@@ -501,6 +500,10 @@ function make_m45_info_window(player)
       tab2_main_frame.add {
         type = "label",
         caption = "Deconstruction planner warning removed."
+      }
+      tab2_main_frame.add {
+        type = "label",
+        caption = "tinyurl.com/ycktpy45"
       }
       --Close Button Frame
       local tab2_close_frame =
