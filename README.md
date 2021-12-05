@@ -48,7 +48,3 @@ commonly needed utility functions
 
 img: all our custom images
 preview.jpg, provides a logo image for save files
-
-
-darkness.lua
-in-progress custom scenario
