@@ -12,10 +12,10 @@ function make_online_button(player)
       player.gui.top.add {
       type = "sprite-button",
       name = "online_button",
-      sprite = "file/img/buttons/online-32.png",
+      sprite = "file/img/buttons/online-64.png",
       tooltip = "See players online!"
     }
-    online_32.style.size = {32, 32}
+    online_32.style.size = {64, 64}
   end
 end
 

@@ -657,10 +657,10 @@ local function on_player_joined_game(event)
         player.gui.top.add {
         type = "sprite-button",
         name = "todo_button",
-        sprite = "file/img/buttons/todo-32.png",
+        sprite = "file/img/buttons/todo-64.png",
         tooltip = "Read or edit the To-Do list."
       }
-      todo_32.style.size = {32, 32}
+      todo_32.style.size = {64, 64}
     end
 
     --Refresh window if open

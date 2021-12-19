@@ -11,10 +11,10 @@ function make_info_button(player)
       player.gui.top.add {
       type = "sprite-button",
       name = "m45_button",
-      sprite = "file/img/buttons/m45-32.png",
+      sprite = "file/img/buttons/m45-64.png",
       tooltip = "Opens the server info window"
     }
-    m45_32.style.size = {32, 32}
+    m45_32.style.size = {64, 64}
   end
 end
 
