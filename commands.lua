@@ -94,7 +94,7 @@ script.on_load(
         end
       )
 
-      --Enable / disable friendly fire
+      --Enable / disable blueprints
       commands.add_command(
         "blueprints",
         "on/off",
@@ -127,6 +127,49 @@ script.on_load(
                 set_blueprints_enabled(global.membersgroup, true)
                 set_blueprints_enabled(global.regularsgroup, true)
                 smart_print(player, "blueprints enabled...")
+              end
+            end
+          else
+            smart_print(player, "on or off?")
+          end
+        end
+      )
+
+      --Enable / disable cheat mode
+      commands.add_command(
+        "cheats",
+        "on/off",
+        function(param)
+          local player
+          local victim
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+          create_groups()
+
+          if param and param.parameter then
+            local pforce = game.forces["player"]
+
+            if pforce then
+              if string.lower(param.parameter) == "off" then
+                global.cheatson = false
+                for _, player in pairs(game.players) do
+                  player.cheat_mode = false
+                end
+                smart_print(player, "cheats disabled...")
+              elseif string.lower(param.parameter) == "on" then
+                global.cheatson = true
+                for _, player in pairs(game.players) do
+                  player.cheat_mode = true
+                end
+                smart_print(player, "cheats enabled...")
               end
             end
           else
