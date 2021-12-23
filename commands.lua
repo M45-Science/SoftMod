@@ -137,7 +137,7 @@ script.on_load(
 
       --Enable / disable cheat mode
       commands.add_command(
-        "cheats",
+        "enablecheats",
         "on/off",
         function(param)
           local player
