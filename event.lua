@@ -144,6 +144,15 @@ function on_player_joined_game(event)
 
   update_player_list() --online.lua
 
+  if global.cheatson then
+    if event and event.player_index then
+      local player = game.players[event.player_index]
+      if player and player.valid then
+        player.cheat_mode = true
+      end
+    end
+  end
+
   --If player is in list and alive, kill them (offline banish/damn)
   if global.send_to_surface then
     --Event and player?
