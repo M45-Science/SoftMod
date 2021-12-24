@@ -35,30 +35,6 @@ script.on_load(
         end
       )
 
-      commands.add_command(
-        "mapreplay",
-        "",
-        function(param)
-          --Console only
-          if param and param.player_index then
-            smart_print(player, "This command is for console use only.")
-          --return
-          end
-
-          console_print("Map replay started.")
-          local was_bot = ""
-          for _, obj in pairs(global.objmap) do
-            if obj.was_bot then
-            was_bot = ", bot"
-          else
-            was_bot = ""
-          end
-            console_print(obj.creator .. " +" .. obj.object_name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]," .. obj.direction .. was_bot)
-          end
-          console_print("Map replay ended.")
-        end
-      )
-
       --Enable / disable friendly fire
       commands.add_command(
         "friendlyfire",
@@ -169,6 +145,7 @@ script.on_load(
                 for _, player in pairs(game.players) do
                   player.cheat_mode = true
                 end
+                pforce.research_all_technologies()
                 smart_print(player, "cheats enabled...")
               end
             end
