@@ -28,6 +28,8 @@ end
 script.on_nth_tick(
   1800,
   function(event)
+    dodrawlogo() --redraw logo
+    
     update_player_list() --online.lua
 
     --Remove old corpse tags
