@@ -127,74 +127,18 @@ function make_m45_info_window(player)
         caption = ""
       }
 
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]PATREONS:[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]SirVorlon[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Hawkeey[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]BigDogTV[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]beefjrkytime[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Dwits[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Estabon[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]joloman2[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]LeoR998[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Merciless210[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]NameisGareth[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Livedeath[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]HanBai[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]GeneralSnipe[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Lionheart[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]CM42[/color]"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = "[color=purple]Goddess_Minerva[/color]"
-      }
+      if global.patreonlist ~= {} then
+        tab1_lframe.add {
+          type = "label",
+          caption = "[color=purple]PATREONS:[/color]"
+        }
+        for _, pname in pairs(global.patreonlist) do
+          tab1_lframe.add {
+            type = "label",
+            caption = "[color=purple]" .. pname .. "[/color]"
+          }
+        end
+      end
 
       tab1_lframe.add {
         type = "label",
@@ -267,7 +211,8 @@ function make_m45_info_window(player)
         local reset_warning =
           tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS " .. string.upper(global.resetint) .. "[/font][/color]"
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS " ..
+            string.upper(global.resetint) .. "[/font][/color]"
         }
       end
       local restrictions =
@@ -390,7 +335,8 @@ function make_m45_info_window(player)
       tab2_main_frame.add {
         type = "label",
         name = "tab2_score",
-        caption = "[color=red][font=default-large-bold]Your Activity Score: " .. math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
+        caption = "[color=red][font=default-large-bold]Your Activity Score: " ..
+          math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
       }
       tab2_main_frame.add {
         type = "label",
@@ -828,7 +774,10 @@ function on_gui_click(event)
       console_print("GUI_CLICK: " .. player.name .. ": " .. event.element.name)
 
       --Info window close
-      if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+      if
+        event.element.name == "m45_info_close_button" and player.gui and player.gui.center and
+          player.gui.screen.m45_info_window
+       then
         if not global.info_window_timer then
           global.info_window_timer = {}
         end
@@ -836,18 +785,32 @@ function on_gui_click(event)
           global.info_window_timer[player.index] = game.tick
         end
         ----------------------------------------------------------------
-        if is_member(player) or is_regular(player) or player.admin or (is_new(player) and game.tick - global.info_window_timer[player.index] > (60 * 10)) then
+        if
+          is_member(player) or is_regular(player) or player.admin or
+            (is_new(player) and game.tick - global.info_window_timer[player.index] > (60 * 10))
+         then
           player.gui.screen.m45_info_window.destroy()
         else
           smart_print(player, "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
-          smart_print(player, "[color=green](SYSTEM) **** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ****[/color]")
-          smart_print(player, "[color=blue](SYSTEM) ***** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! *****[/color]")
+          smart_print(
+            player,
+            "[color=green](SYSTEM) **** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ****[/color]"
+          )
+          smart_print(
+            player,
+            "[color=blue](SYSTEM) ***** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! *****[/color]"
+          )
         end
-      elseif event.element.name == "patreon_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+      elseif
+        event.element.name == "patreon_button" and player.gui and player.gui.center and
+          player.gui.screen.m45_info_window
+       then
         ----------------------------------------------------------------
         --QR changetab button (info window)
         player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 6
-      elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window then
+      elseif
+        event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window
+       then
         --QR Discord button
         player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 5
       elseif event.element.name == "m45_button" then
