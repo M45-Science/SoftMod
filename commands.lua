@@ -597,28 +597,6 @@ script.on_load(
 
       --Set player to nitro
       commands.add_command(
-        "patreonlist",
-        "(Update patreon credits)",
-        function(param)
-          local player
-
-          --Console only, no players
-          if param and param.player_index then
-            local player = game.players[param.player_index]
-            smart_print(player, "This command is for system use only.")
-            return
-          end
-
-          --Argument required
-          if param.parameter then
-            global.patreonlist = mysplit(param.parameter, ",")
-          end
-        end
-      )
-
-
-      --Set player to nitro
-      commands.add_command(
         "nitro",
         "<player>\n(Makes the player a nitro booster)",
         function(param)
@@ -655,6 +633,49 @@ script.on_load(
             end
           end
           smart_print(player, "Player not found.")
+        end
+      )
+
+
+      --Add player to patreon credits
+      commands.add_command(
+        "patreonlist",
+        "(Update patreon credits)",
+        function(param)
+          local player
+
+          --Console only, no players
+          if param and param.player_index then
+            local player = game.players[param.player_index]
+            smart_print(player, "This command is for system use only.")
+            return
+          end
+
+          --Argument required
+          if param.parameter then
+            global.patreonlist = mysplit(param.parameter, ",")
+          end
+        end
+      )
+
+      --Add player to nitro credits
+      commands.add_command(
+        "nitrolist",
+        "(Update nitro credits)",
+        function(param)
+          local player
+
+          --Console only, no players
+          if param and param.player_index then
+            local player = game.players[param.player_index]
+            smart_print(player, "This command is for system use only.")
+            return
+          end
+
+          --Argument required
+          if param.parameter then
+            global.nitrolist = mysplit(param.parameter, ",")
+          end
         end
       )
 

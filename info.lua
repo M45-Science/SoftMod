@@ -139,6 +139,23 @@ function make_m45_info_window(player)
           }
         end
       end
+      tab1_lframe.add {
+        type = "label",
+        caption = ""
+      }
+      if global.nitrolist ~= {} then
+        tab1_lframe.add {
+          type = "label",
+          caption = "[color=cyan]Nitro Boosters:[/color]"
+        }
+        for _, pname in pairs(global.nitrolist) do
+          tab1_lframe.add {
+            type = "label",
+            caption = "[color=cyan]" .. pname .. "[/color]"
+          }
+        end
+      end
+
 
       tab1_lframe.add {
         type = "label",
