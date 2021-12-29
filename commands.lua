@@ -382,7 +382,7 @@ script.on_load(
           if param and param.player_index then
             local player = game.players[param.player_index]
             if not player.admin then
-              smart_print(player, "This command is for console and admin use only.")
+              smart_print(player, "This command is for system and admin use only.")
               return
             end
           end
@@ -412,7 +412,7 @@ script.on_load(
           --Console only, no players
           if param and param.player_index then
             local player = game.players[param.player_index]
-            smart_print(player, "This command is for console use only.")
+            smart_print(player, "This command is for system use only.")
             return
           end
 
@@ -430,7 +430,7 @@ script.on_load(
           --Console only, no players
           if param and param.player_index then
             local player = game.players[param.player_index]
-            smart_print(player, "This command is for console use only.")
+            smart_print(player, "This command is for system use only.")
             return
           end
 
@@ -594,6 +594,28 @@ script.on_load(
           smart_print(player, "Player not found.")
         end
       )
+
+      --Set player to nitro
+      commands.add_command(
+        "patreonlist",
+        "(Update patreon credits)",
+        function(param)
+          local player
+
+          --Console only, no players
+          if param and param.player_index then
+            local player = game.players[param.player_index]
+            smart_print(player, "This command is for system use only.")
+            return
+          end
+
+          --Argument required
+          if param.parameter then
+            global.patreonlist = mysplit(param.parameter, ",")
+          end
+        end
+      )
+
 
       --Set player to nitro
       commands.add_command(
