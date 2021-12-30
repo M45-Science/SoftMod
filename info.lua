@@ -120,14 +120,14 @@ function make_m45_info_window(player)
       }
       tab1_lframe.add {
         type = "label",
-        caption = global.svers
+        caption = "M45-Science"
       }
       tab1_lframe.add {
         type = "label",
-        caption = ""
+        caption = global.svers
       }
 
-      if global.patreonlist ~= {} then
+      if global.patreonlist[1] ~= nil then
         tab1_lframe.add {
           type = "label",
           caption = "[color=purple]PATREONS:[/color]"
@@ -143,7 +143,7 @@ function make_m45_info_window(player)
         type = "label",
         caption = ""
       }
-      if global.nitrolist ~= {} then
+      if global.nitrolist[1] ~= nil then
         tab1_lframe.add {
           type = "label",
           caption = "[color=cyan]Nitro Boosters:[/color]"
