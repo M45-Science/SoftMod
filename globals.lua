@@ -35,6 +35,13 @@ function create_myglobals()
     global.nitros = {}
   end
 
+  if not global.patreonlist then
+    global.patreonlist = {}
+  end
+  if not global.nitrolist then
+    global.nitrolist = {}
+  end
+
   if not global.last_speaker_warning then
     global.last_speaker_warning = 1
   end
