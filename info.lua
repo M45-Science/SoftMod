@@ -119,30 +119,62 @@ function make_m45_info_window(player)
         tooltip = ""
       }
 
+      --PATREON
       if global.patreonlist[1] ~= nil then
         tab1_lframe.add {
           type = "label",
           caption = "[color=purple]PATREONS:[/color]"
         }
-        for _, pname in pairs(global.patreonlist) do
-          tab1_lframe.add {
-            type = "label",
-            caption = "[color=purple]" .. pname .. "[/color]"
-          }
+        local i = 1
+        while global.patreonlist[i] ~= nil do
+          if global.patreonlist[i+1] ~= nil then
+            tab1_lframe.add {
+              type = "label",
+              caption = "[color=purple]" .. global.patreonlist[i] .. ", " .. global.patreonlist[i + 1] .. "[/color]"
+            }
+            i = i + 1
+          else
+            tab1_lframe.add {
+              type = "label",
+              caption = "[color=purple]" .. global.patreonlist[i] .. "[/color]"
+            }
+          end
+          i = i + 1
         end
       end
+
+      tab1_lframe.add {
+        type = "label",
+        caption = ""
+      }
+
+      --NITRO
       if global.nitrolist[1] ~= nil then
         tab1_lframe.add {
           type = "label",
-          caption = "[color=cyan]Nitro Boosters:[/color]"
+          caption = "[color=cyan]NITRO:[/color]"
         }
-        for _, pname in pairs(global.nitrolist) do
-          tab1_lframe.add {
-            type = "label",
-            caption = "[color=cyan]" .. pname .. "[/color]"
-          }
+        local i = 1
+        while global.nitrolist[i] ~= nil do
+          if global.nitrolist[i+1] ~= nil then
+            tab1_lframe.add {
+              type = "label",
+              caption = "[color=cyan]" .. global.nitrolist[i] .. ", " .. global.nitrolist[i + 1] .. "[/color]"
+            }
+            i = i + 1
+          else
+            tab1_lframe.add {
+              type = "label",
+              caption = "[color=cyan]" .. global.nitrolist[i] .. "[/color]"
+            }
+          end
+          i = i + 1
         end
       end
+      tab1_lframe.add {
+        type = "label",
+        caption = ""
+      }
       tab1_lframe.add {
         type = "button",
         caption = "Help Out!",
@@ -194,9 +226,8 @@ function make_m45_info_window(player)
       }
       tab1_info_center.add {
         type = "label",
-        caption = "v"..global.svers
+        caption = "v" .. global.svers
       }
-
 
       local tab1_cframe = {
         tab1_main_frame.add {
