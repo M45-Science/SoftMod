@@ -28,7 +28,10 @@ end
 script.on_nth_tick(
   1800,
   function(event)
-    dodrawlogo() --redraw logo
+    --Set logo to be redrawn
+    global.drawlogo = false
+    --Redraw
+    dodrawlogo()
     
     update_player_list() --online.lua
 
@@ -141,8 +144,6 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-  global.drawlogo = false --set logo to be redrawn
-  dodrawlogo() --redraw logo
 
   update_player_list() --online.lua
 
