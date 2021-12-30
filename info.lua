@@ -118,14 +118,6 @@ function make_m45_info_window(player)
         sprite = "file/img/info-win/m45-128.png",
         tooltip = ""
       }
-      tab1_lframe.add {
-        type = "label",
-        caption = "M45-Science"
-      }
-      tab1_lframe.add {
-        type = "label",
-        caption = global.svers
-      }
 
       if global.patreonlist[1] ~= nil then
         tab1_lframe.add {
@@ -139,10 +131,6 @@ function make_m45_info_window(player)
           }
         end
       end
-      tab1_lframe.add {
-        type = "label",
-        caption = ""
-      }
       if global.nitrolist[1] ~= nil then
         tab1_lframe.add {
           type = "label",
@@ -155,12 +143,6 @@ function make_m45_info_window(player)
           }
         end
       end
-
-
-      tab1_lframe.add {
-        type = "label",
-        caption = ""
-      }
       tab1_lframe.add {
         type = "button",
         caption = "Help Out!",
@@ -202,6 +184,19 @@ function make_m45_info_window(player)
         type = "label",
         caption = "[color=orange][font=default-large-bold]Report or banish them![/font][/color]"
       }
+      tab1_info_center.add {
+        type = "label",
+        caption = " "
+      }
+      tab1_info_center.add {
+        type = "label",
+        caption = "M45-SoftMod"
+      }
+      tab1_info_center.add {
+        type = "label",
+        caption = "v"..global.svers
+      }
+
 
       local tab1_cframe = {
         tab1_main_frame.add {
