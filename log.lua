@@ -122,7 +122,7 @@ function on_console_command(event)
     if event.player_index then
       local player = game.players[event.player_index]
       print(string.format("[CMD] NAME: %s, COMMAND: %s, ARGS: %s", player.name, command, args))
-    elseif command ~= "time" and command ~= "online" and command ~= "server-save" then --Ignore spammy console commands
+    elseif command ~= "time" and command ~= "online" and command ~= "server-save" and command ~= "p" then --Ignore spammy console commands
       print(string.format("[CMD] NAME: CONSOLE, COMMAND: %s, ARGS: %s", command, args))
     end
   end
