@@ -28,11 +28,19 @@ end
 script.on_nth_tick(
   1800,
   function(event)
-    --Set logo to be redrawn
-    global.drawlogo = false
-    --Redraw
-    dodrawlogo()
-    
+    --Move spawn pad if blocked
+    if not global.movepad then
+      global.movepad = 0
+    end
+    global.movepad = global.movepad + 1
+    if global.movepad > 20 then
+      global.movepad = 0
+
+      --Set logo to be redrawn
+      global.drawlogo = false
+      dodrawlogo()
+    end
+
     update_player_list() --online.lua
 
     --Remove old corpse tags
@@ -144,7 +152,6 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-
   update_player_list() --online.lua
 
   if global.cheatson then
@@ -299,15 +306,25 @@ function on_pre_player_died(event)
         }
 
         --Add to list of pins
-        table.insert(global.corpselist, {tag = qtag, tick = game.tick + 590, pos = player.position, pindex = player.index, corpse_lamp = clight})
+        table.insert(
+          global.corpselist,
+          {tag = qtag, tick = game.tick + 590, pos = player.position, pindex = player.index, corpse_lamp = clight}
+        )
       end
 
       --Log to discord
       if event.cause and event.cause.valid then
         cause = event.cause.name
-        gsysmsg(player.name .. " was killed by " .. cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+        gsysmsg(
+          player.name ..
+            " was killed by " ..
+              cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+        )
       else
-        gsysmsg(player.name .. " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+        gsysmsg(
+          player.name ..
+            " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+        )
       end
     end
   end
@@ -364,7 +381,10 @@ script.on_event(
           if player.walking_state then
             if
               player.walking_state.walking == true and
-                (player.walking_state.direction == defines.direction.north or player.walking_state.direction == defines.direction.northeast or player.walking_state.direction == defines.direction.east or player.walking_state.direction == defines.direction.southeast or
+                (player.walking_state.direction == defines.direction.north or
+                  player.walking_state.direction == defines.direction.northeast or
+                  player.walking_state.direction == defines.direction.east or
+                  player.walking_state.direction == defines.direction.southeast or
                   player.walking_state.direction == defines.direction.south or
                   player.walking_state.direction == defines.direction.southwest or
                   player.walking_state.direction == defines.direction.west or
@@ -431,8 +451,7 @@ script.on_event(
       on_robot_built_entity(event)
     elseif event.name == defines.events.on_robot_pre_mined then
       on_robot_pre_mined(event)
-    elseif event.name == defines.events.on_entity_destroyed or
-    event.name == defines.events.on_entity_died then
+    elseif event.name == defines.events.on_entity_destroyed or event.name == defines.events.on_entity_died then
       on_entity_destroyed(event)
     end
 
@@ -454,14 +473,22 @@ function clear_corpse_tag(event)
 
         if victim and victim.valid and player and player.valid then
           if victim.name ~= player.name then
-            gsysmsg(player.name .. " looted the body of " .. victim.name .. ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
+            gsysmsg(
+              player.name ..
+                " looted the body of " ..
+                  victim.name ..
+                    ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+            )
           end
         end
       end
 
       local index
       for i, ctag in pairs(global.corpselist) do
-        if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex == ent.character_corpse_player_index then
+        if
+          ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and
+            ctag.pindex == ent.character_corpse_player_index
+         then
           --Destroy corpse lamp
           if ctag and ctag.corpse_lamp then
             rendering.destroy(ctag.corpse_lamp)
