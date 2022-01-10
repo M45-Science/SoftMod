@@ -3,11 +3,11 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "579-12292021-1058p-exp"
+  global.svers = "580-01102022-0756-exp"
 
   if not global.levelstart then
     global.levelstart = true
-    
+
     --Overwrite logfile
     game.write_file("mapdata.dat", "", false, 0)
   end
