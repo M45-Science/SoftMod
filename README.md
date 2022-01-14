@@ -1,12 +1,10 @@
 # M45-Factorio-Lua
-LUA scripts (softmod/scenario) for M45's factorio servers.
+LUA scripts (softmod/scenario) for M45's Factorio servers.
 
 antigrief.lua
-active system that prevents mining/rotating and fast-replace of entites new players do not own
-and, blueprint throttling and limiting
 
 banish.lua
-allows regulars to vote-ban new/memeber level players,
+allows regulars to vote-ban new/member level players,
 and admin /damn
 
 commands.lua
