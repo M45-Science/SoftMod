@@ -155,7 +155,7 @@ end
 --Research Finished -- discord
 function on_research_finished(event)
   if event and event.research and not event.by_script then
-    if event.research.level and event.research.level > 0 then
+    if event.research.level and event.research.level > 1 then
       message_alld("Research " .. event.research.name .. " (level ".. event.research.level-1 ..") completed.")
     else
       message_alld("Research " .. event.research.name .. " completed.")
