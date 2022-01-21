@@ -8,7 +8,11 @@ function on_chart_tag_added(event)
     local player = game.players[event.player_index]
 
     if player and player.valid and event.tag then
-      console_print(player.name .. " + tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
+      console_print(
+        player.name ..
+          " + tag [gps=" ..
+            math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+      )
     end
   end
 end
@@ -18,7 +22,11 @@ function on_chart_tag_modified(event)
   if event and event.player_index then
     local player = game.players[event.player_index]
     if player and player.valid and event.tag then
-      console_print(player.name .. " -+ tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
+      console_print(
+        player.name ..
+          " -+ tag [gps=" ..
+            math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+      )
     end
   end
 end
@@ -30,12 +38,19 @@ function on_chart_tag_removed(event)
 
     --Because factorio will hand us an nil event... nice.
     if player and player.valid and event.tag then
-      console_print(player.name .. "- tag [gps=" .. math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text)
+      console_print(
+        player.name ..
+          "- tag [gps=" ..
+            math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+      )
 
       --Delete corpse map tag and corpse_lamp
       for i, ctag in pairs(global.corpselist) do
         if ctag.tag and ctag.tag.valid then
-          if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y == event.tag.position.y then
+          if
+            event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and
+              ctag.pos.y == event.tag.position.y
+           then
             --Destroy corpse lamp
             rendering.destroy(ctag.corpse_lamp)
 
@@ -90,7 +105,16 @@ function on_player_deconstructed_area(event)
 
       --Don't bother if selection is zero.
       if decon_size >= 1 then
-        local msg = player.name .. " deconstructing [gps=" .. math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) .. "sq"
+        local msg =
+          player.name ..
+          " deconstructing [gps=" ..
+            math.floor(area.left_top.x) ..
+              "," ..
+                math.floor(area.left_top.y) ..
+                  "] to [gps=" ..
+                    math.floor(area.right_bottom.x) ..
+                      "," ..
+                        math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) .. "sq"
         console_print(msg)
 
         if is_new(player) or is_member(player) then --Dont bother with regulars/admins
@@ -131,6 +155,10 @@ end
 --Research Finished -- discord
 function on_research_finished(event)
   if event and event.research and not event.by_script then
-    message_alld("Research " .. event.research.name .. " completed.")
+    if event.research.level and event.research.level > 0 then
+      message_alld("Research " .. event.research.name .. " (level ".. event.research.level-1 ..") completed.")
+    else
+      message_alld("Research " .. event.research.name .. " completed.")
+    end
   end
 end
