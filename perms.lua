@@ -31,31 +31,31 @@ function create_groups()
   global.adminsgroup = game.permissions.get_group("Admins")
 end
 
-function set_blueprints_enabled(group, enabled)
+function set_blueprints_enabled(group, option)
   if group ~= nil then
-    group.set_allows_action(defines.input_action.alt_select_blueprint_entities, enabled)
-    group.set_allows_action( defines.input_action.cancel_new_blueprint, enabled)
-    group.set_allows_action( defines.input_action.copy_opened_blueprint, enabled)
-    group.set_allows_action( defines.input_action.copy_opened_blueprint, enabled)
-    group.set_allows_action( defines.input_action.cycle_blueprint_book_backwards, enabled)
-    group.set_allows_action( defines.input_action.cycle_blueprint_book_forwards, enabled)
-    group.set_allows_action( defines.input_action.delete_blueprint_library, enabled)
-    group.set_allows_action( defines.input_action.delete_blueprint_record, enabled)
-    group.set_allows_action( defines.input_action.drop_blueprint_record, enabled)
-    group.set_allows_action( defines.input_action.edit_blueprint_tool_preview, enabled)
-    group.set_allows_action( defines.input_action.export_blueprint, enabled)
-    group.set_allows_action( defines.input_action.grab_blueprint_record, enabled)
-    group.set_allows_action( defines.input_action.import_blueprint, enabled)
-    group.set_allows_action( defines.input_action.import_blueprint_string, enabled)
-    group.set_allows_action( defines.input_action.import_blueprints_filtered, enabled)
-    group.set_allows_action( defines.input_action.open_blueprint_library_gui, enabled)
-    group.set_allows_action( defines.input_action.open_blueprint_record, enabled)
-    group.set_allows_action( defines.input_action.reassign_blueprint, enabled)
-    group.set_allows_action( defines.input_action.select_blueprint_entities, enabled)
-    group.set_allows_action( defines.input_action.setup_blueprint, enabled)
-    group.set_allows_action( defines.input_action.setup_single_blueprint_record, enabled)
-    group.set_allows_action( defines.input_action.upgrade_opened_blueprint_by_item, enabled)
-    group.set_allows_action( defines.input_action.upgrade_opened_blueprint_by_record, enabled)
+    group.set_allows_action(defines.input_action.alt_select_blueprint_entities, option)
+    group.set_allows_action(defines.input_action.cancel_new_blueprint, option)
+    group.set_allows_action(defines.input_action.copy_opened_blueprint, option)
+    group.set_allows_action(defines.input_action.copy_opened_blueprint, option)
+    group.set_allows_action(defines.input_action.cycle_blueprint_book_backwards, option)
+    group.set_allows_action(defines.input_action.cycle_blueprint_book_forwards, option)
+    group.set_allows_action(defines.input_action.delete_blueprint_library, option)
+    group.set_allows_action(defines.input_action.delete_blueprint_record, option)
+    group.set_allows_action(defines.input_action.drop_blueprint_record, option)
+    group.set_allows_action(defines.input_action.edit_blueprint_tool_preview, option)
+    group.set_allows_action(defines.input_action.export_blueprint, option)
+    group.set_allows_action(defines.input_action.grab_blueprint_record, option)
+    group.set_allows_action(defines.input_action.import_blueprint, option)
+    group.set_allows_action(defines.input_action.import_blueprint_string, option)
+    group.set_allows_action(defines.input_action.import_blueprints_filtered, option)
+    group.set_allows_action(defines.input_action.open_blueprint_library_gui, option)
+    group.set_allows_action(defines.input_action.open_blueprint_record, enabled)
+    group.set_allows_action(defines.input_action.reassign_blueprint, option)
+    group.set_allows_action(defines.input_action.select_blueprint_entities, option)
+    group.set_allows_action(defines.input_action.setup_blueprint, option)
+    group.set_allows_action(defines.input_action.setup_single_blueprint_record, option)
+    group.set_allows_action(defines.input_action.upgrade_opened_blueprint_by_item, option)
+    group.set_allows_action(defines.input_action.upgrade_opened_blueprint_by_record, option)
   end
 end
 
@@ -119,13 +119,20 @@ function set_perms()
     global.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, false)
     global.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, false)
     global.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, false)
-
+    global.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, false)
+    global.defaultgroup.set_allows_action(defines.input_action.activate_copy, false)
+    global.defaultgroup.set_allows_action(defines.input_action.alternative_copy, false)
+    global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, false)
+    global.defaultgroup.set_allows_action(defines.input_action.send_spidertron, false)
   end
 end
 
 --Flag player as currently active
 function set_player_active(player)
-  if (player and player.valid and player.connected and player.character and player.character.valid and global.playeractive) then
+  if
+    (player and player.valid and player.connected and player.character and player.character.valid and
+      global.playeractive)
+   then
     --banished players don't get activity score
     if is_banished(player) == false then
       global.playeractive[player.index] = true
@@ -153,29 +160,55 @@ function get_permgroup()
         if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
           if player.permission_group then
             --(ADMINS) Check if they are in the right group, including se-remote-view
-            if (player.admin and player.permission_group.name ~= global.adminsgroup.name and player.permission_group.name ~= global.adminsgroup.name .. "_satellite") then
+            if
+              (player.admin and player.permission_group.name ~= global.adminsgroup.name and
+                player.permission_group.name ~= global.adminsgroup.name .. "_satellite")
+             then
               --(REGULARS) Check if they are in the right group, including se-remote-view
               global.adminsgroup.add_player(player)
               message_all(player.name .. " moved to Admins group")
-            elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
+            elseif
+              (global.active_playtime and global.active_playtime[player.index] and
+                global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
+                not player.admin)
+             then
               --Check if player has hours for regulars status, but isn't a in regulars group.
-              if (player.permission_group.name ~= global.regularsgroup.name and player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
+              if
+                (player.permission_group.name ~= global.regularsgroup.name and
+                  player.permission_group.name ~= global.regularsgroup.name .. "_satellite")
+               then
                 global.regularsgroup.add_player(player)
                 message_all(player.name .. " is now a regular!")
-                smart_print(player, "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
-                smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
+                smart_print(
+                  player,
+                  "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]"
+                )
+                smart_print(
+                  player,
+                  "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]"
+                )
 
                 if player.character then
                   player.character.damage(0.001, "enemy") --Grab attention
                 end
               end
-            elseif (global.active_playtime and global.active_playtime[player.index] and global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
+            elseif
+              (global.active_playtime and global.active_playtime[player.index] and
+                global.active_playtime[player.index] > (30 * 60 * 60) and
+                not player.admin)
+             then
               --Check if player has hours for members status, but isn't a in member group.
               if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                 global.membersgroup.add_player(player)
                 message_all(player.name .. " is now a member!")
-                smart_print(player, "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]")
-                smart_print(player, "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
+                smart_print(
+                  player,
+                  "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]"
+                )
+                smart_print(
+                  player,
+                  "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]"
+                )
                 smart_print(player, "[color=red](SYSTEM) You now have access to our members-only servers![/color]")
 
                 if player.character then

@@ -245,8 +245,8 @@ script.on_load(
         end
       )
 
-      --change new player restrictions
-      commands.add_command(
+       --change new player restrictions
+       commands.add_command(
         "restrict",
         "change player restrictions",
         function(param)
@@ -263,7 +263,7 @@ script.on_load(
 
           --Process argument
           if not param.parameter then
-            smart_print(player, "options: on, off, perms")
+            smart_print(player, "options: on, off, perms, fast, nofast")
             return
           elseif string.lower(param.parameter) == "perms" then
             global.setperms = false
@@ -628,7 +628,6 @@ script.on_load(
         end
       )
 
-
       --Add player to patreon credits
       commands.add_command(
         "patreonlist",
@@ -718,7 +717,10 @@ script.on_load(
           --Set new spawn spot
           if pforce and psurface and new_pos_x and new_pos_y then
             pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
-            smart_print(victim, string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y)))
+            smart_print(
+              victim,
+              string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y))
+            )
             smart_print(victim, string.format("Force: %s", pforce.name))
 
             --Set logo to be redrawn
@@ -926,7 +928,10 @@ script.on_load(
               if pforce then
                 --Calculate walk speed for UPS
                 pforce.character_running_speed_modifier = ((1.0 / value) - 1.0)
-                smart_print(player, "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier)
+                smart_print(
+                  player,
+                  "Game speed: " .. value .. " Walk speed: " .. pforce.character_running_speed_modifier
+                )
 
                 --Don't show message if run via console (ChatWire)
                 if (player) then

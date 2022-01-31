@@ -99,10 +99,8 @@ function on_player_deconstructed_area(event)
   if event and event.player_index and event.area then
     local player = game.players[event.player_index]
     local area = event.area
-    local ename = event.name
 
-
-    if player and area and area.left_top and ename == defines.events.on_marked_for_deconstruction then
+    if player and area and area.left_top then
       local decon_size = dist_to(area.left_top, area.right_bottom)
 
       --Don't bother if selection is zero.
@@ -158,7 +156,7 @@ end
 function on_research_finished(event)
   if event and event.research and not event.by_script then
     if event.research.level and event.research.level > 1 then
-      message_alld("Research " .. event.research.name .. " (level ".. event.research.level-1 ..") completed.")
+      message_alld("Research " .. event.research.name .. " (level " .. event.research.level - 1 .. ") completed.")
     else
       message_alld("Research " .. event.research.name .. " completed.")
     end
