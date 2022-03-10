@@ -98,14 +98,12 @@ function set_perms()
     global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, false)
     --Added 12-2020
     global.defaultgroup.set_allows_action(defines.input_action.cancel_research, false)
-    global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
     global.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, false)
     global.defaultgroup.set_allows_action(defines.input_action.build_rail, false)
     global.defaultgroup.set_allows_action(defines.input_action.activate_paste, false)
     global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_fluid, false)
     global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_specific_fluid, false)
     global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, false)
-    global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, false)
     global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, false)
     global.defaultgroup.set_allows_action(defines.input_action.upgrade, false)
 
@@ -119,7 +117,6 @@ function set_perms()
     global.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, false)
     global.defaultgroup.set_allows_action(defines.input_action.activate_copy, false)
     global.defaultgroup.set_allows_action(defines.input_action.alternative_copy, false)
-    global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, false)
     global.defaultgroup.set_allows_action(defines.input_action.send_spidertron, false)
   end
 end
