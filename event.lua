@@ -194,7 +194,6 @@ function on_player_joined_game(event)
       create_player_globals(player)
       create_groups()
       game_settings(player)
-      set_perms()
       get_permgroup()
 
       --Delete old UIs (migrate old saves)
@@ -243,8 +242,9 @@ function on_player_created(event)
     if player and player.valid then
       global.drawlogo = false --set logo to be redrawn
       dodrawlogo() --redraw logo
+      set_perms()
       send_to_default_spawn(player) --incase spawn moved
-
+      game_settings(player)
       update_player_list() --online.lua
 
       --Cutoff-point, just becomes annoying.
@@ -260,7 +260,6 @@ function on_player_created(event)
 
       insert_weapons(player, 50) --research-based
 
-      set_perms()
       show_players(player)
       message_all("[color=green](SYSTEM) Welcome " .. player.name .. " to the map![/color]")
     end

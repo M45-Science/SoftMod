@@ -263,20 +263,16 @@ script.on_load(
 
           --Process argument
           if not param.parameter then
-            smart_print(player, "options: on, off, perms, fast, nofast")
-            return
-          elseif string.lower(param.parameter) == "perms" then
-            global.setperms = false
-            set_perms()
-
-            smart_print(player, "New player perms-restrictions set.")
+            smart_print(player, "options: on, off")
             return
           elseif string.lower(param.parameter) == "off" then
             global.restrict = false
+            set_perms()
             smart_print(player, "New player restrictions disabled.")
             return
           elseif string.lower(param.parameter) == "on" then
             global.restrict = true
+            set_perms()
             smart_print(player, "New player restrictions enabled.")
             return
           end
@@ -390,8 +386,6 @@ script.on_load(
             global.servers = nil
             global.ports = nil
             create_myglobals()
-
-            set_perms()
           end
         end
       )

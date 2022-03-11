@@ -3,7 +3,7 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "582-01.31.2022-0454-exp"
+  global.svers = "583-03.11.2022-0905"
 
   if not global.levelstart then
     global.levelstart = true
