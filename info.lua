@@ -127,7 +127,7 @@ function make_m45_info_window(player)
         }
         local i = 1
         while global.patreonlist[i] ~= nil do
-          if global.patreonlist[i+1] ~= nil then
+          if global.patreonlist[i + 1] ~= nil then
             tab1_lframe.add {
               type = "label",
               caption = "[color=purple]" .. global.patreonlist[i] .. ", " .. global.patreonlist[i + 1] .. "[/color]"
@@ -156,7 +156,7 @@ function make_m45_info_window(player)
         }
         local i = 1
         while global.nitrolist[i] ~= nil do
-          if global.nitrolist[i+1] ~= nil then
+          if global.nitrolist[i + 1] ~= nil then
             tab1_lframe.add {
               type = "label",
               caption = "[color=cyan]" .. global.nitrolist[i] .. ", " .. global.nitrolist[i + 1] .. "[/color]"
@@ -263,11 +263,6 @@ function make_m45_info_window(player)
         type = "label",
         caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
-      local perms_limit =
-        tab1_info_top.add {
-        type = "label",
-        caption = "[item=locomotive]  [font=default-large]You will also not be allowed to modify trains or logistics.[/font]"
-      }
       local friendly_fire =
         tab1_info_top.add {
         type = "label",
@@ -290,8 +285,8 @@ function make_m45_info_window(player)
       if player.force.friendly_fire then
         friendly_fire.caption = "Friendly fire is currently ON (normally off)."
       end
-      if global.defaultgroup and global.defaultgroup.allows_action(defines.input_action.drag_train_schedule) then
-        perms_limit.caption = "New players are currently allowed to use trains and logistics (normally off)."
+      if global.restrict == false then
+        restrictions.caption = ""
       end
 
       --Tab 1 Main -- Discord
