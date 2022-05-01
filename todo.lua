@@ -1,3 +1,8 @@
+--Carl Frank Otto III
+--carlotto81@gmail.com
+--GitHub: https://github.com/Distortions81/M45-SoftMod
+--License: MPL 2.0
+
 require "utility"
 
 local loremipsum = "Lorem ipsum dolor sit amet"
