@@ -14,9 +14,6 @@ function dodrawlogo()
       if global.m45logo_light then
         rendering.destroy(global.m45logo_light)
       end
-      if global.m45text then
-        rendering.destroy(global.m45text)
-      end
       if global.servtext then
         rendering.destroy(global.servtext)
       end

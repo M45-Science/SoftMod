@@ -127,23 +127,6 @@ function round(number, precision)
   return number
 end
 
-function is_sameobj(obj_a, obj_b)
-  --Valid objects?
-  if obj_a and obj_b and obj_a.valid and obj_b.valid then
-    --Same surface?
-    if obj_a.surface.name == obj_b.surface.name then
-      --Same name and type?
-      if obj_a.object_name == obj_b.object_name and obj_a.type == obj_b.type then
-        --Same position?
-        if obj_a.position.x == obj_b.position.x and obj_a.position.y == obj_b.position.y then
-          return true
-        end
-      end
-    end
-  end
-
-  return false
-end
 
 --Check if player is flagged patreon
 function is_patreon(victim)

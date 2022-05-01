@@ -3,18 +3,8 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "583-03.11.2022-0905"
+  global.svers = "584-05.01.2022-0731"
 
-  if not global.levelstart then
-    global.levelstart = true
-
-    --Overwrite logfile
-    game.write_file("mapdata.dat", "", false, 0)
-  end
-
-  if not global.objmap then
-    global.objmap = {}
-  end
   if not global.restrict == nil then
     global.restrict = true
   end
@@ -23,9 +13,6 @@ function create_myglobals()
   end
   if not global.active_playtime then
     global.active_playtime = {}
-  end
-  if not global.blueprint_throttle then
-    global.blueprint_throttle = {}
   end
 
   if not global.patreons then
@@ -56,9 +43,6 @@ function create_myglobals()
     global.corpselist = {}
   end
   make_banish_globals()
-  if not global.no_fastreplace then
-    global.no_fastreplace = false
-  end
 
   if not global.info_shown then
     global.info_shown = {}
@@ -75,10 +59,6 @@ function create_player_globals(player)
 
       if not global.active_playtime[player.index] then
         global.active_playtime[player.index] = 0
-      end
-
-      if not global.blueprint_throttle[player.index] then
-        global.blueprint_throttle[player.index] = 0
       end
 
       if not global.thebanished[player.index] then

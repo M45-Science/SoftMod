@@ -196,26 +196,6 @@ function on_player_joined_game(event)
       game_settings(player)
       get_permgroup()
 
-      --Delete old UIs (migrate old saves)
-      if player.gui.top.dicon then
-        player.gui.top.dicon.destroy()
-      end
-      if player.gui.top.discordurl then
-        player.gui.top.discordurl.destroy()
-      end
-      if player.gui.top.zout then
-        player.gui.top.zout.destroy()
-      end
-      if player.gui.top.serverlist then
-        player.gui.top.serverlist.destroy()
-      end
-      if player.gui.center.dark_splash then
-        player.gui.center.dark_splash.destroy()
-      end
-      if player.gui.center.splash_screen then
-        player.gui.center.splash_screen.destroy()
-      end
-
       dodrawlogo() --logo.lua
 
       if player.gui and player.gui.top then
@@ -360,10 +340,6 @@ script.on_event(
     defines.events.on_player_rotated_entity,
     defines.events.on_pre_player_mined_item,
     defines.events.on_built_entity,
-    defines.events.on_robot_built_entity,
-    defines.events.on_robot_pre_mined,
-    defines.events.on_entity_destroyed,
-    defines.events.on_entity_died
   },
   function(event)
     --If no event, or event is a tick
@@ -446,12 +422,6 @@ script.on_event(
       on_pre_player_mined_item(event)
     elseif event.name == defines.events.on_built_entity then
       on_built_entity(event)
-    elseif event.name == defines.events.on_robot_built_entity then
-      on_robot_built_entity(event)
-    elseif event.name == defines.events.on_robot_pre_mined then
-      on_robot_pre_mined(event)
-    elseif event.name == defines.events.on_entity_destroyed or event.name == defines.events.on_entity_died then
-      on_entity_destroyed(event)
     end
 
     --To-Do--
