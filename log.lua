@@ -11,8 +11,8 @@ function on_chart_tag_added(event)
 
     if player and player.valid and event.tag then
       console_print(
-        player.name ..
-          " + tag [gps=" ..
+        "[ACT] ".. player.name ..
+          " add-tag [gps=" ..
             math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
       )
     end
@@ -25,8 +25,8 @@ function on_chart_tag_modified(event)
     local player = game.players[event.player_index]
     if player and player.valid and event.tag then
       console_print(
-        player.name ..
-          " -+ tag [gps=" ..
+        "[ACT] ".. player.name ..
+          " mod-tag [gps=" ..
             math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
       )
     end
@@ -41,8 +41,8 @@ function on_chart_tag_removed(event)
     --Because factorio will hand us an nil event... nice.
     if player and player.valid and event.tag then
       console_print(
-        player.name ..
-          "- tag [gps=" ..
+        "[ACT] ".. player.name ..
+          " del-tag [gps=" ..
             math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
       )
 
@@ -108,7 +108,7 @@ function on_player_deconstructed_area(event)
       --Don't bother if selection is zero.
       if decon_size >= 1 then
         local msg =
-          player.name ..
+        "[ACT] ".. player.name ..
           " deconstructing [gps=" ..
             math.floor(area.left_top.x) ..
               "," ..

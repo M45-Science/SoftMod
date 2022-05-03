@@ -48,14 +48,14 @@ function on_built_entity(event)
 
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
-          console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+          console_print("[ACT] ".. player.name .. " placed " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
         else
           if not global.last_ghost_log then
             global.last_ghost_log = {}
           end
           if global.last_ghost_log[player.index] then
             if game.tick - global.last_ghost_log[player.index] > (60 * 2) then
-              console_print(player.name .. " +" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+              console_print([ACT] ".. player.name .. " placed-ghost " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
             end
           end
           global.last_ghost_log[player.index] = game.tick
@@ -81,9 +81,9 @@ function on_pre_player_mined_item(event)
         if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
           if obj.name ~= "entity-ghost" then
             --log
-            console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+            console_print([ACT] ".. player.name .. " mined " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
           else
-            console_print(player.name .. " -" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+            console_print([ACT] ".. player.name .. " mined-ghost " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
           end
         end
       end
@@ -105,9 +105,9 @@ function on_player_rotated_entity(event)
       if obj and obj.valid then
         if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
           if obj.name ~= "entity-ghost" then
-            console_print(player.name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+            console_print([ACT] ".. player.name .. " rotated " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
           else
-            console_print(player.name .. " *" .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+            console_print([ACT] ".. player.name .. " rotated ghost " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
           end
         end
       else
