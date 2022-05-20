@@ -23,6 +23,8 @@ end
 
 --Count online players, store
 function update_player_list()
+  show_players(nil)
+
   --Sort by active time
   local results = {}
   local count = 0
