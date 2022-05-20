@@ -68,7 +68,7 @@ function show_players(victim)
   local count = 0
 
   --For console use
-  if !victim then
+  if not victim then
     buf = "[ONLINE] "
     if global.player_list then
       for i, target in pairs(global.player_list) do
