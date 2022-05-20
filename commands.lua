@@ -247,8 +247,8 @@ script.on_load(
         end
       )
 
-       --change new player restrictions
-       commands.add_command(
+      --change new player restrictions
+      commands.add_command(
         "restrict",
         "change player restrictions",
         function(param)
@@ -359,7 +359,7 @@ script.on_load(
             player = game.players[param.player_index]
           end
 
-          smart_print(player, global.svers)
+          smart_print(player, "[SVERSION] " .. global.svers)
         end
       )
 
@@ -712,7 +712,7 @@ script.on_load(
 
           --Set new spawn spot
           if pforce and psurface and new_pos_x and new_pos_y then
-            pforce.set_spawn_position({new_pos_x, new_pos_y}, psurface)
+            pforce.set_spawn_position({ new_pos_x, new_pos_y }, psurface)
             smart_print(
               victim,
               string.format("New spawn point set: %d,%d", math.floor(new_pos_x), math.floor(new_pos_y))
@@ -784,8 +784,8 @@ script.on_load(
             pforce.chart(
               psurface,
               {
-                lefttop = {x = -size / 2, y = -size / 2},
-                rightbottom = {x = size / 2, y = size / 2}
+                lefttop = { x = -size / 2, y = -size / 2 },
+                rightbottom = { x = size / 2, y = size / 2 }
               }
             )
             local sstr = math.floor(size)
@@ -1016,7 +1016,7 @@ script.on_load(
               local n = game.surfaces[param.parameter]
               if n then
                 surface = n
-                local position = {x = xpos, y = ypos}
+                local position = { x = xpos, y = ypos }
                 local newpos = surface.find_non_colliding_position("character", position, 100, 0.1, false)
                 if newpos then
                   player.teleport(newpos, surface)
@@ -1032,7 +1032,7 @@ script.on_load(
               --str could be "-353,19" or "[gps=80,-20]" or "[gps=5,3,hell]"
               xpos, ypos = str:match("(%-?%d+),%s*(%-?%d+)")
               if tonumber(xpos) and tonumber(ypos) then
-                local position = {x = xpos, y = ypos}
+                local position = { x = xpos, y = ypos }
 
                 if position then
                   if position.x and position.y then
