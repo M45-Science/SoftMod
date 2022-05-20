@@ -67,6 +67,21 @@ function show_players(victim)
   local buf = ""
   local count = 0
 
+  --For console use
+  if !victim then
+    buf = "[ONLINE] "
+    if global.player_list then
+      for i, target in pairs(global.player_list) do
+        if target and target.victim and target.victim.connected then
+          buf = buf .. target.victim.name ..  "," .. target.score .. ","..target.time..","..target.type..";"
+        end
+      end
+    end
+
+    print(buf)
+    return
+  end
+
   if global.player_list then
     for i, target in pairs(global.player_list) do
       if target and target.victim and target.victim.connected then
@@ -74,6 +89,7 @@ function show_players(victim)
       end
     end
   end
+
   --No one is online
   if not global.player_count or global.player_count == 0 then
     smart_print(victim, "No players online.")
