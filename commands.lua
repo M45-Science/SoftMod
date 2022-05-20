@@ -293,7 +293,11 @@ script.on_load(
             player = game.players[param.player_index]
           end
 
-          smart_print(player, "[GT] " .. game.tick)
+          if player  then
+            smart_print(player, "Game tick: " .. game.tick)
+          else
+            print("[GT] " .. game.tick)
+          end
         end
       )
 
@@ -359,7 +363,12 @@ script.on_load(
             player = game.players[param.player_index]
           end
 
-          smart_print(player, "[SVERSION] " .. global.svers)
+          if player then
+            smart_print(player, "[SVERSION] " .. global.svers)
+          else
+            print("[SVERSION] " .. global.svers)
+          end
+
         end
       )
 
