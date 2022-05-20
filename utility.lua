@@ -6,7 +6,7 @@
 --Safe console print
 function console_print(message)
   if message then
-    print("~" .. message)
+    print(message)
   end
 end
 
