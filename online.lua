@@ -11,19 +11,22 @@ function make_online_button(player)
   end
   if not player.gui.top.online_button then
     local online_32 =
-      player.gui.top.add {
+    player.gui.top.add {
       type = "sprite-button",
       name = "online_button",
       sprite = "file/img/buttons/online-64.png",
       tooltip = "See players online!"
     }
-    online_32.style.size = {64, 64}
+    online_32.style.size = { 64, 64 }
   end
 end
 
 --Count online players, store
-function update_player_list()
-  show_players(nil)
+function update_player_list(update)
+
+  if update then
+    show_players(nil)
+  end
 
   --Sort by active time
   local results = {}
@@ -82,7 +85,7 @@ function update_player_list()
         }
       )
     else
-      table.insert(results, {victim = victim, score = 0, time = victim.online_time, type = utag})
+      table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag })
     end
 
     tcount = tcount + 1
@@ -129,7 +132,7 @@ function make_m45_online_submenu(player, target_name)
       if not player.gui.screen.m45_online_submenu then
         if not player.gui.screen.m45_online_submenu then
           local main_flow =
-            player.gui.screen.add {
+          player.gui.screen.add {
             type = "frame",
             name = "m45_online_submenu",
             direction = "vertical"
@@ -140,7 +143,7 @@ function make_m45_online_submenu(player, target_name)
 
           --Online Title Bar--
           local online_submenu_titlebar =
-            main_flow.add {
+          main_flow.add {
             type = "frame",
             direction = "horizontal"
           }
@@ -148,17 +151,13 @@ function make_m45_online_submenu(player, target_name)
           online_submenu_titlebar.style.horizontal_align = "center"
           online_submenu_titlebar.style.horizontally_stretchable = true
 
-          if not global.player_count or not global.player_list then
-            update_player_list()
-          end
-
           online_submenu_titlebar.add {
             type = "label",
             style = "frame_title",
             caption = "Player: " .. target_name
           }
           local pusher =
-            online_submenu_titlebar.add {
+          online_submenu_titlebar.add {
             type = "empty-widget",
             style = "draggable_space_header"
           }
@@ -175,7 +174,7 @@ function make_m45_online_submenu(player, target_name)
           }
 
           local online_submenu_main =
-            main_flow.add {
+          main_flow.add {
             type = "frame",
             name = "main",
             direction = "vertical"
@@ -184,13 +183,13 @@ function make_m45_online_submenu(player, target_name)
 
           --FIND ON MAP
           local find_on_map_frame =
-            online_submenu_main.add {
+          online_submenu_main.add {
             type = "flow",
             direction = "vertical"
           }
           find_on_map_frame.style.horizontal_align = "center"
           local find_on_map =
-            find_on_map_frame.add {
+          find_on_map_frame.add {
             type = "button",
             caption = "[item=artillery-targeting-remote] Find On Map",
             name = "find_on_map",
@@ -200,20 +199,20 @@ function make_m45_online_submenu(player, target_name)
 
           --WHISPER
           local whisper_frame =
-            online_submenu_main.add {
+          online_submenu_main.add {
             type = "flow",
             name = "whisper_frame",
             direction = "vertical"
           }
           whisper_frame.style.horizontal_align = "center"
           local whisper =
-            whisper_frame.add {
+          whisper_frame.add {
             type = "label",
             caption = "[font=default-large-bold]Whisper To:[/font]",
             name = "whisper"
           }
           local whisper_textbox =
-            whisper_frame.add {
+          whisper_frame.add {
             type = "text-box",
             text = "",
             name = "whisper_textbox"
@@ -236,20 +235,20 @@ function make_m45_online_submenu(player, target_name)
 
           --REPORT
           local report_frame =
-            online_submenu_main.add {
+          online_submenu_main.add {
             type = "flow",
             direction = "vertical",
             name = "report_frame"
           }
           report_frame.style.horizontal_align = "center"
           local report =
-            report_frame.add {
+          report_frame.add {
             type = "label",
             caption = "[font=default-large-bold]Report player:[/font]",
             name = "report"
           }
           local report_textbox =
-            report_frame.add {
+          report_frame.add {
             type = "text-box",
             text = "",
             name = "report_textbox"
@@ -266,7 +265,7 @@ function make_m45_online_submenu(player, target_name)
           report_textbox.style.horizontal_align = "left"
 
           local report_button =
-            report_frame.add {
+          report_frame.add {
             type = "button",
             caption = "REPORT",
             style = "red_button",
@@ -281,20 +280,20 @@ function make_m45_online_submenu(player, target_name)
 
           --BANISH
           local banish_frame =
-            online_submenu_main.add {
+          online_submenu_main.add {
             type = "flow",
             direction = "vertical",
             name = "banish_frame"
           }
           banish_frame.style.horizontal_align = "center"
           local banish =
-            banish_frame.add {
+          banish_frame.add {
             type = "label",
             caption = "[font=default-large-bold]Banish Player: (REASON REQUIRED BELOW)[/font]",
             name = "banish"
           }
           local banish_textbox =
-            banish_frame.add {
+          banish_frame.add {
             type = "text-box",
             text = "",
             name = "banish_textbox"
@@ -306,7 +305,7 @@ function make_m45_online_submenu(player, target_name)
           banish_textbox.style.horizontal_align = "center"
 
           local banish_button =
-            banish_frame.add {
+          banish_frame.add {
             type = "button",
             caption = "VOTE TO BANISH",
             style = "red_button",
@@ -317,7 +316,7 @@ function make_m45_online_submenu(player, target_name)
           if is_regular(player) or player.admin then
             if target.admin then
               local banish_note =
-                banish_frame.add {
+              banish_frame.add {
                 type = "label",
                 caption = "(admins cannot be banished)"
               }
@@ -328,7 +327,7 @@ function make_m45_online_submenu(player, target_name)
             end
           else
             local banish_note =
-              banish_frame.add {
+            banish_frame.add {
               type = "label",
               caption = "(only regulars and admins have banish privleges)"
             }
@@ -375,7 +374,7 @@ function make_m45_online_window(player)
     end
     if not player.gui.left.m45_online then
       local main_flow =
-        player.gui.left.add {
+      player.gui.left.add {
         type = "frame",
         name = "m45_online",
         direction = "vertical"
@@ -389,7 +388,7 @@ function make_m45_online_window(player)
 
       --Online Title Bar--
       local online_titlebar =
-        main_flow.add {
+      main_flow.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -397,7 +396,7 @@ function make_m45_online_window(player)
       online_titlebar.style.horizontally_stretchable = true
 
       if not global.player_count or not global.player_list then
-        update_player_list()
+        update_player_list(true)
       end
 
       if not global.online_brief then
@@ -433,7 +432,7 @@ function make_m45_online_window(player)
 
       --CLOSE BUTTON--
       local online_close_button =
-        online_titlebar.add {
+      online_titlebar.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -454,7 +453,7 @@ function make_m45_online_window(player)
 
       if not global.online_brief[player.index] then
         local show_offline =
-          online_close_button.add {
+        online_close_button.add {
           type = "checkbox",
           caption = "Show offline  ",
           name = "m45_online_show_offline",
@@ -464,7 +463,7 @@ function make_m45_online_window(player)
       end
 
       local brief =
-        online_close_button.add {
+      online_close_button.add {
         type = "checkbox",
         caption = "Brief  ",
         name = "m45_online_brief",
@@ -483,19 +482,19 @@ function make_m45_online_window(player)
       }
 
       local online_main =
-        main_flow.add {
+      main_flow.add {
         type = "scroll-pane",
         direction = "vertical"
       }
 
       if not global.online_brief[player.index] then
         local pframe =
-          online_main.add {
+        online_main.add {
           type = "frame",
           direction = "horizontal"
         }
         local submenu =
-          pframe.add {
+        pframe.add {
           type = "label",
           caption = "MENU"
         }
@@ -510,7 +509,7 @@ function make_m45_online_window(player)
           direction = "vertical"
         }
         local name_label =
-          pframe.add {
+        pframe.add {
           type = "label",
           caption = "  Name:"
         }
@@ -520,7 +519,7 @@ function make_m45_online_window(player)
           direction = "vertical"
         }
         local time_label =
-          pframe.add {
+        pframe.add {
           type = "label",
           caption = " Time:"
         }
@@ -530,7 +529,7 @@ function make_m45_online_window(player)
           direction = "vertical"
         }
         local time_label =
-          pframe.add {
+        pframe.add {
           type = "label",
           caption = " Score:"
         }
@@ -540,7 +539,7 @@ function make_m45_online_window(player)
           direction = "vertical"
         }
         local score_label =
-          pframe.add {
+        pframe.add {
           type = "label",
           caption = "  Level:"
         }
@@ -566,14 +565,12 @@ function make_m45_online_window(player)
 
           local pframe
           if not global.online_brief[player.index] then
-            pframe =
-              online_main.add {
+            pframe = online_main.add {
               type = "frame",
               direction = "horizontal"
             }
           else
-            pframe =
-              online_main.add {
+            pframe = online_main.add {
               type = "flow",
               direction = "horizontal"
             }
@@ -583,26 +580,24 @@ function make_m45_online_window(player)
             local submenu
             --Yeah don't need this menu for ourself
             if victim.name == player.name then
-              submenu =
-                pframe.add {
+              submenu = pframe.add {
                 type = "sprite-button",
                 sprite = "utility/player_force_icon",
                 tooltip = "This is you!"
               }
               submenu.enabled = false
             else
-              submenu =
-                pframe.add {
+              submenu = pframe.add {
                 type = "sprite-button",
                 sprite = "utility/expand",
                 name = "m45_online_submenu_open," .. victim.name, --Pass name
                 tooltip = "Additional options, such as whisper, banish and find-on-map."
               }
             end
-            submenu.style.size = {24, 24}
+            submenu.style.size = { 24, 24 }
 
             local gps_spacer =
-              pframe.add {
+            pframe.add {
               type = "empty-widget"
             }
             gps_spacer.style.width = 16
@@ -617,22 +612,21 @@ function make_m45_online_window(player)
             }
           end
           local name_label
-          name_label =
-            pframe.add {
+          name_label = pframe.add {
             type = "label",
             caption = "  " .. victim.name
           }
-          local newcolor = {r = 1, g = 1, b = 1}
+          local newcolor = { r = 1, g = 1, b = 1 }
           if is_patreon(victim) then
-            newcolor = {r = 1.0, g = 0.0, b = 1.0}
+            newcolor = { r = 1.0, g = 0.0, b = 1.0 }
           elseif is_nitro(victim) then
-            newcolor = {r = 0.0, g = 0.5, b = 1.0}
+            newcolor = { r = 0.0, g = 0.5, b = 1.0 }
           elseif victim.admin then
-            newcolor = {r = 1, g = 0, b = 0}
+            newcolor = { r = 1, g = 0, b = 0 }
           elseif is_regular(victim) then
-            newcolor = {r = 1, g = 1, b = 0}
+            newcolor = { r = 1, g = 1, b = 0 }
           elseif is_member(victim) then
-            newcolor = {r = 0, g = 1, b = 0}
+            newcolor = { r = 0, g = 1, b = 0 }
           end
 
           if not global.online_brief[player.index] then
@@ -642,7 +636,7 @@ function make_m45_online_window(player)
 
           --Darker if offline
           if is_offline then
-            newcolor = {r = (newcolor.r / 4) + 0.15, g = (newcolor.g / 4) + 0.15, b = (newcolor.b / 4) + 0.15}
+            newcolor = { r = (newcolor.r / 4) + 0.15, g = (newcolor.g / 4) + 0.15, b = (newcolor.b / 4) + 0.15 }
           end
 
           --Set font color
@@ -650,31 +644,31 @@ function make_m45_online_window(player)
 
           if not global.online_brief[player.index] then
             local name_label =
-              pframe.add {
+            pframe.add {
               type = "line",
               direction = "vertical"
             }
             local time_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m",
               tooltip = "Total time player has been connected on this map."
             }
             time_label.style.width = 100
             local name_label =
-              pframe.add {
+            pframe.add {
               type = "line",
               direction = "vertical"
             }
             local time_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
               tooltip = "Total time player has been active on this map."
             }
             time_label.style.width = 100
             local name_label =
-              pframe.add {
+            pframe.add {
               type = "line",
               direction = "vertical"
             }
@@ -703,7 +697,7 @@ function make_m45_online_window(player)
             end
 
             local score_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = "  " .. utag,
               tooltip = "Current level, see membership tab for more info."
@@ -712,7 +706,7 @@ function make_m45_online_window(player)
           end
         end
       end
-    --end
+      --end
     end
   end
 end

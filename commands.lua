@@ -293,7 +293,7 @@ script.on_load(
             player = game.players[param.player_index]
           end
 
-          if player  then
+          if player then
             smart_print(player, "Game tick: " .. game.tick)
           else
             print("[GT] " .. game.tick)
@@ -509,7 +509,7 @@ script.on_load(
               if victim and victim.valid and global.membersgroup then
                 smart_print(player, "Player given members status.")
                 global.membersgroup.add_player(victim)
-                update_player_list() --online.lua
+                update_player_list(true) --online.lua
                 return
               end
             end
@@ -542,7 +542,7 @@ script.on_load(
               if victim and victim.valid and global.regularsgroup then
                 smart_print(player, "Player given regulars status.")
                 global.regularsgroup.add_player(victim)
-                update_player_list() --online.lua
+                update_player_list(true) --online.lua
                 return
               end
             end
@@ -579,7 +579,7 @@ script.on_load(
                 if not global.patreons[victim.index] then
                   global.patreons[victim.index] = true
                   smart_print(player, "Player given patreon status.")
-                  update_player_list() --online.lua
+                  update_player_list(true) --online.lua
                 else
                   smart_print(player, "Player already has patreon status.")
                 end
@@ -620,7 +620,7 @@ script.on_load(
                 if not global.nitros[victim.index] then
                   global.nitros[victim.index] = true
                   smart_print(player, "Player given nitro status.")
-                  update_player_list() --online.lua
+                  update_player_list(true) --online.lua
                 else
                   smart_print(player, "Player already has nitro status.")
                 end
@@ -847,7 +847,14 @@ script.on_load(
           if param and param.player_index then
             victim = game.players[param.player_index]
           end
-          show_players(victim)
+
+          --Sends updated list of players to server
+          update_player_list(true)
+
+          --Already sent if console
+          if victim then
+            show_players(victim)
+          end
         end
       )
 

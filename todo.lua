@@ -70,10 +70,6 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             todo_submenu_titlebar.style.horizontal_align = "center"
             todo_submenu_titlebar.style.horizontally_stretchable = true
 
-            if not global.player_count or not global.player_list then
-              update_player_list()
-            end
-
             todo_submenu_titlebar.add {
               type = "label",
               style = "frame_title",

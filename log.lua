@@ -72,7 +72,7 @@ end
 
 --Player disconnect messages, with reason (Fact >= v1.1)
 function on_player_left_game(event)
-  update_player_list() --online.lua
+  update_player_list(true) --online.lua
 
   if event and event.player_index and event.reason then
     local player = game.players[event.player_index]
