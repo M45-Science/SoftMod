@@ -24,10 +24,6 @@ end
 --Count online players, store
 function update_player_list(update, removeme)
 
-  if update then
-    show_players(nil)
-  end
-
   --Sort by active time
   local results = {}
   local count = 0
@@ -41,7 +37,7 @@ function update_player_list(update, removeme)
   --Make a table with active time, handle missing data
   for i, victim in pairs(game.players) do
 
-    if victim.Name ~= removeme then
+    if victim.name ~= removeme then
       local utag
 
       --Catch all
@@ -120,6 +116,11 @@ function update_player_list(update, removeme)
       make_m45_online_window(victim) --online.lua
     end
   end
+
+  if update then
+    show_players(nil)
+  end
+
 end
 
 --Global, called from control.lua
