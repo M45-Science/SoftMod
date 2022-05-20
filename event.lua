@@ -43,7 +43,7 @@ script.on_nth_tick(
       dodrawlogo()
     end
 
-    update_player_list(false) --online.lua
+    update_player_list(false, "") --online.lua
 
     --Remove old corpse tags
     if (global.corpselist) then
@@ -154,7 +154,7 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-  update_player_list(true) --online.lua
+  update_player_list(true, "") --online.lua
 
   if global.cheatson then
     if event and event.player_index then
@@ -227,7 +227,7 @@ function on_player_created(event)
       set_perms()
       send_to_default_spawn(player) --incase spawn moved
       game_settings(player)
-      update_player_list(true) --online.lua
+      update_player_list(true, "") --online.lua
 
       --Cutoff-point, just becomes annoying.
       if not player.force.technologies["military-2"].researched then

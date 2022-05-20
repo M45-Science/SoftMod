@@ -22,7 +22,7 @@ function make_online_button(player)
 end
 
 --Count online players, store
-function update_player_list(update)
+function update_player_list(update, removeme)
 
   if update then
     show_players(nil)
@@ -40,57 +40,61 @@ function update_player_list(update)
 
   --Make a table with active time, handle missing data
   for i, victim in pairs(game.players) do
-    local utag
 
-    --Catch all
-    if victim.permission_group then
-      local gname = victim.permission_group.name
-      utag = gname
-    else
-      utag = "none"
-    end
+    if victim.Name ~= removeme then
+      local utag
 
-    --Normal groups
-    if is_new(victim) then
-      utag = "NEW"
-    end
-    if is_member(victim) then
-      utag = "Members"
-    end
-    if is_regular(victim) then
-      utag = "Regulars"
-    end
-    if is_banished(victim) then
-      utag = "BANISHED"
-    end
-    if victim.admin then
-      utag = "ADMINS"
-    end
+      --Catch all
+      if victim.permission_group then
+        local gname = victim.permission_group.name
+        utag = gname
+      else
+        utag = "none"
+      end
 
-    if is_patreon(victim) then
-      utag = utag .. " (PATREON)"
-    end
-    if is_nitro(victim) then
-      utag = utag .. " (NITRO)"
-    end
+      --Normal groups
+      if is_new(victim) then
+        utag = "NEW"
+      end
+      if is_member(victim) then
+        utag = "Members"
+      end
+      if is_regular(victim) then
+        utag = "Regulars"
+      end
+      if is_banished(victim) then
+        utag = "BANISHED"
+      end
+      if victim.admin then
+        utag = "ADMINS"
+      end
 
-    if global.active_playtime[victim.index] then
-      table.insert(
-        results,
-        {
-          victim = victim,
-          score = global.active_playtime[victim.index],
-          time = victim.online_time,
-          type = utag
-        }
-      )
-    else
-      table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag })
-    end
+      if is_patreon(victim) then
+        utag = utag .. " (PATREON)"
+      end
+      if is_nitro(victim) then
+        utag = utag .. " (NITRO)"
+      end
 
-    tcount = tcount + 1
-    if victim.connected then
-      count = count + 1
+      if global.active_playtime[victim.index] then
+        table.insert(
+          results,
+          {
+            victim = victim,
+            score = global.active_playtime[victim.index],
+            time = victim.online_time,
+            type = utag
+          }
+        )
+      else
+        table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag })
+      end
+
+      tcount = tcount + 1
+      if victim.connected then
+        count = count + 1
+      end
+
     end
   end
 
@@ -396,7 +400,7 @@ function make_m45_online_window(player)
       online_titlebar.style.horizontally_stretchable = true
 
       if not global.player_count or not global.player_list then
-        update_player_list(true)
+        update_player_list(true, "")
       end
 
       if not global.online_brief then

@@ -11,9 +11,9 @@ function on_chart_tag_added(event)
 
     if player and player.valid and event.tag then
       console_print(
-        "[ACT] ".. player.name ..
-          " add-tag [gps=" ..
-            math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+        "[ACT] " .. player.name ..
+        " add-tag [gps=" ..
+        math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
       )
     end
   end
@@ -25,9 +25,9 @@ function on_chart_tag_modified(event)
     local player = game.players[event.player_index]
     if player and player.valid and event.tag then
       console_print(
-        "[ACT] ".. player.name ..
-          " mod-tag [gps=" ..
-            math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+        "[ACT] " .. player.name ..
+        " mod-tag [gps=" ..
+        math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
       )
     end
   end
@@ -41,18 +41,17 @@ function on_chart_tag_removed(event)
     --Because factorio will hand us an nil event... nice.
     if player and player.valid and event.tag then
       console_print(
-        "[ACT] ".. player.name ..
-          " del-tag [gps=" ..
-            math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
+        "[ACT] " .. player.name ..
+        " del-tag [gps=" ..
+        math.floor(event.tag.position.x) .. "," .. math.floor(event.tag.position.y) .. "] " .. event.tag.text
       )
 
       --Delete corpse map tag and corpse_lamp
       for i, ctag in pairs(global.corpselist) do
         if ctag.tag and ctag.tag.valid then
-          if
-            event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and
+          if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and
               ctag.pos.y == event.tag.position.y
-           then
+          then
             --Destroy corpse lamp
             rendering.destroy(ctag.corpse_lamp)
 
@@ -72,11 +71,12 @@ end
 
 --Player disconnect messages, with reason (Fact >= v1.1)
 function on_player_left_game(event)
-  update_player_list(true) --online.lua
 
   if event and event.player_index and event.reason then
     local player = game.players[event.player_index]
-    if player and player.valid then
+    if player then
+      update_player_list(true, player.Name) --online.lua
+
       local reason = {
         "(Quit)",
         "(Dropped)",
@@ -92,8 +92,15 @@ function on_player_left_game(event)
         "(Unknown)"
       }
       message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
+      return
     end
   end
+
+
+  local player = game.players[event.player_index]
+  update_player_list(true, player.Name) --online.lua
+  message_alld(player.name .. " disconnected!")
+
 end
 
 --Deconstruction planner warning
@@ -108,15 +115,15 @@ function on_player_deconstructed_area(event)
       --Don't bother if selection is zero.
       if decon_size >= 1 then
         local msg =
-        "[ACT] ".. player.name ..
-          " deconstructing [gps=" ..
+        "[ACT] " .. player.name ..
+            " deconstructing [gps=" ..
             math.floor(area.left_top.x) ..
-              "," ..
-                math.floor(area.left_top.y) ..
-                  "] to [gps=" ..
-                    math.floor(area.right_bottom.x) ..
-                      "," ..
-                        math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) .. "sq"
+            "," ..
+            math.floor(area.left_top.y) ..
+            "] to [gps=" ..
+            math.floor(area.right_bottom.x) ..
+            "," ..
+            math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) .. "sq"
         console_print(msg)
 
         if is_new(player) or is_member(player) then --Dont bother with regulars/admins
