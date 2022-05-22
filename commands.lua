@@ -359,6 +359,8 @@ script.on_load(
         function(param)
           local player
 
+          create_myglobals()
+
           if param and param.player_index then
             player = game.players[param.player_index]
           end
