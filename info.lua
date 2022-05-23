@@ -831,6 +831,7 @@ function on_gui_click(event)
          then
           player.gui.screen.m45_info_window.destroy()
         else
+          player.character.damage(25, "enemy") --Grab attention
           smart_print(player, "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
           smart_print(
             player,
