@@ -75,7 +75,6 @@ function on_player_left_game(event)
   if event and event.player_index and event.reason then
     local player = game.players[event.player_index]
     if player then
-      update_player_list(true, player.name) --online.lua
 
       local reason = {
         "(quit)",
@@ -92,6 +91,8 @@ function on_player_left_game(event)
         "(unknown reason)"
       }
       message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
+
+      update_player_list(true, player.name) --online.lua
       return
     end
   end
