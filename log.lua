@@ -78,18 +78,18 @@ function on_player_left_game(event)
       update_player_list(true, player.name) --online.lua
 
       local reason = {
-        "(Quit)",
-        "(Dropped)",
-        "(Reconnecting)",
-        "(WRONG INPUT)",
-        "(TOO MANY DESYNC)",
-        "(CPU TOO SLOW!!!)",
-        "(AFK)",
-        "(KICKED)",
-        "(KICKED AND DELETED)",
-        "(BANNED)",
-        "(Switching servers)",
-        "(Unknown)"
+        "(quit)",
+        "(dropped)",
+        "(reconnecting)",
+        "(wrong input)",
+        "(too many desync)",
+        "(cannot keep up)",
+        "(afk)",
+        "(kicked)",
+        "(kicked and deleted)",
+        "(banned)",
+        "(switching servers)",
+        "(unknown reason)"
       }
       message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
       return
