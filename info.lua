@@ -491,10 +491,6 @@ function make_m45_info_window(player)
         type = "label",
         caption = "Deconstruction planner warning removed."
       }
-      tab2_main_frame.add {
-        type = "label",
-        caption = "tinyurl.com/ycktpy45"
-      }
       --Close Button Frame
       local tab2_close_frame =
         tab2_main_frame.add {
