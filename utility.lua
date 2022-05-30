@@ -16,7 +16,7 @@ function smart_print(player, message)
     if player then
       player.print(message)
     else
-      rcon.print("~ " .. message)
+      rcon.print(message)
     end
   end
 end
