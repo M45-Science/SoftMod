@@ -256,7 +256,7 @@ function make_m45_info_window(player)
         local reset_warning =
           tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS AT " ..
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]NEXT MAP RESET ON: " ..
             string.upper(global.resetint) .. "[/font][/color]"
         }
       end
@@ -264,7 +264,7 @@ function make_m45_info_window(player)
         local reset_warning =
           tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS IN " ..
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESET IN: " ..
             string.upper(global.resetdur) .. "[/font][/color]"
         }
       end
