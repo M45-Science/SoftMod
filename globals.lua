@@ -5,7 +5,7 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "586-05.20.2022-1026"
+  global.svers = "587-05.30.2022-0810p"
 
   if not global.restrict == nil then
     global.restrict = true

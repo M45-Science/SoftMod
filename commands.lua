@@ -14,6 +14,35 @@ script.on_load(
       add_banish_commands()
       --banish.lua
 
+
+      --Reset interval message
+      commands.add_command(
+        "resetdur",
+        "on/off",
+        function(param)
+          local player
+          local victim
+
+          --Admins only
+          if param and param.player_index then
+            player = game.players[param.player_index]
+            if player and player.admin == false then
+              smart_print(player, "Admins only.")
+              return
+            end
+          end
+
+          if param.parameter then
+            global.resetdur = param.parameter
+            for _, target in pairs(game.connected_players) do
+              if target.gui.top.reset_clock then
+                target.gui.top.reset_clock.caption = "Map reset: "..param.parameter
+              end
+            end
+          end
+        end
+      )
+
       --Reset interval message
       commands.add_command(
         "resetint",

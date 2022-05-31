@@ -203,6 +203,7 @@ function on_player_joined_game(event)
       if player.gui and player.gui.top then
         make_info_button(player) --info.lua
         make_online_button(player) --online.lua
+        make_reset_clock(player) --clock.lua
       end
 
       --Always show to new players, everyone else at least once per map

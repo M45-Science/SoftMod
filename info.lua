@@ -256,10 +256,23 @@ function make_m45_info_window(player)
         local reset_warning =
           tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS " ..
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS AT " ..
             string.upper(global.resetint) .. "[/font][/color]"
         }
       end
+      if global.resetdur then
+        local reset_warning =
+          tab1_info_top.add {
+          type = "label",
+          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESETS IN " ..
+            string.upper(global.resetdur) .. "[/font][/color]"
+        }
+      end
+      tab1_info_top.style.horizontally_stretchable = true
+      tab1_info_top.add {
+        type = "label",
+        caption = ""
+      }
       local restrictions =
         tab1_info_top.add {
         type = "label",
@@ -276,7 +289,7 @@ function make_m45_info_window(player)
       }
       tab1_info_top.add {
         type = "label",
-        caption = "[font=default-large]Click the '[item=automation-science-pack] Membership' tab above, to find out how to become a member.[/font]"
+        caption = "[font=default-large]Click the '[item=automation-science-pack] Membership' tab above for more information.[/font]"
       }
       tab1_info_top.add {
         type = "label",
