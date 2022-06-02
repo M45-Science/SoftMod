@@ -256,7 +256,7 @@ function make_m45_info_window(player)
         local reset_warning =
         tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]NEXT MAP RESET ON: " ..
+          caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]NEXT MAP RESET ON: " ..
               string.upper(global.resetint) .. "[/font][/color]"
         }
       end
@@ -264,7 +264,7 @@ function make_m45_info_window(player)
         local reset_warning =
         tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESET IN: " ..
+          caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]MAP RESET IN: " ..
               string.upper(global.resetdur) .. "[/font][/color]"
         }
       end
@@ -276,7 +276,7 @@ function make_m45_info_window(player)
       local restrictions =
       tab1_info_top.add {
         type = "label",
-        caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
+        caption = "[entity=character]  [color=yello][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
       local friendly_fire =
       tab1_info_top.add {
