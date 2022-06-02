@@ -158,7 +158,7 @@ function on_player_joined_game(event)
 
   --Set clock as NOT MINIMIZED on login
   if event and event.player_index then
-    if global.hide_clock and global.hide_clock[event.player_indes] then
+    if global.hide_clock and global.hide_clock[event.player_index] then
     global.hide_clock[event.player_index] = false
     end
   end
