@@ -882,18 +882,20 @@ function on_gui_click(event)
       elseif event.element.name == "reset_clock" then
         --reset-clock-close
         if player.gui and player.gui.top and player.gui.top.reset_clock then
-          if event.button and event.button == defines.mouse_button_type.right and event.control then
-            if global.hide_clock then
-              if global.hide_clock[player.index] and global.hide_clock[player.index] == true then
-                global.hide_clock[player.index] = false
-                player.gui.top.reset_clock.caption = "Map reset: " .. global.resetdur
-                player.gui.top.reset_clock.style = "red_button"
-              else
+
+          if global.hide_clock then
+            if global.hide_clock[player.index] and global.hide_clock[player.index] == true then
+              global.hide_clock[player.index] = false
+              player.gui.top.reset_clock.caption = "Map reset: " .. global.resetdur
+              player.gui.top.reset_clock.style = "red_button"
+            else
+              if event.button and event.button == defines.mouse_button_type.right and event.control then
                 global.hide_clock[player.index] = true
                 player.gui.top.reset_clock.caption = ">"
                 player.gui.top.reset_clock.style = "tip_notice_close_button"
               end
             end
+
           end
         end
       end
