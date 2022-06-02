@@ -10,13 +10,13 @@ function make_info_button(player)
   end
   if not player.gui.top.m45_button then
     local m45_32 =
-      player.gui.top.add {
+    player.gui.top.add {
       type = "sprite-button",
       name = "m45_button",
       sprite = "file/img/buttons/m45-64.png",
       tooltip = "Opens the server info window"
     }
-    m45_32.style.size = {64, 64}
+    m45_32.style.size = { 64, 64 }
   end
 end
 
@@ -36,7 +36,7 @@ function make_m45_info_window(player)
       end
 
       local main_flow =
-        player.gui.screen.add {
+      player.gui.screen.add {
         type = "frame",
         name = "m45_info_window",
         direction = "vertical"
@@ -47,7 +47,7 @@ function make_m45_info_window(player)
 
       --Info Title Bar--
       local info_titlebar =
-        main_flow.add {
+      main_flow.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -70,7 +70,7 @@ function make_m45_info_window(player)
           caption = "Server Name: " .. global.servname
         }
       end
-      local pusher = info_titlebar.add {type = "empty-widget", style = "draggable_space_header"}
+      local pusher = info_titlebar.add { type = "empty-widget", style = "draggable_space_header" }
       pusher.style.vertically_stretchable = true
       pusher.style.horizontally_stretchable = true
       pusher.drag_target = main_flow
@@ -83,19 +83,19 @@ function make_m45_info_window(player)
         tooltip = "Close this window"
       }
 
-      local info_pane = main_flow.add {type = "tabbed-pane", name = "m45_info_window_tabs"}
+      local info_pane = main_flow.add { type = "tabbed-pane", name = "m45_info_window_tabs" }
       info_pane.style.minimal_width = 725
 
-      local tab1 = info_pane.add {type = "tab", caption = "[entity=character] Welcome"}
-      local tab2 = info_pane.add {type = "tab", caption = "[item=automation-science-pack] Membership"}
-      local tab3 = info_pane.add {type = "tab", caption = "[item=steel-plate]Rules"}
-      local tab4 = info_pane.add {type = "tab", caption = "[virtual-signal=signal-info] Tips & Tricks"}
-      local tab5 = info_pane.add {type = "tab", caption = "[item=advanced-circuit] QR-Code"}
-      local tab6 = info_pane.add {type = "tab", caption = "[item=production-science-pack] Patreon"}
+      local tab1 = info_pane.add { type = "tab", caption = "[entity=character] Welcome" }
+      local tab2 = info_pane.add { type = "tab", caption = "[item=automation-science-pack] Membership" }
+      local tab3 = info_pane.add { type = "tab", caption = "[item=steel-plate]Rules" }
+      local tab4 = info_pane.add { type = "tab", caption = "[virtual-signal=signal-info] Tips & Tricks" }
+      local tab5 = info_pane.add { type = "tab", caption = "[item=advanced-circuit] QR-Code" }
+      local tab6 = info_pane.add { type = "tab", caption = "[item=production-science-pack] Patreon" }
 
       --Tab 1 -- Welcome
       local tab1_frame =
-        info_pane.add {
+      info_pane.add {
         type = "flow",
         direction = "vertical"
       }
@@ -103,14 +103,14 @@ function make_m45_info_window(player)
 
       --Tab 1 -- Main
       local tab1_main_frame =
-        tab1_frame.add {
+      tab1_frame.add {
         type = "flow",
         direction = "horizontal"
       }
 
       --Tab 1 left-frame logo-patreons
       local tab1_lframe =
-        tab1_main_frame.add {
+      tab1_main_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -193,13 +193,13 @@ function make_m45_info_window(player)
 
       --Tab 1 right-frame
       local tab1_rframe =
-        tab1_main_frame.add {
+      tab1_main_frame.add {
         type = "flow",
         direction = "vertical"
       }
       --Tab 1 Center -- Info
       local tab1_info_center =
-        tab1_main_frame.add {
+      tab1_main_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -243,7 +243,7 @@ function make_m45_info_window(player)
 
       --Tab 1 Main -- New Player Warning
       local tab1_info_top =
-        tab1_rframe.add {
+      tab1_rframe.add {
         type = "flow",
         direction = "vertical"
       }
@@ -254,18 +254,18 @@ function make_m45_info_window(player)
       }
       if global.resetint then
         local reset_warning =
-          tab1_info_top.add {
+        tab1_info_top.add {
           type = "label",
           caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]NEXT MAP RESET ON: " ..
-            string.upper(global.resetint) .. "[/font][/color]"
+              string.upper(global.resetint) .. "[/font][/color]"
         }
       end
       if global.resetdur then
         local reset_warning =
-          tab1_info_top.add {
+        tab1_info_top.add {
           type = "label",
           caption = "[virtual-signal=signal-everything]  [color=red][font=default-large-bold]MAP RESET IN: " ..
-            string.upper(global.resetdur) .. "[/font][/color]"
+              string.upper(global.resetdur) .. "[/font][/color]"
         }
       end
       tab1_info_top.style.horizontally_stretchable = true
@@ -274,12 +274,12 @@ function make_m45_info_window(player)
         caption = ""
       }
       local restrictions =
-        tab1_info_top.add {
+      tab1_info_top.add {
         type = "label",
         caption = "[entity=character]  [color=red][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
       local friendly_fire =
-        tab1_info_top.add {
+      tab1_info_top.add {
         type = "label",
         caption = "[recipe=combat-shotgun] [font=default-large]Friendly fire is off, for players and buildings.[/font]"
       }
@@ -306,14 +306,14 @@ function make_m45_info_window(player)
 
       --Tab 1 Main -- Discord
       local tab1_discord_frame =
-        tab1_rframe.add {
+      tab1_rframe.add {
         type = "frame",
         direction = "vertical"
       }
       tab1_discord_frame.style.horizontally_stretchable = true
       tab1_discord_frame.style.vertically_squashable = true
       local tab1_discord_sub1_frame =
-        tab1_discord_frame.add {
+      tab1_discord_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -330,7 +330,7 @@ function make_m45_info_window(player)
 
       --Tab 1 Main -- Discord -- Logo/URL frame
       local tab1_discord_sub2_frame =
-        tab1_discord_sub1_frame.add {
+      tab1_discord_sub1_frame.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -368,7 +368,7 @@ function make_m45_info_window(player)
       --TAB 2 -- MEMBERSHIP --
       ------------------------
       local tab2_frame =
-        info_pane.add {
+      info_pane.add {
         type = "flow",
         direction = "vertical"
       }
@@ -377,7 +377,7 @@ function make_m45_info_window(player)
 
       --tab 2 -- Main
       local tab2_main_frame =
-        tab2_frame.add {
+      tab2_frame.add {
         type = "scroll-pane",
         direction = "vertical"
       }
@@ -389,7 +389,7 @@ function make_m45_info_window(player)
         type = "label",
         name = "tab2_score",
         caption = "[color=red][font=default-large-bold]Your Activity Score: " ..
-          math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
+            math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
       }
       tab2_main_frame.add {
         type = "label",
@@ -506,7 +506,7 @@ function make_m45_info_window(player)
       }
       --Close Button Frame
       local tab2_close_frame =
-        tab2_main_frame.add {
+      tab2_main_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -518,7 +518,7 @@ function make_m45_info_window(player)
       --tab 3 -- Rules --
       ------------------------
       local tab3_frame =
-        info_pane.add {
+      info_pane.add {
         type = "flow",
         direction = "vertical"
       }
@@ -527,7 +527,7 @@ function make_m45_info_window(player)
 
       --tab 3 -- Main
       local tab3_main_frame =
-        tab3_frame.add {
+      tab3_frame.add {
         type = "scroll-pane",
         direction = "vertical"
       }
@@ -582,7 +582,7 @@ function make_m45_info_window(player)
 
       --Close Button Frame
       local tab3_close_frame =
-        tab3_main_frame.add {
+      tab3_main_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -594,7 +594,7 @@ function make_m45_info_window(player)
       --tab 4 -- Tips & Tricks --
       ------------------------
       local tab4_frame =
-        info_pane.add {
+      info_pane.add {
         type = "flow",
         direction = "vertical"
       }
@@ -603,7 +603,7 @@ function make_m45_info_window(player)
 
       --tab 4 -- Main
       local tab4_main_frame =
-        tab4_frame.add {
+      tab4_frame.add {
         type = "scroll-pane",
         direction = "vertical"
       }
@@ -620,7 +620,7 @@ function make_m45_info_window(player)
         caption = "[font=default-large]You can bookmark servers, by clicking the gear icon in the server browser![/font]"
       }
       local tab4_img2_frame =
-        tab4_main_frame.add {
+      tab4_main_frame.add {
         type = "frame",
         direction = "vertical"
       }
@@ -679,13 +679,13 @@ function make_m45_info_window(player)
       --- QR CODE ---
       ---------------
       local tab5_frame =
-        info_pane.add {
+      info_pane.add {
         type = "flow",
         direction = "vertical"
       }
 
       local tab5_qr_frame =
-        tab5_frame.add {
+      tab5_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -708,7 +708,7 @@ function make_m45_info_window(player)
         caption = ""
       }
       local tab5_qr =
-        tab5_qr_frame.add {
+      tab5_qr_frame.add {
         type = "sprite",
         sprite = "file/img/info-win/m45-qr.png",
         tooltip = "Just open camera on a cellphone!"
@@ -728,13 +728,13 @@ function make_m45_info_window(player)
       --- HELP    ---
       ---------------
       local tab6_frame =
-        info_pane.add {
+      info_pane.add {
         type = "flow",
         direction = "vertical"
       }
 
       local tab6_main_frame =
-        tab6_frame.add {
+      tab6_frame.add {
         type = "flow",
         direction = "vertical"
       }
@@ -781,7 +781,7 @@ function make_m45_info_window(player)
         caption = ""
       }
       local tab6_patreon_url =
-        tab6_main_frame.add {
+      tab6_main_frame.add {
         type = "text-box",
         text = "https://www.patreon.com/m45sci",
         name = "patreon_url"
@@ -823,10 +823,9 @@ function on_gui_click(event)
       console_print("GUI_CLICK: " .. player.name .. ": " .. event.element.name)
 
       --Info window close
-      if
-        event.element.name == "m45_info_close_button" and player.gui and player.gui.center and
+      if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and
           player.gui.screen.m45_info_window
-       then
+      then
         if not global.info_window_timer then
           global.info_window_timer = {}
         end
@@ -834,33 +833,32 @@ function on_gui_click(event)
           global.info_window_timer[player.index] = game.tick
         end
         ----------------------------------------------------------------
-        if
-          is_member(player) or is_regular(player) or player.admin or
+        if is_member(player) or is_regular(player) or player.admin or
             (is_new(player) and game.tick - global.info_window_timer[player.index] > (60 * 10))
-         then
+        then
           player.gui.screen.m45_info_window.destroy()
         else
-          player.character.damage(25, "enemy") --Grab attention
-          smart_print(player, "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
-          smart_print(
-            player,
-            "[color=green](SYSTEM) **** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ****[/color]"
-          )
-          smart_print(
-            player,
-            "[color=blue](SYSTEM) ***** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! *****[/color]"
-          )
+          if player and player.character then
+            player.character.damage(25, "enemy") --Grab attention
+            smart_print(player, "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
+            smart_print(
+              player,
+              "[color=green](SYSTEM) **** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ****[/color]"
+            )
+            smart_print(
+              player,
+              "[color=blue](SYSTEM) ***** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! *****[/color]"
+            )
+          end
         end
-      elseif
-        event.element.name == "patreon_button" and player.gui and player.gui.center and
+      elseif event.element.name == "patreon_button" and player.gui and player.gui.center and
           player.gui.screen.m45_info_window
-       then
+      then
         ----------------------------------------------------------------
         --QR changetab button (info window)
         player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 6
-      elseif
-        event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window
-       then
+      elseif event.element.name == "qr_button" and player.gui and player.gui.center and player.gui.screen.m45_info_window
+      then
         --QR Discord button
         player.gui.screen.m45_info_window.m45_info_window_tabs.selected_tab_index = 5
       elseif event.element.name == "m45_button" then
