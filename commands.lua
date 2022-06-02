@@ -35,8 +35,14 @@ script.on_load(
           if param.parameter then
             global.resetdur = param.parameter
             for _, target in pairs(game.connected_players) do
-              if target.gui.top.reset_clock then
-                target.gui.top.reset_clock.caption = "Map reset: "..param.parameter
+              if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
+                if global.hide_clock and global.hide_clock[target.index] == true then
+                  target.gui.top.reset_clock.caption = ">"
+                  target.gui.top.reset_clock.style = "tip_notice_close_button"
+                else
+                  target.gui.top.reset_clock.caption = "MAP RESET: " .. param.parameter
+                  target.gui.top.reset_clock.style = "red_button"
+                end
               end
             end
           end

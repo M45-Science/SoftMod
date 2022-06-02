@@ -840,7 +840,9 @@ function on_gui_click(event)
         else
           if player and player.character then
             player.character.damage(25, "enemy") --Grab attention
-            smart_print(player, "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
+            smart_print(
+              player,
+              "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
             smart_print(
               player,
               "[color=green](SYSTEM) **** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ****[/color]"
@@ -848,6 +850,14 @@ function on_gui_click(event)
             smart_print(
               player,
               "[color=blue](SYSTEM) ***** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! *****[/color]"
+            )
+            smart_print(
+              player,
+              "[color=WHITE](SYSTEM) ****** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ******[/color]"
+            )
+            smart_print(
+              player,
+              "[color=BLACK](SYSTEM) ******* PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ********[/color]"
             )
           end
         end
@@ -868,6 +878,23 @@ function on_gui_click(event)
           player.gui.screen.m45_info_window.destroy()
         else
           make_m45_info_window(player)
+        end
+      elseif event.element.name == "reset_clock" then
+        --reset-clock-close
+        if player.gui and player.gui.top and player.gui.top.reset_clock then
+          if event.button and event.button == defines.mouse_button_type.right and event.control then
+            if global.hide_clock then
+              if global.hide_clock[player.index] and global.hide_clock[player.index] == true then
+                global.hide_clock[player.index] = false
+                player.gui.top.reset_clock.caption = "Map reset: " .. global.resetdur
+                player.gui.top.reset_clock.style = "red_button"
+              else
+                global.hide_clock[player.index] = true
+                player.gui.top.reset_clock.caption = ">"
+                player.gui.top.reset_clock.style = "tip_notice_close_button"
+              end
+            end
+          end
         end
       end
     end

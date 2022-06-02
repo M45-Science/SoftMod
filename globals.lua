@@ -49,6 +49,10 @@ function create_myglobals()
   if not global.info_shown then
     global.info_shown = {}
   end
+
+  if not global.hide_clock then
+    global.hide_clock = {}
+  end
 end
 
 --Create player globals, if needed
@@ -65,6 +69,10 @@ function create_player_globals(player)
 
       if not global.thebanished[player.index] then
         global.thebanished[player.index] = 0
+      end
+
+      if not global.hide_clock[player.index] then
+        global.hide_clock[player.index] = false
       end
     end
   end
