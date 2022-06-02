@@ -276,7 +276,7 @@ function make_m45_info_window(player)
       local restrictions =
       tab1_info_top.add {
         type = "label",
-        caption = "[entity=character]  [color=yello][font=default-large-bold]New players start with some restrictions![/font][/color]"
+        caption = "[entity=character]  [color=yellow][font=default-large-bold]New players start with some restrictions![/font][/color]"
       }
       local friendly_fire =
       tab1_info_top.add {
