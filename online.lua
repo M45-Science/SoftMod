@@ -22,7 +22,7 @@ function make_online_button(player)
 end
 
 --Count online players, store
-function update_player_list(update)
+function update_player_list()
 
   --Sort by active time
   local results = {}
@@ -116,9 +116,7 @@ function update_player_list(update)
     end
   end
 
-  if update then
-    show_players(nil)
-  end
+  show_players(nil)
 
 end
 
@@ -400,7 +398,7 @@ function make_m45_online_window(player)
       online_titlebar.style.horizontally_stretchable = true
 
       if not global.player_count or not global.player_list then
-        update_player_list(true, "")
+        update_player_list()
       end
 
       if not global.online_brief then

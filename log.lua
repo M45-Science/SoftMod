@@ -92,14 +92,14 @@ function on_player_left_game(event)
       }
       message_alld(player.name .. " disconnected. " .. reason[event.reason + 1])
 
-      update_player_list(true, player.name) --online.lua
+      update_player_list() --online.lua
       return
     end
   end
 
 
   local player = game.players[event.player_index]
-  update_player_list(true, player.name) --online.lua
+  update_player_list() --online.lua
   message_alld(player.name .. " disconnected!")
 
 end
