@@ -210,7 +210,7 @@ function get_permgroup()
                   player,
                   "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]"
                 )
-                smart_print(player, "[color=red](SYSTEM) You now have access to our members-only servers![/color]")
+                smart_print(player, "[color=red](SYSTEM) You now have access to our members-only maps![/color]")
 
                 if player.character then
                   player.character.damage(0.001, "enemy") --Grab attention

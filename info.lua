@@ -14,7 +14,7 @@ function make_info_button(player)
       type = "sprite-button",
       name = "m45_button",
       sprite = "file/img/buttons/m45-64.png",
-      tooltip = "Opens the server info window"
+      tooltip = "Opens the info window"
     }
     m45_32.style.size = { 64, 64 }
   end
@@ -67,7 +67,7 @@ function make_m45_info_window(player)
           type = "label",
           name = "online_title",
           style = "frame_title",
-          caption = "Server Name: " .. global.servname
+          caption = "Map Name: " .. global.servname
         }
       end
       local pusher = info_titlebar.add { type = "empty-widget", style = "draggable_space_header" }
