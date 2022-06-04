@@ -15,3 +15,4 @@ require "perms" --Permissions system
 require "todo" --To-Do-list
 require "utility" --Widely used general utility
 require "clock" --Time until map reset
+require "ultimate" --Ultimate Deathworld

@@ -350,12 +350,14 @@ script.on_event(
     defines.events.on_player_rotated_entity,
     defines.events.on_pre_player_mined_item,
     defines.events.on_built_entity,
+    defines.events.on_player_main_inventory_changed
   },
   function(event)
     --If no event, or event is a tick
     if not event or (event and event.name == defines.events.on_tick) then
       return
     end
+
 
     --Mark player active
     if event.player_index then
@@ -382,6 +384,11 @@ script.on_event(
           set_player_active(player)
         end
       end
+    end
+
+    --ultimate.lua
+    if event.name == defines.events.on_player_main_inventory_changed then
+      on_detect_fish(event)
     end
 
     --Player join/leave respawn
