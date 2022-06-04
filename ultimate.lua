@@ -10,7 +10,7 @@ function on_detect_fish(event)
                 if contents then
                     for name, count in pairs(contents) do
                         if name == "raw-fish" then
-                            game.print("Fish are not allowed in ultimate deathworld.")
+                            player.print("Fish are not allowed in ultimate deathworld.")
                             player.remove_item({ name = "raw-fish", count = count })
                             player.character.damage(25, "enemy")
                         end
