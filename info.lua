@@ -297,7 +297,7 @@ function make_m45_info_window(player)
       }
       tab1_info_top.add {
         type = "label",
-        caption = "[entity=character]  [color=yellow][font=default-large-bold]NULTIMATE DEATHWORLD: NO FISH! JUST ONE LIFE!![/font][/color]"
+        caption = "[entity=character]  [color=yellow][font=default-large-bold]ULTIMATE DEATHWORLD:\nNO FISH! JUST ONE LIFE!![/font][/color]"
       }
       tab1_info_top.add {
         type = "label",
