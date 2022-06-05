@@ -235,7 +235,6 @@ function on_player_created(event)
       set_perms()
       send_to_default_spawn(player) --incase spawn moved
       game_settings(player)
-      update_player_list() --online.lua
 
       --Cutoff-point, just becomes annoying.
       if not player.force.technologies["military-2"].researched then
