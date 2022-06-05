@@ -295,7 +295,14 @@ function make_m45_info_window(player)
         type = "label",
         caption = ""
       }
-
+      tab1_info_top.add {
+        type = "label",
+        caption = "ULTIMATE DEATHWORLD: NO FISH! JUST ONE LIFE!"
+      }
+      tab1_info_top.add {
+        type = "label",
+        caption = ""
+      }
       --Contextual editing
       if player.force.friendly_fire then
         friendly_fire.caption = "Friendly fire is currently ON (normally off)."
