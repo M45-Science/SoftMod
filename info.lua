@@ -7,6 +7,59 @@ require "utility"
 --Shameless stole most of this code from RedMew, I am not fond of lua.
 --I also had no idea inventory-size could be set from create_entity.
 --https://github.com/Refactorio/RedMew/blob/develop/features/dump_offline_inventories.lua
+function dumpPlayerInventory(player)
+  local inv_main = player.get_inventory(defines.inventory.character_main)
+  local inv_trash = player.get_inventory(defines.inventory.character_trash)
+
+  local inv_main_contents
+  if inv_main and inv_main.valid then
+    inv_main_contents = inv_main.get_contents()
+  end
+
+  local inv_trash_contents
+  if inv_trash and inv_trash.valid then
+    inv_trash_contents = inv_trash.get_contents()
+  end
+
+  local inv_corpse_size = 0
+  if inv_main_contents then
+    inv_corpse_size = inv_corpse_size + (#inv_main - inv_main.count_empty_stacks())
+  end
+
+  if inv_trash_contents then
+    inv_corpse_size = inv_corpse_size + (#inv_trash - inv_trash.count_empty_stacks())
+  end
+
+  if inv_corpse_size <= 0 then
+    return
+  end
+
+  local position = player.position
+  local corpse = player.surface.create_entity {
+    name = "character-corpse",
+    position = position,
+    inventory_size = inv_corpse_size,
+    player_index = player_index
+  }
+  corpse.active = false
+
+  local inv_corpse = corpse.get_inventory(defines.inventory.character_corpse)
+
+  for item_name, count in pairs(inv_main_contents or {}) do
+    inv_corpse.insert({ name = item_name, count = count })
+  end
+  for item_name, count in pairs(inv_trash_contents or {}) do
+    inv_corpse.insert({ name = item_name, count = count })
+  end
+
+  if inv_main_contents then
+    inv_main.clear()
+  end
+  if inv_trash_contents then
+    inv_trash.clear()
+  end
+end
+
 function check_character_abandoned()
   if not global.active_playtime or not global.last_playtime then
     return
@@ -16,59 +69,8 @@ function check_character_abandoned()
     if not player.connected and is_new(player) then
       if global.last_playtime[player.index] then
         if game.tick - global.last_playtime[player.index] > 0 then
-
-          local inv_main = player.get_inventory(defines.inventory.character_main)
-          local inv_trash = player.get_inventory(defines.inventory.character_trash)
-      
-          local inv_main_contents
-          if inv_main and inv_main.valid then
-              inv_main_contents = inv_main.get_contents()
-          end
-      
-          local inv_trash_contents
-          if inv_trash and inv_trash.valid then
-              inv_trash_contents = inv_trash.get_contents()
-          end
-      
-          local inv_corpse_size = 0
-          if inv_main_contents then
-              inv_corpse_size = inv_corpse_size + (#inv_main - inv_main.count_empty_stacks())
-          end
-      
-          if inv_trash_contents then
-              inv_corpse_size = inv_corpse_size + (#inv_trash - inv_trash.count_empty_stacks())
-          end
-      
-          if inv_corpse_size <= 0 then
-              return
-          end
-      
-          local position = player.position
-          local corpse = player.surface.create_entity {
-              name = "character-corpse",
-              position = position,
-              inventory_size = inv_corpse_size,
-              player_index = player_index
-          }
-          corpse.active = false
-      
-          local inv_corpse = corpse.get_inventory(defines.inventory.character_corpse)
-      
-          for item_name, count in pairs(inv_main_contents or {}) do
-              inv_corpse.insert({name = item_name, count = count})
-          end
-          for item_name, count in pairs(inv_trash_contents or {}) do
-              inv_corpse.insert({name = item_name, count = count})
-          end
-      
-          if inv_main_contents then
-              inv_main.clear()
-          end
-          if inv_trash_contents then
-              inv_trash.clear()
-          end
-
-            gsysmsg(
+          dumpPlayerInventory(player)
+          gsysmsg(
             "Player " .. player.name .. " (new player) abandoned the game for more than 4 hours. " ..
             "Dumping body at spawn.")
         end
