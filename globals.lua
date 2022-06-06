@@ -5,7 +5,7 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "588-06.01.2022-0140"
+  global.svers = "589-06.05.2022-0720p"
 
   --Adjust look
   game.surfaces[1].show_clouds = false
