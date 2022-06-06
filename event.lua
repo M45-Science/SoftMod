@@ -43,7 +43,7 @@ script.on_nth_tick(
       dodrawlogo()
     end
 
-    update_player_list() --online.lua
+    --update_player_list() --online.lua
 
     --Remove old corpse tags
     if (global.corpselist) then
