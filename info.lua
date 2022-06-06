@@ -68,11 +68,10 @@ function check_character_abandoned()
   for _, player in pairs(game.players) do
     if not player.connected and is_new(player) then
       if global.last_playtime[player.index] then
-        if game.tick - global.last_playtime[player.index] > 0 then
+        if game.tick - global.last_playtime[player.index] > 4*60*60*60 then
           dumpPlayerInventory(player)
           gsysmsg(
-            "Player " .. player.name .. " (new player) abandoned the game for more than 4 hours. " ..
-            "Dumping body at spawn.")
+            "[color=orange] * New player '" .. player.name .. "' was not active long enough to become a member and have been offline for hours. Their items are now considered abandoned, and have been placed at spawn (expires in 15m) *[/color]")
         end
       end
     end
