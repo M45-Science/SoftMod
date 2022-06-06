@@ -4,7 +4,7 @@
 --License: MPL 2.0
 require "utility"
 
---Shameless stole most of this code from RedMew, I am not fond of lua.
+--Shamelessly stole most of this code from RedMew... I am not fond of lua.
 --I also had no idea inventory-size could be set from create_entity.
 --https://github.com/Refactorio/RedMew/blob/develop/features/dump_offline_inventories.lua
 function dumpPlayerInventory(player)
