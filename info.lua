@@ -37,7 +37,7 @@ function dumpPlayerInventory(player)
   local position = player.position
   local corpse = player.surface.create_entity {
     name = "character-corpse",
-    position = position,
+    position = get_default_spawn(),
     inventory_size = inv_corpse_size,
     player_index = player_index
   }
