@@ -112,6 +112,9 @@ script.on_nth_tick(
             if global.active_playtime[player.index] then
               --Compensate for game speed
               global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
+              if global.last_playtime then
+              global.last_playtime[player.index] = game.tick
+              end
             else
               --INIT
               global.active_playtime[player.index] = 0
@@ -125,6 +128,8 @@ script.on_nth_tick(
     end
 
     get_permgroup() --See if player qualifies now
+
+    check_character_abandoned()
   end
 )
 

@@ -7,6 +7,9 @@
 function create_myglobals()
   global.svers = "588-06.01.2022-0140"
 
+  --Adjust look
+  game.surfaces[1].show_clouds = false
+
   if not global.restrict == nil then
     global.restrict = true
   end
@@ -15,6 +18,9 @@ function create_myglobals()
   end
   if not global.active_playtime then
     global.active_playtime = {}
+  end
+  if not global.last_playtime then
+    global.last_playtime = {}
   end
 
   if not global.patreons then
