@@ -151,7 +151,11 @@ function update_banished_votes()
       if victim.character and victim.character.valid then
         send_to_default_spawn(victim)
         victim.character.die("player")
+      else
+        dumpPlayerInventory(player)
       end
+
+      gsysmsg(player.name.."'s items have been dumped at spawn so they can be recovered.")
 
       if not global.send_to_surface then
         global.send_to_surface = {}
