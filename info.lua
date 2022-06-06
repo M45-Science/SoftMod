@@ -31,7 +31,7 @@ function dumpPlayerInventory(player)
   end
 
   if inv_corpse_size <= 0 then
-    return
+    return false
   end
 
   local position = player.position
@@ -58,6 +58,8 @@ function dumpPlayerInventory(player)
   if inv_trash_contents then
     inv_trash.clear()
   end
+
+  return true
 end
 
 function check_character_abandoned()
@@ -67,11 +69,13 @@ function check_character_abandoned()
 
   for _, player in pairs(game.players) do
     if not player.connected and is_new(player) then
+
       if global.last_playtime[player.index] then
         if game.tick - global.last_playtime[player.index] > 4*60*60*60 then
-          dumpPlayerInventory(player)
+          if dumpPlayerInventory(player) then
           gsysmsg(
             "[color=orange] * New player '" .. player.name .. "' was not active long enough to become a member and have been offline for hours. Their items are now considered abandoned, and have been placed at spawn (expires in 15m) *[/color]")
+          end
         end
       end
     end
