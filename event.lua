@@ -28,7 +28,7 @@ end
 --Refresh players online window
 
 script.on_nth_tick(
-  1800,
+  900,
   function(event)
     --Move spawn pad if blocked
     if not global.movepad then
@@ -111,7 +111,7 @@ script.on_nth_tick(
 
             if global.active_playtime[player.index] then
               --Compensate for game speed
-              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (900.0 / game.speed) --Same as loop time
               if global.last_playtime then
                 global.last_playtime[player.index] = game.tick
               end
