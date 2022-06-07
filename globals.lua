@@ -80,6 +80,10 @@ function create_player_globals(player)
       if not global.hide_clock[player.index] then
         global.hide_clock[player.index] = false
       end
+
+      if not global.last_playtime[player.index] then
+        global.last_playtime[player.index] = false
+      end
     end
   end
 end
