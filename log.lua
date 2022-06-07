@@ -76,6 +76,11 @@ function on_player_left_game(event)
     local player = game.players[event.player_index]
     if player then
 
+
+      if global.last_playtime then
+        global.last_playtime[event.player_index] = game.tick
+      end
+
       local reason = {
         "(quit)",
         "(dropped)",
@@ -101,7 +106,6 @@ function on_player_left_game(event)
   local player = game.players[event.player_index]
   update_player_list() --online.lua
   message_alld(player.name .. " disconnected!")
-
 end
 
 --Deconstruction planner warning

@@ -72,6 +72,14 @@ function update_player_list()
       utag = utag .. " (NITRO)"
     end
 
+    local isafk = ""
+    if global.last_playtime and global.last_playtime[victim.index] then
+      local lplaytime = global.last_playtime[victim.index]
+      if game.tick - lplaytime > 18000 then
+        isafk = " (AFK)"
+      end
+    end
+
     if global.active_playtime[victim.index] then
       table.insert(
         results,
@@ -79,11 +87,12 @@ function update_player_list()
           victim = victim,
           score = global.active_playtime[victim.index],
           time = victim.online_time,
-          type = utag
+          type = utag,
+          afk = isafk
         }
       )
     else
-      table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag })
+      table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag, afk = isafk })
     end
 
     tcount = tcount + 1
@@ -92,6 +101,7 @@ function update_player_list()
     end
 
   end
+
 
   table.sort(
     results,
@@ -546,6 +556,11 @@ function make_m45_online_window(player)
           caption = "  Level:"
         }
         score_label.style.width = 200
+        local score_label =
+        pframe.add {
+          type = "label",
+          caption = "  (AFK)"
+        }
       end
 
       --for x = 0, 100, 1 do
@@ -705,6 +720,12 @@ function make_m45_online_window(player)
               tooltip = "Current level, see membership tab for more info."
             }
             score_label.style.width = 200
+
+            local afk_label =
+            pframe.add {
+              type = "label",
+              caption = target.afk,
+            }
           end
         end
       end

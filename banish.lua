@@ -117,7 +117,7 @@ function update_banished_votes()
         global.send_to_surface = {}
       end
 
-      table.insert(global.send_to_surface, {victim = victim, surface = "nauvis", position = get_default_spawn()})
+      table.insert(global.send_to_surface, { victim = victim, surface = "nauvis", position = get_default_spawn() })
     elseif is_banished(victim) == true and prevstate == false then
       --Was not banished, but is now.
       local msg = victim.name .. " has been banished."
@@ -130,7 +130,7 @@ function update_banished_votes()
           width = 100,
           height = 100,
           default_enable_all_autoplace_controls = false,
-          property_expression_names = {cliffiness = 0},
+          property_expression_names = { cliffiness = 0 },
           autoplace_settings = {
             tile = {
               settings = {
@@ -151,12 +151,16 @@ function update_banished_votes()
       if victim.character and victim.character.valid then
         send_to_default_spawn(victim)
         victim.character.die("player")
+      else
+        dumpPlayerInventory(victim)
       end
+
+      gsysmsg(victim.name .. "'s items have been dumped at spawn so they can be recovered.")
 
       if not global.send_to_surface then
         global.send_to_surface = {}
       end
-      table.insert(global.send_to_surface, {victim = victim, surface = "hell", position = {0, 0}})
+      table.insert(global.send_to_surface, { victim = victim, surface = "hell", position = { 0, 0 } })
     end
   end
 end
@@ -327,7 +331,7 @@ function add_banish_commands()
             width = 100,
             height = 100,
             default_enable_all_autoplace_controls = false,
-            property_expression_names = {cliffiness = 0},
+            property_expression_names = { cliffiness = 0 },
             autoplace_settings = {
               tile = {
                 settings = {
@@ -356,7 +360,7 @@ function add_banish_commands()
             if not global.send_to_surface then
               global.send_to_surface = {}
             end
-            table.insert(global.send_to_surface, {victim = victim, surface = "hell", position = {0, 0}})
+            table.insert(global.send_to_surface, { victim = victim, surface = "hell", position = { 0, 0 } })
           else
             smart_print(player, "Couldn't find that player.")
           end

@@ -4,6 +4,84 @@
 --License: MPL 2.0
 require "utility"
 
+--Shamelessly stole most of this code from RedMew... I am not fond of lua.
+--I also had no idea inventory-size could be set from create_entity.
+--https://github.com/Refactorio/RedMew/blob/develop/features/dump_offline_inventories.lua
+function dumpPlayerInventory(player)
+  local inv_main = player.get_inventory(defines.inventory.character_main)
+  local inv_trash = player.get_inventory(defines.inventory.character_trash)
+
+  local inv_main_contents
+  if inv_main and inv_main.valid then
+    inv_main_contents = inv_main.get_contents()
+  end
+
+  local inv_trash_contents
+  if inv_trash and inv_trash.valid then
+    inv_trash_contents = inv_trash.get_contents()
+  end
+
+  local inv_corpse_size = 0
+  if inv_main_contents then
+    inv_corpse_size = inv_corpse_size + (#inv_main - inv_main.count_empty_stacks())
+  end
+
+  if inv_trash_contents then
+    inv_corpse_size = inv_corpse_size + (#inv_trash - inv_trash.count_empty_stacks())
+  end
+
+  if inv_corpse_size <= 0 then
+    return false
+  end
+
+  local position = player.position
+  local corpse = player.surface.create_entity {
+    name = "character-corpse",
+    position = get_default_spawn(),
+    inventory_size = inv_corpse_size,
+    player_index = player_index
+  }
+  corpse.active = false
+
+  local inv_corpse = corpse.get_inventory(defines.inventory.character_corpse)
+
+  for item_name, count in pairs(inv_main_contents or {}) do
+    inv_corpse.insert({ name = item_name, count = count })
+  end
+  for item_name, count in pairs(inv_trash_contents or {}) do
+    inv_corpse.insert({ name = item_name, count = count })
+  end
+
+  if inv_main_contents then
+    inv_main.clear()
+  end
+  if inv_trash_contents then
+    inv_trash.clear()
+  end
+
+  return true
+end
+
+function check_character_abandoned()
+  if not global.active_playtime or not global.last_playtime then
+    return
+  end
+
+  for _, player in pairs(game.players) do
+    if not player.connected and is_new(player) then
+
+      if global.last_playtime[player.index] then
+        if game.tick - global.last_playtime[player.index] > 4 * 60 * 60 * 60 then
+          if dumpPlayerInventory(player) then
+            gsysmsg(
+              "[color=orange] * New player '" .. player.name .. "' was not active long enough to become a member and have been offline for hours. Their items are now considered abandoned, and have been placed at spawn (expires in 15m) *[/color]")
+          end
+        end
+      end
+    end
+  end
+end
+
 function make_info_button(player)
   if player.gui.top.m45_button then
     player.gui.top.m45_button.destroy()
@@ -860,11 +938,11 @@ function on_gui_click(event)
             )
             smart_print(
               player,
-              "[color=WHITE](SYSTEM) ****** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ******[/color]"
+              "[color=white](SYSTEM) ****** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ******[/color]"
             )
             smart_print(
               player,
-              "[color=BLACK](SYSTEM) ******* PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ********[/color]"
+              "[color=black](SYSTEM) ******* PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ********[/color]"
             )
           end
         end

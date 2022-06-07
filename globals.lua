@@ -5,7 +5,10 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "588-06.01.2022-0140"
+  global.svers = "591-06.06.2022-1038p"
+
+  --Adjust look
+  game.surfaces[1].show_clouds = false
 
   if not global.restrict == nil then
     global.restrict = true
@@ -15,6 +18,9 @@ function create_myglobals()
   end
   if not global.active_playtime then
     global.active_playtime = {}
+  end
+  if not global.last_playtime then
+    global.last_playtime = {}
   end
 
   if not global.patreons then
@@ -53,6 +59,10 @@ function create_myglobals()
   if not global.hide_clock then
     global.hide_clock = {}
   end
+
+  if not global.lastonlinestring then
+    global.lastonlinestring = ""
+  end
 end
 
 --Create player globals, if needed
@@ -73,6 +83,10 @@ function create_player_globals(player)
 
       if not global.hide_clock[player.index] then
         global.hide_clock[player.index] = false
+      end
+
+      if not global.last_playtime[player.index] then
+        global.last_playtime[player.index] = false
       end
     end
   end

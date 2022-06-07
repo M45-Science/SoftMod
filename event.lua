@@ -28,7 +28,7 @@ end
 --Refresh players online window
 
 script.on_nth_tick(
-  1800,
+  900,
   function(event)
     --Move spawn pad if blocked
     if not global.movepad then
@@ -111,7 +111,10 @@ script.on_nth_tick(
 
             if global.active_playtime[player.index] then
               --Compensate for game speed
-              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (900.0 / game.speed) --Same as loop time
+              if global.last_playtime then
+                global.last_playtime[player.index] = game.tick
+              end
             else
               --INIT
               global.active_playtime[player.index] = 0
@@ -125,6 +128,8 @@ script.on_nth_tick(
     end
 
     get_permgroup() --See if player qualifies now
+
+    check_character_abandoned()
   end
 )
 
@@ -154,7 +159,6 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-  update_player_list() --online.lua
 
   --Set clock as NOT MINIMIZED on login
   if event and event.player_index then
@@ -212,6 +216,11 @@ function on_player_joined_game(event)
         make_online_button(player) --online.lua
         make_reset_clock(player) --clock.lua
       end
+
+      if global.last_playtime then
+        global.last_playtime[event.player_index] = game.tick
+      end
+      update_player_list() --online.lua
 
       --Always show to new players, everyone else at least once per map
       if is_new(player) or not global.info_shown[player.index] then

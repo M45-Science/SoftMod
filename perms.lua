@@ -130,10 +130,9 @@ end
 
 --Flag player as currently active
 function set_player_active(player)
-  if
-    (player and player.valid and player.connected and player.character and player.character.valid and
+  if (player and player.valid and player.connected and player.character and player.character.valid and
       global.playeractive)
-   then
+  then
     --banished players don't get activity score
     if is_banished(player) == false then
       global.playeractive[player.index] = true
@@ -161,23 +160,20 @@ function get_permgroup()
         if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
           if player.permission_group then
             --(ADMINS) Check if they are in the right group, including se-remote-view
-            if
-              (player.admin and player.permission_group.name ~= global.adminsgroup.name and
+            if (player.admin and player.permission_group.name ~= global.adminsgroup.name and
                 player.permission_group.name ~= global.adminsgroup.name .. "_satellite")
-             then
+            then
               --(REGULARS) Check if they are in the right group, including se-remote-view
               global.adminsgroup.add_player(player)
               message_all(player.name .. " moved to Admins group")
-            elseif
-              (global.active_playtime and global.active_playtime[player.index] and
+            elseif (global.active_playtime and global.active_playtime[player.index] and
                 global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
                 not player.admin)
-             then
+            then
               --Check if player has hours for regulars status, but isn't a in regulars group.
-              if
-                (player.permission_group.name ~= global.regularsgroup.name and
+              if (player.permission_group.name ~= global.regularsgroup.name and
                   player.permission_group.name ~= global.regularsgroup.name .. "_satellite")
-               then
+              then
                 global.regularsgroup.add_player(player)
                 message_all(player.name .. " is now a regular!")
                 smart_print(
@@ -193,11 +189,10 @@ function get_permgroup()
                   player.character.damage(0.001, "enemy") --Grab attention
                 end
               end
-            elseif
-              (global.active_playtime and global.active_playtime[player.index] and
+            elseif (global.active_playtime and global.active_playtime[player.index] and
                 global.active_playtime[player.index] > (30 * 60 * 60) and
                 not player.admin)
-             then
+            then
               --Check if player has hours for members status, but isn't a in member group.
               if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                 global.membersgroup.add_player(player)
