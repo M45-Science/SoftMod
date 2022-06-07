@@ -45,8 +45,16 @@ script.on_load(
                 end
               end
             end
+            --Refresh open info windows
+            for _, victim in pairs(game.connected_players) do
+              if victim and victim.valid and victim.gui and victim.gui.screen and victim.gui.screen.m45_info_window then
+                make_m45_info_window(victim)
+              end
+            end
           end
         end
+
+
       )
 
       --Reset interval message
