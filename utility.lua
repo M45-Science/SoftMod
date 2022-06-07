@@ -73,7 +73,6 @@ function show_players(victim)
     if global.player_list then
       for i, target in pairs(global.player_list) do
         if target and target.victim and target.victim.connected then
-
           buf = buf .. target.victim.name .. "," .. target.score .. "," .. target.time .. "," .. target.type .. "," .. target.afk .. ";"
         end
       end
