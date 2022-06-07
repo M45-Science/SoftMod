@@ -59,6 +59,10 @@ function create_myglobals()
   if not global.hide_clock then
     global.hide_clock = {}
   end
+
+  if not global.lastonlinestring then
+    global.lastonlinestring = ""
+  end
 end
 
 --Create player globals, if needed
