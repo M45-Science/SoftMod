@@ -159,10 +159,6 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
-  if global.last_playtime then
-    global.last_playtime[event.player_index] = game.tick
-  end
-  update_player_list() --online.lua
 
   --Set clock as NOT MINIMIZED on login
   if event and event.player_index then
@@ -220,6 +216,11 @@ function on_player_joined_game(event)
         make_online_button(player) --online.lua
         make_reset_clock(player) --clock.lua
       end
+
+      if global.last_playtime then
+        global.last_playtime[event.player_index] = game.tick
+      end
+      update_player_list() --online.lua
 
       --Always show to new players, everyone else at least once per map
       if is_new(player) or not global.info_shown[player.index] then
