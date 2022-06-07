@@ -75,7 +75,7 @@ function update_player_list()
     local isafk = ""
     if global.last_playtime and global.last_playtime[victim.index] then
       local lplaytime = global.last_playtime[victim.index]
-      if game.tick - lplaytime > 7200 then
+      if game.tick - lplaytime > 18000 then
         isafk = " (AFK)"
       end
     end
@@ -556,6 +556,11 @@ function make_m45_online_window(player)
           caption = "  Level:"
         }
         score_label.style.width = 200
+        local score_label =
+        pframe.add {
+          type = "label",
+          caption = "  (AFK)"
+        }
       end
 
       --for x = 0, 100, 1 do
