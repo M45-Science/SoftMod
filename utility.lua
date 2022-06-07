@@ -86,9 +86,9 @@ function show_players(victim)
     for i, target in pairs(global.player_list) do
       if target and target.victim and target.victim.connected then
         if target.afk then
-          buf = buf .. string.format("~%16s: - Score: AFK - Online: %dm - (%s)\n", target.victim.name, math.floor(target.time / 60 / 60), target.type)
+          buf = buf .. string.format("~%16s: - Score: %4d - Online: %4dm - (%s) (AFK)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
         else
-          buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
+          buf = buf .. string.format("~%16s: - Score: %4d - Online: %4dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
         end
       end
     end
