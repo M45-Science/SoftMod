@@ -719,7 +719,7 @@ function make_m45_online_window(player)
             local afk_label =
             pframe.add {
               type = "label",
-              caption = target.AFK,
+              caption = target.afk,
             }
           end
         end
