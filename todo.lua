@@ -49,7 +49,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
         if player.gui and player.gui.screen then
           if not player.gui.screen.m45_todo_submenu then
             local main_flow =
-              player.gui.screen.add {
+            player.gui.screen.add {
               type = "frame",
               name = "m45_todo_submenu",
               direction = "vertical"
@@ -61,7 +61,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
 
             --Online Title Bar--
             local todo_submenu_titlebar =
-              main_flow.add {
+            main_flow.add {
               type = "flow",
               direction = "horizontal",
               name = "titlebar"
@@ -76,7 +76,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
               caption = "To-Do ID# " .. target.id
             }
             local pusher =
-              todo_submenu_titlebar.add {
+            todo_submenu_titlebar.add {
               type = "empty-widget",
               style = "draggable_space_header"
             }
@@ -93,7 +93,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             }
 
             local todo_submenu_main =
-              main_flow.add {
+            main_flow.add {
               type = "flow",
               name = "main",
               direction = "horizontal"
@@ -105,7 +105,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
               caption = "[font=default-large-bold]Priority: [/font]"
             }
             local priority_textbox =
-              todo_submenu_main.add {
+            todo_submenu_main.add {
               type = "text-box",
               text = target.priority,
               name = "todo_priority_textbox"
@@ -121,7 +121,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
               caption = "[font=default-large-bold]Subject: [/font]"
             }
             local subject_textbox =
-              todo_submenu_main.add {
+            todo_submenu_main.add {
               type = "text-box",
               text = target.subject,
               name = "todo_subject_textbox"
@@ -133,13 +133,13 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             end
 
             local todo_submenu_body =
-              main_flow.add {
+            main_flow.add {
               type = "flow",
               name = "todo_body",
               direction = "vertical"
             }
             local lock_spacer =
-              todo_submenu_main.add {
+            todo_submenu_main.add {
               type = "empty-widget"
             }
             lock_spacer.style.width = 32
@@ -150,7 +150,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             end
 
             local todo_lock =
-              todo_submenu_main.add {
+            todo_submenu_main.add {
               type = "checkbox",
               caption = "Protected",
               name = "todo_protected",
@@ -171,7 +171,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             }
 
             local notes_textbox =
-              todo_submenu_body.add {
+            todo_submenu_body.add {
               type = "text-box",
               text = target.text,
               name = "todo_text_textbox"
@@ -185,7 +185,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
             end
 
             local todo_save_frame =
-              todo_submenu_body.add {
+            todo_submenu_body.add {
               type = "flow",
               name = "save_frame",
               direction = "horizontal"
@@ -207,19 +207,19 @@ local function make_m45_todo_submenu(player, i, edit_mode)
               end
               if whoedit ~= "" then
                 local edit_note =
-                  todo_save_frame.add {
+                todo_save_frame.add {
                   type = "label",
                   caption = "[font=default-large-bold][color=red]CURRENTLY BEING EDITED BY: " .. whoedit .. "[/color][/font]"
                 }
                 local lock_spacer =
-                  todo_save_frame.add {
+                todo_save_frame.add {
                   type = "empty-widget"
                 }
                 lock_spacer.style.width = 32
               end
               if target.hidden then
                 local delete_button =
-                  todo_save_frame.add {
+                todo_save_frame.add {
                   type = "button",
                   caption = "Unhide",
                   style = "red_button",
@@ -227,7 +227,7 @@ local function make_m45_todo_submenu(player, i, edit_mode)
                 }
               else
                 local delete_button =
-                  todo_save_frame.add {
+                todo_save_frame.add {
                   type = "button",
                   caption = "Hide",
                   style = "red_button",
@@ -235,12 +235,12 @@ local function make_m45_todo_submenu(player, i, edit_mode)
                 }
               end
               local lock_spacer =
-                todo_save_frame.add {
+              todo_save_frame.add {
                 type = "empty-widget"
               }
               lock_spacer.style.width = 16
               local save_button =
-                todo_save_frame.add {
+              todo_save_frame.add {
                 type = "button",
                 caption = "Save",
                 style = "green_button",
@@ -267,7 +267,7 @@ function make_m45_todo_window(player)
     end
     if not player.gui.screen.m45_todo then
       local main_flow =
-        player.gui.screen.add {
+      player.gui.screen.add {
         type = "frame",
         name = "m45_todo",
         direction = "vertical"
@@ -279,7 +279,7 @@ function make_m45_todo_window(player)
 
       --Todo Title Bar--
       local todo_titlebar =
-        main_flow.add {
+      main_flow.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -293,7 +293,7 @@ function make_m45_todo_window(player)
         style = "frame_title",
         caption = "To-Do List:"
       }
-      local pusher = todo_titlebar.add {type = "empty-widget"}
+      local pusher = todo_titlebar.add { type = "empty-widget" }
       pusher.style.horizontally_stretchable = true
 
       local state = false
@@ -302,7 +302,7 @@ function make_m45_todo_window(player)
       end
 
       local show_hidden =
-        todo_titlebar.add {
+      todo_titlebar.add {
         type = "checkbox",
         caption = "Show hidden  ",
         name = "m45_todo_show_hidden",
@@ -312,7 +312,7 @@ function make_m45_todo_window(player)
 
       --CLOSE BUTTON--
       local todo_close_button =
-        todo_titlebar.add {
+      todo_titlebar.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -327,7 +327,7 @@ function make_m45_todo_window(player)
       }
 
       local pframe =
-        main_flow.add {
+      main_flow.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -335,7 +335,7 @@ function make_m45_todo_window(player)
       pframe.style.horizontal_align = "right"
 
       local todo_main =
-        main_flow.add {
+      main_flow.add {
         type = "scroll-pane",
         direction = "vertical"
       }
@@ -343,7 +343,7 @@ function make_m45_todo_window(player)
       pframe.style.horizontally_stretchable = true
 
       local submenu =
-        pframe.add {
+      pframe.add {
         type = "label",
         caption = "VIEW / EDIT"
       }
@@ -354,25 +354,25 @@ function make_m45_todo_window(player)
         caption = " "
       }
       local id_label =
-        pframe.add {
+      pframe.add {
         type = "label",
         caption = " ID#"
       }
       id_label.style.width = 53
       local name_label =
-        pframe.add {
+      pframe.add {
         type = "label",
         caption = "Priority"
       }
       name_label.style.width = 100
       local time_label =
-        pframe.add {
+      pframe.add {
         type = "label",
         caption = "Subject"
       }
       time_label.style.width = 200
       local notes_label =
-        pframe.add {
+      pframe.add {
         type = "label",
         caption = " Notes"
       }
@@ -393,7 +393,7 @@ function make_m45_todo_window(player)
               direction = "horizontal"
             }
             local pframe =
-              todo_main.add {
+            todo_main.add {
               type = "flow",
               direction = "horizontal"
             }
@@ -401,25 +401,25 @@ function make_m45_todo_window(player)
             pframe.style.vertically_stretchable = false
             pframe.style.maximal_width = 1600
             local submenu_view =
-              pframe.add {
+            pframe.add {
               type = "sprite-button",
               sprite = "utility/search_white",
               style = "frame_action_button",
               name = "m45_todo_submenu_view," .. i, --pass-item
               tooltip = "View this item"
             }
-            submenu_view.style.size = {36, 36}
+            submenu_view.style.size = { 36, 36 }
             submenu_view.style.padding = 4
 
             local submenu_edit =
-              pframe.add {
+            pframe.add {
               type = "sprite-button",
               sprite = "utility/rename_icon_small_white",
               style = "frame_action_button",
               name = "m45_todo_submenu_edit," .. i, --pass-item
               tooltip = "Edit this item"
             }
-            submenu_edit.style.size = {36, 36}
+            submenu_edit.style.size = { 36, 36 }
             submenu_edit.style.padding = 4
             local can_edit = true
             --Disable button if we can't edit
@@ -429,24 +429,24 @@ function make_m45_todo_window(player)
             end
 
             local gps_spacer =
-              pframe.add {
+            pframe.add {
               type = "empty-widget"
             }
             gps_spacer.style.width = 54
             local id_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = target.id
             }
             id_label.style.width = 45
             local pri_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = target.priority
             }
             pri_label.style.width = 100
             local name_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = target.subject
             }
@@ -458,34 +458,33 @@ function make_m45_todo_window(player)
               locked = " (locked)"
             end
             local notes_label =
-              pframe.add {
+            pframe.add {
               type = "label",
               caption = "  " .. target.text .. "  ",
               tooltip = "Last User: " .. target.last_user .. ", Owner: " .. target.owner .. locked
             }
             local hidden = ""
             if target.hidden then
-              local grayed = {r = 0.66, g = 0.66, b = 0.66}
+              local grayed = { r = 0.66, g = 0.66, b = 0.66 }
               id_label.style.font_color = grayed
               pri_label.style.font_color = grayed
               name_label.style.font_color = grayed
               notes_label.style.font_color = grayed
             end
 
-            gps_button =
-              pframe.add {
+            gps_button = pframe.add {
               type = "sprite-button",
               sprite = "utility/spawn_flag",
               name = "m45_todo_gps," .. i, --Pass name
               tooltip = "View location on map."
             }
-            gps_button.style.size = {38, 38}
+            gps_button.style.size = { 38, 38 }
             if not target.gps then
               gps_button.visible = false
             end
 
             local gps_spacer =
-              pframe.add {
+            pframe.add {
               type = "empty-widget"
             }
             gps_spacer.style.width = 16
@@ -495,13 +494,13 @@ function make_m45_todo_window(player)
             notes_label.style.minimal_width = 300
             notes_label.style.horizontal_align = "left"
             local spacer =
-              pframe.add {
+            pframe.add {
               type = "empty-widget"
             }
             spacer.style.horizontally_stretchable = true
 
             local move_ud_frame =
-              pframe.add {
+            pframe.add {
               type = "flow",
               direction = "vertical"
             }
@@ -509,7 +508,7 @@ function make_m45_todo_window(player)
             --Invisible space for up arrow when hidden
             if i == 1 then
               local invis_space =
-                move_ud_frame.add {
+              move_ud_frame.add {
                 type = "label",
                 caption = " "
               }
@@ -517,24 +516,24 @@ function make_m45_todo_window(player)
             end
 
             local moveup =
-              move_ud_frame.add {
+            move_ud_frame.add {
               type = "sprite-button",
               sprite = "file/img/todo/up.png",
               name = "m45_todo_moveup," .. i, --pass-item
               style = "frame_action_button",
               tooltip = "move up"
             }
-            moveup.style.size = {18, 18}
+            moveup.style.size = { 18, 18 }
 
             local movedown =
-              move_ud_frame.add {
+            move_ud_frame.add {
               type = "sprite-button",
               sprite = "file/img/todo/down.png",
               name = "m45_todo_movedown," .. i, --pass-item
               style = "frame_action_button",
               tooltip = "move down"
             }
-            movedown.style.size = {18, 18}
+            movedown.style.size = { 18, 18 }
 
             if is_new(player) then
               movedown.visible = false
@@ -547,7 +546,7 @@ function make_m45_todo_window(player)
             end
             if i == global.vis_todo_count then
               local invis_space =
-                move_ud_frame.add {
+              move_ud_frame.add {
                 type = "label",
                 caption = " "
               }
@@ -563,7 +562,7 @@ function make_m45_todo_window(player)
 
       --ADD LINE
       local add_frame =
-        main_flow.add {
+      main_flow.add {
         type = "flow",
         direction = "horizontal"
       }
@@ -572,7 +571,7 @@ function make_m45_todo_window(player)
       add_frame.style.horizontally_stretchable = false
 
       local add =
-        add_frame.add {
+      add_frame.add {
         type = "sprite-button",
         sprite = "file/img/todo/add.png",
         name = "m45_todo_add"
@@ -581,11 +580,11 @@ function make_m45_todo_window(player)
         add.enabled = false
       end
       local add_note =
-        add_frame.add {
+      add_frame.add {
         type = "label",
         caption = "Add item"
       }
-      add.style.size = {24, 24}
+      add.style.size = { 24, 24 }
       notes_label.style.rich_text_setting = defines.rich_text_setting.highlight
       notes_label.style.horizontally_stretchable = true
     end
@@ -625,7 +624,7 @@ local function todo_create_myglobals()
         last_user = "Nemaster",
         can_edit = false,
         owner = "Nemaster",
-        gps = {x = 0, y = 0},
+        gps = { x = 0, y = 0 },
         id = 0,
         hidden = false
       }
@@ -655,13 +654,13 @@ local function on_player_joined_game(event)
     end
     if not player.gui.top.todo_button then
       local todo_32 =
-        player.gui.top.add {
+      player.gui.top.add {
         type = "sprite-button",
         name = "todo_button",
         sprite = "file/img/buttons/todo-64.png",
         tooltip = "Read or edit the To-Do list."
       }
-      todo_32.style.size = {64, 64}
+      todo_32.style.size = { 64, 64 }
     end
 
     --Refresh window if open
@@ -820,10 +819,9 @@ local function on_gui_click(event)
         local i = todo_id_to_index(id) --Find by ID, index can change
         if i > 0 then --If we found the note
           --Sanity check
-          if
-            global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and player.gui.screen.m45_todo_submenu and player.gui.screen.m45_todo_submenu.todo_body and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and
+          if global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and player.gui.screen.m45_todo_submenu and player.gui.screen.m45_todo_submenu.todo_body and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and
               player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox.text
-           then
+          then
             if not global.todo_throttle then
               global.todo_throttle = {}
             end
@@ -869,10 +867,9 @@ local function on_gui_click(event)
         local i = todo_id_to_index(id) --Find by ID, index can change
         if i > 0 then --If we found the note
           --Sanity check
-          if
-            global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and player.gui.screen.m45_todo_submenu and player.gui.screen.m45_todo_submenu.todo_body and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and
+          if global.todo_list and global.todo_list[i] and player and player.valid and player.gui and player.gui.screen and player.gui.screen.m45_todo_submenu and player.gui.screen.m45_todo_submenu.todo_body and player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox and
               player.gui.screen.m45_todo_submenu.todo_body.todo_text_textbox.text
-           then
+          then
             --Store current state
             local prev_priority = global.todo_list[i].priority
             local prev_subject = global.todo_list[i].subject

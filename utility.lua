@@ -73,7 +73,7 @@ function show_players(victim)
     if global.player_list then
       for i, target in pairs(global.player_list) do
         if target and target.victim and target.victim.connected then
-          buf = buf .. target.victim.name ..  "," .. target.score .. ","..target.time..","..target.type..";"
+          buf = buf .. target.victim.name .. "," .. target.score .. "," .. target.time .. "," .. target.type .. "," .. target.afk .. ";"
         end
       end
     end
@@ -85,7 +85,11 @@ function show_players(victim)
   if global.player_list then
     for i, target in pairs(global.player_list) do
       if target and target.victim and target.victim.connected then
-        buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
+        if target.afk then
+          buf = buf .. string.format("~%16s: - Score: AFK - Online: %dm - (%s)\n", target.victim.name, math.floor(target.time / 60 / 60), target.type)
+        else
+          buf = buf .. string.format("~%16s: - Score: %d - Online: %dm - (%s)\n", target.victim.name, math.floor(target.score / 60 / 60), math.floor(target.time / 60 / 60), target.type)
+        end
       end
     end
   end
@@ -122,7 +126,7 @@ function mysplit(inputstr, sep)
     end
     return t
   end
-  return {""}
+  return { "" }
 end
 
 --Quickly turn tables into strings
@@ -147,7 +151,6 @@ function round(number, precision)
   number = string.format(fmtStr, number)
   return number
 end
-
 
 --Check if player is flagged patreon
 function is_patreon(victim)
@@ -245,7 +248,7 @@ function send_to_default_spawn(victim)
 
     if nsurf then
       local pforce = victim.force
-      local spawnpos = {0, 0}
+      local spawnpos = { 0, 0 }
       if pforce then
         spawnpos = pforce.get_spawn_position(nsurf)
       else
@@ -255,7 +258,7 @@ function send_to_default_spawn(victim)
       if newpos then
         victim.teleport(newpos, nsurf)
       else
-        victim.teleport({0, 0}, nsurf)
+        victim.teleport({ 0, 0 }, nsurf)
       end
     else
       console_print("send_to_default_spawn: The surface nauvis does not exist, could not teleport victim.")
@@ -270,7 +273,7 @@ function send_to_surface_spawn(victim)
     local nsurf = victim.surface
     if nsurf then
       local pforce = victim.force
-      local spawnpos = {0, 0}
+      local spawnpos = { 0, 0 }
       if pforce then
         spawnpos = pforce.get_spawn_position(nsurf)
       else
@@ -280,7 +283,7 @@ function send_to_surface_spawn(victim)
       if newpos then
         victim.teleport(newpos, nsurf)
       else
-        victim.teleport({0, 0}, nsurf)
+        victim.teleport({ 0, 0 }, nsurf)
       end
     else
       console_print("send_to_surface_spawn: The surface does not exist, could not teleport victim.")
@@ -299,10 +302,10 @@ function get_default_spawn()
       return spawnpos
     else
       console_print("get_default_spawn: Couldn't find force 'player'")
-      return {0, 0}
+      return { 0, 0 }
     end
   else
     console_print("get_default_spawn: Couldn't find default surface nauvis.")
-    return {0, 0}
+    return { 0, 0 }
   end
 end

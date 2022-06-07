@@ -72,6 +72,14 @@ function update_player_list()
       utag = utag .. " (NITRO)"
     end
 
+    local isafk = false
+    if glob.last_playtime and glob.last_playtime[victim.index] then
+      local last_playtime = glob.last_playtime[victim.index]
+      if game.tick - last_playtime > 7200 then
+        AFK = true
+      end
+    end
+
     if global.active_playtime[victim.index] then
       table.insert(
         results,
@@ -79,11 +87,12 @@ function update_player_list()
           victim = victim,
           score = global.active_playtime[victim.index],
           time = victim.online_time,
-          type = utag
+          type = utag,
+          afk = isafk
         }
       )
     else
-      table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag })
+      table.insert(results, { victim = victim, score = 0, time = victim.online_time, type = utag, afk = isafk })
     end
 
     tcount = tcount + 1
@@ -662,12 +671,22 @@ function make_m45_online_window(player)
               type = "line",
               direction = "vertical"
             }
-            local time_label =
-            pframe.add {
-              type = "label",
-              caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
-              tooltip = "Total time player has been active on this map."
-            }
+            if target.afk then
+              local time_label =
+              pframe.add {
+                type = "label",
+                caption = " AFK",
+                tooltip = "This player is currently AFK."
+              }
+            else
+              local time_label =
+              pframe.add {
+                type = "label",
+                caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
+                tooltip = "Total time player has been active on this map."
+              }
+            end
+
             time_label.style.width = 100
             local name_label =
             pframe.add {

@@ -9,15 +9,15 @@ require "todo"
 
 local function insert_weapons(player, ammo_amount)
   if player.force.technologies["military"].researched then
-    player.insert {name = "submachine-gun", count = 1}
+    player.insert { name = "submachine-gun", count = 1 }
   else
-    player.insert {name = "pistol", count = 1}
+    player.insert { name = "pistol", count = 1 }
   end
 
   if player.force.technologies["military-2"].researched then
-    player.insert {name = "piercing-rounds-magazine", count = ammo_amount}
+    player.insert { name = "piercing-rounds-magazine", count = ammo_amount }
   else
-    player.insert {name = "firearm-magazine", count = ammo_amount}
+    player.insert { name = "firearm-magazine", count = ammo_amount }
   end
 end
 
@@ -91,7 +91,7 @@ script.on_nth_tick(
 
       local chartTag = {
         position = get_default_spawn(),
-        icon = {type = "item", name = "heavy-armor"},
+        icon = { type = "item", name = "heavy-armor" },
         text = label
       }
       local pforce = game.forces["player"]
@@ -113,7 +113,7 @@ script.on_nth_tick(
               --Compensate for game speed
               global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
               if global.last_playtime then
-              global.last_playtime[player.index] = game.tick
+                global.last_playtime[player.index] = game.tick
               end
             else
               --INIT
@@ -164,7 +164,7 @@ function on_player_joined_game(event)
   --Set clock as NOT MINIMIZED on login
   if event and event.player_index then
     if global.hide_clock and global.hide_clock[event.player_index] then
-    global.hide_clock[event.player_index] = false
+      global.hide_clock[event.player_index] = false
     end
   end
 
@@ -223,7 +223,7 @@ function on_player_joined_game(event)
         global.info_shown[player.index] = true
         make_m45_online_window(player) --online.lua
         make_m45_info_window(player) --info.lua
-      --make_m45_todo_window(player) --todo.lua
+        --make_m45_todo_window(player) --todo.lua
       end
     end
   end
@@ -243,14 +243,14 @@ function on_player_created(event)
 
       --Cutoff-point, just becomes annoying.
       if not player.force.technologies["military-2"].researched then
-        player.insert {name = "iron-plate", count = 50}
-        player.insert {name = "copper-plate", count = 50}
-        player.insert {name = "wood", count = 50}
-        player.insert {name = "burner-mining-drill", count = 2}
-        player.insert {name = "stone-furnace", count = 2}
-        player.insert {name = "iron-chest", count = 1}
+        player.insert { name = "iron-plate", count = 50 }
+        player.insert { name = "copper-plate", count = 50 }
+        player.insert { name = "wood", count = 50 }
+        player.insert { name = "burner-mining-drill", count = 2 }
+        player.insert { name = "stone-furnace", count = 2 }
+        player.insert { name = "iron-chest", count = 1 }
       end
-      player.insert {name = "light-armor", count = 1}
+      player.insert { name = "light-armor", count = 1 }
 
       insert_weapons(player, 50) --research-based
 
@@ -280,7 +280,7 @@ function on_pre_player_died(event)
         --Make map pin
         local centerPosition = player.position
         local label = ("Body of: " .. player.name)
-        local chartTag = {position = centerPosition, icon = nil, text = label}
+        local chartTag = { position = centerPosition, icon = nil, text = label }
         local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
         create_myglobals()
@@ -288,20 +288,20 @@ function on_pre_player_died(event)
 
         --Add a light, so it is easier to see
         local clight =
-          rendering.draw_light {
+        rendering.draw_light {
           sprite = "utility/light_medium",
           target = centerPosition,
           render_layer = 148,
           surface = player.surface,
-          color = {0.5, 0.25, 0},
+          color = { 0.5, 0.25, 0 },
           scale = 1,
-          target_offset = {0, 0}
+          target_offset = { 0, 0 }
         }
 
         --Add to list of pins
         table.insert(
           global.corpselist,
-          {tag = qtag, tick = game.tick + 590, pos = player.position, pindex = player.index, corpse_lamp = clight}
+          { tag = qtag, tick = game.tick + 590, pos = player.position, pindex = player.index, corpse_lamp = clight }
         )
       end
 
@@ -310,13 +310,13 @@ function on_pre_player_died(event)
         cause = event.cause.name
         gsysmsg(
           player.name ..
-            " was killed by " ..
-              cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+          " was killed by " ..
+          cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
         )
       else
         gsysmsg(
           player.name ..
-            " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+          " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
         )
       end
     end
@@ -368,17 +368,16 @@ script.on_event(
         --Only mark active on movement if walking
         if event.name == defines.events.on_player_changed_position then
           if player.walking_state then
-            if
-              player.walking_state.walking == true and
+            if player.walking_state.walking == true and
                 (player.walking_state.direction == defines.direction.north or
-                  player.walking_state.direction == defines.direction.northeast or
-                  player.walking_state.direction == defines.direction.east or
-                  player.walking_state.direction == defines.direction.southeast or
-                  player.walking_state.direction == defines.direction.south or
-                  player.walking_state.direction == defines.direction.southwest or
-                  player.walking_state.direction == defines.direction.west or
-                  player.walking_state.direction == defines.direction.northwest)
-             then
+                    player.walking_state.direction == defines.direction.northeast or
+                    player.walking_state.direction == defines.direction.east or
+                    player.walking_state.direction == defines.direction.southeast or
+                    player.walking_state.direction == defines.direction.south or
+                    player.walking_state.direction == defines.direction.southwest or
+                    player.walking_state.direction == defines.direction.west or
+                    player.walking_state.direction == defines.direction.northwest)
+            then
               set_player_active(player)
             end
           end
@@ -458,9 +457,9 @@ function clear_corpse_tag(event)
           if victim.name ~= player.name then
             gsysmsg(
               player.name ..
-                " looted the body of " ..
-                  victim.name ..
-                    ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+              " looted the body of " ..
+              victim.name ..
+              ", at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
             )
           end
         end
@@ -468,10 +467,9 @@ function clear_corpse_tag(event)
 
       local index
       for i, ctag in pairs(global.corpselist) do
-        if
-          ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and
+        if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and
             ctag.pindex == ent.character_corpse_player_index
-         then
+        then
           --Destroy corpse lamp
           if ctag and ctag.corpse_lamp then
             rendering.destroy(ctag.corpse_lamp)
