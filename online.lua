@@ -73,9 +73,9 @@ function update_player_list()
     end
 
     local isafk = false
-    if glob.last_playtime and glob.last_playtime[victim.index] then
-      local last_playtime = glob.last_playtime[victim.index]
-      if game.tick - last_playtime > 7200 then
+    if global.last_playtime and global.last_playtime[victim.index] then
+      local last_playtime = global.last_playtime[victim.index]
+      if game.tick - global.last_playtime > 7200 then
         AFK = true
       end
     end
@@ -654,7 +654,7 @@ function make_m45_online_window(player)
           name_label.style.font_color = newcolor
 
           if not global.online_brief[player.index] then
-            local name_label =
+            local line =
             pframe.add {
               type = "line",
               direction = "vertical"
@@ -666,29 +666,26 @@ function make_m45_online_window(player)
               tooltip = "Total time player has been connected on this map."
             }
             time_label.style.width = 100
-            local name_label =
+            local line2 =
             pframe.add {
               type = "line",
               direction = "vertical"
             }
-            if target.afk then
-              local time_label =
-              pframe.add {
-                type = "label",
-                caption = " AFK",
-                tooltip = "This player is currently AFK."
-              }
-            else
-              local time_label =
-              pframe.add {
-                type = "label",
-                caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
-                tooltip = "Total time player has been active on this map."
-              }
-            end
+            local active_label =
+            pframe.add {
+              type = "label",
+              caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
+              tooltip = "Total time player has been active on this map."
+            }
+            local afk_label =
+            pframe.add {
+              type = "label",
+              caption = target.AFK,
+            }
+
 
             time_label.style.width = 100
-            local name_label =
+            local line3 =
             pframe.add {
               type = "line",
               direction = "vertical"
