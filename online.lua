@@ -74,8 +74,8 @@ function update_player_list()
 
     local isafk = ""
     if global.last_playtime and global.last_playtime[victim.index] then
-      local last_playtime = global.last_playtime[victim.index]
-      if game.tick - global.last_playtime > 7200 then
+      local lplaytime = global.last_playtime[victim.index]
+      if game.tick - lplaytime > 7200 then
         isafk = " (AFK)"
       end
     end
@@ -101,6 +101,7 @@ function update_player_list()
     end
 
   end
+
 
   table.sort(
     results,
@@ -654,7 +655,7 @@ function make_m45_online_window(player)
           name_label.style.font_color = newcolor
 
           if not global.online_brief[player.index] then
-            local line =
+            local name_label =
             pframe.add {
               type = "line",
               direction = "vertical"
@@ -666,26 +667,19 @@ function make_m45_online_window(player)
               tooltip = "Total time player has been connected on this map."
             }
             time_label.style.width = 100
-            local line2 =
+            local name_label =
             pframe.add {
               type = "line",
               direction = "vertical"
             }
-            local active_label =
+            local time_label =
             pframe.add {
               type = "label",
               caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
               tooltip = "Total time player has been active on this map."
             }
-            local afk_label =
-            pframe.add {
-              type = "label",
-              caption = target.AFK,
-            }
-
-
             time_label.style.width = 100
-            local line3 =
+            local name_label =
             pframe.add {
               type = "line",
               direction = "vertical"
@@ -721,6 +715,12 @@ function make_m45_online_window(player)
               tooltip = "Current level, see membership tab for more info."
             }
             score_label.style.width = 200
+
+            local afk_label =
+            pframe.add {
+              type = "label",
+              caption = target.AFK,
+            }
           end
         end
       end

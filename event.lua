@@ -159,6 +159,9 @@ end
 
 --Player connected, make variables, draw UI, set permissions, and game settings
 function on_player_joined_game(event)
+  if global.last_playtime then
+    global.last_playtime[event.player_index] = game.tick
+  end
   update_player_list() --online.lua
 
   --Set clock as NOT MINIMIZED on login
