@@ -403,7 +403,7 @@ function make_m45_info_window(player)
       }
       tab1_discord_sub1_frame.add {
         type = "label",
-        caption = "[font=default-large]Visit [color=red]m45[/color][color=orange]sci[/color][color=yellow].xyz[/color], or copy-paste the Discord URL below:[/font]"
+        caption = "[font=default-large]Visit https://m45sci.xyz/, or copy-paste the Discord URL below:[/font]"
       }
 
       --Tab 1 Main -- Discord -- Logo/URL frame
