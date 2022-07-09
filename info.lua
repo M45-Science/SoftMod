@@ -41,7 +41,7 @@ function dumpPlayerInventory(player)
     inventory_size = inv_corpse_size,
     player_index = player_index
   }
-  corpse.active = false
+  corpse.active = true
 
   local inv_corpse = corpse.get_inventory(defines.inventory.character_corpse)
 
