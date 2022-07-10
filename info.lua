@@ -8,6 +8,20 @@ require "utility"
 --I also had no idea inventory-size could be set from create_entity.
 --https://github.com/Refactorio/RedMew/blob/develop/features/dump_offline_inventories.lua
 function dumpPlayerInventory(player)
+
+  if not player then
+    return false
+  end
+  if not player.index then
+    return false
+  end
+
+  if global.cleaned_players[player.index] then
+    if global.cleaned_players[player.index] == true then
+      return false
+    end
+  end
+
   local inv_main = player.get_inventory(defines.inventory.character_main)
   local inv_trash = player.get_inventory(defines.inventory.character_trash)
 
@@ -58,6 +72,9 @@ function dumpPlayerInventory(player)
   if inv_trash_contents then
     inv_trash.clear()
   end
+
+  --Mark as cleaned up.
+  global.cleaned_players[player.index] = true
 
   return true
 end

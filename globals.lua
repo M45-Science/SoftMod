@@ -63,6 +63,10 @@ function create_myglobals()
   if not global.lastonlinestring then
     global.lastonlinestring = ""
   end
+
+  if not global.cleaned_players then
+    global.cleaned_players = {}
+  end
 end
 
 --Create player globals, if needed
@@ -88,6 +92,11 @@ function create_player_globals(player)
       if not global.last_playtime[player.index] then
         global.last_playtime[player.index] = false
       end
+
+      if not global.cleaned_players[player.index] then
+        global.cleaned_players[player.index] = false
+      end
+      
     end
   end
 end
