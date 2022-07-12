@@ -167,7 +167,7 @@ end
 
 function g_banish(player, victim, reason)
   if player and player.valid then
-    --Regulars/admins only
+    --Regulars/mods only
     if is_regular(player) or player.admin then
       --Must have arguments
       if victim and reason then
@@ -186,7 +186,7 @@ function g_banish(player, victim, reason)
         else
           --Must have valid victim
           if victim and victim.valid then
-            --Victim can not be an admin
+            --Victim can not be an moderator
             if not victim.admin then
               --Check if we already voted against them
               if global.banishvotes and global.banishvotes ~= {} then
@@ -247,7 +247,7 @@ function g_banish(player, victim, reason)
               )
               update_banished_votes() --Must do this to add to tally
             else
-              smart_print(player, "Admins can not be banished.")
+              smart_print(player, "Moderators can not be banished.")
             end
           else
             smart_print(player, "There are no players by that name.")
@@ -257,7 +257,7 @@ function g_banish(player, victim, reason)
         smart_print(player, "Usage: /banish <player> <reason for banishment>")
       end
     else
-      smart_print(player, "This command is for regulars-status players and admins only!")
+      smart_print(player, "This command is for regulars-status players and moderators only!")
       return
     end
   else
@@ -315,11 +315,11 @@ function add_banish_commands()
     function(param)
       local player
 
-      --Admins only
+      --Mods only
       if param and param.player_index then
         player = game.players[param.player_index]
         if player and player.admin == false then
-          smart_print(player, "Admins only.")
+          smart_print(player, "Moderators only.")
           return
         end
       end
@@ -366,11 +366,11 @@ function add_banish_commands()
           end
         end
       else
-        smart_print(player, "Admins only.")
+        smart_print(player, "Moderators only.")
       end
     end
   )
-  --Admin vote overrrule
+  --Mod vote overrrule
   commands.add_command(
     "overrule",
     "<defendant>\n(overrule votes against defendant)\n<clear>\n(clear all votes, will unbanish all)",
@@ -378,7 +378,7 @@ function add_banish_commands()
       if param and param.player_index then
         local player = game.players[param.player_index]
 
-        --Admins only
+        --Moderator only
         if (player and player.admin) then
           if global.banishvotes then
             --get arguments
@@ -430,7 +430,7 @@ function add_banish_commands()
             smart_print(player, "There are no votes to overrule.")
           end
         else
-          smart_print(player, "Admins only.")
+          smart_print(player, "Moderators only.")
         end
       end
     end
@@ -512,7 +512,7 @@ function add_banish_commands()
       if param and param.player_index then
         local player = game.players[param.player_index]
         if player and param.parameter then
-          --regulars/admin players only
+          --regulars/moderators players only
           if is_regular(player) or player.admin then
             --get arguments
             local args = mysplit(param.parameter, " ")
@@ -548,7 +548,7 @@ function add_banish_commands()
               smart_print(player, "Usage: /unbanish <player>")
             end
           else
-            smart_print(player, "Only regulars/admin status players can vote.")
+            smart_print(player, "Only regulars/moderator status players can vote.")
             return
           end
         else

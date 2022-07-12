@@ -9,7 +9,7 @@ function create_groups()
   global.defaultgroup = game.permissions.get_group("Default")
   global.membersgroup = game.permissions.get_group("Members")
   global.regularsgroup = game.permissions.get_group("Regulars")
-  global.adminsgroup = game.permissions.get_group("Admins")
+  global.modsgroup = game.permissions.get_group("Moderators")
 
   if (not global.defaultgroup) then
     game.permissions.create_group("Default")
@@ -23,14 +23,14 @@ function create_groups()
     game.permissions.create_group("Regulars")
   end
 
-  if (not global.adminsgroup) then
-    game.permissions.create_group("Admins")
+  if (not global.modsgroup) then
+    game.permissions.create_group("Moderators")
   end
 
   global.defaultgroup = game.permissions.get_group("Default")
   global.membersgroup = game.permissions.get_group("Members")
   global.regularsgroup = game.permissions.get_group("Regulars")
-  global.adminsgroup = game.permissions.get_group("Admins")
+  global.modsgroup = game.permissions.get_group("Moderators")
 end
 
 function set_blueprints_enabled(group, option)
@@ -157,15 +157,15 @@ function get_permgroup()
     for _, player in pairs(game.connected_players) do
       if (player and player.valid) then
         --Check if groups are valid
-        if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.adminsgroup) then
+        if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
           if player.permission_group then
             --(ADMINS) Check if they are in the right group, including se-remote-view
-            if (player.admin and player.permission_group.name ~= global.adminsgroup.name and
-                player.permission_group.name ~= global.adminsgroup.name .. "_satellite")
+            if (player.admin and player.permission_group.name ~= global.modsgroup.name and
+                player.permission_group.name ~= global.modsgroup.name .. "_satellite")
             then
               --(REGULARS) Check if they are in the right group, including se-remote-view
-              global.adminsgroup.add_player(player)
-              message_all(player.name .. " moved to Admins group")
+              global.modsgroup.add_player(player)
+              message_all(player.name .. " moved to Moderators group")
             elseif (global.active_playtime and global.active_playtime[player.index] and
                 global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
                 not player.admin)

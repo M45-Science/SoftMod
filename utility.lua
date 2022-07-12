@@ -229,7 +229,7 @@ end
 --Check if player should be considered banished
 function is_banished(victim)
   if victim and victim.valid and not victim.admin then
-    --Admins can not be marked as banished
+    --Mods can not be marked as banished
     if victim.admin then
       return false
     elseif global.thebanished and global.thebanished[victim.index] then

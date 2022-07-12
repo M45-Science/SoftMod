@@ -131,7 +131,7 @@ function on_player_deconstructed_area(event)
             math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) .. "sq"
         console_print(msg)
 
-        if is_new(player) or is_member(player) then --Dont bother with regulars/admins
+        if is_new(player) or is_member(player) then --Dont bother with regulars/moderators
           if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
             global.last_decon_warning = game.tick
             gsysmsg(msg)
