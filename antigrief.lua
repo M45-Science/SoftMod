@@ -39,7 +39,7 @@ function on_built_entity(event)
 
       if obj.name == "programmable-speaker" or (obj.name == "entity-ghost" and obj.ghost_name == "programmable-speaker") then
         if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 5) then
-          if player.admin == false then --Don't bother with admins
+          if player.admin == false then --Don't bother with mods
             gsysmsg(player.name .. " placed a speaker at [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
             global.last_speaker_warning = game.tick
           end
@@ -48,14 +48,14 @@ function on_built_entity(event)
 
       if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
-          console_print("[ACT] " .. player.name .. " placed " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+          console_print("[ACT] " .. player.name .. " placed " .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
         else
           if not global.last_ghost_log then
             global.last_ghost_log = {}
           end
           if global.last_ghost_log[player.index] then
             if game.tick - global.last_ghost_log[player.index] > (60 * 2) then
-              console_print("[ACT] " .. player.name .. " placed-ghost " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+              console_print("[ACT] " .. player.name .. " placed-ghost " .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " .. obj.ghost_name)
             end
           end
           global.last_ghost_log[player.index] = game.tick
@@ -81,9 +81,9 @@ function on_pre_player_mined_item(event)
         if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
           if obj.name ~= "entity-ghost" then
             --log
-            console_print("[ACT] " .. player.name .. " mined " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+            console_print("[ACT] " .. player.name .. " mined " .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
           else
-            console_print("[ACT] " .. player.name .. " mined-ghost " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+            console_print("[ACT] " .. player.name .. " mined-ghost " .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " .. obj.ghost_name)
           end
         end
       end
@@ -105,9 +105,9 @@ function on_player_rotated_entity(event)
       if obj and obj.valid then
         if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
           if obj.name ~= "entity-ghost" then
-            console_print("[ACT] " .. player.name .. " rotated " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "]")
+            console_print("[ACT] " .. player.name .. " rotated " .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
           else
-            console_print("[ACT] " .. player.name .. " rotated ghost " .. obj.name .. " [gps=" .. obj.position.x .. "," .. obj.position.y .. "] " .. obj.ghost_name)
+            console_print("[ACT] " .. player.name .. " rotated ghost " .. obj.name .. " [gps=" .. math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " .. obj.ghost_name)
           end
         end
       else
