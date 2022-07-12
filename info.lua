@@ -4,7 +4,7 @@
 --License: MPL 2.0
 require "utility"
 
---Shamelessly stole most of this code from RedMew... I am not fond of lua.
+--Shamelessly stole most of this function from RedMew.
 --I also had no idea inventory-size could be set from create_entity.
 --https://github.com/Refactorio/RedMew/blob/develop/features/dump_offline_inventories.lua
 function dumpPlayerInventory(player)
@@ -91,7 +91,7 @@ function check_character_abandoned()
         if game.tick - global.last_playtime[player.index] > 4 * 60 * 60 * 60 then
           if dumpPlayerInventory(player) then
             gsysmsg(
-              "[color=orange] * New player '" .. player.name .. "' was not active long enough to become a member and have been offline for hours. Their items are now considered abandoned, and have been placed at spawn (expires in 15m) *[/color]")
+              "[color=orange] * New player '" .. player.name .. "' was not active long enough to become a member, and have been offline for hours. Their items are now considered abandoned, and have been placed at spawn (expires in 15m) *[/color]")
           end
         end
       end
@@ -736,7 +736,7 @@ function make_m45_info_window(player)
       tab4_main_frame.add {
         type = "text-box",
         name = "old_maps",
-        text = "http://m45sci.xyz/u/fact/old-maps/",
+        text = "https://m45sci.xyz/u/fact2/archive/1.1%20maps/?C=M;O=D",
         tooltip = "drag-select with mouse, control-c to copy."
       }
       tab4_main_frame.old_maps.style.font = "default-large"
@@ -853,7 +853,7 @@ function make_m45_info_window(player)
       }
       tab6_main_frame.add {
         type = "label",
-        caption = "[font=default-large]CPU: Ryzen 9 3900X, 32GB RAM, NVME SSD, Gigabit Fiber[/font]"
+        caption = "[font=default-large]CPU: Ryzen 9 3900X, 96GB RAM, NVME SSD, Gigabit Fiber[/font]"
       }
       tab6_main_frame.add {
         type = "label",
@@ -865,7 +865,7 @@ function make_m45_info_window(player)
       }
       tab6_main_frame.add {
         type = "label",
-        caption = "[font=default-large]Our server costs are $84/mo USD[/font]"
+        caption = "[font=default-large]Our server costs are $104/mo USD[/font]"
       }
       tab6_main_frame.add {
         type = "label",
@@ -1008,7 +1008,7 @@ function on_gui_text_changed(event)
     if event.element.name == "discord_url" then
       event.element.text = "https://discord.gg/rQANzBheVh"
     elseif event.element.name == "old_maps" then
-      event.element.text = "http://m45sci.xyz/u/fact/old-maps/"
+      event.element.text = "https://m45sci.xyz/u/fact2/archive/1.1%20maps/?C=M;O=D"
     elseif event.element.name == "patreon_url" then
       event.element.text = "https://www.patreon.com/m45sci"
     elseif event.element.name == "wube_dl" then
