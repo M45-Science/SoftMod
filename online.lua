@@ -62,7 +62,7 @@ function update_player_list()
       utag = "BANISHED"
     end
     if victim.admin then
-      utag = "ADMINS"
+      utag = "Moderator"
     end
 
     if is_patreon(victim) then
@@ -330,7 +330,7 @@ function make_m45_online_submenu(player, target_name)
               local banish_note =
               banish_frame.add {
                 type = "label",
-                caption = "(admins cannot be banished)"
+                caption = "(moderators cannot be banished)"
               }
               banish_note.enabled = false
               banish.enabled = false
@@ -341,7 +341,7 @@ function make_m45_online_submenu(player, target_name)
             local banish_note =
             banish_frame.add {
               type = "label",
-              caption = "(only regulars and admins have banish privleges)"
+              caption = "(only regulars and moderators have banish privleges)"
             }
             banish_note.enabled = false
             banish.enabled = false
@@ -703,7 +703,7 @@ function make_m45_online_window(player)
               utag = "BANISHED"
             end
             if victim.admin then
-              utag = "ADMINS"
+              utag = "Moderators"
             end
 
             if is_nitro(victim) then
