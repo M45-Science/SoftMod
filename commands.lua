@@ -23,14 +23,16 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "moderators only.")
               return
             end
           end
+
+          create_groups()
 
           if param.parameter then
             global.resetdur = param.parameter
@@ -65,14 +67,16 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
+
+          create_groups()
 
           if param.parameter then
             global.resetint = param.parameter
@@ -88,14 +92,16 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
+
+          create_groups()
 
           if param and param.parameter then
             local pforce = game.forces["player"]
@@ -123,11 +129,11 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -164,11 +170,11 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -208,11 +214,11 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -253,11 +259,11 @@ script.on_load(
           local player
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -297,14 +303,16 @@ script.on_load(
         function(param)
           local player
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
+
+          create_groups()
 
           --Process argument
           if not param.parameter then
@@ -374,7 +382,7 @@ script.on_load(
               local ptype = "Error"
 
               if player.admin then
-                ptype = "admin"
+                ptype = "moderator"
               elseif is_regular(player) then
                 ptype = "regular"
               elseif is_member(player) then
@@ -422,14 +430,16 @@ script.on_load(
         "cname",
         "<name here>\n(Names the factorio server)",
         function(param)
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             local player = game.players[param.player_index]
             if not player.admin then
-              smart_print(player, "This command is for system and admin use only.")
+              smart_print(player, "This command is for system and moderator use only.")
               return
             end
           end
+
+          create_groups()
 
           if param.parameter then
             global.servname = param.parameter
@@ -502,11 +512,11 @@ script.on_load(
         function(param)
           local player
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -537,11 +547,11 @@ script.on_load(
         function(param)
           local player
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -570,11 +580,11 @@ script.on_load(
         function(param)
           local player
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -603,11 +613,11 @@ script.on_load(
         function(param)
           local player
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -644,11 +654,11 @@ script.on_load(
         function(param)
           local player
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             player = game.players[param.player_index]
             if player and player.admin == false then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
           end
@@ -723,18 +733,18 @@ script.on_load(
       --Change default spawn point
       commands.add_command(
         "cspawn",
-        "<x,y> (OPTIONAL)\n(Sets spawn point to <x,y>, or where admin is standing)",
+        "<x,y> (OPTIONAL)\n(Sets spawn point to <x,y>, or where moderator is standing)",
         function(param)
           local victim
           local new_pos_x = 0.0
           local new_pos_y = 0.0
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             victim = game.players[param.player_index]
 
             if victim and victim.admin == false then
-              smart_print(victim, "Admins only.")
+              smart_print(victim, "Moderators only.")
               return
             end
           end
@@ -742,7 +752,7 @@ script.on_load(
           local psurface = game.surfaces[1]
           local pforce = game.forces["player"]
 
-          --use admin's force and position if available.
+          --use mods's force and position if available.
           if victim and victim.valid then
             pforce = victim.force
 
@@ -790,11 +800,11 @@ script.on_load(
         function(param)
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             victim = game.players[param.player_index]
             if victim and victim.admin == false then
-              smart_print(victim, "Admins only.")
+              smart_print(victim, "Moderators only.")
               return
             end
           end
@@ -805,7 +815,7 @@ script.on_load(
           --Default size
           local size = 1024
 
-          --Use admin's surface and force if possible
+          --Use mods's surface and force if possible
           if victim and victim.valid then
             psurface = victim.surface
             pforce = victim.force
@@ -857,11 +867,11 @@ script.on_load(
         function(param)
           local victim
 
-          --Admins only
+          --Moderators only
           if param and param.player_index then
             victim = game.players[param.player_index]
             if victim and victim.admin == false then
-              smart_print(victim, "Admins only.")
+              smart_print(victim, "Moderators only.")
               return
             end
           end
@@ -914,9 +924,9 @@ script.on_load(
             player = game.players[param.player_index]
           end
 
-          --Admins only
+          --Moderators only
           if player and player.admin == false then
-            smart_print(player, "Admins only.")
+            smart_print(player, "Moderators only.")
             return
           end
 
@@ -953,9 +963,9 @@ script.on_load(
             player = game.players[param.player_index]
           end
 
-          --Admins only
+          --Moderators only
           if player and player.admin == false then
-            smart_print(player, "Admins only.")
+            smart_print(player, "Moderators only.")
             return
           end
 
@@ -1018,10 +1028,10 @@ script.on_load(
           end
           local player = game.players[param.player_index]
 
-          --Admin only
+          --Moderator only
           if (player and player.valid and player.connected and player.character and player.character.valid) then
             if (player.admin == false) then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
 
@@ -1058,10 +1068,10 @@ script.on_load(
           end
           local player = game.players[param.player_index]
 
-          --Admins only
+          --Moderators only
           if (player and player.valid and player.connected and player.character and player.character.valid) then
             if (player.admin == false) then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
 
@@ -1131,10 +1141,10 @@ script.on_load(
           end
           local player = game.players[param.player_index]
 
-          --Admins only
+          --Moderators only
           if (player and player.valid and player.connected and player.character and player.character.valid) then
             if (player.admin == false) then
-              smart_print(player, "Admins only.")
+              smart_print(player, "Moderators only.")
               return
             end
 
