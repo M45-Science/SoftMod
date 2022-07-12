@@ -2,7 +2,7 @@
 --carlotto81@gmail.com
 --GitHub: https://github.com/Distortions81/M45-SoftMod
 --License: MPL 2.0
-require "antigrief" --Mine/rotate/fast-replace/bp throttle
+require "antigrief" --Log player actions
 require "banish" --Banish system
 require "commands" --Slash commands
 require "event" --Event/tick handler
