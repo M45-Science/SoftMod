@@ -159,13 +159,13 @@ function get_permgroup()
         --Check if groups are valid
         if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
           if player.permission_group then
-            --(ADMINS) Check if they are in the right group, including se-remote-view
+            --(Moderators) Check if they are in the right group, including se-remote-view
             if (player.admin and player.permission_group.name ~= global.modsgroup.name and
                 player.permission_group.name ~= global.modsgroup.name .. "_satellite")
             then
               --(REGULARS) Check if they are in the right group, including se-remote-view
               global.modsgroup.add_player(player)
-              message_all(player.name .. " moved to Moderators group")
+              message_all(player.name .. " moved to moderators group")
             elseif (global.active_playtime and global.active_playtime[player.index] and
                 global.active_playtime[player.index] > (4 * 60 * 60 * 60) and
                 not player.admin)

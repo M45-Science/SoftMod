@@ -9,7 +9,7 @@ Logging and alerts <br>
 Allows regulars to vote-ban players,<br>
 <br>
 *commands.lua*<br>
-Server, admin and player commands<br>
+Server, moderator and player commands<br>
 <br>
 *control.lua*<br>
 Main, loads modules<br>
