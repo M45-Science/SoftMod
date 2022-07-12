@@ -240,6 +240,7 @@ function on_player_created(event)
 
     if player and player.valid then
       global.drawlogo = false --set logo to be redrawn
+      create_groups()
       dodrawlogo() --redraw logo
       set_perms()
       send_to_default_spawn(player) --incase spawn moved
