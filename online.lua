@@ -72,13 +72,15 @@ function update_player_list()
       utag = utag .. " (NITRO)"
     end
 
-    local isafk = ""
+    local isafk = "      "
+    if victim and victim.connected then
     if global.last_playtime and global.last_playtime[victim.index] then
       local lplaytime = global.last_playtime[victim.index]
       if game.tick - lplaytime > 18000 then
         isafk = " (AFK)"
       end
     end
+  end
 
     if global.active_playtime[victim.index] then
       table.insert(
