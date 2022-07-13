@@ -740,7 +740,7 @@ function make_m45_info_window(player)
         tooltip = "drag-select with mouse, control-c to copy."
       }
       tab4_main_frame.old_maps.style.font = "default-large"
-      tab4_main_frame.old_maps.style.minimal_width = 350
+      tab4_main_frame.old_maps.style.minimal_width = 550
       tab4_main_frame.add {
         type = "label",
         caption = ""
@@ -766,7 +766,7 @@ function make_m45_info_window(player)
         tooltip = "drag-select with mouse, control-c to copy."
       }
       tab4_main_frame.wube_dl.style.font = "default-large"
-      tab4_main_frame.wube_dl.style.minimal_width = 250
+      tab4_main_frame.wube_dl.style.minimal_width = 350
 
       info_pane.add_tab(tab4, tab4_frame)
 
