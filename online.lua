@@ -72,15 +72,28 @@ function update_player_list()
       utag = utag .. " (NITRO)"
     end
 
+    --Show last online in minutes
     local isafk = "      "
-    if victim and victim.connected then
-    if global.last_playtime and global.last_playtime[victim.index] then
-      local lplaytime = global.last_playtime[victim.index]
-      if game.tick - lplaytime > 18000 then
-        isafk = " (AFK)"
+
+    if victim then
+      if victim.connected then
+        if global.last_playtime and global.last_playtime[victim.index] then
+          local lplaytime = global.last_playtime[victim.index]
+          local ago = math.floor((game.tick - global.last_playtime[victim.index]) / 60 / 60)
+          if ago > 0 then
+            isafk = ""
+            isafk = isafk .. "(" .. ago .. "m)"
+          end
+        end
+      else
+        if global.last_playtime[victim.index] then
+          isafk = ""
+
+          local ago = math.floor((game.tick - global.last_playtime[victim.index]) / 60 / 60 / 60)
+          isafk = isafk .. "(" .. ago .. "h)"
+        end
       end
     end
-  end
 
     if global.active_playtime[victim.index] then
       table.insert(
@@ -727,6 +740,7 @@ function make_m45_online_window(player)
             pframe.add {
               type = "label",
               caption = target.afk,
+              tooltip = "Time AFK or offline (map time)"
             }
           end
         end
@@ -767,7 +781,9 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "send_whisper" then
         ----------------------------------------------------------------
-        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.whisper_frame and player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
+            player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.whisper_frame and
+            player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox then
           if victim and victim.valid then
             local text = player.gui.screen.m45_online_submenu.main.whisper_frame.whisper_textbox.text
             if text and string.len(text) > 0 then
@@ -791,7 +807,9 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "banish_player" then
         ----------------------------------------------------------------
-        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.banish_frame and player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
+            player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.banish_frame and
+            player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox then
           if victim and victim.valid then
             local reason = player.gui.screen.m45_online_submenu.main.banish_frame.banish_textbox.text
             if reason and string.len(reason) > 0 then
@@ -812,7 +830,9 @@ function online_on_gui_click(event)
         end
       elseif event.element.name == "report_player" then
         ----------------------------------------------------------------
-        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.report_frame and player.gui.screen.m45_online_submenu.main.report_frame.report_textbox then
+        if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu and
+            player.gui.screen.m45_online_submenu.main and player.gui.screen.m45_online_submenu.main.report_frame and
+            player.gui.screen.m45_online_submenu.main.report_frame.report_textbox then
           if victim and victim.valid then
             local reason = player.gui.screen.m45_online_submenu.main.report_frame.report_textbox.text
             if reason and string.len(reason) > 0 then
