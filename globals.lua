@@ -5,7 +5,7 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "595-07.13.2022-0150p"
+  global.svers = "596-07.25.2022-0240p"
 
   --Adjust look
   game.surfaces[1].show_clouds = false
@@ -94,7 +94,7 @@ function create_player_globals(player)
       end
 
       if not global.cleaned_players[player.index] then
-        global.cleaned_players[player.index] = false
+        global.cleaned_players[player.index] = true
       end
 
     end
