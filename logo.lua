@@ -61,8 +61,8 @@ function dodrawlogo()
         text = global.servname,
         draw_on_ground = true,
         surface = msurf,
-        target = { cpos.x - 0.125, cpos.y + 2.125 },
-        scale = 1.0,
+        target = { cpos.x - 0.125, cpos.y - 2.5 },
+        scale = 3.0,
         color = { 1, 1, 1 },
         alignment = "center",
         scale_with_zoom = false
