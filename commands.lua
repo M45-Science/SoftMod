@@ -1100,8 +1100,8 @@ script.on_load(
 
               --Find x/y from argument
               --Matches two potentially negative numbers separated by a comma, gps compatible
-              --str could be "-353,19" or "[gps=80,-20]" or "[gps=5,3,hell]"
-              xpos, ypos = str:match("(%-?%d+),%s*(%-?%d+)")
+              --str could be "-353.5,19.3" or "[gps=80,-20]" or "[gps=5,3,hell]"
+              xpos, ypos = str:match("(%-?%d+)%.?%d*,%s*(%-?%d+)")
               if tonumber(xpos) and tonumber(ypos) then
                 local position = { x = xpos, y = ypos }
 
