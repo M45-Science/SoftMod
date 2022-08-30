@@ -215,6 +215,14 @@ function make_m45_info_window(player)
         sprite = "file/img/info-win/m45-128.png",
         tooltip = ""
       }
+      tab1_lframe.add {
+        type = "label",
+        caption = "[color=white][font=default-large-bold]M45-Science![/font][/color]"
+      }
+      tab1_lframe.add {
+        type = "label",
+        caption = "[color=white]A Factorio gaming community.[/color]"
+      }
 
       --PATREON
       if global.patreonlist[1] ~= nil then
