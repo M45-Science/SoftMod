@@ -21,14 +21,14 @@ local function insert_weapons(player, ammo_amount)
   end
 end
 
---Looping timer, 30 seconds
+--Looping timer, 60 seconds
 --delete old corpse map pins
 --Check spawn area map pin
 --Add to player active time if needed
 --Refresh players online window
 
 script.on_nth_tick(
-  900,
+  3600,
   function(event)
     --Move spawn pad if blocked
     if not global.movepad then
@@ -105,13 +105,14 @@ script.on_nth_tick(
     --Add time to connected players
     if global.active_playtime then
       for _, player in pairs(game.connected_players) do
+        --Player active?
         if global.playeractive[player.index] then
           if global.playeractive[player.index] == true then
             global.playeractive[player.index] = false --Turn back off
 
             if global.active_playtime[player.index] then
               --Compensate for game speed
-              global.active_playtime[player.index] = global.active_playtime[player.index] + (900.0 / game.speed) --Same as loop time
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
               if global.last_playtime then
                 global.last_playtime[player.index] = game.tick
               end
@@ -120,10 +121,34 @@ script.on_nth_tick(
               global.active_playtime[player.index] = 0
             end
           end
+
         else
           --INIT
           global.playeractive[player.index] = false
         end
+
+        --Player moving?
+        if global.playermoving[player.index] then
+          if global.playermoving[player.index] == true then
+            global.playermoving[player.index] = false --Turn back off
+
+            if global.active_playtime[player.index] then
+              --Compensate for game speed
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
+              if global.last_playtime then
+                global.last_playtime[player.index] = game.tick
+              end
+            else
+              --INIT
+              global.active_playtime[player.index] = 0
+            end
+          end
+
+        else
+          --INIT
+          global.playermoving[player.index] = false
+        end
+
       end
     end
 
@@ -383,7 +408,7 @@ script.on_event(
                     player.walking_state.direction == defines.direction.west or
                     player.walking_state.direction == defines.direction.northwest)
             then
-              --set_player_active(player)
+              set_player_moving(player)
             end
           end
         else

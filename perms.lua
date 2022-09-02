@@ -128,6 +128,18 @@ function set_perms()
   end
 end
 
+--Flag player as currently moving
+function set_player_moving(player)
+  if (player and player.valid and player.connected and player.character and player.character.valid and
+      global.playermoving)
+  then
+    --banished players don't get move score
+    if is_banished(player) == false then
+      global.playermoving[player.index] = true
+    end
+  end
+end
+
 --Flag player as currently active
 function set_player_active(player)
   if (player and player.valid and player.connected and player.character and player.character.valid and

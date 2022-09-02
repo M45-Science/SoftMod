@@ -5,7 +5,7 @@
 
 --Create globals, if needed
 function create_myglobals()
-  global.svers = "599-09.02.2022-1256"
+  global.svers = "599-09.02.2022-0120"
 
   --Adjust look
   game.surfaces[1].show_clouds = false
@@ -15,6 +15,9 @@ function create_myglobals()
   end
   if not global.playeractive then
     global.playeractive = {}
+  end
+  if not global.playermoving then
+    global.playermoving = {}
   end
   if not global.active_playtime then
     global.active_playtime = {}
@@ -75,6 +78,9 @@ function create_player_globals(player)
     if global.playeractive and player and player.index then
       if not global.playeractive[player.index] then
         global.playeractive[player.index] = false
+      end
+      if not global.playermoving[player.index] then
+        global.playermoving[player.index] = false
       end
 
       if not global.active_playtime[player.index] then
