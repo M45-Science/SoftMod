@@ -383,7 +383,7 @@ script.on_event(
                     player.walking_state.direction == defines.direction.west or
                     player.walking_state.direction == defines.direction.northwest)
             then
-              set_player_active(player)
+              --set_player_active(player)
             end
           end
         else
