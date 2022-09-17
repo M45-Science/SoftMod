@@ -338,13 +338,13 @@ function on_pre_player_died(event)
       --Log to discord
       if event.cause and event.cause.valid then
         cause = event.cause.name
-        gsysmsg(
+        message_alld(
           player.name ..
           " was killed by " ..
           cause .. " at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
         )
       else
-        gsysmsg(
+        message_alld(
           player.name ..
           " was killed at [gps=" .. math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
         )
