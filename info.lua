@@ -861,11 +861,11 @@ function make_m45_info_window(player)
       }
       tab6_main_frame.add {
         type = "label",
-        caption = "[font=default-large]CPU: Ryzen 9 3900X, 96GB RAM, NVME SSD, Gigabit Fiber[/font]"
+        caption = "[font=default-large]CPU: Dual Xeon E5-2670, 32GB RAM, NVME SSD, Gigabit Fiber[/font]"
       }
       tab6_main_frame.add {
         type = "label",
-        caption = "(Rented in a datacenter, in Kansas City, Kansas, USA)"
+        caption = "(Rented in a datacenter, in Wichita, Kansas, USA)"
       }
       tab6_main_frame.add {
         type = "label",
@@ -873,7 +873,7 @@ function make_m45_info_window(player)
       }
       tab6_main_frame.add {
         type = "label",
-        caption = "[font=default-large]Our server costs are $104/mo USD[/font]"
+        caption = "[font=default-large]Our server costs are $50/mo USD[/font]"
       }
       tab6_main_frame.add {
         type = "label",
