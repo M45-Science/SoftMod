@@ -61,8 +61,47 @@ function set_blueprints_enabled(group, option)
   end
 end
 
---Disable some permissions for new players
+--Disable some permissions for new players, minimal mode
 function set_perms()
+  --Auto set default group permissions
+
+  if global.defaultgroup then
+
+    --If new user restrictions are on, then disable all permissions
+    --Otherwise undo
+    local option = true
+    if global.restrict then
+      option = false
+    end
+
+    global.defaultgroup.set_allows_action(defines.input_action.build_terrain, option)
+    global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, option)
+    global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters, option)
+    global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, option)
+    global.defaultgroup.set_allows_action(defines.input_action.deconstruct, option)
+    global.defaultgroup.set_allows_action(defines.input_action.launch_rocket, option)
+    global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, option)
+    global.defaultgroup.set_allows_action(defines.input_action.cancel_research, option)
+    global.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, option)
+    global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, option)
+    global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, option)
+    global.defaultgroup.set_allows_action(defines.input_action.upgrade, option)
+
+    --Added 1-2022
+    global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, option)
+    global.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, option)
+    global.defaultgroup.set_allows_action(defines.input_action.import_blueprint, option)
+    global.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, option)
+    global.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, option)
+    global.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, option)
+    global.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, option)
+    global.defaultgroup.set_allows_action(defines.input_action.send_spidertron, option)
+  end
+end
+
+
+--Disable some permissions for new players
+function set_hperms()
   --Auto set default group permissions
 
   if global.defaultgroup then
