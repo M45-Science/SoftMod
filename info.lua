@@ -155,14 +155,14 @@ function make_m45_info_window(player)
           type = "label",
           name = "online_title",
           style = "frame_title",
-          caption = "M45 Science, a gaming community."
+          caption = "Welcome to M45!"
         }
       else
         info_titlebar.add {
           type = "label",
           name = "online_title",
           style = "frame_title",
-          caption = "Map Name: " .. global.servname
+          caption = "Welcome to M45! You are playing map: " .. global.servname
         }
       end
       local pusher = info_titlebar.add { type = "empty-widget", style = "draggable_space_header" }
@@ -181,12 +181,12 @@ function make_m45_info_window(player)
       local info_pane = main_flow.add { type = "tabbed-pane", name = "m45_info_window_tabs" }
       info_pane.style.minimal_width = 725
 
-      local tab1 = info_pane.add { type = "tab", caption = "[entity=character] Welcome" }
-      local tab2 = info_pane.add { type = "tab", caption = "[item=automation-science-pack] Membership" }
-      local tab3 = info_pane.add { type = "tab", caption = "[item=steel-plate]Rules" }
-      local tab4 = info_pane.add { type = "tab", caption = "[virtual-signal=signal-info] Tips & Tricks" }
-      local tab5 = info_pane.add { type = "tab", caption = "[item=advanced-circuit] QR-Code" }
+      local tab1 = info_pane.add { type = "tab", caption = "[entity=character] INFO-README" }
+      local tab2 = info_pane.add { type = "tab", caption = "[item=automation-science-pack] FREE-MEMBERSHIP" }
+      local tab3 = info_pane.add { type = "tab", caption = "[item=steel-plate] RULES" }
+      local tab5 = info_pane.add { type = "tab", caption = "[item=advanced-circuit] Discord Link" }
       local tab6 = info_pane.add { type = "tab", caption = "[item=production-science-pack] Patreon" }
+      local tab4 = info_pane.add { type = "tab", caption = "[virtual-signal=signal-info] Tips & Tricks" }
 
       --Tab 1 -- Welcome
       local tab1_frame =
@@ -217,11 +217,11 @@ function make_m45_info_window(player)
       }
       tab1_lframe.add {
         type = "label",
-        caption = "[color=white][font=default-large-bold]M45-Science![/font][/color]"
+        caption = "[color=white][font=default-large-bold]M45[/font][/color]"
       }
       tab1_lframe.add {
         type = "label",
-        caption = "[color=white]A Factorio gaming community.[/color]"
+        caption = " "
       }
 
       --PATREON
@@ -311,7 +311,7 @@ function make_m45_info_window(player)
       tab1_info_center.style.horizontally_stretchable = true
       tab1_info_center.add {
         type = "label",
-        caption = "[color=orange][font=default-large-bold]Issues, trolls or griefers?[/font][/color]"
+        caption = "[color=orange][font=default-large-bold]TROLLS or GRIEFERS?[/font][/color]"
       }
       tab1_info_center.add {
         type = "sprite",
@@ -319,7 +319,7 @@ function make_m45_info_window(player)
       }
       tab1_info_center.add {
         type = "label",
-        caption = "[color=orange][font=default-large-bold]Report or banish them![/font][/color]"
+        caption = "[color=orange][font=default-large-bold]JUST BANISH THEM![/font][/color]"
       }
       tab1_info_center.add {
         type = "label",
@@ -359,7 +359,7 @@ function make_m45_info_window(player)
         local reset_warning =
         tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]NEXT MAP RESET ON: " ..
+          caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]Next map reset: " ..
               string.upper(global.resetint) .. "[/font][/color]"
         }
       end
@@ -367,7 +367,7 @@ function make_m45_info_window(player)
         local reset_warning =
         tab1_info_top.add {
           type = "label",
-          caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]MAP RESET IN: " ..
+          caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]Map will reset in: " ..
               string.upper(global.resetdur) .. "[/font][/color]"
         }
       end
@@ -379,12 +379,12 @@ function make_m45_info_window(player)
       local restrictions =
       tab1_info_top.add {
         type = "label",
-        caption = "[entity=character]  [color=yellow][font=default-large-bold]New players start with some restrictions![/font][/color]"
+        caption = "[entity=character]  [color=yellow][font=default-large-bold]NEW PLAYERS start with some restrictions![/font][/color]"
       }
       local friendly_fire =
       tab1_info_top.add {
         type = "label",
-        caption = "[recipe=combat-shotgun] [font=default-large]Friendly fire is off, for players and buildings.[/font]"
+        caption = "[recipe=combat-shotgun] [font=default-large]Friendly fire is OFF, for players and buildings.[/font]"
       }
       tab1_info_top.add {
         type = "label",
@@ -392,7 +392,7 @@ function make_m45_info_window(player)
       }
       tab1_info_top.add {
         type = "label",
-        caption = "[font=default-large]Click the '[item=automation-science-pack] Membership' tab above for more information.[/font]"
+        caption = "[font=default-large]Click the '[item=automation-science-pack] FREE-MEMBERSHIP' tab to learn more.[/font]"
       }
       tab1_info_top.add {
         type = "label",
@@ -424,11 +424,11 @@ function make_m45_info_window(player)
       --Tab 1 Main -- Discord -- Info Text
       tab1_discord_sub1_frame.add {
         type = "label",
-        caption = "[font=default-large-bold]See our [color=blue]Discord Server[/color] for more info![/font]"
+        caption = "[font=default-large-bold]See our [color=blue]Discord Server[/color] for commands like vote-map![/font]"
       }
       tab1_discord_sub1_frame.add {
         type = "label",
-        caption = "[font=default-large]Visit https://m45sci.xyz/, or copy-paste the Discord URL below:[/font]"
+        caption = "[font=default-large]Visit m45sci.xyz or copy-paste the Discord link below:[/font]"
       }
 
       --Tab 1 Main -- Discord -- Logo/URL frame
@@ -491,7 +491,7 @@ function make_m45_info_window(player)
       tab2_main_frame.add {
         type = "label",
         name = "tab2_score",
-        caption = "[color=red][font=default-large-bold]Your Activity Score: " ..
+        caption = "[color=red][font=default-large-bold]Current score: " ..
             math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
       }
       tab2_main_frame.add {
@@ -500,15 +500,15 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=construction-robot]   [font=default-bold]Membership is automatic, and based on activity.[/font] Your current activity score is listed above."
+        caption = "[recipe=construction-robot]   [font=default-large-bold]Membership is automatic & free, and based on ACTIVITY. Your current activity score is listed above.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "The score is specific to this map, and does not carry over to other maps or servers."
+        caption = "[font=default-large]The score is specific to this map, and does not carry over to other maps or servers.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Once you achieve a specific level, the level persists between maps and servers (but the activity score does not)."
+        caption = "[font=default-large]Once you achieve a specific level, the level persists between maps and servers (but the activity score does not).[/font]"
       }
       tab2_main_frame.add {
         type = "label",
@@ -521,12 +521,12 @@ function make_m45_info_window(player)
       if is_new(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[color=red][font=default-bold]Level 1:[/font] New[/color]"
+          caption = "[recipe=inserter]   [color=red][font=default-large-bold]Level 1: New[/color][/font]"
         }
       else
         tab2_main_frame.add {
           type = "label",
-          caption = "[font=default-bold]Level 1:[/font] New"
+          caption = "[recipe=inserter]   [font=default-large-bold]Level 1: New[/font]"
         }
       end
       tab2_main_frame.add {
@@ -536,15 +536,19 @@ function make_m45_info_window(player)
 
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=inserter]   [font=default-bold]New players have these permissions limitations:[/font]"
+        caption = "[font=default-large-bold]New players have these permissions limitations:[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Modify wires, trains, combinators, signals, speakers, launch rockets or edit logistics."
+        caption = "[font=default-large]NO deconstruction planner, landfill, speakers, launch rocket, cancel research, artillery remote or delete blueprints.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Level 3 players (regulars) can banish you with 1 vote."
+        caption = ""
+      }
+      tab2_main_frame.add {
+        type = "label",
+        caption = "[font=default-large-bold]Level 3 players (regulars) can BANISH you with ONE vote.[/font]"
       }
       tab2_main_frame.add {
         type = "line",
@@ -554,12 +558,12 @@ function make_m45_info_window(player)
       if is_member(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[color=red][font=default-bold]Level 2:[/font] Members[/color] (Score: 30)"
+          caption = "[recipe=fast-inserter]   [color=red][font=default-large-bold]Level 2: Members[/color] (Score: 30)[/font]"
         }
       else
         tab2_main_frame.add {
           type = "label",
-          caption = "[font=default-bold]Level 2:[/font] Members (Score: 30)"
+          caption = "[recipe=fast-inserter]   [font=default-large-bold]Level 2: Members (Score: 30)[/font]"
         }
       end
       tab2_main_frame.add {
@@ -568,15 +572,19 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=fast-inserter]   Permissions restrictions are lifted."
+        caption = "[font=default-large]Permissions restrictions are lifted.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Votes needed to banish you increases to 2. Access to deconstruction planner (warns other players, with location)."
+        caption = " "
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Access to members-only servers."
+        caption = "[font=default-large-bold]Votes needed to BANISH you increases to TWO. Access to deconstruction planner (with warning msg).[/font]"
+      }
+      tab2_main_frame.add {
+        type = "label",
+        caption = "[font=default-large-bold][color=green]Access to members-only servers.[/color][/font]"
       }
 
       tab2_main_frame.add {
@@ -587,12 +595,12 @@ function make_m45_info_window(player)
       if is_regular(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[color=red][font=default-bold]Level 3:[/font] Regulars[/color] (Score: 240)"
+          caption = "[recipe=stack-inserter]   [color=red][font=default-large-bold]Level 3: Regulars[/color] (Score: 240)[/font]"
         }
       else
         tab2_main_frame.add {
           type = "label",
-          caption = "[font=default-bold]Level 3:[/font] Regulars (Score: 240)"
+          caption = "[recipe=stack-inserter]   [font=default-bold]Level 3: Regulars (Score: 240)[/font]"
         }
       end
       tab2_main_frame.add {
@@ -601,11 +609,11 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[recipe=stack-inserter]   Allowed to vote-banish other players."
+        caption = "[font=default-large]Allowed to BANISH other players.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "Deconstruction planner warning removed."
+        caption = "[font=default-large]Deconstruction planner warning removed.[/font]"
       }
       --Close Button Frame
       local tab2_close_frame =
@@ -660,7 +668,7 @@ function make_m45_info_window(player)
       }
       tab3_main_frame.add {
         type = "label",
-        caption = "[font=default-large-bold]3: [item=blueprint-book] Read the Welcome, Rules and Membership tabs before asking for help.[/font]"
+        caption = "[font=default-large-bold]3: [item=blueprint-book] Read the INFO-README, Rules and FREE-MEMBERSHIP tabs before asking for help.[/font]"
       }
       tab3_main_frame.add {
         type = "label",
@@ -668,7 +676,7 @@ function make_m45_info_window(player)
       }
       tab3_main_frame.add {
         type = "label",
-        caption = "[font=default-large-bold]4: [item=repair-pack] Use [/font][font=default-game]report or banish[/font] [font=default-large-bold]if there are problem-players.[/font]"
+        caption = "[font=default-large-bold]4: [item=repair-pack] Use [/font][font=default-game]BANISH[/font] [font=default-large-bold]if there are problem-players.[/font]"
       }
       tab3_main_frame.add {
         type = "label",
