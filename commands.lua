@@ -32,9 +32,9 @@ script.on_load(
             end
           end
 
-          create_groups()
 
-          if param.parameter then
+          if param.parameter and global.resetdur ~= param.parameter then
+            create_groups()
             global.resetdur = param.parameter
             for _, target in pairs(game.connected_players) do
               if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
@@ -76,9 +76,8 @@ script.on_load(
             end
           end
 
-          create_groups()
-
-          if param.parameter then
+          if param.parameter and global.resetint ~= param.parameter  then
+            create_groups()
             global.resetint = param.parameter
           end
         end
