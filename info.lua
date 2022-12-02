@@ -162,7 +162,7 @@ function make_m45_info_window(player)
           type = "label",
           name = "online_title",
           style = "frame_title",
-          caption = "Welcome to M45! You are playing map: " .. global.servname
+          caption = "You are playing on: " .. global.servname
         }
       end
       local pusher = info_titlebar.add { type = "empty-widget", style = "draggable_space_header" }
@@ -536,19 +536,19 @@ function make_m45_info_window(player)
 
       tab2_main_frame.add {
         type = "label",
-        caption = "[font=default-large-bold]New players have these permissions limitations:[/font]"
+        caption = "[font=default-large-bold]New players DO NOT have the following permissions:[/font]"
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[font=default-large]NO deconstruction planner, landfill, speakers, launch rocket, cancel research, artillery remote or delete blueprints.[/font]"
-      }
-      tab2_main_frame.add {
-        type = "label",
-        caption = ""
+        caption = "[font=default-large]deconstruction planner, landfill, speakers, launch rocket, cancel research, artillery remote or delete blueprints.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
         caption = "[font=default-large-bold]Level 3 players (regulars) can BANISH you with ONE vote.[/font]"
+      }
+      tab2_main_frame.add {
+        type = "label",
+        caption = ""
       }
       tab2_main_frame.add {
         type = "line",
@@ -576,17 +576,16 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = " "
-      }
-      tab2_main_frame.add {
-        type = "label",
         caption = "[font=default-large-bold]Votes needed to BANISH you increases to TWO. Access to deconstruction planner (with warning msg).[/font]"
       }
       tab2_main_frame.add {
         type = "label",
         caption = "[font=default-large-bold][color=green]Access to members-only servers.[/color][/font]"
       }
-
+      tab2_main_frame.add {
+        type = "label",
+        caption = " "
+      }
       tab2_main_frame.add {
         type = "line",
         direction = "horizontal"
@@ -600,7 +599,7 @@ function make_m45_info_window(player)
       else
         tab2_main_frame.add {
           type = "label",
-          caption = "[recipe=stack-inserter]   [font=default-bold]Level 3: Regulars (Score: 240)[/font]"
+          caption = "[recipe=stack-inserter]   [font=default-large-bold]Level 3: Regulars (Score: 240)[/font]"
         }
       end
       tab2_main_frame.add {
@@ -609,11 +608,15 @@ function make_m45_info_window(player)
       }
       tab2_main_frame.add {
         type = "label",
-        caption = "[font=default-large]Allowed to BANISH other players.[/font]"
+        caption = "[font=default-large-bold]Allowed to BANISH other players.[/font]"
       }
       tab2_main_frame.add {
         type = "label",
         caption = "[font=default-large]Deconstruction planner warning removed.[/font]"
+      }
+      tab2_main_frame.add {
+        type = "label",
+        caption = "[font=default-large]Access to vote-map command on Discord (after registration).[/font]"
       }
       --Close Button Frame
       local tab2_close_frame =
@@ -668,7 +671,7 @@ function make_m45_info_window(player)
       }
       tab3_main_frame.add {
         type = "label",
-        caption = "[font=default-large-bold]3: [item=blueprint-book] Read the INFO-README, Rules and FREE-MEMBERSHIP tabs before asking for help.[/font]"
+        caption = "[font=default-large-bold]3: [item=blueprint-book] Read the INFO-README, RULES and FREE-MEMBERSHIP tabs before asking for help.[/font]"
       }
       tab3_main_frame.add {
         type = "label",
