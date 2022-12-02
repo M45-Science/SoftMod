@@ -33,7 +33,7 @@ script.on_load(
           end
 
 
-          if param.parameter and global.resetdur ~= param.parameter then
+          if param.parameter then
             create_groups()
             global.resetdur = param.parameter
             for _, target in pairs(game.connected_players) do
@@ -48,9 +48,11 @@ script.on_load(
               end
             end
             --Refresh open info windows
-            for _, victim in pairs(game.connected_players) do
-              if victim and victim.valid and victim.gui and victim.gui.screen and victim.gui.screen.m45_info_window then
-                make_m45_info_window(victim)
+            if global.resetdur ~= param.parameter then
+              for _, victim in pairs(game.connected_players) do
+                if victim and victim.valid and victim.gui and victim.gui.screen and victim.gui.screen.m45_info_window then
+                  make_m45_info_window(victim)
+                end
               end
             end
           end
@@ -76,7 +78,7 @@ script.on_load(
             end
           end
 
-          if param.parameter and global.resetint ~= param.parameter  then
+          if param.parameter then
             create_groups()
             global.resetint = param.parameter
           end
