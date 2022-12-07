@@ -75,7 +75,7 @@ function update_player_list()
     --Show last online in minutes
     local isafk = "      "
 
-    if victim then
+    if victim and global.last_playtime then
       if victim.connected then
         if global.last_playtime and global.last_playtime[victim.index] then
           local lplaytime = global.last_playtime[victim.index]
@@ -259,51 +259,6 @@ function make_m45_online_submenu(player, target_name)
           whisper_textbox.style.height = 64
           whisper_textbox.word_wrap = true
           whisper_textbox.style.horizontal_align = "left"
-
-          --REPORT
-          local report_frame =
-          online_submenu_main.add {
-            type = "flow",
-            direction = "vertical",
-            name = "report_frame"
-          }
-          report_frame.style.horizontal_align = "center"
-          local report =
-          report_frame.add {
-            type = "label",
-            caption = "[font=default-large-bold]Report player:[/font]",
-            name = "report"
-          }
-          local report_textbox =
-          report_frame.add {
-            type = "text-box",
-            text = "",
-            name = "report_textbox"
-          }
-          report_frame.add {
-            type = "label",
-            caption = "(Posts to #moderation on Discord)",
-            name = "report_note"
-          }
-
-          report_textbox.style.width = 500
-          report_textbox.style.height = 64
-          report_textbox.word_wrap = true
-          report_textbox.style.horizontal_align = "left"
-
-          local report_button =
-          report_frame.add {
-            type = "button",
-            caption = "REPORT",
-            style = "red_button",
-            name = "report_player",
-            tooltip = "Send this report to the moderators, on Discord."
-          }
-
-          report_frame.add {
-            type = "label",
-            caption = " "
-          }
 
           --BANISH
           local banish_frame =
