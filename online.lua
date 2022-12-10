@@ -73,24 +73,23 @@ function update_player_list()
     end
 
     --Show last online in minutes
-    local isafk = "      "
+    local isafk = "   "
 
     if victim and global.last_playtime then
-      if victim.connected then
-        if global.last_playtime and global.last_playtime[victim.index] then
-          local lplaytime = global.last_playtime[victim.index]
-          local ago = math.floor((game.tick - global.last_playtime[victim.index]) / 60 / 60)
-          if ago > 1 then
-            isafk = ""
-            isafk = isafk .. "(" .. ago .. "m)"
-          end
-        end
-      else
-        if global.last_playtime[victim.index] then
-          isafk = ""
+      if global.last_playtime and global.last_playtime[victim.index] then
+        local lplaytime = global.last_playtime[victim.index]
+        local ago = ((game.tick - global.last_playtime[victim.index]) / 60)
+        if ago > 1 then
+          isafk = "   "
 
-          local ago = math.floor((game.tick - global.last_playtime[victim.index]) / 60 / 60 / 60)
-          isafk = isafk .. "(" .. ago .. "h)"
+          if ago > 60 then
+            isafk = isafk .. "(" .. math.floor(ago / 60) .. "m)"
+          elseif ago > math.floor(60 * 60) then
+            isafk = isafk .. "(" .. (ago / 60 / 60) .. "h)"
+          elseif ago > math.floor(60 * 60 * 24) then
+            isafk = isafk .. "(" .. math.floor(ago / 60 / 60 / 24) .. "d)"
+          end
+
         end
       end
     end
@@ -605,7 +604,7 @@ function make_m45_online_window(player)
           }
           local newcolor = { r = 1, g = 1, b = 1 }
           if is_banished(victim) then
-          newcolor = { r = 0, g = 0, b = 0 }
+            newcolor = { r = 0, g = 0, b = 0 }
           elseif is_patreon(victim) then
             newcolor = { r = 1.0, g = 0.0, b = 1.0 }
           elseif is_nitro(victim) then
@@ -637,10 +636,21 @@ function make_m45_online_window(player)
               type = "line",
               direction = "vertical"
             }
+            local time = victim.online_time / 60
+            local tmsg = ""
+            if time > 60 then
+              tmsg = math.floor(time / 60) .. "m"
+            elseif time > math.floor(60 * 60) then
+              tmsg = (time / 60 / 60) .. "h"
+            elseif time > math.floor(60 * 60 * 24) then
+              tmsg = math.floor(time / 60 / 60 / 24) .. "d"
+            else
+              tmsg = "0m"
+            end
             local time_label =
             pframe.add {
               type = "label",
-              caption = " " .. math.floor(victim.online_time / 60.0 / 60.0) .. "m",
+              caption = " " .. tmsg,
               tooltip = "Total time player has been connected on this map."
             }
             time_label.style.width = 100
@@ -652,8 +662,8 @@ function make_m45_online_window(player)
             local time_label =
             pframe.add {
               type = "label",
-              caption = " " .. math.floor(target.score / 60.0 / 60.0) .. "m",
-              tooltip = "Total time player has been active on this map."
+              caption = " " .. math.floor(target.score / 60.0 / 60.0),
+              tooltip = "Player activity score."
             }
             time_label.style.width = 100
             local name_label =
