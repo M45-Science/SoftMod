@@ -491,7 +491,7 @@ function make_m45_info_window(player)
       tab2_main_frame.add {
         type = "label",
         name = "tab2_score",
-        caption = "[color=red][font=default-large-bold]Current score: " ..
+        caption = "[color=orange][font=default-large-bold]Current score: " ..
             math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
       }
       tab2_main_frame.add {
@@ -521,7 +521,7 @@ function make_m45_info_window(player)
       if is_new(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[recipe=inserter]   [color=red][font=default-large-bold]Level 1: New[/color][/font]"
+          caption = "[recipe=inserter]   [font=default-large-bold][color=red]Level 1: New[/color][/font]"
         }
       else
         tab2_main_frame.add {
@@ -558,7 +558,7 @@ function make_m45_info_window(player)
       if is_member(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[recipe=fast-inserter]   [color=red][font=default-large-bold]Level 2: Members[/color] (Score: 30)[/font]"
+          caption = "[recipe=fast-inserter]   [font=default-large-bold][color=red]Level 2: Members[/color] (Score: 30)[/font]"
         }
       else
         tab2_main_frame.add {
@@ -594,7 +594,7 @@ function make_m45_info_window(player)
       if is_regular(player) then
         tab2_main_frame.add {
           type = "label",
-          caption = "[recipe=stack-inserter]   [color=red][font=default-large-bold]Level 3: Regulars[/color] (Score: 240)[/font]"
+          caption = "[recipe=stack-inserter]   [font=default-large-bold][color=red]Level 3: Regulars[/color] (Score: 240)[/font]"
         }
       else
         tab2_main_frame.add {
