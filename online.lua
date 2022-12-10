@@ -80,7 +80,7 @@ function update_player_list()
         if global.last_playtime and global.last_playtime[victim.index] then
           local lplaytime = global.last_playtime[victim.index]
           local ago = math.floor((game.tick - global.last_playtime[victim.index]) / 60 / 60)
-          if ago > 0 then
+          if ago > 1 then
             isafk = ""
             isafk = isafk .. "(" .. ago .. "m)"
           end
@@ -604,7 +604,9 @@ function make_m45_online_window(player)
             caption = "  " .. victim.name
           }
           local newcolor = { r = 1, g = 1, b = 1 }
-          if is_patreon(victim) then
+          if is_banished(victim) then
+          newcolor = { r = 0, g = 0, b = 0 }
+          elseif is_patreon(victim) then
             newcolor = { r = 1.0, g = 0.0, b = 1.0 }
           elseif is_nitro(victim) then
             newcolor = { r = 0.0, g = 0.5, b = 1.0 }
@@ -661,26 +663,26 @@ function make_m45_online_window(player)
             }
             local utag = ""
             if is_new(victim) then
-              utag = "NEW"
+              utag = "[color=white]NEW[/color]"
             end
             if is_member(victim) then
-              utag = "Members"
+              utag = "[color=green]Members[/color]"
             end
             if is_regular(victim) then
-              utag = "Regulars"
+              utag = "[color=yellow]Regulars[/color]"
             end
             if is_banished(victim) then
-              utag = "BANISHED"
+              utag = "[color=red]BANISHED[/color]"
             end
             if victim.admin then
-              utag = "Moderators"
+              utag = "[color=red]Moderators[/color]"
             end
 
             if is_nitro(victim) then
-              utag = utag .. " (NITRO)"
+              utag = utag .. " [color=cyan](NITRO)[/color]"
             end
             if is_patreon(victim) then
-              utag = utag .. " (PATREON)"
+              utag = utag .. " [color=purple](PATREON)[/color]"
             end
 
             local score_label =
