@@ -21,15 +21,17 @@ local function insert_weapons(player, ammo_amount)
   end
 end
 
---Looping timer, 60 seconds
+--Looping timer, 10 seconds
 --delete old corpse map pins
 --Check spawn area map pin
 --Add to player active time if needed
 --Refresh players online window
 
 script.on_nth_tick(
-  3600,
+  600,
   function(event)
+
+    
     --Move spawn pad if blocked
     if not global.movepad then
       global.movepad = 0
@@ -105,6 +107,9 @@ script.on_nth_tick(
     --Add time to connected players
     if global.active_playtime then
       for _, player in pairs(game.connected_players) do
+        --Banish if some mod eats respawn event
+        send_to_surface(player)
+
         --Player active?
         if global.playeractive[player.index] then
           if global.playeractive[player.index] == true then
@@ -112,7 +117,7 @@ script.on_nth_tick(
 
             if global.active_playtime[player.index] then
               --Compensate for game speed
-              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (600.0 / game.speed) --Same as loop time
               if global.last_playtime then
                 global.last_playtime[player.index] = game.tick
               end
@@ -134,7 +139,7 @@ script.on_nth_tick(
 
             if global.active_playtime[player.index] then
               --Compensate for game speed
-              global.active_playtime[player.index] = global.active_playtime[player.index] + (1800.0 / game.speed) --Same as loop time
+              global.active_playtime[player.index] = global.active_playtime[player.index] + (600.0 / game.speed) --Same as loop time
               if global.last_playtime then
                 global.last_playtime[player.index] = game.tick
               end
@@ -170,10 +175,10 @@ end
 
 --Handle killing, and teleporting users to other surfaces
 function on_player_respawned(event)
-  send_to_surface(event) --banish.lua
 
   if event and event.player_index then
     local player = game.players[event.player_index]
+    send_to_surface(player) --banish.lua
 
     --Cutoff-point, just becomes annoying.
     if not player.force.technologies["military-science-pack"].researched then
