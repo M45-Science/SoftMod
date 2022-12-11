@@ -75,19 +75,17 @@ function update_player_list()
 
         if victim and global.last_playtime then
             if global.last_playtime and global.last_playtime[victim.index] then
-                local lplaytime = global.last_playtime[victim.index]
-                local ago = ((game.tick - global.last_playtime[victim.index]) / 60)
-                if ago > 1 then
-                    isafk = "   "
-
-                    if ago > 60 then
-                        isafk = isafk .. "(" .. math.floor(ago / 60) .. "m)"
-                    elseif ago > math.floor(60 * 60) then
-                        isafk = isafk .. "(" .. (ago / 60 / 60) .. "h)"
-                    elseif ago > math.floor(60 * 60 * 24) then
-                        isafk = isafk .. "(" .. math.floor(ago / 60 / 60 / 24) .. "d)"
-                    end
-
+                local time = ((game.tick - global.last_playtime[victim.index]) / 60)
+                local days = math.floor(time / 60 / 60 / 24)
+                local hours = math.floor(time / 60 / 60)
+                local minutes = math.floor(time / 60)
+                local seconds = math.floor(time)
+                if days > 0 then
+                    isafk = string.format("%3.2fd", time / 60 / 60 / 24)
+                elseif hours > 0 then
+                    isafk = string.format("%3.2fh", time / 60 / 60)
+                elseif minutes > 2 then
+                    isafk = minutes .. "m"
                 end
             end
         end
@@ -637,15 +635,25 @@ function make_m45_online_window(player)
                         }
                         local time = victim.online_time / 60
                         local tmsg = ""
-                        if time > 60 then
-                            tmsg = math.floor(time / 60) .. "m"
-                        elseif time > math.floor(60 * 60) then
-                            tmsg = (time / 60 / 60) .. "h"
-                        elseif time > math.floor(60 * 60 * 24) then
-                            tmsg = math.floor(time / 60 / 60 / 24) .. "d"
+                        local months = math.floor(time / 60 / 60 / 24 / 30)
+                        local days = math.floor(time / 60 / 60 / 24)
+                        local hours = math.floor(time / 60 / 60)
+                        local minutes = math.floor(time / 60)
+                        local seconds = math.floor(time)
+                        if months > 0 then
+                            tmsg = string.format("%3.2fd", time / 60 / 60 / 24 / 30)
+                        elseif days > 0 then
+                            tmsg = string.format("%3.2fd", time / 60 / 60 / 24)
+                        elseif hours > 0 then
+                            tmsg = string.format("%3.2fh", time / 60 / 60)
+                        elseif minutes > 0 then
+                            tmsg = minutes .. "m"
+                        elseif seconds > 0 then
+                            tmsg = seconds .. "s"
                         else
-                            tmsg = "0m"
+                            tmsg = "0s"
                         end
+
                         local time_label = pframe.add {
                             type = "label",
                             caption = " " .. tmsg,
