@@ -12,5 +12,8 @@
     "Lua.diagnostics.disable": [
         "undefined-global",
         "lowercase-global"
+    ],
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "Main"
     ]
 }

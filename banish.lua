@@ -265,13 +265,9 @@ function g_banish(player, victim, reason)
   end
 end
 
-function send_to_surface(event)
+function send_to_surface(player)
   --Anything queued?
   if global.send_to_surface then
-    --Event and player?
-    if event and event.player_index then
-      local player = game.players[event.player_index]
-
       --Valid player?
       if player and player.valid and player.character and player.character.valid then
         local index = nil
@@ -303,7 +299,6 @@ function send_to_surface(event)
           table.remove(global.send_to_surface, index)
         end
       end
-    end
   end
 end
 
