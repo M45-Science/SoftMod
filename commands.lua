@@ -494,11 +494,12 @@ script.on_load(function()
             -- Argument required
             if param.parameter then
                 local victim = game.players[param.parameter]
+                player = game.players[param.player_index]
 
                 if (victim) then
                     if victim and victim.valid and global.membersgroup then
                         smart_print(player, "Player given members status.")
-                        message_all(player.name .. " is now a member!")
+                        message_all(victim.name .. " is now a member!")
                         global.membersgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
