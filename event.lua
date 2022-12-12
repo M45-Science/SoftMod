@@ -204,7 +204,7 @@ end
 function on_player_joined_game(event)
 
     if event and event.player_index then
-      local player = game.players[event.player_index]
+        local player = game.players[event.player_index]
         send_to_surface(player)
     end
 
