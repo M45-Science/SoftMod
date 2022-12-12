@@ -469,8 +469,10 @@ script.on_load(function()
                         if victim and victim.valid and global.defaultgroup then
                             global.defaultgroup.add_player(victim)
                         end
-                        smart_print(player, "Player set to 0.")
-                        message_all(player.name .. " is now reset!")
+                        if player then
+                            smart_print(player, "Player set to 0.")
+                            message_all(victim.name .. " is now reset!")
+                        end
                         return
                     end
                 end
@@ -494,12 +496,13 @@ script.on_load(function()
             -- Argument required
             if param.parameter then
                 local victim = game.players[param.parameter]
-                player = game.players[param.player_index]
 
                 if (victim) then
                     if victim and victim.valid and global.membersgroup then
-                        smart_print(player, "Player given members status.")
-                        message_all(victim.name .. " is now a member!")
+                        if player then
+                            smart_print(player, "Player given members status.")
+                            message_all(victim.name .. " is now a member!")
+                        end
                         global.membersgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
@@ -525,12 +528,13 @@ script.on_load(function()
             -- Argument required
             if param.parameter then
                 local victim = game.players[param.parameter]
-                player = game.players[param.player_index]
 
                 if (victim) then
                     if victim and victim.valid and global.regularsgroup then
-                        smart_print(player, "Player given regulars status.")
-                        message_all(victim.name .. " is now a regular!")
+                        if player then
+                            smart_print(player, "Player given regulars status.")
+                            message_all(victim.name .. " is now a regular!")
+                        end
                         global.regularsgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
