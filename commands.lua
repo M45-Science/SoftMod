@@ -470,6 +470,7 @@ script.on_load(function()
                             global.defaultgroup.add_player(victim)
                         end
                         smart_print(player, "Player set to 0.")
+                        message_all(player.name .. " is now reset!")
                         return
                     end
                 end
@@ -497,6 +498,7 @@ script.on_load(function()
                 if (victim) then
                     if victim and victim.valid and global.membersgroup then
                         smart_print(player, "Player given members status.")
+                        message_all(player.name .. " is now a member!")
                         global.membersgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
@@ -526,6 +528,7 @@ script.on_load(function()
                 if (victim) then
                     if victim and victim.valid and global.regularsgroup then
                         smart_print(player, "Player given regulars status.")
+                        message_all(player.name .. " is now a regular!")
                         global.regularsgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
