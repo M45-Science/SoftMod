@@ -27,30 +27,34 @@ script.on_load(function()
                 end
             end
 
+            local input = ""
             if param.parameter then
-                create_groups()
-                global.resetdur = param.parameter
-                for _, target in pairs(game.connected_players) do
-                    if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
-                        if global.hide_clock and global.hide_clock[target.index] == true then
-                            target.gui.top.reset_clock.caption = ">"
-                            target.gui.top.reset_clock.style = "tip_notice_close_button"
-                        else
-                            target.gui.top.reset_clock.caption = "MAP RESET: " .. param.parameter
-                            target.gui.top.reset_clock.style = "red_button"
-                        end
-                    end
-                end
-                -- Refresh open info windows
-                if global.resetdur ~= param.parameter then
-                    for _, victim in pairs(game.connected_players) do
-                        if victim and victim.valid and victim.gui and victim.gui.screen and
-                            victim.gui.screen.m45_info_window then
-                            make_m45_info_window(victim)
-                        end
+                input = param.parameter
+            end
+
+            create_groups()
+            for _, target in pairs(game.connected_players) do
+                if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
+                    if global.hide_clock and global.hide_clock[target.index] == true or input == "" then
+                        target.gui.top.reset_clock.caption = ">"
+                        target.gui.top.reset_clock.style = "tip_notice_close_button"
+                    else
+                        target.gui.top.reset_clock.caption = "MAP RESET: " .. input
+                        target.gui.top.reset_clock.style = "red_button"
                     end
                 end
             end
+            -- Refresh open info windows
+            if global.resetdur ~= input then
+                global.resetdur = input
+                for _, victim in pairs(game.connected_players) do
+                    if victim and victim.valid and victim.gui and victim.gui.screen and
+                        victim.gui.screen.m45_info_window then
+                        make_m45_info_window(victim)
+                    end
+                end
+            end
+
         end)
 
         -- Reset interval message
@@ -67,10 +71,13 @@ script.on_load(function()
                 end
             end
 
+            local input = ""
             if param.parameter then
-                create_groups()
-                global.resetint = param.parameter
+                input = param.parameter
             end
+            create_groups()
+            global.resetint = input
+
         end)
 
         -- Enable / disable friendly fire

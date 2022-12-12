@@ -8,7 +8,7 @@ function make_reset_clock(player)
             type = "button",
             name = "reset_clock",
             style = "red_button",
-            tooltip = "control right-click to minimize"
+            tooltip = "Map reset schdule. Control-right-click to minimize."
         }
     end
 end

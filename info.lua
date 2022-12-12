@@ -376,14 +376,14 @@ function make_m45_info_window(player)
                 type = "label",
                 caption = ""
             }
-            if global.resetint then
+            if global.resetint and global.resetint ~= "" then
                 local reset_warning = tab1_info_top.add {
                     type = "label",
                     caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]Next map reset: " ..
                         string.upper(global.resetint) .. "[/font][/color]"
                 }
             end
-            if global.resetdur then
+            if global.resetdur and global.resetdur ~= "" then
                 local reset_warning = tab1_info_top.add {
                     type = "label",
                     caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]Map will reset in: " ..
@@ -985,7 +985,7 @@ function on_gui_click(event)
                 if player.gui and player.gui.top and player.gui.top.reset_clock then
 
                     if global.hide_clock then
-                        if global.hide_clock[player.index] and global.hide_clock[player.index] == true then
+                        if global.hide_clock[player.index] and global.hide_clock[player.index] == true and global.resetdur ~= "" then
                             global.hide_clock[player.index] = false
                             player.gui.top.reset_clock.caption = "Map reset: " .. global.resetdur
                             player.gui.top.reset_clock.style = "red_button"
