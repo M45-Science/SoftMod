@@ -1,20 +1,20 @@
 {
     "extension": "linecounter",
     "version": "0.2.7",
-    "workspace": "/home/carl/Documents/github/M45-SoftMod",
+    "workspace": "/home/dist/Documents/github/M45/SoftMod",
     "linecount": [
         {
             "version": "0.2.7",
-            "counttime": "2022-09-18 21:56:06",
-            "filesum": 47,
-            "codesum": 3969,
+            "counttime": "2022-12-12 06:11:15",
+            "filesum": 46,
+            "codesum": 3795,
             "commentsum": 17,
-            "blanksum": 460,
+            "blanksum": 436,
             "statistics": {
                 ".lua": {
-                    "code": 3763,
+                    "code": 3590,
                     "comment": 15,
-                    "blank": 410
+                    "blank": 386
                 },
                 ".md": {
                     "code": 3,
@@ -25,11 +25,6 @@
                     "code": 202,
                     "comment": 1,
                     "blank": 50
-                },
-                ".sh": {
-                    "code": 1,
-                    "comment": 0,
-                    "blank": 0
                 }
             },
             "filelist": [
@@ -41,25 +36,25 @@
                 },
                 {
                     "blank": 5,
-                    "code": 37,
+                    "code": 38,
                     "comment": 1,
                     "filename": "antigrief.lua"
                 },
                 {
-                    "blank": 38,
-                    "code": 510,
+                    "blank": 37,
+                    "code": 506,
                     "comment": 1,
                     "filename": "banish.lua"
                 },
                 {
                     "blank": 0,
-                    "code": 15,
+                    "code": 14,
                     "comment": 0,
                     "filename": "clock.lua"
                 },
                 {
-                    "blank": 63,
-                    "code": 415,
+                    "blank": 58,
+                    "code": 368,
                     "comment": 1,
                     "filename": "commands.lua"
                 },
@@ -70,19 +65,13 @@
                     "filename": "control.lua"
                 },
                 {
-                    "blank": 0,
-                    "code": 1,
-                    "comment": 0,
-                    "filename": "copy.sh"
-                },
-                {
-                    "blank": 60,
-                    "code": 464,
+                    "blank": 61,
+                    "code": 457,
                     "comment": 2,
                     "filename": "event.lua"
                 },
                 {
-                    "blank": 18,
+                    "blank": 17,
                     "code": 90,
                     "comment": 1,
                     "filename": "globals.lua"
@@ -284,8 +273,8 @@
                     "comment": 0
                 },
                 {
-                    "blank": 81,
-                    "code": 945,
+                    "blank": 78,
+                    "code": 946,
                     "comment": 2,
                     "filename": "info.lua"
                 },
@@ -296,26 +285,26 @@
                     "filename": "LICENSE"
                 },
                 {
-                    "blank": 20,
-                    "code": 100,
+                    "blank": 17,
+                    "code": 80,
                     "comment": 1,
                     "filename": "log.lua"
                 },
                 {
-                    "blank": 4,
+                    "blank": 3,
                     "code": 68,
                     "comment": 1,
                     "filename": "logo.lua"
                 },
                 {
-                    "blank": 63,
-                    "code": 550,
+                    "blank": 56,
+                    "code": 478,
                     "comment": 1,
                     "filename": "online.lua"
                 },
                 {
-                    "blank": 5,
-                    "code": 37,
+                    "blank": 3,
+                    "code": 31,
                     "comment": 1,
                     "filename": "perms.lua"
                 },
@@ -333,14 +322,14 @@
                     "filename": "README.md"
                 },
                 {
-                    "blank": 43,
-                    "code": 444,
+                    "blank": 42,
+                    "code": 425,
                     "comment": 1,
                     "filename": "todo.lua"
                 },
                 {
-                    "blank": 10,
-                    "code": 71,
+                    "blank": 9,
+                    "code": 72,
                     "comment": 1,
                     "filename": "utility.lua"
                 }

@@ -1,6 +1,6 @@
 -- Carl Frank Otto III
 -- carlotto81@gmail.com
--- GitHub: https://github.com/Distortions81/M45-SoftMod
+-- GitHub: https://github.com/M45-Science/SoftMod
 -- License: MPL 2.0
 -- Safe console print
 function console_print(message)

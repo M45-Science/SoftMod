@@ -2,30 +2,28 @@
 EXTENSION NAME : linecounter
 EXTENSION VERSION : 0.2.7
 -------------------------------------------------------------------------------
-count time : 2022-09-18 21:56:06
-count workspace : /home/carl/Documents/github/M45-SoftMod
-total files : 47
-total code lines : 3969
+count time : 2022-12-12 06:11:15
+count workspace : /home/dist/Documents/github/M45/SoftMod
+total files : 46
+total code lines : 3795
 total comment lines : 17
-total blank lines : 460
+total blank lines : 436
 
     statistics
    |      extension|     total code|  total comment|    total blank|percent|
    -------------------------------------------------------------------------
-   |           .lua|           3763|             15|            410|     95|
-   |            .md|              3|              1|              0|  0.076|
-   |               |            202|              1|             50|    5.1|
-   |            .sh|              1|              0|              0|  0.025|
+   |           .lua|           3590|             15|            386|     95|
+   |            .md|              3|              1|              0|  0.079|
+   |               |            202|              1|             50|    5.3|
    -------------------------------------------------------------------------
 .gitignore, code is 15, comment is 0, blank is 3.
-antigrief.lua, code is 37, comment is 1, blank is 5.
-banish.lua, code is 510, comment is 1, blank is 38.
-clock.lua, code is 15, comment is 0, blank is 0.
-commands.lua, code is 415, comment is 1, blank is 63.
+antigrief.lua, code is 38, comment is 1, blank is 5.
+banish.lua, code is 506, comment is 1, blank is 37.
+clock.lua, code is 14, comment is 0, blank is 0.
+commands.lua, code is 368, comment is 1, blank is 58.
 control.lua, code is 17, comment is 1, blank is 0.
-copy.sh, code is 1, comment is 0, blank is 0.
-event.lua, code is 464, comment is 2, blank is 60.
-globals.lua, code is 90, comment is 1, blank is 18.
+event.lua, code is 457, comment is 2, blank is 61.
+globals.lua, code is 90, comment is 1, blank is 17.
 img-source/character.psd, it is a binary file.
 img-source/logo-button.psd, it is a binary file.
 img-source/m45-2021-logo-bold.png, it is a binary file.
@@ -54,14 +52,14 @@ img/todo/del.png, it is a binary file.
 img/todo/down.png, it is a binary file.
 img/todo/up.png, it is a binary file.
 img/world/m45-pad-v5.png, it is a binary file.
-info.lua, code is 945, comment is 2, blank is 81.
+info.lua, code is 946, comment is 2, blank is 78.
 LICENSE, code is 187, comment is 1, blank is 47.
-log.lua, code is 100, comment is 1, blank is 20.
-logo.lua, code is 68, comment is 1, blank is 4.
-online.lua, code is 550, comment is 1, blank is 63.
-perms.lua, code is 37, comment is 1, blank is 5.
+log.lua, code is 80, comment is 1, blank is 17.
+logo.lua, code is 68, comment is 1, blank is 3.
+online.lua, code is 478, comment is 1, blank is 56.
+perms.lua, code is 31, comment is 1, blank is 3.
 preview.jpg, it is a binary file.
 README.md, code is 3, comment is 1, blank is 0.
-todo.lua, code is 444, comment is 1, blank is 43.
-utility.lua, code is 71, comment is 1, blank is 10.
+todo.lua, code is 425, comment is 1, blank is 42.
+utility.lua, code is 72, comment is 1, blank is 9.
 ===============================================================================
