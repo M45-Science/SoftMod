@@ -525,11 +525,12 @@ script.on_load(function()
             -- Argument required
             if param.parameter then
                 local victim = game.players[param.parameter]
+                player = game.players[param.player_index]
 
                 if (victim) then
                     if victim and victim.valid and global.regularsgroup then
                         smart_print(player, "Player given regulars status.")
-                        message_all(player.name .. " is now a regular!")
+                        message_all(victim.name .. " is now a regular!")
                         global.regularsgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
