@@ -41,20 +41,21 @@ end
 
 script.on_nth_tick(600, function(event)
 
-    -- Move spawn pad if blocked
-    if not global.movepad then
-        global.movepad = 0
+    -- Tick divider, one minute
+    if not global.tickdiv then
+        global.tickdiv = 0
     end
-    global.movepad = global.movepad + 1
-    if global.movepad > 20 then
-        global.movepad = 0
+    global.tickdiv = global.tickdiv + 1
+
+    if global.tickdiv >= 360 then
+        global.tickdiv = 0
 
         -- Set logo to be redrawn
         global.drawlogo = false
         dodrawlogo()
-    end
 
-    update_player_list() -- online.lua
+        update_player_list() -- online.lua
+    end
 
     -- Remove old corpse tags
     if (global.corpselist) then
@@ -484,7 +485,7 @@ function clear_corpse_tag(event)
 
                 if victim and victim.valid and player and player.valid then
                     if victim.name ~= player.name then
-                        gsysmsg(player.name .. " looted the body of " .. victim.name .. ", at [gps=" ..
+                        message_alld(player.name .. " looted the body of " .. victim.name .. ", at [gps=" ..
                                     math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
                     end
                 end
