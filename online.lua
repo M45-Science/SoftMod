@@ -128,14 +128,18 @@ function update_player_list()
     global.tplayer_count = tcount
     global.player_list = results
 
+    local tmp_online = global.lastonlinestring
+    show_players(nil)
+
     -- Refresh open player-online windows
-    for _, victim in pairs(game.connected_players) do
-        if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
-            make_m45_online_window(victim) -- online.lua
+    if tmp_online ~= global.lastonlinestring then
+        for _, victim in pairs(game.connected_players) do
+            if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
+                victim.gui.left.m45_online.destroy()
+                make_m45_online_window(victim) -- online.lua
+            end
         end
     end
-
-    show_players(nil)
 
 end
 
@@ -333,7 +337,9 @@ function make_m45_online_window(player)
     if player then
         if player.gui.screen then
             if player.gui.screen.member_welcome then
-                player.gui.screen.member_welcome.destroy()
+                if not player.gui.left.m45_online then
+                    player.gui.screen.member_welcome.destroy()
+                end
             end
         else
             return
