@@ -329,6 +329,19 @@ end
 
 -- M45 Online Players Window
 function make_m45_online_window(player)
+    -- Auto close membership welcome window--
+    if player then
+        if player.gui.screen then
+            if player.gui.screen.member_welcome then
+                player.gui.screen.member_welcome.destroy()
+            end
+        else
+            return
+        end
+    else
+        return
+    end
+
     if player.gui and player.gui.left then
         if player.gui.left.m45_online then
             player.gui.left.m45_online.destroy()
@@ -851,6 +864,8 @@ function online_on_gui_click(event)
                 end
                 global.online_brief[player.index] = event.element.state
                 make_m45_online_window(player)
+            elseif event.element.name == "m45_member_welcome_close" then
+                show_member_welcome(player)
             end
         end
     end
