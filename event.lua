@@ -485,7 +485,7 @@ function clear_corpse_tag(event)
 
                 if victim and victim.valid and player and player.valid then
                     if victim.name ~= player.name then
-                        message_alld(player.name .. " looted the body of " .. victim.name .. ", at [gps=" ..
+                        message_all(player.name .. " looted the body of " .. victim.name .. ", at [gps=" ..
                                     math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]")
                     end
                 end
