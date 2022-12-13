@@ -43,12 +43,12 @@ script.on_nth_tick(599, function(event)
 
     -- Tick divider, one minute
     if not global.tickdiv then
-        global.tickdiv = 1
+        global.tickdiv = 0
     end
     global.tickdiv = global.tickdiv + 1
 
     if global.tickdiv >= 6 then
-        global.tickdiv = 1
+        global.tickdiv = 0
 
         -- Set logo to be redrawn
         global.drawlogo = false
