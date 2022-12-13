@@ -47,7 +47,7 @@ script.on_nth_tick(600, function(event)
     end
     global.tickdiv = global.tickdiv + 1
 
-    if global.tickdiv >= 360 then
+    if global.tickdiv >= 6 then
         global.tickdiv = 0
 
         -- Set logo to be redrawn
