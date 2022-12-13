@@ -114,7 +114,7 @@ function make_info_button(player)
             type = "sprite-button",
             name = "m45_button",
             sprite = "file/img/buttons/m45-64.png",
-            tooltip = "Opens the info window"
+            tooltip = "Opens the server-info window"
         }
         m45_32.style.size = {64, 64}
     end
@@ -123,6 +123,20 @@ end
 -- M45 Info/Welcome window
 function make_m45_info_window(player)
     -- M45 Welcome--
+
+    --Auto close membership welcome window--
+    if player then
+        if player.gui.screen then
+            if player.gui.screen.member_welcome then
+                player.gui.screen.member_welcome.destroy()
+            end
+        else
+            return
+        end
+    else
+        return
+    end
+
     if player.gui.center then
         if player.gui.screen.m45_info_window then
             player.gui.screen.m45_info_window.destroy()
@@ -985,7 +999,8 @@ function on_gui_click(event)
                 if player.gui and player.gui.top and player.gui.top.reset_clock then
 
                     if global.hide_clock then
-                        if global.hide_clock[player.index] and global.hide_clock[player.index] == true and global.resetdur ~= "" then
+                        if global.hide_clock[player.index] and global.hide_clock[player.index] == true and
+                            global.resetdur ~= "" then
                             global.hide_clock[player.index] = false
                             player.gui.top.reset_clock.caption = "Map reset: " .. global.resetdur
                             player.gui.top.reset_clock.style = "red_button"
