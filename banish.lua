@@ -588,6 +588,11 @@ function add_banish_commands()
                     end
                 end
 
+                if is_banished(victim) then
+                    smart_print(player,"They are already banished!")
+                    return
+                end
+
                 g_banish(player, victim, reason)
             end
         end)
