@@ -222,14 +222,7 @@ function get_permgroup()
                                 player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
                                 global.regularsgroup.add_player(player)
                                 message_all(player.name .. " is now a regular!")
-                                smart_print(player,
-                                    "[color=red](SYSTEM) You have been active enough, that you have been promoted to the 'Regulars' group![/color]")
-                                smart_print(player,
-                                    "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
-
-                                if player.character then
-                                    player.character.damage(0.001, "enemy") -- Grab attention
-                                end
+                                show_member_welcome(player)
                             end
                         elseif (global.active_playtime and global.active_playtime[player.index] and
                             global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
@@ -237,20 +230,130 @@ function get_permgroup()
                             if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                                 global.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
-                                smart_print(player,
-                                    "[color=red](SYSTEM) You have been active enough, that the restrictions on your character have been lifted.[/color]")
-                                smart_print(player,
-                                    "[color=red](SYSTEM) To find out more, click the (M45-Science) logo in the top-left of the screen (flask/inserter)[/color]")
-                                smart_print(player,
-                                    "[color=red](SYSTEM) You now have access to our members-only maps![/color]")
-
-                                if player.character then
-                                    player.character.damage(0.001, "enemy") -- Grab attention
-                                end
+                                show_member_welcome(player)
                             end
                         end
                     end
                 end
+            end
+        end
+    end
+end
+
+function show_member_welcome(player)
+    if player then
+        if player.gui.screen then
+            if player.gui.screen.member_welcome then
+                player.gui.screen.member_welcome.destroy()
+            else
+                local tfont = "[font=default-large-bold]"
+                local efont = "[/font]"
+
+                local lname = "members"
+                if is_regular(player) then
+                    lname = "regulars"
+                end
+
+                local main_flow = player.gui.screen.add {
+                    type = "frame",
+                    name = "member_welcome",
+                    direction = "vertical"
+                }
+
+                local info_titlebar = main_flow.add {
+                    type = "flow",
+                    direction = "horizontal"
+                }
+
+                info_titlebar.drag_target = main_flow
+                info_titlebar.add {
+                    type = "label",
+                    name = "member_welcome_title",
+                    style = "frame_title",
+                    caption = "Congratulations!"
+                }
+
+                local pusher = info_titlebar.add {
+                    type = "empty-widget",
+                    style = "draggable_space_header"
+                }
+
+                pusher.style.vertically_stretchable = true
+                pusher.style.horizontally_stretchable = true
+                pusher.drag_target = main_flow
+
+                info_titlebar.add {
+                    type = "sprite-button",
+                    name = "m45_member_welcome_close",
+                    sprite = "utility/close_white",
+                    style = "frame_action_button",
+                    tooltip = "Close this window"
+                }
+
+                main_flow.style.padding = 4
+                local mframe = main_flow.add {
+                    type = "flow",
+                    direction = "horizontal"
+                }
+                local lframe = mframe.add {
+                    type = "flow",
+                    direction = "vertical"
+                }
+                lframe.style.padding = 4
+                lframe.add {
+                    type = "sprite",
+                    sprite = "file/img/info-win/m45-128.png",
+                    tooltip = ""
+                }
+
+
+                local rframe = mframe.add {
+                    type = "flow",
+                    direction = "vertical"
+                }
+                rframe.add {
+                    type = "label",
+                    caption = tfont.."You have been active enough, that you have automatically been promoted to the '"..lname.."' group!"..efont
+                }
+                rframe.add {
+                    type = "label",
+                    caption = tfont.."You can now access members-only servers and have increased permissions!"..efont
+                }
+
+                if is_regular(player) then
+                    rframe.add {
+                        type = "label",
+                        caption = tfont.."You now also have access to BANISH in the players-online window:"..efont
+                    }
+                    local online_32 = rframe.add {
+                        type = "sprite-button",
+                        name = "online_button",
+                        sprite = "file/img/buttons/online-64.png",
+                        tooltip = "See players online!"
+                    }
+                    online_32.style.size = {64, 64}
+                    rframe.add {
+                        type = "label",
+                        caption = tfont.."You can also vote to rewind, reset, or skip-reset the map on Discord."..efont
+                    }
+                end
+
+                rframe.add {
+                    type = "label",
+                    caption = ""
+                }
+
+                rframe.add {
+                    type = "label",
+                    caption = tfont.."To find out more, click the SERVER-INFO button here: "..efont
+                }
+                local m45_32 = rframe.add {
+                    type = "sprite-button",
+                    name = "m45_button",
+                    sprite = "file/img/buttons/m45-64.png",
+                    tooltip = "Opens the server-info window"
+                }
+                m45_32.style.size = {64, 64}
             end
         end
     end
