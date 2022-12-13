@@ -103,9 +103,11 @@ function on_player_deconstructed_area(event)
                 console_print(msg)
 
                 if is_new(player) or is_member(player) then -- Dont bother with regulars/moderators
-                    if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
-                        global.last_decon_warning = game.tick
-                        message_all(msg)
+                    if not is_banished(player) then --Don't let bansihed players use this to spam
+                        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
+                            global.last_decon_warning = game.tick
+                            message_all(msg)
+                        end
                     end
                 end
             end
