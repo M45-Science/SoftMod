@@ -39,16 +39,16 @@ end
 -- Add to player active time if needed
 -- Refresh players online window
 
-script.on_nth_tick(600, function(event)
+script.on_nth_tick(599, function(event)
 
     -- Tick divider, one minute
     if not global.tickdiv then
-        global.tickdiv = 0
+        global.tickdiv = 1
     end
     global.tickdiv = global.tickdiv + 1
 
     if global.tickdiv >= 6 then
-        global.tickdiv = 0
+        global.tickdiv = 1
 
         -- Set logo to be redrawn
         global.drawlogo = false
