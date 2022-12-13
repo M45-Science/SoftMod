@@ -93,7 +93,7 @@ function on_pre_player_mined_item(event)
                         if global.cleaned_players and player.index and global.cleaned_players[player.index] then
                             global.cleaned_players[player.index] = false
                         end
-
+                    else
                         console_print("[ACT] " .. player.name .. " mined-ghost " .. obj.name .. " [gps=" ..
                                           math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " ..
                                           obj.ghost_name)
