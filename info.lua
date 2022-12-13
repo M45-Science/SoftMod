@@ -124,11 +124,13 @@ end
 function make_m45_info_window(player)
     -- M45 Welcome--
 
-    --Auto close membership welcome window--
+    -- Auto close membership welcome window--
     if player then
         if player.gui.screen then
             if player.gui.screen.member_welcome then
-                player.gui.screen.member_welcome.destroy()
+                if not player.gui.screen.m45_info_window then
+                    player.gui.screen.member_welcome.destroy()
+                end
             end
         else
             return
