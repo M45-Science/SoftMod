@@ -97,7 +97,7 @@ function on_player_deconstructed_area(event)
                                 math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," ..
                                 math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) ..
                                 "sq"
-                                if player.surface ~= "nauvis" then
+                                if player.surface and player.surface.index ~= 1 then
                                 msg = msg .. " (" .. player.surface.name .. ")"
                                 end
                 console_print(msg)
