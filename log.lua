@@ -10,8 +10,7 @@ function on_chart_tag_added(event)
         local player = game.players[event.player_index]
 
         if player and player.valid and event.tag then
-            console_print("[ACT] " .. player.name .. " add-tag [gps=" .. math.floor(event.tag.position.x) .. "," ..
-                              math.floor(event.tag.position.y) .. "] " .. event.tag.text)
+            console_print("[ACT] " .. player.name .. " add-tag" ..make_gps_str_obj(player, event.tag) .. event.tag.text)
         end
     end
 end
@@ -21,8 +20,7 @@ function on_chart_tag_modified(event)
     if event and event.player_index then
         local player = game.players[event.player_index]
         if player and player.valid and event.tag then
-            console_print("[ACT] " .. player.name .. " mod-tag [gps=" .. math.floor(event.tag.position.x) .. "," ..
-                              math.floor(event.tag.position.y) .. "] " .. event.tag.text)
+            console_print("[ACT] " .. player.name .. " mod-tag" .. make_gps_str_obj(player, event.tag) .. event.tag.text)
         end
     end
 end
@@ -34,8 +32,7 @@ function on_chart_tag_removed(event)
 
         -- Because factorio will hand us an nil event... nice.
         if player and player.valid and event.tag then
-            console_print("[ACT] " .. player.name .. " del-tag [gps=" .. math.floor(event.tag.position.x) .. "," ..
-                              math.floor(event.tag.position.y) .. "] " .. event.tag.text)
+            console_print("[ACT] " .. player.name .. " del-tag" .. make_gps_str_obj(player, event.tag) .. event.tag.text)
 
             -- Delete corpse map tag and corpse_lamp
             for i, ctag in pairs(global.corpselist) do
@@ -100,6 +97,9 @@ function on_player_deconstructed_area(event)
                                 math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," ..
                                 math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) ..
                                 "sq"
+                                if player.surface ~= "nauvis" then
+                                msg = msg .. " (" .. player.surface.name .. ")"
+                                end
                 console_print(msg)
 
                 if is_new(player) or is_member(player) then -- Dont bother with regulars/moderators

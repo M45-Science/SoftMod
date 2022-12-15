@@ -4,26 +4,14 @@
 -- License: MPL 2.0
 require "utility"
 
-function surfnum(surface)
-    local pos = 0
-    for _, s in pairs(game.surfaces) do
-        if s == surface then
-            return pos
-        end
-        pos = pos + 1
+function make_gps_str_obj(player, obj)
+    if player.surface and player.surface.index ~= 1 then
+        return " [gps=" .. math.floor(obj.position.x) .. "," ..
+        math.floor(obj.position.y) .. "," .. player.surface.name .. "] "
+    else
+        return " [gps=" .. math.floor(obj.position.x) .. ","
+        .. math.floor(obj.position.y) .. "] "
     end
-    return nil
-end
-
-function forcenum(force)
-    local pos = 0
-    for _, f in pairs(game.forces) do
-        if f == force then
-            return pos
-        end
-        pos = pos + 1
-    end
-    return nil
 end
 
 -- Build stuff -- activity
@@ -41,8 +29,7 @@ function on_built_entity(event)
                 (obj.name == "entity-ghost" and obj.ghost_name == "programmable-speaker") then
                 if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 5) then
                     if player.admin == false then -- Don't bother with mods
-                        gsysmsg(player.name .. " placed a speaker at [gps=" .. math.floor(obj.position.x) .. "," ..
-                                    math.floor(obj.position.y) .. "]")
+                            gsysmsg(player.name .. " placed a speaker at" .. make_gps_str_obj(player, obj))
                         global.last_speaker_warning = game.tick
                     end
                 end
@@ -50,16 +37,14 @@ function on_built_entity(event)
 
             if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
                 if obj.name ~= "entity-ghost" then
-                    console_print("[ACT] " .. player.name .. " placed " .. obj.name .. " [gps=" ..
-                                      math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+                    console_print("[ACT] " .. player.name .. " placed " .. obj.name  .. make_gps_str_obj(player, obj))
                 else
                     if not global.last_ghost_log then
                         global.last_ghost_log = {}
                     end
                     if global.last_ghost_log[player.index] then
                         if game.tick - global.last_ghost_log[player.index] > (60 * 2) then
-                            console_print("[ACT] " .. player.name .. " placed-ghost " .. obj.name .. " [gps=" ..
-                                              math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " ..
+                            console_print("[ACT] " .. player.name .. " placed-ghost " .. obj.name .. make_gps_str_obj(player, obj) ..
                                               obj.ghost_name)
                         end
                     end
@@ -86,16 +71,14 @@ function on_pre_player_mined_item(event)
                 if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
                     if obj.name ~= "entity-ghost" then
                         -- log
-                        console_print("[ACT] " .. player.name .. " mined " .. obj.name .. " [gps=" ..
-                                          math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+                        console_print("[ACT] " .. player.name .. " mined " .. obj.name .. make_gps_str_obj(player, obj))
 
                         -- Mark player as having picked up an item, and needing to be cleaned.
                         if global.cleaned_players and player.index and global.cleaned_players[player.index] then
                             global.cleaned_players[player.index] = false
                         end
                     else
-                        console_print("[ACT] " .. player.name .. " mined-ghost " .. obj.name .. " [gps=" ..
-                                          math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " ..
+                        console_print("[ACT] " .. player.name .. " mined-ghost " .. obj.name .. make_gps_str_obj(player, obj) ..
                                           obj.ghost_name)
                     end
                 end
@@ -120,11 +103,9 @@ function on_player_rotated_entity(event)
             if obj and obj.valid then
                 if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
                     if obj.name ~= "entity-ghost" then
-                        console_print("[ACT] " .. player.name .. " rotated " .. obj.name .. " [gps=" ..
-                                          math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "]")
+                        console_print("[ACT] " .. player.name .. " rotated " .. obj.name .. make_gps_str_obj(player, obj))
                     else
-                        console_print("[ACT] " .. player.name .. " rotated ghost " .. obj.name .. " [gps=" ..
-                                          math.floor(obj.position.x) .. "," .. math.floor(obj.position.y) .. "] " ..
+                        console_print("[ACT] " .. player.name .. " rotated ghost " .. obj.name .. make_gps_str_obj(player, obj) ..
                                           obj.ghost_name)
                     end
                 end

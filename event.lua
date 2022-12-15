@@ -484,8 +484,7 @@ function clear_corpse_tag(event)
                 victim = game.players[ent.character_corpse_player_index]
 
                 if victim and victim.valid and player and player.valid then
-                    local buf = player.name .. " looted the body of " .. victim.name .. " at [gps=" ..
-                    math.floor(player.position.x) .. "," .. math.floor(player.position.y) .. "]"
+                    local buf = player.name .. " looted the body of " .. victim.name .. " at" .. make_gps_str_obj(player, victim)
                     if victim.name ~= player.name then
                         gsysmsg(buf)
                     else
