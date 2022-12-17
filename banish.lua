@@ -674,7 +674,15 @@ function showBanishedInform(close, victim)
             }
             banished_main.add {
                 type = "label",
-                caption = "[font=default-large]We share our ban list with many other factorio communities, and we put the reason, date and link to the log in the ban.[/font]"
+                caption = "[font=default-large]We share our ban list with many other factorio communities. We put the reason, date and a link to the log file in the ban.[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]Any items you took have been left at the spawn area so they can be retrieved.[/font]"
             }
             banished_main.add {
                 type = "label",
@@ -690,7 +698,7 @@ function showBanishedInform(close, victim)
             }
             banished_main.add {
                 type = "label",
-                caption = "[font=default-large]If you were griefing, I hope you carefully think about why you were doing this.[/font]"
+                caption = "[font=default-large]If you were griefing, I hope you think carefully about why you were doing this.[/font]"
             }
             banished_main.add {
                 type = "label",
@@ -714,7 +722,7 @@ function showBanishedInform(close, victim)
             }
             banished_main.add {
                 type = "label",
-                caption = "[font=default-large]before you suffer real-world consequences for this type of behavior elsewhere in life.[/font]"
+                caption = "[font=default-large]Before you suffer real-world consequences for this type of behavior elsewhere.[/font]"
             }
         else
             -- Close button
