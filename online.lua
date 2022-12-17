@@ -872,6 +872,8 @@ function online_on_gui_click(event)
                 make_m45_online_window(player)
             elseif event.element.name == "m45_member_welcome_close" then
                 show_member_welcome(player)
+            elseif event.element.name == "banished_inform_close" then
+                showBanishedInform(true,player)
             end
         end
     end

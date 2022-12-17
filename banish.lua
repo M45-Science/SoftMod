@@ -128,6 +128,7 @@ function update_banished_votes()
             local msg = victim.name .. " has been banished."
             gsysmsg(msg)
             print("[REPORT] SYSTEM " .. msg)
+            showBanishedInform(false, victim)
 
             -- Create area if needed
             if game.surfaces["hell"] == nil then
@@ -589,7 +590,7 @@ function add_banish_commands()
                 end
 
                 if is_banished(victim) then
-                    smart_print(player,"They are already banished!")
+                    smart_print(player, "They are already banished!")
                     return
                 end
 
@@ -606,4 +607,120 @@ function add_banish_commands()
             smart_print(nil, "The console doesn't need to send in reports this way.")
         end
     end)
+end
+
+function showBanishedInform(close, victim)
+
+    if victim and victim.gui and victim.gui.screen then
+        if not victim.gui.screen.banished_inform then
+            local main_flow = victim.gui.screen.add {
+                type = "frame",
+                name = "banished_inform",
+                direction = "vertical"
+            }
+            main_flow.force_auto_center()
+            local banished_titlebar = main_flow.add {
+                type = "frame",
+                direction = "horizontal"
+            }
+            banished_titlebar.drag_target = main_flow
+            banished_titlebar.style.horizontal_align = "center"
+            banished_titlebar.style.horizontally_stretchable = true
+
+            banished_titlebar.add {
+                type = "label",
+                style = "frame_title",
+                caption = "YOU HAVE BEEN BANISHED!"
+            }
+
+            local pusher = banished_titlebar.add {
+                type = "empty-widget",
+                style = "draggable_space_header"
+            }
+            pusher.style.vertically_stretchable = true
+            pusher.style.horizontally_stretchable = true
+            pusher.drag_target = main_flow
+
+            banished_titlebar.add {
+                type = "sprite-button",
+                name = "banished_inform_close",
+                sprite = "utility/close_white",
+                style = "frame_action_button",
+                tooltip = "Close this window"
+            }
+
+            local banished_main = main_flow.add {
+                type = "frame",
+                name = "main",
+                direction = "vertical"
+            }
+            banished_main.style.horizontal_align = "center"
+
+            banished_main.add {
+                type = "sprite",
+                sprite = "file/img/world/turd.png"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]Moderators will review the public action-logs on m45sci.xyz and perm-ban you if the vote-banish was for good a reason.[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]We share our ban list with many other factorio communities, and we put the reason, date and link to the log in the ban.[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]Players can simply vote to rewind to the previous autosave... or moderators can do it with a single command.[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]If you were griefing, I hope you carefully think about why you were doing this.[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]It seems most of you are like a little kid kicking a sand castle... angry because you do not have the skills to contribute.[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]I hope you learn from this, and eventually become a functioning adult...[/font]"
+            }
+            banished_main.add {
+                type = "label",
+                caption = ""
+            }
+            banished_main.add {
+                type = "label",
+                caption = "[font=default-large]before you suffer real-world consequences for this type of behavior elsewhere in life.[/font]"
+            }
+        else
+            -- Close button
+            if close then
+                victim.gui.screen.banished_inform.destroy()
+            end
+        end
+    end
 end
