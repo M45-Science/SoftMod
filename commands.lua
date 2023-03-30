@@ -867,7 +867,7 @@ script.on_load(function()
 
         -- Game speed
         commands.add_command("gspeed",
-            "<x.x>\n(Changes game speed)\nDefault speed: 1.0 (60 UPS), Min 0.1 (6 UPS), Max  10.0 (600 UPS)",
+            "<x.x>\n(Changes game speed)\nDefault speed: 1.0 (60 UPS), Min 0.01 (0.6 UPS), Max  10.0 (600 UPS)",
             function(param)
                 local player
 
@@ -883,7 +883,7 @@ script.on_load(function()
 
                 -- Need argument
                 if (not param.parameter) then
-                    smart_print(player, "But what speed? 0.1 to 10")
+                    smart_print(player, "But what speed? 0.01 to 10")
                     return
                 end
 
@@ -892,7 +892,7 @@ script.on_load(function()
                     local value = tonumber(param.parameter)
 
                     -- Limit speed range
-                    if (value >= 0.1 and value <= 10.0) then
+                    if (value >= 0.01 and value <= 10.0) then
                         game.speed = value
 
                         -- Get default force
