@@ -4,10 +4,17 @@
 -- License: MPL 2.0
 -- Create globals, if needed
 function create_myglobals()
-    global.svers = "611-03.30.2023-357p"
+    global.svers = "612-04.09.2023-1044p"
 
     -- Adjust look
     game.surfaces[1].show_clouds = false
+
+    -- This mod complely screws player permissions
+    if game.active_mods["RemoteConfiguration"] then
+        global.disableperms = true
+    else
+        global.disableperms = false
+    end
 
     if not global.resetdur then
         global.resetdur = ""

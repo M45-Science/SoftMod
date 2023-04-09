@@ -8,6 +8,7 @@ require "logo"
 
 -- Custom commands
 script.on_load(function()
+
     -- Only add if no commands yet
     if (not commands.commands.server_interface) then
         add_banish_commands()
@@ -387,6 +388,7 @@ script.on_load(function()
 
         -- Server name
         commands.add_command("cname", "<name here>\n(Names the factorio server)", function(param)
+
             -- Moderators only
             if param and param.player_index then
                 local player = game.players[param.player_index]

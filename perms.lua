@@ -202,39 +202,41 @@ end
 
 -- Automatically promote users to higher levels
 function get_permgroup()
-    if game.connected_players then
+
+    --Skip if permissions are disabled
+    if game.connected_players and global.disableperms == false then
         -- Check all connected players
         for _, player in pairs(game.connected_players) do
             if (player and player.valid) then
-                -- Check if groups are valid
-                if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
-                    if player.permission_group then
-                        -- (Moderators) Check if they are in the right group, including se-remote-view
-                        if (player.admin and player.permission_group.name ~= global.modsgroup.name and
-                            player.permission_group.name ~= global.modsgroup.name .. "_satellite") then
-                            -- (REGULARS) Check if they are in the right group, including se-remote-view
-                            global.modsgroup.add_player(player)
-                            message_all(player.name .. " moved to moderators group")
-                        elseif (global.active_playtime and global.active_playtime[player.index] and
-                            global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
-                            -- Check if player has hours for regulars status, but isn't a in regulars group.
-                            if (player.permission_group.name ~= global.regularsgroup.name and
-                                player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
-                                global.regularsgroup.add_player(player)
-                                message_all(player.name .. " is now a regular!")
-                                show_member_welcome(player)
-                            end
-                        elseif (global.active_playtime and global.active_playtime[player.index] and
-                            global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
-                            -- Check if player has hours for members status, but isn't a in member group.
-                            if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
-                                global.membersgroup.add_player(player)
-                                message_all(player.name .. " is now a member!")
-                                show_member_welcome(player)
+                    -- Check if groups are valid
+                    if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
+                        if player.permission_group then
+                            -- (Moderators) Check if they are in the right group, including se-remote-view
+                            if (player.admin and player.permission_group.name ~= global.modsgroup.name and
+                                player.permission_group.name ~= global.modsgroup.name .. "_satellite") then
+                                -- (REGULARS) Check if they are in the right group, including se-remote-view
+                                global.modsgroup.add_player(player)
+                                message_all(player.name .. " moved to moderators group")
+                            elseif (global.active_playtime and global.active_playtime[player.index] and
+                                global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
+                                -- Check if player has hours for regulars status, but isn't a in regulars group.
+                                if (player.permission_group.name ~= global.regularsgroup.name and
+                                    player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
+                                    global.regularsgroup.add_player(player)
+                                    message_all(player.name .. " is now a regular!")
+                                    show_member_welcome(player)
+                                end
+                            elseif (global.active_playtime and global.active_playtime[player.index] and
+                                global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
+                                -- Check if player has hours for members status, but isn't a in member group.
+                                if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
+                                    global.membersgroup.add_player(player)
+                                    message_all(player.name .. " is now a member!")
+                                    show_member_welcome(player)
+                                end
                             end
                         end
                     end
-                end
             end
         end
     end
@@ -306,24 +308,25 @@ function show_member_welcome(player)
                     tooltip = ""
                 }
 
-
                 local rframe = mframe.add {
                     type = "flow",
                     direction = "vertical"
                 }
                 rframe.add {
                     type = "label",
-                    caption = tfont.."You have been active enough, that you have automatically been promoted to the '"..lname.."' group!"..efont
+                    caption = tfont .. "You have been active enough, that you have automatically been promoted to the '" ..
+                        lname .. "' group!" .. efont
                 }
                 rframe.add {
                     type = "label",
-                    caption = tfont.."You can now access members-only servers and have increased permissions!"..efont
+                    caption = tfont .. "You can now access members-only servers and have increased permissions!" ..
+                        efont
                 }
 
                 if is_regular(player) then
                     rframe.add {
                         type = "label",
-                        caption = tfont.."You now also have access to BANISH in the players-online window:"..efont
+                        caption = tfont .. "You now also have access to BANISH in the players-online window:" .. efont
                     }
                     local online_32 = rframe.add {
                         type = "sprite-button",
@@ -334,7 +337,8 @@ function show_member_welcome(player)
                     online_32.style.size = {64, 64}
                     rframe.add {
                         type = "label",
-                        caption = tfont.."You can also vote to rewind, reset, or skip-reset the map on Discord."..efont
+                        caption = tfont .. "You can also vote to rewind, reset, or skip-reset the map on Discord." ..
+                            efont
                     }
                 end
 
@@ -345,7 +349,7 @@ function show_member_welcome(player)
 
                 rframe.add {
                     type = "label",
-                    caption = tfont.."To find out more, click the SERVER-INFO button here: "..efont
+                    caption = tfont .. "To find out more, click the SERVER-INFO button here: " .. efont
                 }
                 local m45_32 = rframe.add {
                     type = "sprite-button",
