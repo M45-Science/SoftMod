@@ -174,7 +174,9 @@ script.on_nth_tick(599, function(event)
 
     get_permgroup() -- See if player qualifies now
 
+    if not global.disableperms then
     check_character_abandoned()
+    end
 end)
 
 function on_character_corpse_expired(event)

@@ -191,6 +191,12 @@ end
 -- permissions system
 -- Check if player should be considered a regular
 function is_regular(victim)
+
+    --Turn everyone into regular if permissions are disabled
+    if global.disableperms then
+        return true
+    end
+
     if victim and victim.valid and not victim.admin then
         -- If in group
         if victim.permission_group and global.regularsgroup then
