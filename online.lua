@@ -64,7 +64,7 @@ function update_player_list()
         end
 
         if is_patreon(victim) then
-            utag = utag .. " (PATREON)"
+            utag = utag .. " (SUPPORTER)"
         end
         if is_nitro(victim) then
             utag = utag .. " (NITRO)"
@@ -714,7 +714,7 @@ function make_m45_online_window(player)
                             utag = utag .. " [color=cyan](NITRO)[/color]"
                         end
                         if is_patreon(victim) then
-                            utag = utag .. " [color=purple](PATREON)[/color]"
+                            utag = utag .. " [color=purple](SUPPORTER)[/color]"
                         end
 
                         local score_label = pframe.add {

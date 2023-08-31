@@ -268,7 +268,7 @@ function make_m45_info_window(player)
             if global.patreonlist[1] ~= nil then
                 tab1_lframe.add {
                     type = "label",
-                    caption = "[color=purple]PATREONS:[/color]"
+                    caption = "[color=purple]SUPPORTERS:[/color]"
                 }
                 local i = 1
                 while global.patreonlist[i] ~= nil do
@@ -298,7 +298,7 @@ function make_m45_info_window(player)
             if global.nitrolist[1] ~= nil then
                 tab1_lframe.add {
                     type = "label",
-                    caption = "[color=cyan]NITRO:[/color]"
+                    caption = "[color=cyan]DISCORD NITRO:[/color]"
                 }
                 local i = 1
                 while global.nitrolist[i] ~= nil do
