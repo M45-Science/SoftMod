@@ -38,7 +38,7 @@ function dodrawlogo()
             -- Set drawn flag
             global.drawlogo = true
             global.m45logo = rendering.draw_sprite {
-                sprite = "file/img/world/m45-pad-v5.png",
+                sprite = "file/img/world/m45-pad-v6.png",
                 render_layer = "floor",
                 target = cpos,
                 x_scale = 0.5,
