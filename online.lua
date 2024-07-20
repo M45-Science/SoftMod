@@ -56,6 +56,9 @@ function update_player_list()
         if is_regular(victim) then
             utag = "Regulars"
         end
+        if is_veteran(victim) then
+            utag = "Veterans"
+        end
         if is_banished(victim) then
             utag = "BANISHED"
         end
@@ -616,6 +619,12 @@ function make_m45_online_window(player)
                             g = 0,
                             b = 0
                         }
+                    elseif is_veteran(victim) then
+                        newcolor = {
+                            r = 1,
+                            g = 0.5,
+                            b = 0
+                        }
                     elseif is_regular(victim) then
                         newcolor = {
                             r = 1,
@@ -702,6 +711,9 @@ function make_m45_online_window(player)
                         end
                         if is_regular(victim) then
                             utag = "[color=yellow]Regulars[/color]"
+                        end
+                        if is_veteran(victim) then
+                            utag = "[color=orange]Veterans[/color]"
                         end
                         if is_banished(victim) then
                             utag = "[color=red]BANISHED[/color]"

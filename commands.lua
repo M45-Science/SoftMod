@@ -349,10 +349,12 @@ script.on_load(function()
 
                     if player.admin then
                         ptype = "moderator"
+                    elseif is_veteran(player) then
+                        ptype = "veteran"
                     elseif is_regular(player) then
                         ptype = "regular"
                     elseif is_member(player) then
-                        ptype = "trusted"
+                        ptype = "member"
                     else
                         ptype = "normal"
                     end
@@ -520,6 +522,38 @@ script.on_load(function()
             end
             smart_print(player, "Player not found.")
         end)
+
+-- Set player to veteran
+commands.add_command("veteran", "<player>\n(Makes the player a veteran)", function(param)
+    local player
+
+    -- Moderators only
+    if param and param.player_index then
+        player = game.players[param.player_index]
+        if player and player.admin == false then
+            smart_print(player, "Moderators only.")
+            return
+        end
+    end
+
+    -- Argument required
+    if param.parameter then
+        local victim = game.players[param.parameter]
+
+        if (victim) then
+            if victim and victim.valid and global.veteransgroup then
+                if player then
+                    smart_print(player, "Player given veterans status.")
+                    message_all(victim.name .. " is now a veteran!")
+                end
+                global.veteransgroup.add_player(victim)
+                update_player_list() -- online.lua
+                return
+            end
+        end
+    end
+    smart_print(player, "Player not found.")
+end)
 
         -- Set player to regular
         commands.add_command("regular", "<player>\n(Makes the player a regular)", function(param)

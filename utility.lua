@@ -188,6 +188,23 @@ function is_nitro(victim)
     return false
 end
 
+
+-- permissions system
+-- Check if player should be considered a veteran
+function is_veteran(victim)
+    if victim and victim.valid and not victim.admin then
+        -- If in group
+        if victim.permission_group and global.veteransgroup then
+            if victim.permission_group.name == global.veteransgroup.name or victim.permission_group.name ==
+                global.veteransgroup.name .. "_satellite" then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
 -- permissions system
 -- Check if player should be considered a regular
 function is_regular(victim)
@@ -199,6 +216,11 @@ function is_regular(victim)
                 return true
             end
         end
+    end
+
+    -- Veterans are also regulars
+    if is_veteran(victim) then
+        return true
     end
 
     return false

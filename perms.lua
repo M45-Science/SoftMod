@@ -9,6 +9,7 @@ function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
+    global.veteransgroup = game.permissions.get_group("Veterans")
     global.modsgroup = game.permissions.get_group("Moderators")
 
     if (not global.defaultgroup) then
@@ -23,6 +24,10 @@ function create_groups()
         game.permissions.create_group("Regulars")
     end
 
+    if (not global.veteransgroup) then
+        game.permissions.create_group("Veterans")
+    end
+
     if (not global.modsgroup) then
         game.permissions.create_group("Moderators")
     end
@@ -30,6 +35,7 @@ function create_groups()
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
+    global.veteransgroup = game.permissions.get_group("Veterans")
     global.modsgroup = game.permissions.get_group("Moderators")
 end
 
