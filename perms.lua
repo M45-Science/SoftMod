@@ -227,7 +227,9 @@ function get_permgroup()
                                 global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
                                 -- Check if player has hours for regulars status, but isn't a in regulars group.
                                 if (player.permission_group.name ~= global.regularsgroup.name and
-                                    player.permission_group.name ~= global.regularsgroup.name .. "_satellite") then
+                                    player.permission_group.name ~= global.veteransgroup.name and
+                                    player.permission_group.name ~= global.regularsgroup.name .. "_satellite" and
+                                    player.permission_group.name ~= global.veteransgroup.name .. "_satellite") then
                                     global.regularsgroup.add_player(player)
                                     message_all(player.name .. " is now a regular!")
                                     show_member_welcome(player)
