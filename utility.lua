@@ -244,7 +244,7 @@ end
 -- Check if player should be considered new
 function is_new(victim)
     if victim and victim.valid and not victim.admin then
-        if is_member(victim) == false and is_regular(victim) == false then
+        if  is_member(victim) == false and is_regular(victim) == false then
             return true
         end
     end
@@ -261,7 +261,8 @@ function is_banished(victim)
         elseif global.thebanished and global.thebanished[victim.index] then
             if (is_new(victim) and global.thebanished[victim.index] >= 1) or
                 (is_member(victim) and global.thebanished[victim.index] >= 2) or
-                (is_regular(victim) and global.thebanished[victim.index] >= 2) then
+                (is_regular(victim) and global.thebanished[victim.index] >= 3) or 
+                (is_veteran(victim) and global.thebanished[victim.index] >= 3) then
                 return true
             end
         end

@@ -268,7 +268,7 @@ function g_banish(player, victim, reason)
                 smart_print(player, "Usage: /banish <player> <reason for banishment>")
             end
         else
-            smart_print(player, "This command is for regulars-status players and moderators only!")
+            smart_print(player, "This command is for regulars/veterans (level 3+) players and moderators only!")
             return
         end
     else
