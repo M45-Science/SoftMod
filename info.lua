@@ -528,7 +528,7 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[recipe=construction-robot]   [font=default-large-bold]Membership is automatic & free, and based on ACTIVITY. Your current activity score is listed above.[/font]"
+                caption = "[font=default-large-bold]Membership is automatic & free, and based on ACTIVITY. Your current activity score is listed above.[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -549,12 +549,12 @@ function make_m45_info_window(player)
             if is_new(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=inserter]   [font=default-large-bold][color=red]Level 1: New[/color][/font]"
+                    caption = "[recipe=burner-inserter]   [font=default-large-bold][color=red]Level 1: New[/color][/font]"
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=inserter]   [font=default-large-bold]Level 1: New[/font]"
+                    caption = "[recipe=burner-inserter]   [font=default-large-bold]Level 1: New[/font]"
                 }
             end
             tab2_main_frame.add {
@@ -572,7 +572,7 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Level 3 players (regulars) can BANISH you with ONE vote.[/font]"
+                caption = "[font=default-large-bold]Level 3+ players can BANISH you with ONE vote.[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -586,12 +586,12 @@ function make_m45_info_window(player)
             if is_member(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=fast-inserter]   [font=default-large-bold][color=red]Level 2: Members[/color] (Score: 30)[/font]"
+                    caption = "[recipe=inserter]   [font=default-large-bold][color=red]Level 2: Members[/color] (Score: 30)[/font]"
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=fast-inserter]   [font=default-large-bold]Level 2: Members (Score: 30)[/font]"
+                    caption = "[recipe=inserter]   [font=default-large-bold]Level 2: Members (Score: 30)[/font]"
                 }
             end
             tab2_main_frame.add {
@@ -622,12 +622,12 @@ function make_m45_info_window(player)
             if is_regular(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=stack-inserter]   [font=default-large-bold][color=red]Level 3: Regulars[/color] (Score: 240)[/font]"
+                    caption = "[recipe=fast-inserter]   [font=default-large-bold][color=red]Level 3: Regulars[/color] (Score: 240)[/font]"
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=stack-inserter]   [font=default-large-bold]Level 3: Regulars (Score: 240)[/font]"
+                    caption = "[recipe=fast-inserter]   [font=default-large-bold]Level 3: Regulars (Score: 240)[/font]"
                 }
             end
             tab2_main_frame.add {
@@ -645,6 +645,33 @@ function make_m45_info_window(player)
             tab2_main_frame.add {
                 type = "label",
                 caption = "[font=default-large]Access to vote-map command on Discord (after registration).[/font]"
+            }
+            tab2_main_frame.add {
+                type = "line",
+                direction = "horizontal"
+            }
+            if is_veteran(player) then
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[recipe=stack-inserter]   [font=default-large-bold][color=red]Level 4: Veteran[/color][/font]"
+                }
+            else
+                tab2_main_frame.add {
+                    type = "label",
+                    caption = "[recipe=stack-inserter]   [font=default-large-bold]Level 4: Veteran[/font] "
+                }
+            end
+            tab2_main_frame.add {
+                type = "label",
+                caption = ""
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "(Long-standing members of the community)"
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = ""
             }
             -- Close Button Frame
             local tab2_close_frame = tab2_main_frame.add {
