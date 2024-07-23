@@ -77,11 +77,15 @@ function update_banished_votes()
                 -- valid defendant
                 if is_new(vote.victim) or is_member(vote.victim) then
                     -- valid voter
-                    if is_regular(vote.voter) or vote.voter.admin then
+                    if is_regular(vote.voter) or is_veteran(vote.voter) or vote.voter.admin then
                         -- vote isn't overruled or withdrawn
                         if vote.withdrawn == false and vote.overruled == false then
                             if banishedtemp[vote.victim.index] then
-                                banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 1 -- Add vote against them
+                                if is_veteran(vote.voter) then
+                                    banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 2 -- Veterans get extra votes
+                                else
+                                    banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 1 -- Add one vote against them
+                                end
                             else
                                 -- was empty, init
                                 banishedtemp[vote.victim.index] = 1
@@ -180,7 +184,7 @@ end
 function g_banish(player, victim, reason)
     if player and player.valid then
         -- Regulars/mods only
-        if is_regular(player) or player.admin then
+        if is_regular(player) or is_veteran(player) or player.admin then
             -- Must have arguments
             if victim and reason then
                 if victim.name == player.name then
@@ -517,7 +521,7 @@ function add_banish_commands()
             local player = game.players[param.player_index]
             if player and param.parameter then
                 -- regulars/moderators players only
-                if is_regular(player) or player.admin then
+                if is_regular(player) or is_veteran(player) or player.admin then
                     -- get arguments
                     local args = mysplit(param.parameter, " ")
 

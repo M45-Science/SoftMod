@@ -283,7 +283,7 @@ function make_m45_online_submenu(player, target_name)
                         tooltip = "Vote to banish this player!"
                     }
 
-                    if is_regular(player) or player.admin then
+                    if is_regular(player) or is_veteran(player) or player.admin then
                         if target.admin then
                             local banish_note = banish_frame.add {
                                 type = "label",

@@ -572,7 +572,7 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Level 3+ players can BANISH you with ONE vote.[/font]"
+                caption = "[font=default-large-bold]Level 3+ players can BANISH you with ONE vote point.[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -604,7 +604,7 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Votes needed to BANISH you increases to TWO. Access to deconstruction planner (with warning msg).[/font]"
+                caption = "[font=default-large-bold]Access to deconstruction planner (with warning msg).[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -636,7 +636,7 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Allowed to BANISH other players.[/font]"
+                caption = "[font=default-large-bold]Allowed to BANISH other players, and vote points needed to BANISH you increases to TWO.[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -667,7 +667,11 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "(Long-standing members of the community)"
+                caption = "Long-standing members of the community, vote points needed to BANISH you increases to four."
+            }
+            tab2_main_frame.add {
+                type = "label",
+                caption = "Your votes increase to two points each."
             }
             tab2_main_frame.add {
                 type = "label",
@@ -988,7 +992,7 @@ function on_gui_click(event)
                     global.info_window_timer[player.index] = game.tick
                 end
                 ----------------------------------------------------------------
-                if is_member(player) or is_regular(player) or player.admin or
+                if is_member(player) or is_regular(player) or is_veteran(player) or player.admin or
                     (is_new(player) and game.tick - global.info_window_timer[player.index] > (60 * 10)) then
                     player.gui.screen.m45_info_window.destroy()
                 else

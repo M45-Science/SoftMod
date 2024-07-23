@@ -218,11 +218,6 @@ function is_regular(victim)
         end
     end
 
-    -- Veterans are also regulars
-    if is_veteran(victim) then
-        return true
-    end
-
     return false
 end
 
@@ -244,7 +239,7 @@ end
 -- Check if player should be considered new
 function is_new(victim)
     if victim and victim.valid and not victim.admin then
-        if  is_member(victim) == false and is_regular(victim) == false then
+        if  is_member(victim) == false and is_regular(victim) == false and is_veteran(victim )== false then
             return true
         end
     end
@@ -260,9 +255,9 @@ function is_banished(victim)
             return false
         elseif global.thebanished and global.thebanished[victim.index] then
             if (is_new(victim) and global.thebanished[victim.index] >= 1) or
-                (is_member(victim) and global.thebanished[victim.index] >= 2) or
-                (is_regular(victim) and global.thebanished[victim.index] >= 3) or 
-                (is_veteran(victim) and global.thebanished[victim.index] >= 3) then
+                (is_member(victim) and global.thebanished[victim.index] >= 1) or
+                (is_regular(victim) and global.thebanished[victim.index] >= 2) or 
+                (is_veteran(victim) and global.thebanished[victim.index] >= 4) then
                 return true
             end
         end

@@ -237,7 +237,7 @@ function get_permgroup()
                             elseif (global.active_playtime and global.active_playtime[player.index] and
                                 global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
                                 -- Check if player has hours for members status, but isn't a in member group.
-                                if is_regular(player) == false and is_member(player) == false and is_new(player) == true then
+                                if is_veteran(player) == false and is_regular(player) == false and is_member(player) == false and is_new(player) == true then
                                     global.membersgroup.add_player(player)
                                     message_all(player.name .. " is now a member!")
                                     show_member_welcome(player)
