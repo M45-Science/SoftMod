@@ -667,11 +667,11 @@ function make_m45_info_window(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "Long-standing members of the community, vote points needed to BANISH you increases to four."
+                caption = "[font=default-large-bold]Long-standing members of the community. Vote points needed to BANISH you increases to four.[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "Your votes increase to two points each."
+                caption = "[font=default-large-bold]Your votes increase to two points each.[/font]"
             }
             tab2_main_frame.add {
                 type = "label",
