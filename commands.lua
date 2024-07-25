@@ -15,7 +15,7 @@ script.on_load(function()
         -- banish.lua
 
         -- Reset interval message
-        commands.add_command("resetdur", "on/off", function(param)
+        commands.add_command("resetdur", "server use only", function(param)
             local player
             local victim
 
@@ -59,7 +59,7 @@ script.on_load(function()
         end)
 
         -- Reset interval message
-        commands.add_command("resetint", "on/off", function(param)
+        commands.add_command("resetint", "server use only", function(param)
             local player
             local victim
 
@@ -192,7 +192,7 @@ script.on_load(function()
         end)
 
         -- adjust run speed
-        commands.add_command("run", "<float> (0 is normal speed)", function(param)
+        commands.add_command("run", "speed: -1 to 100, 0 = normal speed", function(param)
             local player
             local victim
 
@@ -274,7 +274,7 @@ script.on_load(function()
         end)
 
         -- change new player restrictions
-        commands.add_command("restrict", "change player restrictions", function(param)
+        commands.add_command("restrict", "change player restrictions: on/off", function(param)
             local player
 
             -- Moderators only
@@ -307,7 +307,7 @@ script.on_load(function()
         end)
 
         -- game tick
-        commands.add_command("gt", "(Shows game tick)", function(param)
+        commands.add_command("gt", "Show current game tick number", function(param)
             local player
 
             if param and param.player_index then
@@ -322,7 +322,7 @@ script.on_load(function()
         end)
 
         -- register command
-        commands.add_command("register", "<code>\n(Requires a registration code from discord)", function(param)
+        commands.add_command("register", "<code> (Requires a registration code from discord)", function(param)
             -- This command is disabled
             if param and param.player_index then
                 local player = game.players[param.player_index]
@@ -371,7 +371,7 @@ script.on_load(function()
         end)
 
         -- softmod version
-        commands.add_command("sversion", "(Shows soft-mod version)", function(param)
+        commands.add_command("sversion", "server use only", function(param)
             local player
 
             create_myglobals()
@@ -389,7 +389,7 @@ script.on_load(function()
         end)
 
         -- Server name
-        commands.add_command("cname", "<name here>\n(Names the factorio server)", function(param)
+        commands.add_command("cname", "server use only", function(param)
 
             -- Moderators only
             if param and param.player_index then
@@ -417,7 +417,7 @@ script.on_load(function()
         end)
 
         -- Server chat
-        commands.add_command("cchat", "<message here>\n(Used for Discord bridge)", function(param)
+        commands.add_command("cchat", "server use only", function(param)
             -- Console only, no players
             if param and param.player_index then
                 local player = game.players[param.player_index]
@@ -431,7 +431,7 @@ script.on_load(function()
         end)
 
         -- Server whisper
-        commands.add_command("cwhisper", "<message here>\n(Used for Discord Bridge)", function(param)
+        commands.add_command("cwhisper", "server use only", function(param)
             -- Console only, no players
             if param and param.player_index then
                 local player = game.players[param.player_index]
@@ -458,7 +458,7 @@ script.on_load(function()
         end)
 
         -- Reset players's time and status
-        commands.add_command("reset", "<player>\n(Set player to NEW)", function(param)
+        commands.add_command("reset", "<player> -- (Set player to NEW)", function(param)
             local player
 
             -- Moderators only
@@ -492,7 +492,7 @@ script.on_load(function()
         end)
 
         -- Trust player
-        commands.add_command("member", "<player>\n(Makes the player a member)", function(param)
+        commands.add_command("member", "<player> -- (Makes the player a member)", function(param)
             local player
 
             -- Moderators only
@@ -524,7 +524,7 @@ script.on_load(function()
         end)
 
 -- Set player to veteran
-commands.add_command("veteran", "<player>\n(Makes the player a veteran)", function(param)
+commands.add_command("veteran", "<player> -- (Makes the player a veteran)", function(param)
     local player
 
     -- Moderators only
@@ -556,7 +556,7 @@ commands.add_command("veteran", "<player>\n(Makes the player a veteran)", functi
 end)
 
         -- Set player to regular
-        commands.add_command("regular", "<player>\n(Makes the player a regular)", function(param)
+        commands.add_command("regular", "<player> -- (Makes the player a regular)", function(param)
             local player
 
             -- Moderators only
@@ -588,7 +588,7 @@ end)
         end)
 
         -- Set player to patreon
-        commands.add_command("patreon", "<player>\n(Makes the player a patreon)", function(param)
+        commands.add_command("patreon", "<player> -- (Makes the player a patreon)", function(param)
             local player
 
             -- Moderators only
@@ -625,7 +625,7 @@ end)
         end)
 
         -- Set player to nitro
-        commands.add_command("nitro", "<player>\n(Makes the player a nitro booster)", function(param)
+        commands.add_command("nitro", "<player> -- (Makes the player a nitro booster)", function(param)
             local player
 
             -- Moderators only
@@ -662,7 +662,7 @@ end)
         end)
 
         -- Add player to patreon credits
-        commands.add_command("patreonlist", "(Update patreon credits)", function(param)
+        commands.add_command("patreonlist", "server use only", function(param)
             local player
 
             -- Console only, no players
@@ -679,7 +679,7 @@ end)
         end)
 
         -- Add player to nitro credits
-        commands.add_command("nitrolist", "(Update nitro credits)", function(param)
+        commands.add_command("nitrolist", "server use only", function(param)
             local player
 
             -- Console only, no players
@@ -696,7 +696,7 @@ end)
         end)
 
         -- Change default spawn point
-        commands.add_command("cspawn", "<x,y> (OPTIONAL)\n(Sets spawn point to <x,y>, or where moderator is standing)",
+        commands.add_command("cspawn", "<x,y> -- (OPTIONAL) (Sets spawn point to <x,y>, or where you stand by default)",
             function(param)
                 local victim
                 local new_pos_x = 0.0
@@ -755,7 +755,7 @@ end)
 
         -- Reveal map
         commands.add_command("reveal",
-            "<size> (OPTIONAL)\n(Reveals <size> units of the map, or 1024 by default. Min 128, Max 8192)",
+            "<size> -- (OPTIONAL) Reveals <size> units of the map from map center, or 1024 by default. Min 128, Max 8192)",
             function(param)
                 local victim
 
@@ -822,7 +822,7 @@ end)
             end)
 
         -- Rechart map
-        commands.add_command("rechart", "(Refreshes all chunks that exist)", function(param)
+        commands.add_command("rechart", "Refreshes all chunks that exist", function(param)
             local victim
 
             -- Moderators only
@@ -850,7 +850,7 @@ end)
         end)
 
         -- Online
-        commands.add_command("online", "(See who is online)", function(param)
+        commands.add_command("online", "See who is online", function(param)
             local victim
 
             if param and param.player_index then
@@ -867,7 +867,7 @@ end)
         end)
 
         -- Game speed, without walk speed mod
-        commands.add_command("aspeed", "<x.x>\nSet game UPS, and do not adjust walk speed.", function(param)
+        commands.add_command("aspeed", "<x.x> -- Set game UPS, and do not adjust walk speed.", function(param)
             local player
 
             if param and param.player_index then
@@ -903,7 +903,7 @@ end)
 
         -- Game speed
         commands.add_command("gspeed",
-            "<x.x>\n(Changes game speed)\nDefault speed: 1.0 (60 UPS), Min 0.01 (0.6 UPS), Max  10.0 (600 UPS)",
+            "<x.x> -- Changes game speed. Default speed: 1.0 (60 UPS), Min 0.01 (0.6 UPS), Max  10.0 (600 UPS)",
             function(param)
                 local player
 
@@ -999,7 +999,7 @@ end)
         end)
 
         -- Teleport x,y
-        commands.add_command("tp", "<x,y> -- teleport to <x,y>", function(param)
+        commands.add_command("tp", "<x,y> -- teleport to <x,y> or <surface>", function(param)
             -- No console :P
             if not param.player_index then
                 smart_print(nil, "You want me to teleport a remote console somewhere???")
