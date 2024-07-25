@@ -80,15 +80,20 @@ function update_banished_votes()
                     if is_regular(vote.voter) or is_veteran(vote.voter) or vote.voter.admin then
                         -- vote isn't overruled or withdrawn
                         if vote.withdrawn == false and vote.overruled == false then
+                            local points = 1
+                            
+                            if vote.voter.admin then
+                               points = 1000 -- Admins get single-vote banish
+                            elseif is_veteran(vote.voter) then
+                                points = 2 -- Veterans get extra votes
+                            end
+
+                            --Add vote, or init if needed
                             if banishedtemp[vote.victim.index] then
-                                if is_veteran(vote.voter) then
-                                    banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 2 -- Veterans get extra votes
-                                else
-                                    banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + 1 -- Add one vote against them
-                                end
+                                banishedtemp[vote.victim.index] = banishedtemp[vote.victim.index] + points
                             else
                                 -- was empty, init
-                                banishedtemp[vote.victim.index] = 1
+                                banishedtemp[vote.victim.index] = points
                             end
                         end
                     end
@@ -214,7 +219,7 @@ function g_banish(player, victim, reason)
                                             votecount = votecount + 1
                                         end
                                         -- Limit number of votes player gets
-                                        if votecount >= 5 then
+                                        if not vote.voter.admin and votecount >= 5 then
                                             smart_print(player, "You have exhausted your voting privilege for this map.")
                                             return
                                         end
