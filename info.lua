@@ -440,6 +440,26 @@ function make_m45_info_window(player)
                 restrictions.caption = ""
             end
 
+            -- server list URL
+            tab1_info_top.add {
+                type = "label",
+                caption = "[font=default-large]See our other Factorio servers:[/font]"
+            }
+
+            tab1_info_top.add {
+                type = "text-box",
+                name = "server_list",
+                text = "http://factorio.go-game.net/?tag=M45",
+                tooltip = "(if not selected), drag-select with mouse, control-c to copy."
+            }
+            tab1_info_top.server_list.style.font = "default-large"
+            tab1_info_top.server_list.style.minimal_width = 350
+
+            tab1_info_top.add {
+                type = "label",
+                caption = "  "
+            }
+
             -- Tab 1 Main -- Discord
             local tab1_discord_frame = tab1_rframe.add {
                 type = "frame",
@@ -451,6 +471,7 @@ function make_m45_info_window(player)
                 type = "flow",
                 direction = "vertical"
             }
+
 
             -- Tab 1 Main -- Discord -- Info Text
             tab1_discord_sub1_frame.add {
@@ -480,6 +501,7 @@ function make_m45_info_window(player)
                 text = "https://discord.gg/rQANzBheVh",
                 tooltip = "(if not selected), drag-select with mouse, control-c to copy."
             }
+
             -- URL Style
             tab1_discord_sub2_frame.discord_url.style.font = "default-large"
             tab1_discord_sub2_frame.discord_url.style.minimal_width = 350
@@ -488,6 +510,7 @@ function make_m45_info_window(player)
                 type = "label",
                 caption = "  "
             }
+
             -- Tab 1 Main -- Discord -- Bottom Info Text
             tab1_discord_sub2_frame.add {
                 type = "button",
@@ -1061,6 +1084,8 @@ function on_gui_text_changed(event)
 
         if event.element.name == "discord_url" then
             event.element.text = "https://discord.gg/rQANzBheVh"
+        elseif event.element.name == "server_list" then
+            event.element.text = "http://factorio.go-game.net/?tag=M45"
         elseif event.element.name == "old_maps" then
             event.element.text = "https://m45sci.xyz/u/fact2/archive/1.1%20maps/?C=M;O=D"
         elseif event.element.name == "patreon_url" then

@@ -4,7 +4,7 @@
 -- License: MPL 2.0
 -- Create globals, if needed
 function create_myglobals()
-    global.svers = "617-07.25.2024-0220p"
+    global.svers = "618-07.28.2024-0431p"
 
     -- Adjust look
     game.surfaces[1].show_clouds = false
