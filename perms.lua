@@ -35,7 +35,6 @@ function create_groups()
 
     --Disable these, this can bypass decon warning
     global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
-
     global.membersgroup.set_allows_action(defines.input_action.activate_cut, false)
 
 
