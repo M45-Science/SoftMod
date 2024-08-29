@@ -32,17 +32,15 @@ function create_groups()
         game.permissions.create_group("Moderators")
     end
 
-
-    --Disable these, this can bypass decon warning
-    global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
-    global.membersgroup.set_allows_action(defines.input_action.activate_cut, false)
-
-
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
     global.veteransgroup = game.permissions.get_group("Veterans")
     global.modsgroup = game.permissions.get_group("Moderators")
+
+    -- Disable these, this can bypass decon warning
+    global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
+    global.membersgroup.set_allows_action(defines.input_action.activate_cut, false)
 end
 
 function set_blueprints_enabled(group, option)
@@ -214,42 +212,43 @@ end
 -- Automatically promote users to higher levels
 function get_permgroup()
 
-    --Skip if permissions are disabled
+    -- Skip if permissions are disabled
     if game.connected_players and global.disableperms == false then
         -- Check all connected players
         for _, player in pairs(game.connected_players) do
             if (player and player.valid) then
-                    -- Check if groups are valid
-                    if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
-                        if player.permission_group then
-                            -- (Moderators) Check if they are in the right group, including se-remote-view
-                            if (player.admin and player.permission_group.name ~= global.modsgroup.name and
-                                player.permission_group.name ~= global.modsgroup.name .. "_satellite") then
-                                -- (REGULARS) Check if they are in the right group, including se-remote-view
-                                global.modsgroup.add_player(player)
-                                message_all(player.name .. " moved to moderators group")
-                            elseif (global.active_playtime and global.active_playtime[player.index] and
-                                global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
-                                -- Check if player has hours for regulars status, but isn't a in regulars group.
-                                if (player.permission_group.name ~= global.regularsgroup.name and
-                                    player.permission_group.name ~= global.veteransgroup.name and
-                                    player.permission_group.name ~= global.regularsgroup.name .. "_satellite" and
-                                    player.permission_group.name ~= global.veteransgroup.name .. "_satellite") then
-                                    global.regularsgroup.add_player(player)
-                                    message_all(player.name .. " is now a regular!")
-                                    show_member_welcome(player)
-                                end
-                            elseif (global.active_playtime and global.active_playtime[player.index] and
-                                global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
-                                -- Check if player has hours for members status, but isn't a in member group.
-                                if is_veteran(player) == false and is_regular(player) == false and is_member(player) == false and is_new(player) == true then
-                                    global.membersgroup.add_player(player)
-                                    message_all(player.name .. " is now a member!")
-                                    show_member_welcome(player)
-                                end
+                -- Check if groups are valid
+                if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
+                    if player.permission_group then
+                        -- (Moderators) Check if they are in the right group, including se-remote-view
+                        if (player.admin and player.permission_group.name ~= global.modsgroup.name and
+                            player.permission_group.name ~= global.modsgroup.name .. "_satellite") then
+                            -- (REGULARS) Check if they are in the right group, including se-remote-view
+                            global.modsgroup.add_player(player)
+                            message_all(player.name .. " moved to moderators group")
+                        elseif (global.active_playtime and global.active_playtime[player.index] and
+                            global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
+                            -- Check if player has hours for regulars status, but isn't a in regulars group.
+                            if (player.permission_group.name ~= global.regularsgroup.name and
+                                player.permission_group.name ~= global.veteransgroup.name and
+                                player.permission_group.name ~= global.regularsgroup.name .. "_satellite" and
+                                player.permission_group.name ~= global.veteransgroup.name .. "_satellite") then
+                                global.regularsgroup.add_player(player)
+                                message_all(player.name .. " is now a regular!")
+                                show_member_welcome(player)
+                            end
+                        elseif (global.active_playtime and global.active_playtime[player.index] and
+                            global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
+                            -- Check if player has hours for members status, but isn't a in member group.
+                            if is_veteran(player) == false and is_regular(player) == false and is_member(player) ==
+                                false and is_new(player) == true then
+                                global.membersgroup.add_player(player)
+                                message_all(player.name .. " is now a member!")
+                                show_member_welcome(player)
                             end
                         end
                     end
+                end
             end
         end
     end
