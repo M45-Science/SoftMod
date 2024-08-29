@@ -32,6 +32,13 @@ function create_groups()
         game.permissions.create_group("Moderators")
     end
 
+
+    --Disable these, this can bypass decon warning
+    global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
+
+    global.membersgroup.set_allows_action(defines.input_action.activate_cut, false)
+
+
     global.defaultgroup = game.permissions.get_group("Default")
     global.membersgroup = game.permissions.get_group("Members")
     global.regularsgroup = game.permissions.get_group("Regulars")
@@ -120,7 +127,6 @@ function set_hperms()
         end
 
         global.defaultgroup.set_allows_action(defines.input_action.wire_dragging, option)
-        global.defaultgroup.set_allows_action(defines.input_action.activate_cut, option)
         global.defaultgroup.set_allows_action(defines.input_action.add_train_station, option)
         global.defaultgroup.set_allows_action(defines.input_action.build_terrain, option)
         global.defaultgroup.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, option)

@@ -10,7 +10,7 @@ function on_chart_tag_added(event)
         local player = game.players[event.player_index]
 
         if player and player.valid and event.tag then
-            console_print("[ACT] " .. player.name .. " add-tag" ..make_gps_str_obj(player, event.tag) .. event.tag.text)
+            console_print("[ACT] " .. player.name .. " add-tag" .. make_gps_str_obj(player, event.tag) .. event.tag.text)
         end
     end
 end
@@ -92,24 +92,36 @@ function on_player_deconstructed_area(event)
             local decon_size = dist_to(area.left_top, area.right_bottom)
 
             -- Don't bother if selection is zero.
-            if decon_size >= 1 then
-                local msg = "[ACT] " .. player.name .. " deconstructing [gps=" .. math.floor(area.left_top.x) .. "," ..
-                                math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," ..
-                                math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) ..
-                                "sq"
-                                if player.surface and player.surface.index ~= 1 then
-                                msg = msg .. " (" .. player.surface.name .. ")"
-                                end
-                console_print(msg)
+            if decon_size ~= 0 then
+                local msg = ""
+                if event.alt then
+                    msg = "[ACT] " .. player.name .. " unmarking for deconstruction [gps=" ..
+                              math.floor(area.left_top.x) .. "," .. math.floor(area.left_top.y) .. "] to [gps=" ..
+                              math.floor(area.right_bottom.x) .. "," .. math.floor(area.right_bottom.y) .. "] AREA: " ..
+                              math.floor(decon_size * decon_size) .. "sq"
+                    if player.surface and player.surface.index ~= 1 then
+                        msg = msg .. " (" .. player.surface.name .. ")"
+                    end
+                else
+                    msg = "[ACT] " .. player.name .. " deconstructing [gps=" .. math.floor(area.left_top.x) .. "," ..
+                              math.floor(area.left_top.y) .. "] to [gps=" .. math.floor(area.right_bottom.x) .. "," ..
+                              math.floor(area.right_bottom.y) .. "] AREA: " .. math.floor(decon_size * decon_size) ..
+                              "sq"
+                    if player.surface and player.surface.index ~= 1 then
+                        msg = msg .. " (" .. player.surface.name .. ")"
+                    end
 
-                if is_new(player) or is_member(player) then -- Dont bother with regulars/moderators
-                    if not is_banished(player) then --Don't let bansihed players use this to spam
-                        if (global.last_decon_warning and game.tick - global.last_decon_warning >= 60) then
-                            global.last_decon_warning = game.tick
-                            message_all(msg)
+                    if is_new(player) or is_member(player) then -- Dont bother with regulars/moderators
+                        if not is_banished(player) then -- Don't let bansihed players use this to spam
+                            if (global.last_decon_warning and game.tick - global.last_decon_warning >= 15) then
+                                global.last_decon_warning = game.tick
+                                message_all(msg)
+                            end
                         end
                     end
                 end
+
+                console_print(msg)
             end
         end
     end
