@@ -1021,7 +1021,7 @@ function on_gui_click(event)
                 else
                     if player and player.character then
                         rendering.draw_rectangle {
-                            surface = victim.surface,
+                            surface = player.surface,
                             left_top = {-8192, -8192},
                             right_bottom = {8192, 8192},
                             color = {1, 0, 0},
