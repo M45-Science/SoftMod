@@ -1020,7 +1020,17 @@ function on_gui_click(event)
                     player.gui.screen.m45_info_window.destroy()
                 else
                     if player and player.character then
-                        player.character.damage(25, "enemy") -- Grab attention
+                        global.flashlist[i] = rendering.draw_rectangle {
+                            surface = victim.surface,
+                            left_top = {-8192, -8192},
+                            right_bottom = {8192, 8192},
+                            color = {1, 0, 0},
+                            filled = true,
+                            players = {player},
+                            time_to_live = 8
+                        }
+                        
+                        player.character.damage(10, "enemy") -- Grab attention
                         smart_print(player,
                             "[color=red](SYSTEM) *** PLEASE READ THE INFO WINDOW BEFORE CLOSING IT!!! ***[/color]")
                         smart_print(player,
