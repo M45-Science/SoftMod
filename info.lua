@@ -1020,7 +1020,7 @@ function on_gui_click(event)
                     player.gui.screen.m45_info_window.destroy()
                 else
                     if player and player.character then
-                        global.flashlist[i] = rendering.draw_rectangle {
+                        rendering.draw_rectangle {
                             surface = victim.surface,
                             left_top = {-8192, -8192},
                             right_bottom = {8192, 8192},
