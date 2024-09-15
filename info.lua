@@ -421,7 +421,7 @@ function make_m45_info_window(player)
             }
             tab1_info_top.add {
                 type = "label",
-                caption = ""
+                caption = "[color=red][font=default-large]THIS SERVER IS PERMA-DEATH. YOU HAVE ONE LIFE TO LIVE PER MAP![/font][/color]"
             }
             tab1_info_top.add {
                 type = "label",

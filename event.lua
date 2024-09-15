@@ -6,6 +6,7 @@ require "antigrief"
 require "info"
 require "log"
 require "todo"
+require "onelife"
 
 local function insert_weapons(player, ammo_amount)
     if player.force.technologies["military"].researched then
@@ -243,6 +244,7 @@ function on_player_joined_game(event)
                 make_info_button(player) -- info.lua
                 make_online_button(player) -- online.lua
                 make_reset_clock(player) -- clock.lua
+                make_onelife_button(player) --onelife.lua
             end
 
             if global.last_playtime then
@@ -377,6 +379,7 @@ function on_pre_player_died(event)
                                  math.floor(player.position.y) .. "]")
             end
         end
+        doOnelife(event)
     end
 end
 
@@ -441,6 +444,7 @@ defines.events.on_pre_player_mined_item, defines.events.on_built_entity}, functi
     elseif event.name == defines.events.on_gui_click then
         on_gui_click(event)
         online_on_gui_click(event) -- online.lua
+        onelife_clickhandler(event) --onelife.lua
     elseif event.name == defines.events.on_gui_text_changed then
         -- log
         on_gui_text_changed(event)

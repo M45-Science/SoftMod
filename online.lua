@@ -73,6 +73,10 @@ function update_player_list()
             utag = utag .. " (NITRO)"
         end
 
+        if victim.controller_type == defines.controllers.spectator then
+            utag = "SPECTATOR"
+        end
+
         -- Show last online in minutes
         local isafk = "   "
 
@@ -727,6 +731,10 @@ function make_m45_online_window(player)
                         end
                         if is_patreon(victim) then
                             utag = utag .. " [color=purple](SUPPORTER)[/color]"
+                        end
+
+                        if victim.controller_type == defines.controllers.spectator then
+                            utag = "SPECTATOR"
                         end
 
                         local score_label = pframe.add {
