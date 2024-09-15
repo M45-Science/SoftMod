@@ -69,7 +69,7 @@ function onelife_clickhandler(event)
         if global.spec_confirm and player.index and global.spec_confirm[player.index] then
 
             if global.spec_confirm[player.index] >= 2 then
-                lobal.spec_confirm[player.index] = nil
+                global.spec_confirm[player.index] = nil
                 player.character.die("player")
                 doOnelife(event)
             elseif global.spec_confirm[player.index] < 2 then
