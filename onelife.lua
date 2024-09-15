@@ -72,6 +72,7 @@ function onelife_clickhandler(event)
                 global.spec_confirm[player.index] = nil
                 player.character.die("player")
                 doOnelife(event)
+                return
             elseif global.spec_confirm[player.index] < 2 then
                 smart_print(player,
                     "[color=red](NO UNDO, PERM-DEATH) -- click " .. 2 - global.spec_confirm[player.index] ..
