@@ -4,7 +4,7 @@
 -- License: MPL 2.0
 -- Create globals, if needed
 function create_myglobals()
-    global.svers = "OneLife-621-09.32.2024-0315p"
+    global.svers = "OneLife-622-09.15.2024-0835"
 
     -- Adjust look
     game.surfaces[1].show_clouds = false
