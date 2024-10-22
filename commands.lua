@@ -38,7 +38,6 @@ script.on_load(function()
                 if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
                     if storage.hide_clock and storage.hide_clock[target.index] == true or input == "" then
                         target.gui.top.reset_clock.caption = ">"
-                        target.gui.top.reset_clock.style = "tip_notice_close_button"
                     else
                         target.gui.top.reset_clock.caption = "MAP RESET: " .. input
                         target.gui.top.reset_clock.style = "red_button"

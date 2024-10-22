@@ -1075,7 +1075,6 @@ function on_gui_click(event)
                             if event.button and event.button == defines.mouse_button_type.right and event.control then
                                 storage.hide_clock[player.index] = true
                                 player.gui.top.reset_clock.caption = ">"
-                                player.gui.top.reset_clock.style = "tip_notice_close_button"
                             end
                         end
 

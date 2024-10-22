@@ -455,8 +455,10 @@ function make_m45_online_window(player)
                 type = "sprite-button",
                 name = "m45_online_close_button",
                 style = "frame_action_button",
+                sprite = "utility/close",
                 tooltip = "Close this window"
             }
+            
 
             local online_main = main_flow.add {
                 type = "scroll-pane",
@@ -851,7 +853,7 @@ function online_on_gui_click(event)
             elseif event.element.name == "find_on_map" then
                 ----------------------------------------------------------------
                 if victim and victim.valid then
-                    player.zoom_to_world(victim.position, 1.0)
+                    player.set_controller{type=defines.controllers.remote, position=victim.position}
                 else
                     smart_print(player, "Invalid target.")
                 end

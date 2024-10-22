@@ -501,7 +501,7 @@ function clear_corpse_tag(event)
                     ent.character_corpse_player_index then
                     -- Destroy corpse lamp
                     if ctag and ctag.corpse_lamp then
-                        rtag.corpse_lamp.destroy()
+                        ctag.corpse_lamp.destroy()
                     end
 
                     -- Destroy map tag

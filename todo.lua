@@ -445,22 +445,6 @@ function make_m45_todo_window(player)
                             notes_label.style.font_color = grayed
                         end
 
-                        gps_button = pframe.add {
-                            type = "sprite-button",
-                            sprite = "utility/spawn_flag",
-                            name = "m45_todo_gps," .. i, -- Pass name
-                            tooltip = "View location on map."
-                        }
-                        gps_button.style.size = {38, 38}
-                        if not target.gps then
-                            gps_button.visible = false
-                        end
-
-                        local gps_spacer = pframe.add {
-                            type = "empty-widget"
-                        }
-                        gps_spacer.style.width = 16
-
                         notes_label.style.horizontally_stretchable = true
                         notes_label.style.horizontally_squashable = true
                         notes_label.style.minimal_width = 300
@@ -690,16 +674,7 @@ local function on_gui_click(event)
                     smart_print(player, "It is already at the end of the list.")
                 end
                 console_print("[TODO] " .. player.name .. " moved item " .. todo_key(i) .. " down.")
-            elseif args and args[2] and args[1] == "m45_todo_gps" then
-                ----------------------------------------------------------------
-                if player and player.valid and player.character and player.character.valid then
-                    local i = tonumber(args[2])
-                    if storage.todo_list[i] and storage.todo_list[i].gps and storage.todo_list[i].gps.x then
-                        player.zoom_to_world(storage.todo_list[i].gps, 0.5)
-                    else
-                        smart_print(player, "Invalid location")
-                    end
-                end
+           
             elseif args and args[2] and args[1] == "m45_todo_submenu_edit" then
                 ----------------------------------------------------------------
                 if player and player.valid and player.character and player.character.valid then
