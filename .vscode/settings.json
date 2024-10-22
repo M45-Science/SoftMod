@@ -1,7 +1,7 @@
 {
-    "Lua.diagnostics.globals": [
+    "Lua.diagnostics.storage": [
         "data",
-        "global",
+        "storage",
         "game",
         "defines",
         "script",
@@ -10,8 +10,8 @@
         "settings"
     ],
     "Lua.diagnostics.disable": [
-        "undefined-global",
-        "lowercase-global"
+        "undefined-storage",
+        "lowercase-storage"
     ],
     "githubPullRequests.ignoredPullRequestBranches": [
         "Main"

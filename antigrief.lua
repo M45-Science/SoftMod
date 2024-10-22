@@ -21,16 +21,16 @@ function on_built_entity(event)
 
     if player and player.valid then
         if obj and obj.valid then
-            if not global.last_speaker_warning then
-                global.last_speaker_warning = 0
+            if not storage.last_speaker_warning then
+                storage.last_speaker_warning = 0
             end
 
             if obj.name == "programmable-speaker" or
                 (obj.name == "entity-ghost" and obj.ghost_name == "programmable-speaker") then
-                if (global.last_speaker_warning and game.tick - global.last_speaker_warning >= 5) then
+                if (storage.last_speaker_warning and game.tick - storage.last_speaker_warning >= 5) then
                     if player.admin == false then -- Don't bother with mods
                             gsysmsg(player.name .. " placed a speaker at" .. make_gps_str_obj(player, obj))
-                        global.last_speaker_warning = game.tick
+                        storage.last_speaker_warning = game.tick
                     end
                 end
             end
@@ -39,16 +39,16 @@ function on_built_entity(event)
                 if obj.name ~= "entity-ghost" then
                     console_print("[ACT] " .. player.name .. " placed " .. obj.name  .. make_gps_str_obj(player, obj))
                 else
-                    if not global.last_ghost_log then
-                        global.last_ghost_log = {}
+                    if not storage.last_ghost_log then
+                        storage.last_ghost_log = {}
                     end
-                    if global.last_ghost_log[player.index] then
-                        if game.tick - global.last_ghost_log[player.index] > (60 * 2) then
+                    if storage.last_ghost_log[player.index] then
+                        if game.tick - storage.last_ghost_log[player.index] > (60 * 2) then
                             console_print("[ACT] " .. player.name .. " placed-ghost " .. obj.name .. make_gps_str_obj(player, obj) ..
                                               obj.ghost_name)
                         end
                     end
-                    global.last_ghost_log[player.index] = game.tick
+                    storage.last_ghost_log[player.index] = game.tick
                 end
             end
         else
@@ -74,8 +74,8 @@ function on_pre_player_mined_item(event)
                         console_print("[ACT] " .. player.name .. " mined " .. obj.name .. make_gps_str_obj(player, obj))
 
                         -- Mark player as having picked up an item, and needing to be cleaned.
-                        if global.cleaned_players and player.index and global.cleaned_players[player.index] then
-                            global.cleaned_players[player.index] = false
+                        if storage.cleaned_players and player.index and storage.cleaned_players[player.index] then
+                            storage.cleaned_players[player.index] = false
                         end
                     else
                         console_print("[ACT] " .. player.name .. " mined-ghost " .. obj.name .. make_gps_str_obj(player, obj) ..

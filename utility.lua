@@ -69,8 +69,8 @@ function show_players(victim)
     -- For console use
     if not victim then
         buf = "[ONLINE2] "
-        if global.player_list then
-            for i, target in pairs(global.player_list) do
+        if storage.player_list then
+            for i, target in pairs(storage.player_list) do
                 if target and target.victim and target.victim.connected then
                     buf = buf .. target.victim.name .. "," .. math.floor(target.score / 60 / 60) .. "," ..
                               math.floor(target.time / 60 / 60) .. "," .. target.type .. "," .. target.afk .. ";"
@@ -79,15 +79,15 @@ function show_players(victim)
         end
 
         -- Don't send unless there is a change
-        if global.lastonlinestring ~= buf then
-            global.lastonlinestring = buf
+        if storage.lastonlinestring ~= buf then
+            storage.lastonlinestring = buf
             print(buf)
         end
         return
     end
 
-    if global.player_list then
-        for i, target in pairs(global.player_list) do
+    if storage.player_list then
+        for i, target in pairs(storage.player_list) do
             if target and target.victim and target.victim.connected then
                 buf = buf ..
                           string.format("~%16s: - Score: %4d - Online: %4dm - (%s)%s\n", target.victim.name,
@@ -97,10 +97,10 @@ function show_players(victim)
     end
 
     -- No one is online
-    if not global.player_count or global.player_count == 0 then
+    if not storage.player_count or storage.player_count == 0 then
         smart_print(victim, "No players online.")
     else
-        smart_print(victim, "Players Online: " .. global.player_count .. "\n" .. buf)
+        smart_print(victim, "Players Online: " .. storage.player_count .. "\n" .. buf)
     end
 end
 
@@ -157,13 +157,13 @@ end
 -- Check if player is flagged patreon
 function is_patreon(victim)
     if victim and victim.valid then
-        if not global.patreons then
-            global.patreons = {}
+        if not storage.patreons then
+            storage.patreons = {}
         end
-        if global.patreons and global.patreons[victim.index] then
-            return global.patreons[victim.index]
+        if storage.patreons and storage.patreons[victim.index] then
+            return storage.patreons[victim.index]
         else
-            global.patreons[victim.index] = false
+            storage.patreons[victim.index] = false
             return false
         end
     end
@@ -174,13 +174,13 @@ end
 -- Check if player is flagged nitro
 function is_nitro(victim)
     if victim and victim.valid then
-        if not global.nitros then
-            global.nitros = {}
+        if not storage.nitros then
+            storage.nitros = {}
         end
-        if global.nitros and global.nitros[victim.index] then
-            return global.nitros[victim.index]
+        if storage.nitros and storage.nitros[victim.index] then
+            return storage.nitros[victim.index]
         else
-            global.nitros[victim.index] = false
+            storage.nitros[victim.index] = false
             return false
         end
     end
@@ -194,9 +194,9 @@ end
 function is_veteran(victim)
     if victim and victim.valid and not victim.admin then
         -- If in group
-        if victim.permission_group and global.veteransgroup then
-            if victim.permission_group.name == global.veteransgroup.name or victim.permission_group.name ==
-                global.veteransgroup.name .. "_satellite" then
+        if victim.permission_group and storage.veteransgroup then
+            if victim.permission_group.name == storage.veteransgroup.name or victim.permission_group.name ==
+                storage.veteransgroup.name .. "_satellite" then
                 return true
             end
         end
@@ -210,9 +210,9 @@ end
 function is_regular(victim)
     if victim and victim.valid and not victim.admin then
         -- If in group
-        if victim.permission_group and global.regularsgroup then
-            if victim.permission_group.name == global.regularsgroup.name or victim.permission_group.name ==
-                global.regularsgroup.name .. "_satellite" then
+        if victim.permission_group and storage.regularsgroup then
+            if victim.permission_group.name == storage.regularsgroup.name or victim.permission_group.name ==
+                storage.regularsgroup.name .. "_satellite" then
                 return true
             end
         end
@@ -225,9 +225,9 @@ end
 function is_member(victim)
     if victim and victim.valid and not victim.admin then
         -- If in group
-        if victim.permission_group and global.membersgroup then
-            if victim.permission_group.name == global.membersgroup.name or victim.permission_group.name ==
-                global.membersgroup.name .. "_satellite" then
+        if victim.permission_group and storage.membersgroup then
+            if victim.permission_group.name == storage.membersgroup.name or victim.permission_group.name ==
+                storage.membersgroup.name .. "_satellite" then
                 return true
             end
         end
@@ -253,11 +253,11 @@ function is_banished(victim)
         -- Mods can not be marked as banished
         if victim.admin then
             return false
-        elseif global.thebanished and global.thebanished[victim.index] then
-            if (is_new(victim) and global.thebanished[victim.index] >= 1) or
-                (is_member(victim) and global.thebanished[victim.index] >= 1) or
-                (is_regular(victim) and global.thebanished[victim.index] >= 2) or 
-                (is_veteran(victim) and global.thebanished[victim.index] >= 4) then
+        elseif storage.thebanished and storage.thebanished[victim.index] then
+            if (is_new(victim) and storage.thebanished[victim.index] >= 1) or
+                (is_member(victim) and storage.thebanished[victim.index] >= 1) or
+                (is_regular(victim) and storage.thebanished[victim.index] >= 2) or 
+                (is_veteran(victim) and storage.thebanished[victim.index] >= 4) then
                 return true
             end
         end

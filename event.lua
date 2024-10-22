@@ -42,29 +42,29 @@ end
 script.on_nth_tick(599, function(event)
 
     -- Tick divider, one minute
-    if not global.tickdiv then
-        global.tickdiv = 0
+    if not storage.tickdiv then
+        storage.tickdiv = 0
     end
-    global.tickdiv = global.tickdiv + 1
+    storage.tickdiv = storage.tickdiv + 1
 
-    if global.tickdiv >= 6 then
-        global.tickdiv = 0
+    if storage.tickdiv >= 6 then
+        storage.tickdiv = 0
 
         -- Set logo to be redrawn
-        global.drawlogo = false
+        storage.drawlogo = false
         dodrawlogo()
 
         update_player_list() -- online.lua
     end
 
     -- Remove old corpse tags
-    if (global.corpselist) then
+    if (storage.corpselist) then
         local index = nil
-        for i, corpse in pairs(global.corpselist) do
+        for i, corpse in pairs(storage.corpselist) do
             if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                 if corpse.corpse_lamp then
                     -- Destroy corpse lamp
-                    rendering.destroy(corpse.corpse_lamp)
+                    corpse.corpse_lamp.destroy()
                 end
 
                 -- Destory map tag
@@ -77,28 +77,28 @@ script.on_nth_tick(599, function(event)
             end
         end
         -- Properly remove items
-        if global.corpselist and index then
-            table.remove(global.corpselist, index)
+        if storage.corpselist and index then
+            table.remove(storage.corpselist, index)
         end
     else
-        create_myglobals()
+        create_mystorage()
     end
 
     -- Server tag
-    if (global.servertag and not global.servertag.valid) then
-        global.servertag = nil
+    if (storage.servertag and not storage.servertag.valid) then
+        storage.servertag = nil
     end
-    if (global.servertag and global.servertag.valid) then
-        global.servertag.destroy()
-        global.servertag = nil
+    if (storage.servertag and storage.servertag.valid) then
+        storage.servertag.destroy()
+        storage.servertag = nil
     end
-    if (not global.servertag) then
+    if (not storage.servertag) then
         local label = "Spawn Area"
         local xpos = 0
         local ypos = 0
 
-        if global.servname and global.servname ~= "" then
-            label = global.servname
+        if storage.servname and storage.servname ~= "" then
+            label = storage.servname
         end
 
         local chartTag = {
@@ -113,60 +113,60 @@ script.on_nth_tick(599, function(event)
         local psurface = game.surfaces[1]
 
         if pforce and psurface then
-            global.servertag = pforce.add_chart_tag(psurface, chartTag)
+            storage.servertag = pforce.add_chart_tag(psurface, chartTag)
         end
     end
 
     -- Add time to connected players
-    if global.active_playtime then
+    if storage.active_playtime then
         for _, player in pairs(game.connected_players) do
             -- Banish if some mod eats respawn event
             send_to_surface(player)
 
             -- Player active?
-            if global.playeractive[player.index] then
-                if global.playeractive[player.index] == true then
-                    global.playeractive[player.index] = false -- Turn back off
+            if storage.playeractive[player.index] then
+                if storage.playeractive[player.index] == true then
+                    storage.playeractive[player.index] = false -- Turn back off
 
-                    if global.active_playtime[player.index] then
+                    if storage.active_playtime[player.index] then
                         -- Compensate for game speed
-                        global.active_playtime[player.index] =
-                            global.active_playtime[player.index] + (600.0 / game.speed) -- Same as loop time
-                        if global.last_playtime then
-                            global.last_playtime[player.index] = game.tick
+                        storage.active_playtime[player.index] =
+                            storage.active_playtime[player.index] + (600.0 / game.speed) -- Same as loop time
+                        if storage.last_playtime then
+                            storage.last_playtime[player.index] = game.tick
                         end
                     else
                         -- INIT
-                        global.active_playtime[player.index] = 0
+                        storage.active_playtime[player.index] = 0
                     end
                 end
 
             else
                 -- INIT
-                global.playeractive[player.index] = false
+                storage.playeractive[player.index] = false
             end
 
             -- Player moving?
-            if global.playermoving[player.index] then
-                if global.playermoving[player.index] == true then
-                    global.playermoving[player.index] = false -- Turn back off
+            if storage.playermoving[player.index] then
+                if storage.playermoving[player.index] == true then
+                    storage.playermoving[player.index] = false -- Turn back off
 
-                    if global.active_playtime[player.index] then
+                    if storage.active_playtime[player.index] then
                         -- Compensate for game speed
-                        global.active_playtime[player.index] =
-                            global.active_playtime[player.index] + (600.0 / game.speed) -- Same as loop time
-                        if global.last_playtime then
-                            global.last_playtime[player.index] = game.tick
+                        storage.active_playtime[player.index] =
+                            storage.active_playtime[player.index] + (600.0 / game.speed) -- Same as loop time
+                        if storage.last_playtime then
+                            storage.last_playtime[player.index] = game.tick
                         end
                     else
                         -- INIT
-                        global.active_playtime[player.index] = 0
+                        storage.active_playtime[player.index] = 0
                     end
                 end
 
             else
                 -- INIT
-                global.playermoving[player.index] = false
+                storage.playermoving[player.index] = false
             end
 
         end
@@ -174,7 +174,7 @@ script.on_nth_tick(599, function(event)
 
     get_permgroup() -- See if player qualifies now
 
-    if not global.disableperms then
+    if not storage.disableperms then
     check_character_abandoned()
     end
 end)
@@ -213,12 +213,12 @@ function on_player_joined_game(event)
 
     -- Set clock as NOT MINIMIZED on login
     if event and event.player_index then
-        if global.hide_clock and global.hide_clock[event.player_index] then
-            global.hide_clock[event.player_index] = false
+        if storage.hide_clock and storage.hide_clock[event.player_index] then
+            storage.hide_clock[event.player_index] = false
         end
     end
 
-    if global.cheatson then
+    if storage.cheatson then
         if event and event.player_index then
             local player = game.players[event.player_index]
             if player and player.valid then
@@ -231,8 +231,8 @@ function on_player_joined_game(event)
     if event and event.player_index then
         local player = game.players[event.player_index]
         if player then
-            create_myglobals()
-            create_player_globals(player)
+            create_mystorage()
+            create_player_storage(player)
             create_groups()
             game_settings(player)
             get_permgroup()
@@ -245,14 +245,14 @@ function on_player_joined_game(event)
                 make_reset_clock(player) -- clock.lua
             end
 
-            if global.last_playtime then
-                global.last_playtime[event.player_index] = game.tick
+            if storage.last_playtime then
+                storage.last_playtime[event.player_index] = game.tick
             end
             update_player_list() -- online.lua
 
             -- Always show to new players, everyone else at least once per map
-            if is_new(player) or not global.info_shown[player.index] then
-                global.info_shown[player.index] = true
+            if is_new(player) or not storage.info_shown[player.index] then
+                storage.info_shown[player.index] = true
                 make_m45_online_window(player) -- online.lua
                 make_m45_info_window(player) -- info.lua
                 -- make_m45_todo_window(player) --todo.lua
@@ -267,7 +267,7 @@ function on_player_created(event)
         local player = game.players[event.player_index]
 
         if player and player.valid then
-            global.drawlogo = false -- set logo to be redrawn
+            storage.drawlogo = false -- set logo to be redrawn
             create_groups()
             dodrawlogo() -- redraw logo
             set_perms()
@@ -321,7 +321,7 @@ function on_pre_player_died(event)
 
         -- Disable corpse map markers if another similar mod is loaded
         local disable_corpsemap = false
-        for name, version in pairs(game.active_mods) do
+        for name, version in pairs(script.active_mods) do
             if name == "space-exploration" or name == "CorpseFlare" or name == "some-corpsemarker" or name ==
                 "WhereIsMyBody" then
                 disable_corpsemap = true
@@ -342,8 +342,8 @@ function on_pre_player_died(event)
                 }
                 local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-                create_myglobals()
-                create_player_globals(player)
+                create_mystorage()
+                create_player_storage(player)
 
                 -- Add a light, so it is easier to see
                 local clight = rendering.draw_light {
@@ -357,7 +357,7 @@ function on_pre_player_died(event)
                 }
 
                 -- Add to list of pins
-                table.insert(global.corpselist, {
+                table.insert(storage.corpselist, {
                     tag = qtag,
                     tick = game.tick + 590,
                     pos = player.position,
@@ -496,12 +496,12 @@ function clear_corpse_tag(event)
             end
 
             local index
-            for i, ctag in pairs(global.corpselist) do
+            for i, ctag in pairs(storage.corpselist) do
                 if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex ==
                     ent.character_corpse_player_index then
                     -- Destroy corpse lamp
                     if ctag and ctag.corpse_lamp then
-                        rendering.destroy(ctag.corpse_lamp)
+                        rtag.corpse_lamp.destroy()
                     end
 
                     -- Destroy map tag
@@ -515,8 +515,8 @@ function clear_corpse_tag(event)
             end
 
             -- Properly remove items
-            if global.corpselist and index then
-                table.remove(global.corpselist, index)
+            if storage.corpselist and index then
+                table.remove(storage.corpselist, index)
             end
         end
     end

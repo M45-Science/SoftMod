@@ -16,8 +16,8 @@ function dumpPlayerInventory(player)
         return false
     end
 
-    if global.cleaned_players[player.index] then
-        if global.cleaned_players[player.index] == true then
+    if storage.cleaned_players[player.index] then
+        if storage.cleaned_players[player.index] == true then
             return false
         end
     end
@@ -80,21 +80,21 @@ function dumpPlayerInventory(player)
     end
 
     -- Mark as cleaned up.
-    global.cleaned_players[player.index] = true
+    storage.cleaned_players[player.index] = true
 
     return true
 end
 
 function check_character_abandoned()
-    if not global.active_playtime or not global.last_playtime then
+    if not storage.active_playtime or not storage.last_playtime then
         return
     end
 
     for _, player in pairs(game.players) do
         if not player.connected and is_new(player) then
 
-            if global.last_playtime[player.index] then
-                if game.tick - global.last_playtime[player.index] > 1 * 60 * 60 * 60 then
+            if storage.last_playtime[player.index] then
+                if game.tick - storage.last_playtime[player.index] > 1 * 60 * 60 * 60 then
                     if dumpPlayerInventory(player) then
                         gsysmsg("[color=orange] * New player '" .. player.name ..
                                     "' was not active long enough to become a member, and have been offline for some time. Their items are now considered abandoned, and have been placed at spawn (expires in 15m) *[/color]")
@@ -144,11 +144,11 @@ function make_m45_info_window(player)
             player.gui.screen.m45_info_window.destroy()
         end
         if not player.gui.screen.m45_info_window then
-            if not global.info_window_timer then
-                global.info_window_timer = {}
+            if not storage.info_window_timer then
+                storage.info_window_timer = {}
             end
-            if not global.info_window_timer[player.index] then
-                global.info_window_timer[player.index] = game.tick
+            if not storage.info_window_timer[player.index] then
+                storage.info_window_timer[player.index] = game.tick
             end
 
             local main_flow = player.gui.screen.add {
@@ -169,7 +169,7 @@ function make_m45_info_window(player)
             info_titlebar.style.horizontal_align = "center"
             info_titlebar.style.horizontally_stretchable = true
 
-            if global.servname == "" then
+            if storage.servname == "" then
                 info_titlebar.add {
                     type = "label",
                     name = "online_title",
@@ -181,7 +181,7 @@ function make_m45_info_window(player)
                     type = "label",
                     name = "online_title",
                     style = "frame_title",
-                    caption = "You are playing on: " .. global.servname
+                    caption = "You are playing on: " .. storage.servname
                 }
             end
             local pusher = info_titlebar.add {
@@ -195,7 +195,7 @@ function make_m45_info_window(player)
             info_titlebar.add {
                 type = "sprite-button",
                 name = "m45_info_close_button",
-                sprite = "utility/close_white",
+                sprite = "utility/close",
                 style = "frame_action_button",
                 tooltip = "Close this window"
             }
@@ -265,24 +265,24 @@ function make_m45_info_window(player)
             }
 
             -- PATREON
-            if global.patreonlist[1] ~= nil then
+            if storage.patreonlist[1] ~= nil then
                 tab1_lframe.add {
                     type = "label",
                     caption = "[color=purple]SUPPORTERS:[/color]"
                 }
                 local i = 1
-                while global.patreonlist[i] ~= nil do
-                    if global.patreonlist[i + 1] ~= nil then
+                while storage.patreonlist[i] ~= nil do
+                    if storage.patreonlist[i + 1] ~= nil then
                         tab1_lframe.add {
                             type = "label",
-                            caption = "[color=purple]" .. global.patreonlist[i] .. ", " .. global.patreonlist[i + 1] ..
+                            caption = "[color=purple]" .. storage.patreonlist[i] .. ", " .. storage.patreonlist[i + 1] ..
                                 "[/color]"
                         }
                         i = i + 1
                     else
                         tab1_lframe.add {
                             type = "label",
-                            caption = "[color=purple]" .. global.patreonlist[i] .. "[/color]"
+                            caption = "[color=purple]" .. storage.patreonlist[i] .. "[/color]"
                         }
                     end
                     i = i + 1
@@ -295,24 +295,24 @@ function make_m45_info_window(player)
             }
 
             -- NITRO
-            if global.nitrolist[1] ~= nil then
+            if storage.nitrolist[1] ~= nil then
                 tab1_lframe.add {
                     type = "label",
                     caption = "[color=cyan]DISCORD NITRO:[/color]"
                 }
                 local i = 1
-                while global.nitrolist[i] ~= nil do
-                    if global.nitrolist[i + 1] ~= nil then
+                while storage.nitrolist[i] ~= nil do
+                    if storage.nitrolist[i + 1] ~= nil then
                         tab1_lframe.add {
                             type = "label",
-                            caption = "[color=cyan]" .. global.nitrolist[i] .. ", " .. global.nitrolist[i + 1] ..
+                            caption = "[color=cyan]" .. storage.nitrolist[i] .. ", " .. storage.nitrolist[i + 1] ..
                                 "[/color]"
                         }
                         i = i + 1
                     else
                         tab1_lframe.add {
                             type = "label",
-                            caption = "[color=cyan]" .. global.nitrolist[i] .. "[/color]"
+                            caption = "[color=cyan]" .. storage.nitrolist[i] .. "[/color]"
                         }
                     end
                     i = i + 1
@@ -371,7 +371,7 @@ function make_m45_info_window(player)
             }
             tab1_info_center.add {
                 type = "label",
-                caption = "v" .. global.svers
+                caption = "v" .. storage.svers
             }
 
             local tab1_cframe = {tab1_main_frame.add {
@@ -392,18 +392,18 @@ function make_m45_info_window(player)
                 type = "label",
                 caption = ""
             }
-            if global.resetint and global.resetint ~= "" then
+            if storage.resetint and storage.resetint ~= "" then
                 local reset_warning = tab1_info_top.add {
                     type = "label",
                     caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]Next map reset: " ..
-                        string.upper(global.resetint) .. "[/font][/color]"
+                        string.upper(storage.resetint) .. "[/font][/color]"
                 }
             end
-            if global.resetdur and global.resetdur ~= "" then
+            if storage.resetdur and storage.resetdur ~= "" then
                 local reset_warning = tab1_info_top.add {
                     type = "label",
                     caption = "[virtual-signal=signal-everything]  [color=orange][font=default-large-bold]Map will reset in: " ..
-                        string.upper(global.resetdur) .. "[/font][/color]"
+                        string.upper(storage.resetdur) .. "[/font][/color]"
                 }
             end
             tab1_info_top.style.horizontally_stretchable = true
@@ -436,7 +436,7 @@ function make_m45_info_window(player)
             if player.force.friendly_fire then
                 friendly_fire.caption = "Friendly fire is currently ON (normally off)."
             end
-            if global.restrict == false then
+            if storage.restrict == false then
                 restrictions.caption = ""
             end
 
@@ -543,7 +543,7 @@ function make_m45_info_window(player)
                 type = "label",
                 name = "tab2_score",
                 caption = "[color=orange][font=default-large-bold]Current score: " ..
-                    math.floor(global.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
+                    math.floor(storage.active_playtime[player.index] / 60 / 60) .. "[/font][/color]"
             }
             tab2_main_frame.add {
                 type = "label",
@@ -1008,15 +1008,15 @@ function on_gui_click(event)
             -- Info window close
             if event.element.name == "m45_info_close_button" and player.gui and player.gui.center and
                 player.gui.screen.m45_info_window then
-                if not global.info_window_timer then
-                    global.info_window_timer = {}
+                if not storage.info_window_timer then
+                    storage.info_window_timer = {}
                 end
-                if not global.info_window_timer[player.index] then
-                    global.info_window_timer[player.index] = game.tick
+                if not storage.info_window_timer[player.index] then
+                    storage.info_window_timer[player.index] = game.tick
                 end
                 ----------------------------------------------------------------
                 if is_member(player) or is_regular(player) or is_veteran(player) or player.admin or
-                    (is_new(player) and game.tick - global.info_window_timer[player.index] > (60 * 10)) then
+                    (is_new(player) and game.tick - storage.info_window_timer[player.index] > (60 * 10)) then
                     player.gui.screen.m45_info_window.destroy()
                 else
                     if player and player.character then
@@ -1065,15 +1065,15 @@ function on_gui_click(event)
                 -- reset-clock-close
                 if player.gui and player.gui.top and player.gui.top.reset_clock then
 
-                    if global.hide_clock then
-                        if global.hide_clock[player.index] and global.hide_clock[player.index] == true and
-                            global.resetdur ~= "" then
-                            global.hide_clock[player.index] = false
-                            player.gui.top.reset_clock.caption = "Map reset: " .. global.resetdur
+                    if storage.hide_clock then
+                        if storage.hide_clock[player.index] and storage.hide_clock[player.index] == true and
+                            storage.resetdur ~= "" then
+                            storage.hide_clock[player.index] = false
+                            player.gui.top.reset_clock.caption = "Map reset: " .. storage.resetdur
                             player.gui.top.reset_clock.style = "red_button"
                         else
                             if event.button and event.button == defines.mouse_button_type.right and event.control then
-                                global.hide_clock[player.index] = true
+                                storage.hide_clock[player.index] = true
                                 player.gui.top.reset_clock.caption = ">"
                                 player.gui.top.reset_clock.style = "tip_notice_close_button"
                             end

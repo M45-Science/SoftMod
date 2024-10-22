@@ -4,9 +4,9 @@
 -- License: MPL 2.0
 require "utility"
 
-function make_banish_globals()
-    if not global.banishvotes then
-        global.banishvotes = {
+function make_banish_storage()
+    if not storage.banishvotes then
+        storage.banishvotes = {
             voter = {},
             victim = {},
             reason = {},
@@ -15,29 +15,29 @@ function make_banish_globals()
             overruled = {}
         }
     end
-    if not global.thebanished then
-        global.thebanished = {}
+    if not storage.thebanished then
+        storage.thebanished = {}
     end
 end
 
 function g_report(player, report)
     if player and player.valid and report then
         -- Init limit list if needed
-        if not global.reportlimit then
-            global.reportlimit = {}
+        if not storage.reportlimit then
+            storage.reportlimit = {}
         end
 
         -- Add or init player's limit
-        if global.reportlimit[player.index] then
-            global.reportlimit[player.index] = global.reportlimit[player.index] + 1
+        if storage.reportlimit[player.index] then
+            storage.reportlimit[player.index] = storage.reportlimit[player.index] + 1
         else
-            global.reportlimit[player.index] = 1
+            storage.reportlimit[player.index] = 1
         end
 
         -- Limit and list number of reports
-        if global.reportlimit[player.index] <= 5 then
+        if storage.reportlimit[player.index] <= 5 then
             print("[REPORT] " .. player.name .. " " .. report)
-            smart_print(player, "Report sent! You have now used " .. global.reportlimit[player.index] ..
+            smart_print(player, "Report sent! You have now used " .. storage.reportlimit[player.index] ..
                 " of your 5 available reports.")
         else
             smart_print("You are not allowed to send any more reports.")
@@ -53,8 +53,8 @@ function update_banished_votes()
     local banishedtemp = {}
 
     -- Init if needed
-    if not global.banishvotes then
-        global.banishvotes = {
+    if not storage.banishvotes then
+        storage.banishvotes = {
             voter = {},
             victim = {},
             reason = {},
@@ -64,12 +64,12 @@ function update_banished_votes()
         }
     end
 
-    if not global.thebanished then
-        global.thebanished = {}
+    if not storage.thebanished then
+        storage.thebanished = {}
     end
 
     -- Loop through votes, tally them
-    for _, vote in pairs(global.banishvotes) do
+    for _, vote in pairs(storage.banishvotes) do
         -- only if everything seems to exist
         if vote and vote.voter and vote.victim then
             -- only if data exists
@@ -106,11 +106,11 @@ function update_banished_votes()
     for _, victim in pairs(game.players) do
         local prevstate = is_banished(victim)
 
-        -- Add votes to global list, erase old votes
+        -- Add votes to storage list, erase old votes
         if banishedtemp[victim.index] then
-            global.thebanished[victim.index] = banishedtemp[victim.index]
+            storage.thebanished[victim.index] = banishedtemp[victim.index]
         else
-            global.thebanished[victim.index] = 0 -- Erase/init
+            storage.thebanished[victim.index] = 0 -- Erase/init
         end
 
         -- Was banished, but not anymore
@@ -123,11 +123,11 @@ function update_banished_votes()
             if victim.character and victim.character.valid then
                 victim.character.die("player")
             end
-            if not global.send_to_surface then
-                global.send_to_surface = {}
+            if not storage.send_to_surface then
+                storage.send_to_surface = {}
             end
 
-            table.insert(global.send_to_surface, {
+            table.insert(storage.send_to_surface, {
                 victim = victim,
                 surface = "nauvis",
                 position = get_default_spawn()
@@ -174,10 +174,10 @@ function update_banished_votes()
 
             gsysmsg(victim.name .. "'s items have been dumped at spawn so they can be recovered.")
 
-            if not global.send_to_surface then
-                global.send_to_surface = {}
+            if not storage.send_to_surface then
+                storage.send_to_surface = {}
             end
-            table.insert(global.send_to_surface, {
+            table.insert(storage.send_to_surface, {
                 victim = victim,
                 surface = "hell",
                 position = {0, 0}
@@ -210,9 +210,9 @@ function g_banish(player, victim, reason)
                         -- Victim can not be an moderator
                         if not victim.admin then
                             -- Check if we already voted against them
-                            if global.banishvotes and global.banishvotes ~= {} then
+                            if storage.banishvotes and storage.banishvotes ~= {} then
                                 local votecount = 1
-                                for _, vote in pairs(global.banishvotes) do
+                                for _, vote in pairs(storage.banishvotes) do
                                     if vote and vote.voter and vote.victim then
                                         -- Count player's total votes, cap them
                                         if vote.voter == player then
@@ -247,8 +247,8 @@ function g_banish(player, victim, reason)
                             end
 
                             -- Init if needed
-                            if not global.banishvotes then
-                                global.banishvotes = {
+                            if not storage.banishvotes then
+                                storage.banishvotes = {
                                     voter = {},
                                     victim = {},
                                     reason = {},
@@ -257,7 +257,7 @@ function g_banish(player, victim, reason)
                                     overruled = {}
                                 }
                             end
-                            table.insert(global.banishvotes, {
+                            table.insert(storage.banishvotes, {
                                 voter = player,
                                 victim = victim,
                                 reason = reason,
@@ -287,12 +287,12 @@ end
 
 function send_to_surface(player)
     -- Anything queued?
-    if global.send_to_surface then
+    if storage.send_to_surface then
         -- Valid player?
         if player and player.valid and player.character and player.character.valid then
             local index = nil
             -- Check list
-            for i, item in pairs(global.send_to_surface) do
+            for i, item in pairs(storage.send_to_surface) do
                 -- Check if item is valid
                 if item and item.victim and item.victim.valid and item.victim.character and item.victim.character.valid and
                     item.position and item.surface then
@@ -317,7 +317,7 @@ function send_to_surface(player)
             -- Remove item we processed
             if index then
                 console_print("send_to_surface: item removed: " .. index)
-                table.remove(global.send_to_surface, index)
+                table.remove(storage.send_to_surface, index)
             end
         end
     end
@@ -373,10 +373,10 @@ function add_banish_commands()
                         if victim.character and victim.character.valid then
                             victim.character.die("player")
                         end
-                        if not global.send_to_surface then
-                            global.send_to_surface = {}
+                        if not storage.send_to_surface then
+                            storage.send_to_surface = {}
                         end
-                        table.insert(global.send_to_surface, {
+                        table.insert(storage.send_to_surface, {
                             victim = victim,
                             surface = "hell",
                             position = {0, 0}
@@ -398,14 +398,14 @@ function add_banish_commands()
 
                 -- Moderator only
                 if (player and player.admin) then
-                    if global.banishvotes then
+                    if storage.banishvotes then
                         -- get arguments
                         local args = mysplit(param.parameter, " ")
 
                         -- Must have arguments
                         if args ~= {} and args[1] then
                             if args[1] == "clear" then
-                                global.banishvotes = nil
+                                storage.banishvotes = nil
                                 smart_print(player, "All votes cleared.")
                                 update_banished_votes()
                                 return
@@ -415,7 +415,7 @@ function add_banish_commands()
                             -- If victim found
                             if victim and victim.valid then
                                 local count = 0
-                                for _, vote in pairs(global.banishvotes) do
+                                for _, vote in pairs(storage.banishvotes) do
                                     if vote and vote.victim and vote.victim.valid then
                                         if vote.victim == victim and vote.overruled == false then
                                             vote.overruled = true
@@ -426,7 +426,7 @@ function add_banish_commands()
                                 if count > 0 then
                                     smart_print(player, "Overruled " .. count .. " votes against " .. victim.name)
                                 else
-                                    for _, vote in pairs(global.banishvotes) do
+                                    for _, vote in pairs(storage.banishvotes) do
                                         if vote and vote.victim and vote.victim.valid then
                                             if vote.victim == victim and vote.overruled == true then
                                                 vote.overruled = false
@@ -460,10 +460,10 @@ function add_banish_commands()
             local player = game.players[param.player_index]
 
             -- Only if banish data found
-            if global.banishvotes then
+            if storage.banishvotes then
                 -- Print votes
                 local pcount = 0
-                for _, vote in pairs(global.banishvotes) do
+                for _, vote in pairs(storage.banishvotes) do
                     if vote and vote.voter and vote.voter.valid and vote.victim and vote.victim.valid then
                         local notes = ""
                         if vote.withdrawn then
@@ -482,20 +482,20 @@ function add_banish_commands()
                 update_banished_votes()
 
                 -- Print accused
-                if global.thebanished then
+                if storage.thebanished then
                     for _, victim in pairs(game.players) do
-                        if global.thebanished[victim.index] and global.thebanished[victim.index] > 1 then
-                            smart_print(player, victim.name .. " has had " .. global.thebanished[victim.index] ..
+                        if storage.thebanished[victim.index] and storage.thebanished[victim.index] > 1 then
+                            smart_print(player, victim.name .. " has had " .. storage.thebanished[victim.index] ..
                                 " complaints against them.")
                             pcount = pcount + 1
                         end
                     end
                 end
                 -- Show summery of votes against them
-                if global.banishvotes then
+                if storage.banishvotes then
                     for _, victim in pairs(game.players) do
                         local votecount = 0
-                        for _, vote in pairs(global.banishvotes) do
+                        for _, vote in pairs(storage.banishvotes) do
                             if victim == vote.voter then
                                 votecount = votecount + 1
                             end
@@ -537,8 +537,8 @@ function add_banish_commands()
                         -- Must have valid victim
                         if victim and victim.valid and victim.character and victim.character.valid then
                             -- Check if we voted against them
-                            if global.banishvotes and global.banishvotes ~= {} then
-                                for _, vote in pairs(global.banishvotes) do
+                            if storage.banishvotes and storage.banishvotes ~= {} then
+                                for _, vote in pairs(storage.banishvotes) do
                                     if vote and vote.voter and vote.victim then
                                         if vote.voter == player and vote.victim == victim then
                                             -- Send report to discord and withdraw vote
@@ -653,7 +653,7 @@ function showBanishedInform(close, victim)
             banished_titlebar.add {
                 type = "sprite-button",
                 name = "banished_inform_close",
-                sprite = "utility/close_white",
+                sprite = "utility/close",
                 style = "frame_action_button",
                 tooltip = "Close this window"
             }
