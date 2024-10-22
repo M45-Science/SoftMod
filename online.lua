@@ -29,8 +29,8 @@ function update_player_list()
     local tcount = 0
 
     -- Init if needed
-    if not global.active_playtime then
-        global.active_playtime = {}
+    if not storage.active_playtime then
+        storage.active_playtime = {}
     end
 
     -- Make a table with active time, handle missing data
@@ -80,9 +80,9 @@ function update_player_list()
         -- Show last online in minutes
         local isafk = "   "
 
-        if victim and global.last_playtime then
-            if global.last_playtime and global.last_playtime[victim.index] then
-                local time = ((game.tick - global.last_playtime[victim.index]) / 60)
+        if victim and storage.last_playtime then
+            if storage.last_playtime and storage.last_playtime[victim.index] then
+                local time = ((game.tick - storage.last_playtime[victim.index]) / 60)
                 local days = math.floor(time / 60 / 60 / 24)
                 local hours = math.floor(time / 60 / 60)
                 local minutes = math.floor(time / 60)
@@ -97,10 +97,10 @@ function update_player_list()
             end
         end
 
-        if global.active_playtime[victim.index] then
+        if storage.active_playtime[victim.index] then
             table.insert(results, {
                 victim = victim,
-                score = global.active_playtime[victim.index],
+                score = storage.active_playtime[victim.index],
                 time = victim.online_time,
                 type = utag,
                 afk = isafk
@@ -131,15 +131,15 @@ function update_player_list()
             item.victim.gui.top.online_button.number = count
         end
     end
-    global.player_count = count
-    global.tplayer_count = tcount
-    global.player_list = results
+    storage.player_count = count
+    storage.tplayer_count = tcount
+    storage.player_list = results
 
-    local tmp_online = global.lastonlinestring
+    local tmp_online = storage.lastonlinestring
     show_players(nil)
 
     -- Refresh open player-online windows
-    if tmp_online ~= global.lastonlinestring then
+    if tmp_online ~= storage.lastonlinestring then
         for _, victim in pairs(game.connected_players) do
             if victim and victim.valid and victim.gui and victim.gui.left and victim.gui.left.m45_online then
                 victim.gui.left.m45_online.destroy()
@@ -150,7 +150,7 @@ function update_player_list()
 
 end
 
--- Global, called from control.lua
+-- storage, called from control.lua
 function make_m45_online_submenu(player, target_name)
     local target = game.players[target_name]
 
@@ -197,7 +197,7 @@ function make_m45_online_submenu(player, target_name)
                     online_submenu_titlebar.add {
                         type = "sprite-button",
                         name = "m45_online_submenu_close_button",
-                        sprite = "utility/close_white",
+                        sprite = "utility/close",
                         style = "frame_action_button",
                         tooltip = "Close this window"
                     }
@@ -327,12 +327,12 @@ end
 
 local function handle_m45_online_submenu(player, target_name)
     -- init if needed
-    if not global.m45_online_submenu_target then
-        global.m45_online_submenu_target = {}
+    if not storage.m45_online_submenu_target then
+        storage.m45_online_submenu_target = {}
     end
 
     if player and player.valid and target_name then
-        global.m45_online_submenu_target[player.index] = target_name
+        storage.m45_online_submenu_target[player.index] = target_name
         destroy_m45_online_submenu(player)
         make_m45_online_submenu(player, target_name)
     end
@@ -380,31 +380,31 @@ function make_m45_online_window(player)
             online_titlebar.style.horizontal_align = "center"
             online_titlebar.style.horizontally_stretchable = true
 
-            if not global.player_count or not global.player_list then
+            if not storage.player_count or not storage.player_list then
                 update_player_list()
             end
 
-            if not global.online_brief then
-                global.online_brief = {}
+            if not storage.online_brief then
+                storage.online_brief = {}
             end
 
             local bcheckstate = false
-            if global.online_brief[player.index] then
-                if global.online_brief[player.index] == true then
+            if storage.online_brief[player.index] then
+                if storage.online_brief[player.index] == true then
                     bcheckstate = true
                 else
                     bcheckstate = false
                 end
             else
-                global.online_brief[player.index] = false
+                storage.online_brief[player.index] = false
             end
 
-            if not global.online_brief[player.index] then
+            if not storage.online_brief[player.index] then
                 online_titlebar.add {
                     type = "label",
                     name = "online_title",
                     style = "frame_title",
-                    caption = "Players Online: " .. global.player_count .. ", Total: " .. global.tplayer_count
+                    caption = "Players Online: " .. storage.player_count .. ", Total: " .. storage.tplayer_count
                 }
             else
                 online_titlebar.add {
@@ -420,22 +420,22 @@ function make_m45_online_window(player)
                 type = "flow",
                 direction = "horizontal"
             }
-            if not global.show_offline_state then
-                global.show_offline_state = {}
+            if not storage.show_offline_state then
+                storage.show_offline_state = {}
             end
 
             local checkstate = false
-            if global.show_offline_state[player.index] then
-                if global.show_offline_state[player.index] == true then
+            if storage.show_offline_state[player.index] then
+                if storage.show_offline_state[player.index] == true then
                     checkstate = true
                 else
                     checkstate = false
                 end
             else
-                global.show_offline_state[player.index] = false
+                storage.show_offline_state[player.index] = false
             end
 
-            if not global.online_brief[player.index] then
+            if not storage.online_brief[player.index] then
                 local show_offline = online_close_button.add {
                     type = "checkbox",
                     caption = "Show offline  ",
@@ -458,7 +458,7 @@ function make_m45_online_window(player)
             online_close_button.add {
                 type = "sprite-button",
                 name = "m45_online_close_button",
-                sprite = "utility/close_white",
+                sprite = "utility/close",
                 style = "frame_action_button",
                 tooltip = "Close this window"
             }
@@ -468,7 +468,7 @@ function make_m45_online_window(player)
                 direction = "vertical"
             }
 
-            if not global.online_brief[player.index] then
+            if not storage.online_brief[player.index] then
                 local pframe = online_main.add {
                     type = "frame",
                     direction = "horizontal"
@@ -526,7 +526,7 @@ function make_m45_online_window(player)
             end
 
             -- for x = 0, 100, 1 do
-            for i, target in pairs(global.player_list) do
+            for i, target in pairs(storage.player_list) do
                 local skip = false
                 local is_offline = false
 
@@ -534,7 +534,7 @@ function make_m45_online_window(player)
                     skip = true
                 end
 
-                if skip and global.show_offline_state and global.show_offline_state[player.index] then
+                if skip and storage.show_offline_state and storage.show_offline_state[player.index] then
                     skip = false
                     is_offline = true
                 end
@@ -543,7 +543,7 @@ function make_m45_online_window(player)
                     local victim = target.victim
 
                     local pframe
-                    if not global.online_brief[player.index] then
+                    if not storage.online_brief[player.index] then
                         pframe = online_main.add {
                             type = "frame",
                             direction = "horizontal"
@@ -555,7 +555,7 @@ function make_m45_online_window(player)
                         }
                     end
 
-                    if not global.online_brief[player.index] then
+                    if not storage.online_brief[player.index] then
                         local submenu
                         -- Yeah don't need this menu for ourself
                         if victim.name == player.name then
@@ -643,7 +643,7 @@ function make_m45_online_window(player)
                         }
                     end
 
-                    if not global.online_brief[player.index] then
+                    if not storage.online_brief[player.index] then
                         name_label.style.font = "default-bold"
                         name_label.style.width = 200
                     end
@@ -660,7 +660,7 @@ function make_m45_online_window(player)
                     -- Set font color
                     name_label.style.font_color = newcolor
 
-                    if not global.online_brief[player.index] then
+                    if not storage.online_brief[player.index] then
                         local name_label = pframe.add {
                             type = "line",
                             direction = "vertical"
@@ -768,8 +768,8 @@ function online_on_gui_click(event)
             -- Grab target if we have one
             local victim_name
             local victim
-            if global.m45_online_submenu_target and global.m45_online_submenu_target[player.index] then
-                victim_name = global.m45_online_submenu_target[player.index]
+            if storage.m45_online_submenu_target and storage.m45_online_submenu_target[player.index] then
+                victim_name = storage.m45_online_submenu_target[player.index]
                 victim = game.players[victim_name]
             end
 
@@ -782,8 +782,8 @@ function online_on_gui_click(event)
                 -- Close online submenu
                 if player.gui and player.gui.screen and player.gui.screen.m45_online_submenu then
                     player.gui.screen.m45_online_submenu.destroy()
-                    if global.m45_online_submenu_target then
-                        global.m45_online_submenu_target[player.index] = nil
+                    if storage.m45_online_submenu_target then
+                        storage.m45_online_submenu_target[player.index] = nil
                     end
                 end
             elseif event.element.name == "send_whisper" then
@@ -879,16 +879,16 @@ function online_on_gui_click(event)
                     player.gui.left.m45_online.destroy()
                 end
             elseif event.element.name == "m45_online_show_offline" then
-                if not global.show_offline_state then
-                    global.show_offline_state = {}
+                if not storage.show_offline_state then
+                    storage.show_offline_state = {}
                 end
-                global.show_offline_state[player.index] = event.element.state
+                storage.show_offline_state[player.index] = event.element.state
                 make_m45_online_window(player)
             elseif event.element.name == "m45_online_brief" then
-                if not global.online_brief then
-                    global.online_brief = {}
+                if not storage.online_brief then
+                    storage.online_brief = {}
                 end
-                global.online_brief[player.index] = event.element.state
+                storage.online_brief[player.index] = event.element.state
                 make_m45_online_window(player)
             elseif event.element.name == "m45_member_welcome_close" then
                 show_member_welcome(player)

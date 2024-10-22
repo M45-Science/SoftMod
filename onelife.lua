@@ -57,35 +57,35 @@ function onelife_clickhandler(event)
     end
     if event.element and event.element.valid and event.element.name == "spec_button" then
 
-        -- Init global if needed
-        if not global.spec_confirm then
-            global.spec_confirm = {}
+        -- Init storage if needed
+        if not storage.spec_confirm then
+            storage.spec_confirm = {}
         end
         -- Create player entry if needed
-        if not global.spec_confirm[player.index] then
-            global.spec_confirm[player.index] = 0
+        if not storage.spec_confirm[player.index] then
+            storage.spec_confirm[player.index] = 0
         end
         -- Otherwise confirm
-        if global.spec_confirm and player.index and global.spec_confirm[player.index] then
+        if storage.spec_confirm and player.index and storage.spec_confirm[player.index] then
 
-            if global.spec_confirm[player.index] >= 2 then
-                global.spec_confirm[player.index] = nil
+            if storage.spec_confirm[player.index] >= 2 then
+                storage.spec_confirm[player.index] = nil
                 player.character.die("player")
                 doOnelife(event)
                 return
-            elseif global.spec_confirm[player.index] < 2 then
+            elseif storage.spec_confirm[player.index] < 2 then
                 smart_print(player,
-                    "[color=red](NO UNDO, PERM-DEATH) -- click " .. 2 - global.spec_confirm[player.index] ..
+                    "[color=red](NO UNDO, PERM-DEATH) -- click " .. 2 - storage.spec_confirm[player.index] ..
                         " more times to confirm.[/color]")
                 smart_print(player,
-                    "[color=white](NO UNDO, PERM-DEATH) -- click " .. 2 - global.spec_confirm[player.index] ..
+                    "[color=white](NO UNDO, PERM-DEATH) -- click " .. 2 - storage.spec_confirm[player.index] ..
                         " more times to confirm.[/color]")
                 smart_print(player,
-                    "[color=black](NO UNDO, PERM-DEATH) -- click " .. 2 - global.spec_confirm[player.index] ..
+                    "[color=black](NO UNDO, PERM-DEATH) -- click " .. 2 - storage.spec_confirm[player.index] ..
                         " more times to confirm.[/color]")
             end
 
-            global.spec_confirm[player.index] = global.spec_confirm[player.index] + 1
+            storage.spec_confirm[player.index] = storage.spec_confirm[player.index] + 1
         end
     end
 end

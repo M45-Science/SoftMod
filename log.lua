@@ -35,12 +35,12 @@ function on_chart_tag_removed(event)
             console_print("[ACT] " .. player.name .. " del-tag" .. make_gps_str_obj(player, event.tag) .. event.tag.text)
 
             -- Delete corpse map tag and corpse_lamp
-            for i, ctag in pairs(global.corpselist) do
+            for i, ctag in pairs(storage.corpselist) do
                 if ctag.tag and ctag.tag.valid then
                     if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y ==
                         event.tag.position.y then
-                        -- Destroy corpse lamp
-                        rendering.destroy(ctag.corpse_lamp)
+                        -- destroy corpse lamp
+                        ctag.corpse_lamp.destroy()
 
                         index = i
                         break
@@ -49,8 +49,8 @@ function on_chart_tag_removed(event)
             end
 
             -- Properly remove items
-            if global.corpselist and index then
-                table.remove(global.corpselist, index)
+            if storage.corpselist and index then
+                table.remove(storage.corpselist, index)
             end
         end
     end
@@ -63,8 +63,8 @@ function on_player_left_game(event)
         local player = game.players[event.player_index]
         if player then
 
-            if global.last_playtime then
-                global.last_playtime[event.player_index] = game.tick
+            if storage.last_playtime then
+                storage.last_playtime[event.player_index] = game.tick
             end
 
             local reason = {"(quit)", "(dropped)", "(reconnecting)", "(wrong input)", "(too many desync)",
@@ -113,8 +113,8 @@ function on_player_deconstructed_area(event)
 
                     if is_new(player) or is_member(player) then -- Dont bother with regulars/moderators
                         if not is_banished(player) then -- Don't let bansihed players use this to spam
-                            if (global.last_decon_warning and game.tick - global.last_decon_warning >= 15) then
-                                global.last_decon_warning = game.tick
+                            if (storage.last_decon_warning and game.tick - storage.last_decon_warning >= 15) then
+                                storage.last_decon_warning = game.tick
                                 message_all(msg)
                             end
                         end

@@ -4,43 +4,40 @@
 -- License: MPL 2.0
 require "utility"
 
--- Create player groups if they don't exist, and create global links to them
+-- Create player groups if they don't exist, and create storage links to them
 function create_groups()
-    global.defaultgroup = game.permissions.get_group("Default")
-    global.membersgroup = game.permissions.get_group("Members")
-    global.regularsgroup = game.permissions.get_group("Regulars")
-    global.veteransgroup = game.permissions.get_group("Veterans")
-    global.modsgroup = game.permissions.get_group("Moderators")
+    storage.defaultgroup = game.permissions.get_group("Default")
+    storage.membersgroup = game.permissions.get_group("Members")
+    storage.regularsgroup = game.permissions.get_group("Regulars")
+    storage.veteransgroup = game.permissions.get_group("Veterans")
+    storage.modsgroup = game.permissions.get_group("Moderators")
 
-    if (not global.defaultgroup) then
+    if (not storage.defaultgroup) then
         game.permissions.create_group("Default")
     end
 
-    if (not global.membersgroup) then
+    if (not storage.membersgroup) then
         game.permissions.create_group("Members")
     end
 
-    if (not global.regularsgroup) then
+    if (not storage.regularsgroup) then
         game.permissions.create_group("Regulars")
     end
 
-    if (not global.veteransgroup) then
+    if (not storage.veteransgroup) then
         game.permissions.create_group("Veterans")
     end
 
-    if (not global.modsgroup) then
+    if (not storage.modsgroup) then
         game.permissions.create_group("Moderators")
     end
 
-    global.defaultgroup = game.permissions.get_group("Default")
-    global.membersgroup = game.permissions.get_group("Members")
-    global.regularsgroup = game.permissions.get_group("Regulars")
-    global.veteransgroup = game.permissions.get_group("Veterans")
-    global.modsgroup = game.permissions.get_group("Moderators")
+    storage.defaultgroup = game.permissions.get_group("Default")
+    storage.membersgroup = game.permissions.get_group("Members")
+    storage.regularsgroup = game.permissions.get_group("Regulars")
+    storage.veteransgroup = game.permissions.get_group("Veterans")
+    storage.modsgroup = game.permissions.get_group("Moderators")
 
-    -- Disable these, this can bypass decon warning
-    global.defaultgroup.set_allows_action(defines.input_action.activate_cut, false)
-    global.membersgroup.set_allows_action(defines.input_action.activate_cut, false)
 end
 
 function set_blueprints_enabled(group, option)
@@ -75,38 +72,37 @@ end
 function set_perms()
     -- Auto set default group permissions
 
-    if global.defaultgroup then
+    if storage.defaultgroup then
 
         -- If new user restrictions are on, then disable all permissions
         -- Otherwise undo
         local option = true
-        if global.restrict then
+        if storage.restrict then
             option = false
         end
 
-        global.defaultgroup.set_allows_action(defines.input_action.build_terrain, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters,
+        storage.defaultgroup.set_allows_action(defines.input_action.build_terrain, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters,
             option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, option)
-        global.defaultgroup.set_allows_action(defines.input_action.deconstruct, option)
-        global.defaultgroup.set_allows_action(defines.input_action.launch_rocket, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, option)
-        global.defaultgroup.set_allows_action(defines.input_action.cancel_research, option)
-        global.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, option)
-        global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, option)
-        global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, option)
-        global.defaultgroup.set_allows_action(defines.input_action.upgrade, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.deconstruct, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.launch_rocket, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.cancel_research, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.toggle_artillery_auto_targeting, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.upgrade, option)
 
         -- Added 1-2022
-        global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, option)
-        global.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, option)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint, option)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, option)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, option)
-        global.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, option)
-        global.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, option)
-        global.defaultgroup.set_allows_action(defines.input_action.send_spidertron, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.import_blueprint, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.send_spidertron, option)
     end
 end
 
@@ -114,76 +110,76 @@ end
 function set_hperms()
     -- Auto set default group permissions
 
-    if global.defaultgroup then
+    if storage.defaultgroup then
 
         -- If new user restrictions are on, then disable all permissions
         -- Otherwise undo
         local option = true
-        if global.restrict then
+        if storage.restrict then
             option = false
         end
 
-        global.defaultgroup.set_allows_action(defines.input_action.wire_dragging, option)
-        global.defaultgroup.set_allows_action(defines.input_action.add_train_station, option)
-        global.defaultgroup.set_allows_action(defines.input_action.build_terrain, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, option)
-        global.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters,
+        storage.defaultgroup.set_allows_action(defines.input_action.wire_dragging, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.add_train_station, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.build_terrain, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_arithmetic_combinator_parameters, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_decider_combinator_parameters, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.switch_constant_combinator_state, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_alert_parameters, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_circuit_parameters,
             option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, option)
-        global.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition_data, option)
-        global.defaultgroup.set_allows_action(defines.input_action.connect_rolling_stock, option)
-        global.defaultgroup.set_allows_action(defines.input_action.deconstruct, option)
-        global.defaultgroup.set_allows_action(defines.input_action.disconnect_rolling_stock, option)
-        global.defaultgroup.set_allows_action(defines.input_action.drag_train_schedule, option)
-        global.defaultgroup.set_allows_action(defines.input_action.drag_train_wait_condition, option)
-        global.defaultgroup.set_allows_action(defines.input_action.launch_rocket, option)
-        global.defaultgroup.set_allows_action(defines.input_action.remove_cables, option)
-        global.defaultgroup.set_allows_action(defines.input_action.remove_train_station, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_condition, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_circuit_mode_of_operation, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_item, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_signal, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_signal, option)
-        global.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_programmable_speaker_parameters, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_train_stop_station, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.change_train_wait_condition_data, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.connect_rolling_stock, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.deconstruct, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.disconnect_rolling_stock, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.drag_train_schedule, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.drag_train_wait_condition, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.launch_rocket, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.remove_cables, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.remove_train_station, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_auto_launch_rocket, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_circuit_condition, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_circuit_mode_of_operation, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_item, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_logistic_filter_signal, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_request_from_buffers, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_signal, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.set_train_stopped, option)
         -- Added 12-2020
-        global.defaultgroup.set_allows_action(defines.input_action.cancel_research, option)
-        global.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, option)
-        global.defaultgroup.set_allows_action(defines.input_action.build_rail, option)
-        global.defaultgroup.set_allows_action(defines.input_action.activate_paste, option)
-        global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_fluid, option)
-        global.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_specific_fluid, option)
-        global.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, option)
-        global.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, option)
-        global.defaultgroup.set_allows_action(defines.input_action.upgrade, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.cancel_research, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.build_rail, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.activate_paste, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_fluid, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.flush_opened_entity_specific_fluid, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.use_artillery_remote, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.upgrade, option)
 
         -- Added 1-2022
-        global.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, option)
-        global.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, option)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint, option)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, option)
-        global.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, option)
-        global.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, option)
-        global.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, option)
-        global.defaultgroup.set_allows_action(defines.input_action.activate_copy, option)
-        global.defaultgroup.set_allows_action(defines.input_action.alternative_copy, option)
-        global.defaultgroup.set_allows_action(defines.input_action.send_spidertron, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.delete_blueprint_library, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.drop_blueprint_record, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.import_blueprint, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.import_blueprint_string, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.import_blueprints_filtered, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.reassign_blueprint, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.cancel_deconstruct, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.activate_copy, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.alternative_copy, option)
+        storage.defaultgroup.set_allows_action(defines.input_action.send_spidertron, option)
     end
 end
 
 -- Flag player as currently moving
 function set_player_moving(player)
     if (player and player.valid and player.connected and player.character and player.character.valid and
-        global.playermoving) then
+        storage.playermoving) then
         -- banished players don't get move score
         if is_banished(player) == false then
-            global.playermoving[player.index] = true
+            storage.playermoving[player.index] = true
         end
     end
 end
@@ -191,20 +187,19 @@ end
 -- Flag player as currently active
 function set_player_active(player)
     if (player and player.valid and player.connected and player.character and player.character.valid and
-        global.playeractive) then
+        storage.playeractive) then
         -- banished players don't get activity score
         if is_banished(player) == false then
-            global.playeractive[player.index] = true
+            storage.playeractive[player.index] = true
         end
     end
 end
 
 -- Set our default game-settings
 function game_settings(player)
-    if player and player.valid and player.force and not global.gset then
-        global.gset = true -- Only apply these once
+    if player and player.valid and player.force and not storage.gset then
+        storage.gset = true -- Only apply these once
         player.force.friendly_fire = false -- friendly fire
-        player.force.research_queue_enabled = true -- nice to have
         game.disable_replay() -- Smaller saves, prevent desync on script upgrade
     end
 end
@@ -213,36 +208,36 @@ end
 function get_permgroup()
 
     -- Skip if permissions are disabled
-    if game.connected_players and global.disableperms == false then
+    if game.connected_players and storage.disableperms == false then
         -- Check all connected players
         for _, player in pairs(game.connected_players) do
             if (player and player.valid) then
                 -- Check if groups are valid
-                if (global.defaultgroup and global.membersgroup and global.regularsgroup and global.modsgroup) then
+                if (storage.defaultgroup and storage.membersgroup and storage.regularsgroup and storage.modsgroup) then
                     if player.permission_group then
                         -- (Moderators) Check if they are in the right group, including se-remote-view
-                        if (player.admin and player.permission_group.name ~= global.modsgroup.name and
-                            player.permission_group.name ~= global.modsgroup.name .. "_satellite") then
+                        if (player.admin and player.permission_group.name ~= storage.modsgroup.name and
+                            player.permission_group.name ~= storage.modsgroup.name .. "_satellite") then
                             -- (REGULARS) Check if they are in the right group, including se-remote-view
-                            global.modsgroup.add_player(player)
+                            storage.modsgroup.add_player(player)
                             message_all(player.name .. " moved to moderators group")
-                        elseif (global.active_playtime and global.active_playtime[player.index] and
-                            global.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
+                        elseif (storage.active_playtime and storage.active_playtime[player.index] and
+                            storage.active_playtime[player.index] > (4 * 60 * 60 * 60) and not player.admin) then
                             -- Check if player has hours for regulars status, but isn't a in regulars group.
-                            if (player.permission_group.name ~= global.regularsgroup.name and
-                                player.permission_group.name ~= global.veteransgroup.name and
-                                player.permission_group.name ~= global.regularsgroup.name .. "_satellite" and
-                                player.permission_group.name ~= global.veteransgroup.name .. "_satellite") then
-                                global.regularsgroup.add_player(player)
+                            if (player.permission_group.name ~= storage.regularsgroup.name and
+                                player.permission_group.name ~= storage.veteransgroup.name and
+                                player.permission_group.name ~= storage.regularsgroup.name .. "_satellite" and
+                                player.permission_group.name ~= storage.veteransgroup.name .. "_satellite") then
+                                storage.regularsgroup.add_player(player)
                                 message_all(player.name .. " is now a regular!")
                                 show_member_welcome(player)
                             end
-                        elseif (global.active_playtime and global.active_playtime[player.index] and
-                            global.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
+                        elseif (storage.active_playtime and storage.active_playtime[player.index] and
+                            storage.active_playtime[player.index] > (30 * 60 * 60) and not player.admin) then
                             -- Check if player has hours for members status, but isn't a in member group.
                             if is_veteran(player) == false and is_regular(player) == false and is_member(player) ==
                                 false and is_new(player) == true then
-                                global.membersgroup.add_player(player)
+                                storage.membersgroup.add_player(player)
                                 message_all(player.name .. " is now a member!")
                                 show_member_welcome(player)
                             end
@@ -299,7 +294,7 @@ function show_member_welcome(player)
                 info_titlebar.add {
                     type = "sprite-button",
                     name = "m45_member_welcome_close",
-                    sprite = "utility/close_white",
+                    sprite = "utility/close",
                     style = "frame_action_button",
                     tooltip = "Close this window"
                 }

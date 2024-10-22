@@ -7,16 +7,16 @@ function dodrawlogo()
     local msurf = game.surfaces["nauvis"]
     if msurf then
         -- Only draw if needed
-        if not global.drawlogo then
-            -- Destroy if already exists
-            if global.m45logo then
-                rendering.destroy(global.m45logo)
+        if not storage.drawlogo then
+            -- destroy if already exists
+            if storage.m45logo then
+                storage.m45logo.destroy()
             end
-            if global.m45logo_light then
-                rendering.destroy(global.m45logo_light)
+            if storage.m45logo_light then
+                storage.m45logo_light.destroy()
             end
-            if global.servtext then
-                rendering.destroy(global.servtext)
+            if storage.servtext then
+               storage.servtext.destroy()
             end
 
             -- Get spawn position
@@ -36,8 +36,8 @@ function dodrawlogo()
             end
 
             -- Set drawn flag
-            global.drawlogo = true
-            global.m45logo = rendering.draw_sprite {
+            storage.drawlogo = true
+            storage.m45logo = rendering.draw_sprite {
                 sprite = "file/img/world/m45-pad-v6.png",
                 render_layer = "floor",
                 target = cpos,
@@ -45,7 +45,7 @@ function dodrawlogo()
                 y_scale = 0.5,
                 surface = msurf
             }
-            global.m45logo_light = rendering.draw_light {
+            storage.m45logo_light = rendering.draw_light {
                 sprite = "utility/light_medium",
                 render_layer = 148,
                 target = cpos,
@@ -53,11 +53,11 @@ function dodrawlogo()
                 surface = msurf,
                 minimum_darkness = 0.5
             }
-            if not global.servname then
-                global.servname = ""
+            if not storage.servname then
+                storage.servname = ""
             end
-            global.servtext = rendering.draw_text {
-                text = global.servname,
+            storage.servtext = rendering.draw_text {
+                text = storage.servname,
                 draw_on_ground = true,
                 surface = msurf,
                 target = {cpos.x - 0.125, cpos.y - 2.5},

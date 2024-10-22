@@ -6,7 +6,7 @@ require "antigrief" -- Log player actions
 require "banish" -- Banish system
 require "commands" -- Slash commands
 require "event" -- Event/tick handler
-require "globals" -- Global variable init
+require "storage" -- storage variable init
 require "info" -- Welcome/Info window
 require "log" -- Action logging
 require "logo" -- Spawn logo

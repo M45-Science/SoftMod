@@ -36,7 +36,7 @@ script.on_load(function()
             create_groups()
             for _, target in pairs(game.connected_players) do
                 if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
-                    if global.hide_clock and global.hide_clock[target.index] == true or input == "" then
+                    if storage.hide_clock and storage.hide_clock[target.index] == true or input == "" then
                         target.gui.top.reset_clock.caption = ">"
                         target.gui.top.reset_clock.style = "tip_notice_close_button"
                     else
@@ -46,8 +46,8 @@ script.on_load(function()
                 end
             end
             -- Refresh open info windows
-            if global.resetdur ~= input then
-                global.resetdur = input
+            if storage.resetdur ~= input then
+                storage.resetdur = input
                 for _, victim in pairs(game.connected_players) do
                     if victim and victim.valid and victim.gui and victim.gui.screen and
                         victim.gui.screen.m45_info_window then
@@ -77,7 +77,7 @@ script.on_load(function()
                 input = param.parameter
             end
             create_groups()
-            global.resetint = input
+            storage.resetint = input
 
         end)
 
@@ -135,14 +135,14 @@ script.on_load(function()
 
                 if pforce then
                     if string.lower(param.parameter) == "off" then
-                        set_blueprints_enabled(global.defaultgroup, false)
-                        set_blueprints_enabled(global.membersgroup, false)
-                        set_blueprints_enabled(global.regularsgroup, false)
+                        set_blueprints_enabled(storage.defaultgroup, false)
+                        set_blueprints_enabled(storage.membersgroup, false)
+                        set_blueprints_enabled(storage.regularsgroup, false)
                         smart_print(player, "blueprints disabled...")
                     elseif string.lower(param.parameter) == "on" then
-                        set_blueprints_enabled(global.defaultgroup, true)
-                        set_blueprints_enabled(global.membersgroup, true)
-                        set_blueprints_enabled(global.regularsgroup, true)
+                        set_blueprints_enabled(storage.defaultgroup, true)
+                        set_blueprints_enabled(storage.membersgroup, true)
+                        set_blueprints_enabled(storage.regularsgroup, true)
                         smart_print(player, "blueprints enabled...")
                     end
                 end
@@ -172,13 +172,13 @@ script.on_load(function()
 
                 if pforce then
                     if string.lower(param.parameter) == "off" then
-                        global.cheatson = false
+                        storage.cheatson = false
                         for _, player in pairs(game.players) do
                             player.cheat_mode = false
                         end
                         smart_print(player, "cheats disabled...")
                     elseif string.lower(param.parameter) == "on" then
-                        global.cheatson = true
+                        storage.cheatson = true
                         for _, player in pairs(game.players) do
                             player.cheat_mode = true
                         end
@@ -293,17 +293,17 @@ script.on_load(function()
                 smart_print(player, "options: on, off")
                 return
             elseif string.lower(param.parameter) == "off" then
-                global.restrict = false
+                storage.restrict = false
                 set_perms()
                 smart_print(player, "New player restrictions disabled.")
                 return
             elseif string.lower(param.parameter) == "on" then
-                global.restrict = true
+                storage.restrict = true
                 set_perms()
                 smart_print(player, "New player restrictions enabled.")
                 return
             end
-            create_player_globals()
+            create_player_storages()
         end)
 
         -- game tick
@@ -329,20 +329,20 @@ script.on_load(function()
 
                 -- Only if arguments
                 if param.parameter and player and player.valid then
-                    -- Init global if needed
-                    if not global.access_count then
-                        global.access_count = {}
+                    -- Init storage if needed
+                    if not storage.access_count then
+                        storage.access_count = {}
                     end
 
                     -- Init player if needed, else add to
-                    if not global.access_count[player.index] then
-                        global.access_count[player.index] = 1
+                    if not storage.access_count[player.index] then
+                        storage.access_count[player.index] = 1
                     else
-                        if global.access_count[player.index] > 3 then
+                        if storage.access_count[player.index] > 3 then
                             smart_print(player, "You have exhausted your registration attempts.")
                             return
                         end
-                        global.access_count[player.index] = global.access_count[player.index] + 1
+                        storage.access_count[player.index] = storage.access_count[player.index] + 1
                     end
 
                     local ptype = "Error"
@@ -374,16 +374,16 @@ script.on_load(function()
         commands.add_command("sversion", "server use only", function(param)
             local player
 
-            create_myglobals()
+            create_mystorages()
 
             if param and param.player_index then
                 player = game.players[param.player_index]
             end
 
             if player then
-                smart_print(player, "[SVERSION] " .. global.svers)
+                smart_print(player, "[SVERSION] " .. storage.svers)
             else
-                print("[SVERSION] " .. global.svers)
+                print("[SVERSION] " .. storage.svers)
             end
 
         end)
@@ -403,16 +403,16 @@ script.on_load(function()
             create_groups()
 
             if param.parameter then
-                global.servname = param.parameter
+                storage.servname = param.parameter
 
                 -- Set logo to be redrawn
-                global.drawlogo = false
+                storage.drawlogo = false
                 -- Redraw
                 dodrawlogo()
 
-                global.servers = nil
-                global.ports = nil
-                create_myglobals()
+                storage.servers = nil
+                storage.ports = nil
+                create_mystorages()
             end
         end)
 
@@ -475,10 +475,10 @@ script.on_load(function()
                 local victim = game.players[param.parameter]
 
                 if victim and victim.valid then
-                    if global.active_playtime and global.active_playtime[victim.index] then
-                        global.active_playtime[victim.index] = 0
-                        if victim and victim.valid and global.defaultgroup then
-                            global.defaultgroup.add_player(victim)
+                    if storage.active_playtime and storage.active_playtime[victim.index] then
+                        storage.active_playtime[victim.index] = 0
+                        if victim and victim.valid and storage.defaultgroup then
+                            storage.defaultgroup.add_player(victim)
                         end
                         if player then
                             smart_print(player, "Player set to 0.")
@@ -509,12 +509,12 @@ script.on_load(function()
                 local victim = game.players[param.parameter]
 
                 if (victim) then
-                    if victim and victim.valid and global.membersgroup then
+                    if victim and victim.valid and storage.membersgroup then
                         if player then
                             smart_print(player, "Player given members status.")
                             message_all(victim.name .. " is now a member!")
                         end
-                        global.membersgroup.add_player(victim)
+                        storage.membersgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
                     end
@@ -541,12 +541,12 @@ commands.add_command("veteran", "<player> -- (Makes the player a veteran)", func
         local victim = game.players[param.parameter]
 
         if (victim) then
-            if victim and victim.valid and global.veteransgroup then
+            if victim and victim.valid and storage.veteransgroup then
                 if player then
                     smart_print(player, "Player given veterans status.")
                     message_all(victim.name .. " is now a veteran!")
                 end
-                global.veteransgroup.add_player(victim)
+                storage.veteransgroup.add_player(victim)
                 update_player_list() -- online.lua
                 return
             end
@@ -573,12 +573,12 @@ end)
                 local victim = game.players[param.parameter]
 
                 if (victim) then
-                    if victim and victim.valid and global.regularsgroup then
+                    if victim and victim.valid and storage.regularsgroup then
                         if player then
                             smart_print(player, "Player given regulars status.")
                             message_all(victim.name .. " is now a regular!")
                         end
-                        global.regularsgroup.add_player(victim)
+                        storage.regularsgroup.add_player(victim)
                         update_player_list() -- online.lua
                         return
                     end
@@ -606,11 +606,11 @@ end)
 
                 if (victim) then
                     if victim and victim.valid then
-                        if not global.patreons then
-                            global.patreons = {}
+                        if not storage.patreons then
+                            storage.patreons = {}
                         end
-                        if not global.patreons[victim.index] then
-                            global.patreons[victim.index] = true
+                        if not storage.patreons[victim.index] then
+                            storage.patreons[victim.index] = true
                             smart_print(player, "Player given patreon status.")
                             update_player_list() -- online.lua
                         else
@@ -643,11 +643,11 @@ end)
 
                 if (victim) then
                     if victim and victim.valid then
-                        if not global.nitros then
-                            global.nitros = {}
+                        if not storage.nitros then
+                            storage.nitros = {}
                         end
-                        if not global.nitros[victim.index] then
-                            global.nitros[victim.index] = true
+                        if not storage.nitros[victim.index] then
+                            storage.nitros[victim.index] = true
                             smart_print(player, "Player given nitro status.")
                             update_player_list() -- online.lua
                         else
@@ -674,7 +674,7 @@ end)
 
             -- Argument required
             if param.parameter then
-                global.patreonlist = mysplit(param.parameter, ",")
+                storage.patreonlist = mysplit(param.parameter, ",")
             end
         end)
 
@@ -691,7 +691,7 @@ end)
 
             -- Argument required
             if param.parameter then
-                global.nitrolist = mysplit(param.parameter, ",")
+                storage.nitrolist = mysplit(param.parameter, ",")
             end
         end)
 
@@ -745,7 +745,7 @@ end)
                     smart_print(victim, string.format("Force: %s", pforce.name))
 
                     -- Set logo to be redrawn
-                    global.drawlogo = false
+                    storage.drawlogo = false
                     -- Redraw
                     dodrawlogo()
                 else
