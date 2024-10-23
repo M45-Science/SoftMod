@@ -39,8 +39,8 @@ function on_chart_tag_removed(event)
                 if ctag.tag and ctag.tag.valid then
                     if event.tag.text == ctag.tag.text and ctag.pos.x == event.tag.position.x and ctag.pos.y ==
                         event.tag.position.y then
-                        -- destroy corpse lamp
-                        ctag.corpse_lamp.destroy()
+                        -- Destroy corpse lamp
+                       ctag.corpse_lamp.destroy()
 
                         index = i
                         break

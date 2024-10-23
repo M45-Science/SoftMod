@@ -4,7 +4,7 @@
 -- License: MPL 2.0
 require "utility"
 
-function make_banish_storages()
+function make_banish_storage()
     if not storage.banishvotes then
         storage.banishvotes = {
             voter = {},

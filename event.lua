@@ -64,7 +64,7 @@ script.on_nth_tick(599, function(event)
         for i, corpse in pairs(storage.corpselist) do
             if (corpse.tick and (corpse.tick + (15 * 60 * 60)) < game.tick) then
                 if corpse.corpse_lamp then
-                    -- destroy corpse lamp
+                    -- Destroy corpse lamp
                     corpse.corpse_lamp.destroy()
                 end
 
@@ -82,7 +82,7 @@ script.on_nth_tick(599, function(event)
             table.remove(storage.corpselist, index)
         end
     else
-        create_mystorages()
+        create_mystorage()
     end
 
     -- Server tag
@@ -232,8 +232,8 @@ function on_player_joined_game(event)
     if event and event.player_index then
         local player = game.players[event.player_index]
         if player then
-            create_mystorages()
-            create_player_storages(player)
+            create_mystorage()
+            create_player_storage(player)
             create_groups()
             game_settings(player)
             get_permgroup()
@@ -344,8 +344,8 @@ function on_pre_player_died(event)
                 }
                 local qtag = player.force.add_chart_tag(player.surface, chartTag)
 
-                create_mystorages()
-                create_player_storages(player)
+                create_mystorage()
+                create_player_storage(player)
 
                 -- Add a light, so it is easier to see
                 local clight = rendering.draw_light {
@@ -503,12 +503,12 @@ function clear_corpse_tag(event)
             for i, ctag in pairs(storage.corpselist) do
                 if ctag and ctag.pos and ctag.pos.x == ent.position.x and ctag.pos.y == ent.position.y and ctag.pindex ==
                     ent.character_corpse_player_index then
-                    -- destroy corpse lamp
+                    -- Destroy corpse lamp
                     if ctag and ctag.corpse_lamp then
                         ctag.corpse_lamp.destroy()
                     end
 
-                    -- destroy map tag
+                    -- Destroy map tag
                     if ctag and ctag.tag and ctag.tag.valid then
                         ctag.tag.destroy()
                     end

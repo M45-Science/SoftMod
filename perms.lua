@@ -91,7 +91,6 @@ function set_perms()
         storage.defaultgroup.set_allows_action(defines.input_action.cancel_research, option)
         storage.defaultgroup.set_allows_action(defines.input_action.cancel_upgrade, option)
         storage.defaultgroup.set_allows_action(defines.input_action.paste_entity_settings, option)
-        storage.defaultgroup.set_allows_action(defines.input_action.toggle_artillery_auto_targeting, option)
         storage.defaultgroup.set_allows_action(defines.input_action.upgrade, option)
 
         -- Added 1-2022

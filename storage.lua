@@ -2,9 +2,9 @@
 -- carlotto81@gmail.com
 -- GitHub: https://github.com/M45-Science/SoftMod
 -- License: MPL 2.0
--- Create storages, if needed
-function create_mystorages()
-    storage.svers = "OneLife-622-09.15.2024-0835"
+-- Create storage, if needed
+function create_mystorage()
+    storage.svers = "OneLife-621-10.22.2024-0643p"
 
     -- Adjust look
     game.surfaces[1].show_clouds = false
@@ -65,7 +65,7 @@ function create_mystorages()
     if not storage.corpselist then
         storage.corpselist = {}
     end
-    make_banish_storages()
+    make_banish_storage()
 
     if not storage.info_shown then
         storage.info_shown = {}
@@ -84,8 +84,8 @@ function create_mystorages()
     end
 end
 
--- Create player storages, if needed
-function create_player_storages(player)
+-- Create player storage, if needed
+function create_player_storage(player)
     if player and player.valid then
         if storage.playeractive and player and player.index then
             if not storage.playeractive[player.index] then

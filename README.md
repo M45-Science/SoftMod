@@ -18,7 +18,7 @@ Main, loads modules<br>
 *event.lua*<br>
 Handles game events and ticks<br>
 <br>
-*storages.lua*<br>
+*storage.lua*<br>
 Handles init of storage variables<br>
 <br>
 *info.lua*<br>

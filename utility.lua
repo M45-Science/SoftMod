@@ -20,7 +20,7 @@ function smart_print(player, message)
     end
 end
 
--- storage messages (game/discord)
+-- Global messages (game/discord)
 function message_all(message)
     if message then
         game.print(message)
@@ -36,14 +36,14 @@ function gsysmsg(message)
     end
 end
 
--- storage messages (game only)
+-- Global messages (game only)
 function message_allp(message)
     if message then
         game.print(message)
     end
 end
 
--- storage messages (discord only)
+-- Global messages (discord only)
 function message_alld(message)
     if message then
         print("[MSG] " .. message)

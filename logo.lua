@@ -8,12 +8,12 @@ function dodrawlogo()
     if msurf then
         -- Only draw if needed
         if not storage.drawlogo then
-            -- destroy if already exists
+            -- Destroy if already exists
             if storage.m45logo then
-                storage.m45logo.destroy()
+               storage.m45logo.destroy()
             end
             if storage.m45logo_light then
-                storage.m45logo_light.destroy()
+               storage.m45logo_light.destroy()
             end
             if storage.servtext then
                storage.servtext.destroy()

@@ -38,7 +38,6 @@ script.on_load(function()
                 if target.valid and target.gui and target.gui.top and target.gui.top.reset_clock then
                     if storage.hide_clock and storage.hide_clock[target.index] == true or input == "" then
                         target.gui.top.reset_clock.caption = ">"
-                        target.gui.top.reset_clock.style = "tip_notice_close_button"
                     else
                         target.gui.top.reset_clock.caption = "MAP RESET: " .. input
                         target.gui.top.reset_clock.style = "red_button"
@@ -303,7 +302,7 @@ script.on_load(function()
                 smart_print(player, "New player restrictions enabled.")
                 return
             end
-            create_player_storages()
+            create_player_storage()
         end)
 
         -- game tick
@@ -374,7 +373,7 @@ script.on_load(function()
         commands.add_command("sversion", "server use only", function(param)
             local player
 
-            create_mystorages()
+            create_mystorage()
 
             if param and param.player_index then
                 player = game.players[param.player_index]
@@ -412,7 +411,7 @@ script.on_load(function()
 
                 storage.servers = nil
                 storage.ports = nil
-                create_mystorages()
+                create_mystorage()
             end
         end)
 
