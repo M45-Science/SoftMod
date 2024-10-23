@@ -13,8 +13,6 @@ function doOnelife(event)
     smart_print(player, "Game over! you are now a spectator.")
     update_player_list()
 
-    player.close_map()
-
     if not player.character or not player.character.valid then
         return
     end
