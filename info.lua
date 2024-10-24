@@ -61,7 +61,7 @@ function dumpPlayerInventory(player)
 
     for item_name, count in pairs(inv_main_contents or {}) do
         if item_name == "" or count <= 0 then
-            continue
+            break
         end
         inv_corpse.insert({
             name = item_name,
@@ -70,7 +70,7 @@ function dumpPlayerInventory(player)
     end
     for item_name, count in pairs(inv_trash_contents or {}) do
         if item_name == "" or count <= 0 then
-            continue
+            break
         end
         inv_corpse.insert({
             name = item_name,
