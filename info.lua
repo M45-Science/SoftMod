@@ -60,12 +60,18 @@ function dumpPlayerInventory(player)
     local inv_corpse = corpse.get_inventory(defines.inventory.character_corpse)
 
     for item_name, count in pairs(inv_main_contents or {}) do
+        if item_name == "" || count <= 0 then
+            continue
+        end
         inv_corpse.insert({
             name = item_name,
             count = count
         })
     end
     for item_name, count in pairs(inv_trash_contents or {}) do
+        if item_name == "" || count <= 0 then
+            continue
+        end
         inv_corpse.insert({
             name = item_name,
             count = count
