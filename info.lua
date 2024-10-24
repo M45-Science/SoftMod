@@ -62,13 +62,15 @@ function dumpPlayerInventory(player)
     for _, item in pairs(inv_main_contents or {}) do
         inv_corpse.insert({
             name = item.name,
-            count = item.count
+            count = item.count,
+            quality = item.quality
         })
     end
     for item_name, count in pairs(inv_trash_contents or {}) do
         inv_corpse.insert({
             name = item.name,
-            count = item.count
+            count = item.count,
+            quality = item.quality
         })
     end
 
