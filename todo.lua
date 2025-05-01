@@ -1061,7 +1061,7 @@ function TODO_Init()
             text = "Use the TO-DO list",
             time = 0,
             last_user = "System",
-            can_edit = false,
+            can_edit = true,
             owner = "System",
             id = 0,
             hidden = false
