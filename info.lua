@@ -491,137 +491,71 @@ function INFO_InfoWin(player)
                 type = "line",
                 direction = "horizontal"
             }
-            if UTIL_Is_New(player) then
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=burner-inserter]   [font=default-large-bold][color=red]Level 1: New[/color][/font]"
-                }
-            else
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=burner-inserter]   [font=default-large-bold]Level 1: New[/font]"
-                }
-            end
-            tab2_main_frame.add {
-                type = "label",
-                caption = ""
+
+            local membership_levels = {
+                {
+                    level = 0,
+                    icon = "[recipe=burner-inserter]",
+                    title = "Level 1: New",
+                    perks = {
+                        "[font=default-large-bold]New players do not have full game permissions.[/font]",
+                        "[font=default-large-bold]Level 3+ players can BANISH you with ONE vote point.[/font]",
+                    },
+                    space = "",
+                },
+                {
+                    level = 1,
+                    icon = "[recipe=inserter]",
+                    title = "Level 2: Members (Score: 30)",
+                    perks = {
+                        "[font=default-large]Permissions restrictions are lifted.[/font]",
+                        "[font=default-large-bold]Access to deconstruction planner (with warning msg).[/font]",
+                        "[font=default-large-bold][color=green]Access to members-only servers.[/color][/font]",
+                    },
+                    space = " ",
+                },
+                {
+                    level = 2,
+                    icon = "[recipe=fast-inserter]",
+                    title = "Level 3: Regulars (Score: 240)",
+                    perks = {
+                        "[font=default-large-bold]Allowed to BANISH other players, and vote points needed to BANISH you increases to TWO.[/font]",
+                        "[font=default-large]Deconstruction planner warning removed.[/font]",
+                        "[font=default-large]Access to vote-map command on Discord (after registration).[/font]",
+                    },
+                    space = " ",
+                },
+                {
+                    level = 3,
+                    icon = "[recipe=stack-inserter]",
+                    title = "Level 4: Veteran",
+                    perks = {
+                        "[font=default-large-bold]Long-standing members of the community. Vote points needed to BANISH you increases to four.[/font]",
+                        "[font=default-large-bold]Your votes increase to two points each.[/font]",
+                    },
+                    space = "",
+                },
             }
 
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold]New players do not have full game permissions.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold]Level 3+ players can BANISH you with ONE vote point.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = ""
-            }
-            tab2_main_frame.add {
-                type = "line",
-                direction = "horizontal"
-            }
+            for i, data in ipairs(membership_levels) do
+                local title = data.title
+                if storage.PData[player.index].level == data.level then
+                    title = "[color=red]" .. title .. "[/color]"
+                end
+                local header = string.format("%s   [font=default-large-bold]%s[/font]", data.icon, title)
+                tab2_main_frame.add { type = "label", caption = header }
+                tab2_main_frame.add { type = "label", caption = "" }
 
-            if UTIL_Is_Member(player) then
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=inserter]   [font=default-large-bold][color=red]Level 2: Members[/color] (Score: 30)[/font]"
-                }
-            else
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=inserter]   [font=default-large-bold]Level 2: Members (Score: 30)[/font]"
-                }
-            end
-            tab2_main_frame.add {
-                type = "label",
-                caption = ""
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large]Permissions restrictions are lifted.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold]Access to deconstruction planner (with warning msg).[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold][color=green]Access to members-only servers.[/color][/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = " "
-            }
-            tab2_main_frame.add {
-                type = "line",
-                direction = "horizontal"
-            }
+                for _, perk in ipairs(data.perks) do
+                    tab2_main_frame.add { type = "label", caption = perk }
+                end
 
-            if UTIL_Is_Regular(player) then
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=fast-inserter]   [font=default-large-bold][color=red]Level 3: Regulars[/color] (Score: 240)[/font]"
-                }
-            else
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=fast-inserter]   [font=default-large-bold]Level 3: Regulars (Score: 240)[/font]"
-                }
+                tab2_main_frame.add { type = "label", caption = data.space }
+                if i < #membership_levels then
+                    tab2_main_frame.add { type = "line", direction = "horizontal" }
+                end
             end
-            tab2_main_frame.add {
-                type = "label",
-                caption = ""
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold]Allowed to BANISH other players, and vote points needed to BANISH you increases to TWO.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large]Deconstruction planner warning removed.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large]Access to vote-map command on Discord (after registration).[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = " "
-            }
-            tab2_main_frame.add {
-                type = "line",
-                direction = "horizontal"
-            }
-            if UTIL_Is_Veteran(player) then
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=stack-inserter]   [font=default-large-bold][color=red]Level 4: Veteran[/color][/font]"
-                }
-            else
-                tab2_main_frame.add {
-                    type = "label",
-                    caption = "[recipe=stack-inserter]   [font=default-large-bold]Level 4: Veteran[/font] "
-                }
-            end
-            tab2_main_frame.add {
-                type = "label",
-                caption = ""
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold]Long-standing members of the community. Vote points needed to BANISH you increases to four.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = "[font=default-large-bold]Your votes increase to two points each.[/font]"
-            }
-            tab2_main_frame.add {
-                type = "label",
-                caption = ""
-            }
+
             -- Close Button Frame
             local tab2_close_frame = tab2_main_frame.add {
                 type = "flow",
