@@ -244,6 +244,7 @@ function QUICKBAR_Clicks(event)
                 QUICKBAR_MakeExchangeWindow(player, true)
             elseif event.element.name == "import_qb" and player.gui and player.gui.screen then
                 if storage.PData and storage.PData[player.index] and
+                    -- qb_import_string holds a raw quickbar string from the player
                     storage.PData[event.player_index].qb_import_string then
                     ImportQuickbar(player, storage.PData[event.player_index].qb_import_string)
                     QUICKBAR_ClearString(player)
@@ -263,6 +264,7 @@ function QUICKBAR_ClearString(player)
     end
     if storage.PData and storage.PData[player.index] and
         storage.PData[player.index].qb_import_string then
+        -- reset stored quickbar string after processing
         storage.PData[player.index].qb_import_string = ""
     end
 end
@@ -279,6 +281,7 @@ function QUICKBAR_TextChanged(event)
                     event.element.text = "String too long."
                     return
                 end
+                -- Store the text so it can be imported after the GUI closes
                 storage.PData[event.player_index].qb_import_string = event.element.text
             end
         end

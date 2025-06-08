@@ -24,6 +24,7 @@ local function ensure_empty_stash(player_index, stash_name, size)
             return true
         end
     else
+        -- create a temporary inventory to hold the player's stashed items
         storage.PData[player_index][stash_name] = game.create_inventory(size)
         return true
     end
@@ -114,8 +115,10 @@ local function stash_armor(player)
                         energy = eq.energy
                     })
                 end
+                -- remember equipment grid so we can restore it when unstashed
                 storage.PData[player.index].armor_equipment_data = equipment_data
             else
+                -- clear any previous grid data if no armor is present
                 storage.PData[player.index].armor_equipment_data = nil
             end
 
@@ -178,6 +181,7 @@ local function unstash_armor(player)
                                 end
                             end
                         end
+                        -- remove stored grid data once restored
                         storage.PData[player.index].armor_equipment_data = nil
                     end
                 else
@@ -235,6 +239,7 @@ function STASH_AddStashCommands()
             if not storage.PData then storage.PData = {} end
             if not storage.PData[player.index] then storage.PData[player.index] = {} end
 
+            -- gun_stash/ammo_stash/armor_stash hold items while stashed
             local can_stash_guns = ensure_empty_stash(player.index, "gun_stash", 3)
             local can_stash_ammo = ensure_empty_stash(player.index, "ammo_stash", 3)
             local can_stash_armor = ensure_empty_stash(player.index, "armor_stash", 1)

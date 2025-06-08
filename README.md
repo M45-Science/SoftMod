@@ -6,7 +6,9 @@
 <br>Currently approximately 3700 lines of lua.
 <br>
 This mod keeps all persistent state in a global table named `storage`. See
-[`docs/storage.md`](docs/storage.md) for an overview of its layout. A basic
+[`docs/storage.md`](docs/storage.md) for an overview of its layout and per-module fields.
+When adding new storage keys, update that document and include a comment near the
+code that creates or modifies the key. A basic
 `luacheck` configuration is provided for optional linting:
 
 ```bash

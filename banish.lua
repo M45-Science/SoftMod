@@ -8,6 +8,7 @@ local function unbanishPlayer(victim)
         return
     end
 
+    -- sendToSurface queue is processed each tick to teleport players
     table.insert(storage.SM_Store.sendToSurface, {
         victim = victim,
         surface = 1,
@@ -18,6 +19,7 @@ local function unbanishPlayer(victim)
         UTIL_MsgAll(victim.name .. " moved out of jailed group.")
     end
 
+    -- mark player as unbanished
     storage.PData[victim.index].banished = 0
     storage.SM_Store.jailGroup.remove_player(victim)
     storage.SM_Store.defGroup.add_player(victim)
@@ -272,6 +274,7 @@ function BANISH_DoJail(victim)
         "'s inventory has been dumped at spawn so the items can be recovered.")
 
     local newpos = game.surfaces["jail"].find_non_colliding_position("character", { x = 0, y = 0 }, 1024, 1, false)
+    -- queue teleport to the jail surface
     table.insert(storage.SM_Store.sendToSurface, {
         victim = victim,
         surface = "jail",
@@ -387,6 +390,7 @@ function BANISH_DoBanish(player, victim, reason)
 
                             -- Insert newest vote at the start of the list
                             -- index 1 is the first valid position in Lua
+                            -- votes table tracks active banishment votes
                             table.insert(storage.SM_Store.votes, 1, {
                                 voter = player,
                                 victim = victim,
@@ -490,6 +494,7 @@ function BANISH_AddBanishCommands()
                         UTIL_SmartPrint(player, "You can't put yourself in jail. Go touch grass.")
                         return
                     end
+                    -- 1000 denotes a jailed state waiting for release
                     storage.PData[victim.index].banished = 1000
                     BANISH_DoJail(victim)
                     UTIL_SmartPrint(player, "Jailed player.")
