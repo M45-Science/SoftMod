@@ -504,8 +504,12 @@ function INFO_InfoWin(player)
             tab2_main_frame.add {
                 type = "label",
                 name = "tab2_score",
-                caption = "[color=orange][font=default-large-bold]Your current score: " ..
-                    math.floor(storage.PData[player.index].score / 60 / 60) .. "[/font][/color]"
+                caption = {
+                    "",
+                    "[color=orange][font=default-large-bold]",
+                    {"strings.info_score_current", math.floor(storage.PData[player.index].score / 60 / 60)},
+                    "[/font][/color]"
+                }
             }
             tab2_main_frame.add {
                 type = "label",
@@ -513,15 +517,15 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Membership is automatic & free, and based on score. Your current score is listed above.[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_auto"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]The score is specific to this map, and does not carry over to other maps.[/font]"
+                caption = {"", "[font=default-large]", {"strings.info_score_specific"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]Once you achieve a level, the level persists between maps (but the activity score does not).[/font]"
+                caption = {"", "[font=default-large]", {"strings.info_score_persistent"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
@@ -534,12 +538,12 @@ function INFO_InfoWin(player)
             if UTIL_Is_New(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=burner-inserter]   [font=default-large-bold][color=red]Level 1: New[/color][/font]"
+                    caption = {"", "[recipe=burner-inserter]   [font=default-large-bold][color=red]", {"strings.info_score_level1"}, "[/color][/font]"}
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=burner-inserter]   [font=default-large-bold]Level 1: New[/font]"
+                    caption = {"", "[recipe=burner-inserter]   [font=default-large-bold]", {"strings.info_score_level1"}, "[/font]"}
                 }
             end
             tab2_main_frame.add {
@@ -549,11 +553,11 @@ function INFO_InfoWin(player)
 
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]New players start with limited permissions.[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_new_perm"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Regulars (Level 3+) can BANISH you with one vote.[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_new_vote"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
@@ -567,12 +571,12 @@ function INFO_InfoWin(player)
             if UTIL_Is_Member(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=inserter]   [font=default-large-bold][color=red]Level 2: Members[/color] (Score: 30)[/font]"
+                    caption = {"", "[recipe=inserter]   [font=default-large-bold][color=red]", {"strings.info_score_level2"}, "[/color][/font]"}
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=inserter]   [font=default-large-bold]Level 2: Members (Score: 30)[/font]"
+                    caption = {"", "[recipe=inserter]   [font=default-large-bold]", {"strings.info_score_level2"}, "[/font]"}
                 }
             end
             tab2_main_frame.add {
@@ -581,15 +585,15 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]All restrictions lifted.[/font]"
+                caption = {"", "[font=default-large]", {"strings.info_score_l2_lift"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Deconstruction planner unlocked (with warning).[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_l2_decon"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold][color=green]Join our members-only servers.[/color][/font]"
+                caption = {"", "[font=default-large-bold][color=green]", {"strings.info_score_l2_join"}, "[/color][/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
@@ -603,12 +607,12 @@ function INFO_InfoWin(player)
             if UTIL_Is_Regular(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=fast-inserter]   [font=default-large-bold][color=red]Level 3: Regulars[/color] (Score: 240)[/font]"
+                    caption = {"", "[recipe=fast-inserter]   [font=default-large-bold][color=red]", {"strings.info_score_level3"}, "[/color][/font]"}
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=fast-inserter]   [font=default-large-bold]Level 3: Regulars (Score: 240)[/font]"
+                    caption = {"", "[recipe=fast-inserter]   [font=default-large-bold]", {"strings.info_score_level3"}, "[/font]"}
                 }
             end
             tab2_main_frame.add {
@@ -617,15 +621,15 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]You can BANISH others, and it now takes two votes to banish you.[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_l3_banish"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]No more deconstruction planner warnings.[/font]"
+                caption = {"", "[font=default-large]", {"strings.info_score_l3_decon"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large]Unlock !vote-map on Discord (after registration).[/font]"
+                caption = {"", "[font=default-large]", {"strings.info_score_l3_vote"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
@@ -638,12 +642,12 @@ function INFO_InfoWin(player)
             if UTIL_Is_Veteran(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=stack-inserter]   [font=default-large-bold][color=red]Level 4: Veteran[/color][/font]"
+                    caption = {"", "[recipe=stack-inserter]   [font=default-large-bold][color=red]", {"strings.info_score_level4"}, "[/color][/font]"}
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = "[recipe=stack-inserter]   [font=default-large-bold]Level 4: Veteran[/font] "
+                    caption = {"", "[recipe=stack-inserter]   [font=default-large-bold]", {"strings.info_score_level4"}, "[/font] "}
                 }
             end
             tab2_main_frame.add {
@@ -652,11 +656,11 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Veteran status: takes four votes to BANISH you.[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_l4_banish"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]Your vote counts double.[/font]"
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_l4_vote"}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
@@ -692,7 +696,7 @@ function INFO_InfoWin(player)
             tab3_main_frame.style.horizontally_stretchable = true
             tab3_main_frame.add {
                 type = "label",
-                caption = "[item=rail-signal] [font=default-large-bold]Server Rules - Break them and the [entity=behemoth-biter] gets you![/font]"
+                caption = {"", "[item=rail-signal] [font=default-large-bold]", {"strings.info_rules_header"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -700,7 +704,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]1: [recipe=cluster-grenade] Don't be a jerk. Use common sense.[/font]"
+                caption = {"", "[font=default-large-bold]1: [recipe=cluster-grenade] ", {"strings.info_rule1"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -708,7 +712,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]2: [item=programmable-speaker] Don't bug the mods. Try /banish or #moderation-help.[/font]"
+                caption = {"", "[font=default-large-bold]2: [item=programmable-speaker] ", {"strings.info_rule2"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -716,7 +720,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]3: [virtual-signal=signal-everything] No ads or self-promo. Keep crypto and invites elsewhere.[/font]"
+                caption = {"", "[font=default-large-bold]3: [virtual-signal=signal-everything] ", {"strings.info_rule3"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -724,7 +728,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]4: [item=repair-pack] Player problem? Use [font=default-game]BANISH[/font] first.[/font]"
+                caption = {"", "[font=default-large-bold]4: [item=repair-pack] ", {"strings.info_rule4"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -732,7 +736,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]5: [fluid=steam] Not your private server. Compromise or play single player.[/font]"
+                caption = {"", "[font=default-large-bold]5: [fluid=steam] ", {"strings.info_rule5"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -740,7 +744,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]6: [item=radar] Nothing here is private. Public server rules apply.[/font]"
+                caption = {"", "[font=default-large-bold]6: [item=radar] ", {"strings.info_rule6"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -748,7 +752,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]7: [item=blueprint-book] Read the info tabs and help channel before asking.[/font]"
+                caption = {"", "[font=default-large-bold]7: [item=blueprint-book] ", {"strings.info_rule7"}, "[/font]"}
             }
             tab3_main_frame.add {
                 type = "label",
@@ -756,7 +760,7 @@ function INFO_InfoWin(player)
             }
             tab3_main_frame.add {
                 type = "label",
-                caption = "[font=default-large-bold]8: [item=locomotive] Links: m45sci.xyz, /r/M45Sci, Steam group.[/font]"
+                caption = {"", "[font=default-large-bold]8: [item=locomotive] ", {"strings.info_rule8"}, "[/font]"}
             }
 
             -- Close Button Frame
