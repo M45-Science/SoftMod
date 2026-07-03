@@ -729,7 +729,7 @@ function CMD_RegisterCommands()
 
         -- Reveal map
         CMD_AddCommand("reveal",
-            "Moderators only: <size> [x,y]|[gps=x,y]|[gps=x,y,surface] -- Reveals map from a given position or the center of map. Size is in tiles. Default size 1024. Min 128, Max 8192.",
+            "Moderators only: [size] [surface] [x,y | gps=x,y | gps=x,y,surface] -- Reveals the map around a position. Args may be given in any order. Position defaults to your location (or map center from console); surface defaults to the named one, else your current surface. Size is in tiles. Default 1024. Min 128, Max 8192.",
             function(param)
                 if CMD_ModsOnly(param) then
                     return
@@ -755,7 +755,6 @@ function CMD_RegisterCommands()
                     if not gx then gx, gy = str:match("%[gps=([-%d%.]+),([-%d%.]+)%]") end
 
                     local x, y = str:match("([-%d%.]+),([-%d%.]+)")
-                    local surfname = str:match("^%s*([%w_]+)%s*$")
 
                     local tokens = {}
                     for token in str:gmatch("[^%s,]+") do
@@ -769,18 +768,28 @@ function CMD_RegisterCommands()
                         table.remove(tokens, 1)
                     end
 
-                    -- Handle GPS
+                    -- Surface: any leftover token that names a real surface switches
+                    -- it. Applied independently of the center so a surface name can be
+                    -- combined with a size and/or explicit x,y coordinates.
+                    local surface_named = false
+                    for _, token in ipairs(tokens) do
+                        if game.surfaces[token] then
+                            psurface = game.surfaces[token]
+                            surface_named = true
+                        end
+                    end
+
+                    -- Center: GPS wins (and may carry its own surface), then plain
+                    -- x,y. If only a surface was named (no coordinates), center on that
+                    -- surface's origin rather than the caller's unrelated position.
                     if gx and gy then
                         center = { x = tonumber(gx), y = tonumber(gy) }
                         if gsurf and game.surfaces[gsurf] then
                             psurface = game.surfaces[gsurf]
                         end
-                        -- Handle x,y
                     elseif x and y then
                         center = { x = tonumber(x), y = tonumber(y) }
-                        -- Handle surface name if valid
-                    elseif surfname and game.surfaces[surfname] then
-                        psurface = game.surfaces[surfname]
+                    elseif surface_named then
                         center = { x = 0, y = 0 }
                     end
                 end
