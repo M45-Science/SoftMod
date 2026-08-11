@@ -66,6 +66,15 @@ function PERMS_MakeVeteran(player, victim)
 end
 
 -- Create player groups if they don't exist, and create storage links to them
+
+-- Walk the input_action lists below with pairs(), never ipairs(). When Factorio
+-- removes an action, defines.input_action.<name> evaluates to nil and leaves a
+-- hole in the table constructor. ipairs() stops at that hole and silently skips
+-- every remaining entry; pairs() skips only the missing one. This is not
+-- theoretical: enable_transitional_requests was removed during 2.0.5x and
+-- translate_string in 2.1.7, which truncated the jail list to its first 90 of
+-- 265 actions until 2026-08.
+
 -- Actions that the default group should never be allowed to perform
 local DEF_GROUP_ALWAYS_DISABLED = {
     defines.input_action.deconstruct,
@@ -169,7 +178,7 @@ function PERMS_ApplyStaticPermissions()
 
     --Always disabled
     if storage.SM_Store.defGroup then
-        for _, action in ipairs(DEF_GROUP_ALWAYS_DISABLED) do
+        for _, action in pairs(DEF_GROUP_ALWAYS_DISABLED) do
             storage.SM_Store.defGroup.set_allows_action(action, false)
         end
     end
@@ -182,6 +191,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.activate_interrupt,
         defines.input_action.activate_paste,
         defines.input_action.add_decider_combinator_condition,
+        defines.input_action.add_decider_combinator_else_output,
         defines.input_action.add_decider_combinator_output,
         defines.input_action.add_logistic_section,
         defines.input_action.add_permission_group,
@@ -218,10 +228,12 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.change_programmable_speaker_alert_parameters,
         defines.input_action.change_programmable_speaker_circuit_parameters,
         defines.input_action.change_programmable_speaker_parameters,
+        defines.input_action.change_research_condition,
         defines.input_action.change_riding_state,
         defines.input_action.change_selector_combinator_parameters,
         defines.input_action.change_shooting_state,
         defines.input_action.change_train_name,
+        defines.input_action.change_train_station,
         defines.input_action.change_train_stop_station,
         defines.input_action.change_train_wait_condition,
         defines.input_action.change_train_wait_condition_data,
@@ -253,7 +265,9 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.destroy_opened_item,
         defines.input_action.disconnect_rolling_stock,
         defines.input_action.drag_decider_combinator_condition,
+        defines.input_action.drag_decider_combinator_else_output,
         defines.input_action.drag_decider_combinator_output,
+        defines.input_action.drag_research_condition,
         defines.input_action.drag_train_schedule,
         defines.input_action.drag_train_schedule_interrupt,
         defines.input_action.drag_train_wait_condition,
@@ -269,7 +283,6 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.edit_interrupt,
         defines.input_action.edit_permission_group,
         defines.input_action.edit_pin,
-        defines.input_action.enable_transitional_requests,
         defines.input_action.export_blueprint,
         defines.input_action.fast_entity_split,
         defines.input_action.fast_entity_transfer,
@@ -282,6 +295,9 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.gui_confirmed,
         defines.input_action.gui_elem_changed,
         defines.input_action.gui_hover,
+        defines.input_action.gui_inventory_action,
+        defines.input_action.gui_inventory_bar_changed,
+        defines.input_action.gui_inventory_filter_changed,
         defines.input_action.gui_leave,
         defines.input_action.gui_location_changed,
         defines.input_action.gui_selected_tab_changed,
@@ -303,6 +319,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.market_offer,
         defines.input_action.mod_settings_changed,
         defines.input_action.modify_decider_combinator_condition,
+        defines.input_action.modify_decider_combinator_else_output,
         defines.input_action.modify_decider_combinator_output,
         defines.input_action.move_research,
         defines.input_action.open_achievements_gui,
@@ -331,6 +348,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.pin_search_result,
         defines.input_action.pipette,
         defines.input_action.place_equipment,
+        defines.input_action.providing_to_other_platforms,
         defines.input_action.quick_bar_pick_slot,
         defines.input_action.quick_bar_set_selected_page,
         defines.input_action.quick_bar_set_slot,
@@ -340,6 +358,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.remote_view_surface,
         defines.input_action.remove_cables,
         defines.input_action.remove_decider_combinator_condition,
+        defines.input_action.remove_decider_combinator_else_output,
         defines.input_action.remove_decider_combinator_output,
         defines.input_action.remove_logistic_section,
         defines.input_action.remove_pin,
@@ -372,16 +391,20 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.set_circuit_condition,
         defines.input_action.set_circuit_mode_of_operation,
         defines.input_action.set_combinator_description,
+        defines.input_action.set_control_behavior_input_networks,
+        defines.input_action.set_control_behavior_output_networks,
         defines.input_action.set_copy_color_from_train_stop,
         defines.input_action.set_deconstruction_item_tile_selection_mode,
         defines.input_action.set_deconstruction_item_trees_and_rocks_only,
         defines.input_action.set_entity_color,
         defines.input_action.set_entity_energy_property,
+        defines.input_action.set_equipment_energy_property,
         defines.input_action.set_filter,
         defines.input_action.set_ghost_cursor,
         defines.input_action.set_heat_interface_mode,
         defines.input_action.set_heat_interface_temperature,
         defines.input_action.set_infinity_container_filter_item,
+        defines.input_action.set_infinity_container_logistic_mode,
         defines.input_action.set_infinity_container_remove_unfiltered_items,
         defines.input_action.set_infinity_pipe_filter,
         defines.input_action.set_inserter_max_stack_size,
@@ -416,6 +439,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.start_repair,
         defines.input_action.start_research,
         defines.input_action.stop_drag_build,
+        defines.input_action.super_forced_select_area,
         defines.input_action.swap_logistic_filter_items,
         defines.input_action.switch_connect_to_logistic_network,
         defines.input_action.switch_constant_combinator_state,
@@ -425,6 +449,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.switch_power_switch_state,
         defines.input_action.take_equipment,
         defines.input_action.toggle_artillery_auto_targeting,
+        defines.input_action.toggle_blueprint_snap_to_grid,
         defines.input_action.toggle_deconstruction_item_entity_filter_mode,
         defines.input_action.toggle_deconstruction_item_tile_filter_mode,
         defines.input_action.toggle_driving,
@@ -436,7 +461,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.toggle_personal_roboport,
         defines.input_action.toggle_selected_entity,
         defines.input_action.toggle_show_entity_info,
-        defines.input_action.translate_string,
+        defines.input_action.toggle_tall_entity_visibility,
         defines.input_action.trash_not_requested_items,
         defines.input_action.undo,
         defines.input_action.upgrade,
@@ -445,7 +470,7 @@ function PERMS_ApplyStaticPermissions()
         defines.input_action.use_item,
         defines.input_action.wire_dragging,
     }
-    for _, item in ipairs(actionList) do
+    for _, item in pairs(actionList) do
         storage.SM_Store.jailGroup.set_allows_action(item, false)
     end
 
@@ -460,7 +485,7 @@ end
 function PERMS_SetBlueprintsAllowed(group, option)
     PERMS_EnsureGroups()
     if group then
-        for _, action in ipairs(BLUEPRINT_ACTIONS) do
+        for _, action in pairs(BLUEPRINT_ACTIONS) do
             group.set_allows_action(action, option)
         end
     end
@@ -479,7 +504,7 @@ function PERMS_SetPermissions()
             option = false
         end
 
-        for _, action in ipairs(DEF_GROUP_TOGGLED) do
+        for _, action in pairs(DEF_GROUP_TOGGLED) do
             storage.SM_Store.defGroup.set_allows_action(action, option)
         end
     end
