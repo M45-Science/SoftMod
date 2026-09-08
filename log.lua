@@ -435,7 +435,7 @@ function LOG_PlayerDrive(event)
             if player.vehicle then
                 msg = "[ACT] " ..
                     player.name ..
-                    " got in of a " ..
+                    " got in a " ..
                     event.entity.name .. " at " .. event.entity.gps_tag
             else
                 msg = "[ACT] " ..
