@@ -498,12 +498,11 @@ function CMD_RegisterCommands()
                 -- Require two args
                 if args and args[1] ~= "" and args[2] then
                     -- Find player
-                    for _, player in pairs(game.connected_players) do
-                        if player.name == args[1] then
-                            args[1] = ""
-                            UTIL_SmartPrint(player, table.concat(args, " "))
-                            return
-                        end
+                    local player = game.players[args[1]]
+                    if player and player.connected then
+                        args[1] = ""
+                        UTIL_SmartPrint(player, table.concat(args, " "))
+                        return
                     end
                 end
             end
