@@ -5,6 +5,7 @@
 
 function PERMS_MakeNew(player, victim)
     if victim  then
+            local changed = not storage.PData or not storage.PData[victim.index] or storage.PData[victim.index].level ~= 0
             UTIL_SmartPrint(player, "Player set to new.")
             UTIL_MsgAll(victim.name .. " is now reset!")
             if storage.PData and storage.PData[victim.index] then
@@ -15,6 +16,10 @@ function PERMS_MakeNew(player, victim)
             if victim and storage.SM_Store.defGroup then
                 storage.SM_Store.defGroup.add_player(victim)
             end
+            if changed and CW_EmitEvent then
+                CW_EmitEvent("player-level", { name = victim.name, level = 0 })
+            end
+            ONLINE_MarkDirty()
         return
     end
 end
@@ -22,12 +27,16 @@ end
 function PERMS_MakeMember(player, victim)
     if victim then
         if victim and storage.SM_Store.memGroup then
+            local changed = not storage.PData or not storage.PData[victim.index] or storage.PData[victim.index].level ~= 1
             UTIL_SmartPrint(player, "Player given members status.")
             UTIL_MsgAll(victim.name .. " is now a member!")
             if storage.PData and storage.PData[victim.index] then
                 storage.PData[victim.index].level = 1
             end
             storage.SM_Store.memGroup.add_player(victim)
+            if changed and CW_EmitEvent then
+                CW_EmitEvent("player-level", { name = victim.name, level = 1 })
+            end
             ONLINE_MarkDirty()
             return
         end
@@ -37,6 +46,7 @@ end
 function PERMS_MakeRegular(player, victim)
     if (victim) then
         if victim  and storage.SM_Store.regGroup then
+            local changed = not storage.PData or not storage.PData[victim.index] or storage.PData[victim.index].level ~= 2
             UTIL_SmartPrint(player, "Player given regulars status.")
             UTIL_MsgAll(victim.name .. " is now a regular!")
 
@@ -44,6 +54,9 @@ function PERMS_MakeRegular(player, victim)
                 storage.PData[victim.index].level = 2
             end
             storage.SM_Store.regGroup.add_player(victim)
+            if changed and CW_EmitEvent then
+                CW_EmitEvent("player-level", { name = victim.name, level = 2 })
+            end
             ONLINE_MarkDirty()
             return
         end
@@ -53,12 +66,16 @@ end
 function PERMS_MakeVeteran(player, victim)
     if (victim) then
         if victim and storage.SM_Store.vetGroup then
+            local changed = not storage.PData or not storage.PData[victim.index] or storage.PData[victim.index].level ~= 3
             UTIL_SmartPrint(player, "Player given veterans status.")
             UTIL_MsgAll(victim.name .. " is now a veteran!")
             if storage.PData and storage.PData[victim.index] then
                 storage.PData[victim.index].level = 3
             end
             storage.SM_Store.vetGroup.add_player(victim)
+            if changed and CW_EmitEvent then
+                CW_EmitEvent("player-level", { name = victim.name, level = 3 })
+            end
             ONLINE_MarkDirty()
             return
         end
@@ -280,6 +297,7 @@ function PERMS_PromotePlayer(player)
             if storage.PData and storage.PData[player.index] then
                 storage.PData[player.index].level = 255
             end
+            CW_EmitEvent("player-level", { name = player.name, level = 255 })
         elseif (storage.PData[player.index].score and
                 storage.PData[player.index].score > (4 * 60 * 60 * 60) and not player.admin) then
             -- Check if player has hours for regulars status, but isn't a in regulars group.
@@ -292,6 +310,7 @@ function PERMS_PromotePlayer(player)
                 if storage.PData and storage.PData[player.index] then
                     storage.PData[player.index].level = 2
                 end
+                CW_EmitEvent("player-level", { name = player.name, level = 2 })
             end
         elseif (storage.PData[player.index].score and
                 storage.PData[player.index].score > (30 * 60 * 60) and not player.admin) then
@@ -303,6 +322,7 @@ function PERMS_PromotePlayer(player)
                 if storage.PData and storage.PData[player.index] then
                     storage.PData[player.index].level = 1
                 end
+                CW_EmitEvent("player-level", { name = player.name, level = 1 })
                 PERMS_WelcomeMember(player)
             end
         end

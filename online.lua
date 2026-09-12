@@ -40,7 +40,7 @@ function ONLINE_MakeOnlineButton(player)
 end
 
 -- Count online players, store
-function ONLINE_UpdatePlayerList()
+function ONLINE_UpdatePlayerList(emit_change)
     if STORAGE_EnsureGlobal then
         STORAGE_EnsureGlobal()
     end
@@ -157,7 +157,9 @@ function ONLINE_UpdatePlayerList()
     storage.SM_Store.tcount = tcount
     storage.SM_Store.playerList = results
     storage.SM_Store.online_dirty = false
-    UTIL_SendPlayers(nil)
+    if emit_change ~= false then
+        UTIL_SendPlayers(nil)
+    end
     update_online_windows()
 end
 

@@ -254,7 +254,20 @@ end
 
 function UTIL_ConsolePrint(message)
     if message then
-        print(message)
+        local tag, text = string.match(message, "^%[([A-Z0-9]+)%]%s*(.*)$")
+        local events = {
+            ACT = "activity",
+            AUDIT = "audit",
+            CMD = "audit",
+            ERROR = "error",
+            REPORT = "report",
+            TODO = "todo",
+        }
+        if CW_EmitText then
+            CW_EmitText((tag and events[tag]) or "log", (tag and events[tag]) and text or message)
+        else
+            print(message)
+        end
     end
 end
 
@@ -285,7 +298,7 @@ end
 function UTIL_MsgAll(message)
     if message then
         game.print(message)
-        print("[MSG] " .. message)
+        CW_EmitText("message", message)
     end
 end
 
@@ -293,7 +306,7 @@ end
 function UTIL_MsgAllSys(message)
     if message then
         game.print("[color=orange](SYSTEM)[/color] [color=red]" .. message .. "[/color]")
-        print("[MSG] " .. message)
+        CW_EmitText("message", message)
     end
 end
 
@@ -307,7 +320,7 @@ end
 -- Global messages (discord only)
 function UTIL_MsgDiscord(message)
     if message then
-        print("[MSG] " .. message)
+        CW_EmitText("message", message)
     end
 end
 
@@ -329,20 +342,10 @@ function UTIL_SendPlayers(victim)
 
     -- For console use
     if not victim then
-        buf = "[ONLINE2] "
-        if storage.SM_Store.playerList then
-            for _, target in ipairs(storage.SM_Store.playerList) do
-                if target and target.victim and target.victim.connected then
-                    buf = buf .. target.victim.name .. "," .. math.floor(target.score / 60 / 60) .. "," ..
-                        math.floor(target.time / 60 / 60) .. "," .. target.type .. "," .. target.afk .. ";"
-                end
-            end
-        end
-
-        -- Don't send unless there is a change
-        if storage.SM_Store.onlineCache ~= buf then
-            storage.SM_Store.onlineCache = buf
-            print(buf)
+        local snapshot = helpers.table_to_json(CW_OnlineSnapshot())
+        if storage.SM_Store.onlineCache ~= snapshot then
+            storage.SM_Store.onlineCache = snapshot
+            CW_EmitOnline()
         end
         return
     end

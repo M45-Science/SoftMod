@@ -335,7 +335,9 @@ script.on_event(
             if event.player_index then
                 local player = game.players[event.player_index]
                 if player and player.valid then
-                    PERMS_PromotePlayer(player)
+                    if not (CW_ConsumeAdminChange and CW_ConsumeAdminChange(player.index)) then
+                        PERMS_PromotePlayer(player)
+                    end
                     FORCEDEL_MakeButton(player)
                 end
             end

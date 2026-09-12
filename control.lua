@@ -18,6 +18,7 @@ require "utility"  -- Widely used general utility
 require "quickbar" -- Save or Restore Quickbar
 require "stash" -- Save or Restore Weapon/Ammo/Armor
 require "forcedel" -- Admin force-delete helper
+require "chatwire" -- ChatWire machine protocol (load after command dependencies)
 
 script.on_init(function()
     RunSetup()

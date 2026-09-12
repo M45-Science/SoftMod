@@ -522,7 +522,7 @@ function LOG_ConsoleCmd(event)
 
         if event.player_index then
             local player = game.players[event.player_index]
-            print(string.format("[CMD] %s ran /%s %s", player.name, command, args))
+            CW_EmitText("audit", string.format("%s ran /%s %s", player.name, command, args))
         end
     end
 end

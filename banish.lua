@@ -40,7 +40,7 @@ function BANISH_DoReport(player, report)
 
         -- Limit and list number of reports
         if storage.PData[player.index].reports <= 5 then
-            print("[REPORT] " .. player.name .. " " .. report)
+            CW_EmitText("report", player.name .. " " .. report)
             UTIL_SmartPrint(player, "Report sent! You have now used " .. storage.PData[player.index].reports ..
                 " of your 5 available reports.")
         else
@@ -122,7 +122,7 @@ function BANISH_UpdateVotes()
         -- Was banished, but not anymore
         if newstate < pointsNeeded and prevstate >= pointsNeeded then
             local msg = victim.name .. " is no longer banished."
-            print("[REPORT] SYSTEM " .. msg)
+            CW_EmitText("report", "SYSTEM " .. msg)
             UTIL_MsgAllSys(msg)
 
             BANISH_UnbanishPlayer(victim)
@@ -130,7 +130,7 @@ function BANISH_UpdateVotes()
             -- Was not banished, but is now.
             local msg = victim.name .. " has been banished."
             UTIL_MsgAllSys(msg)
-            print("[REPORT] SYSTEM " .. msg)
+            CW_EmitText("report", "SYSTEM " .. msg)
 
             BANISH_DoJail(victim)
         end
@@ -384,7 +384,7 @@ function BANISH_DoBanish(player, victim, reason)
                                 -- Send report to discord and add to vote list
                                 local message = player.name .. " voted to banish: " .. victim.name .. " for: " .. reason
                                 UTIL_MsgAllSys(message)
-                                print("[REPORT] " .. message)
+                                CW_EmitText("report", message)
                                 UTIL_SmartPrint(player, "(SYSTEM): Your vote has been added, and posted on Discord!")
                                 UTIL_SmartPrint(player, "/unbanish <player> to withdraw your vote.")
                                 UTIL_SmartPrint(player,

@@ -9,6 +9,8 @@ Requires Factorio 2.0.27 or newer.
 This mod keeps all persistent state in a global table named `storage`. See
 [`docs/storage.md`](docs/storage.md) for an overview of its layout and
 [`docs/in-place-upgrades.md`](docs/in-place-upgrades.md) for upgrade guardrails.
+The system-only ChatWire interface is documented in
+[`docs/chatwire-protocol.md`](docs/chatwire-protocol.md).
 A basic `luacheck` configuration is provided for optional linting:
 
 ```bash

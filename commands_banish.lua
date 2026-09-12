@@ -268,7 +268,7 @@ function BANISH_AddBanishCommands()
                                             local message = player.name .. " WITHDREW their vote to banish: " ..
                                                 victim.name
                                             UTIL_MsgAllSys(message)
-                                            print("[REPORT] " .. message)
+                                            CW_EmitText("report", message)
                                             UTIL_SmartPrint(player,
                                                 "Your vote has been withdrawn, and posted on Discord.")
                                             vote.withdrawn = true
