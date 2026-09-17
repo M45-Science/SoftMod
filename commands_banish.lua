@@ -235,8 +235,8 @@ function BANISH_AddBanishCommands()
         end
     end)
 
-    -- Banish command
-    CMD_AddCommand("unbanish", "<player>\n(Withdraws a banish vote)", function(param)
+    -- Withdraw a banish vote, including for offline players.
+    CMD_AddCommand("unbanish", "<player>\n(Withdraws a banish vote, even if the player is offline)", function(param)
         if param and param.player_index then
             local player = game.players[param.player_index]
             if CMD_NoBanished(player) then
@@ -253,8 +253,8 @@ function BANISH_AddBanishCommands()
                     if args and args[1] ~= "" then
                         local victim = game.players[args[1]]
 
-                        -- Must have valid victim
-                        if victim and victim.character and victim.character.valid then
+                        -- Withdrawing a vote only requires a valid player, not a character.
+                        if victim and victim.valid then
                             -- Check if we voted against them
                             if storage.SM_Store.votes then
                                 for _, vote in ipairs(storage.SM_Store.votes) do
@@ -280,7 +280,7 @@ function BANISH_AddBanishCommands()
                                 UTIL_SmartPrint(player, "I don't see a vote from you, against that player, to withdraw.")
                             end
                         else
-                            UTIL_SmartPrint(player, "There are no players online by that name.")
+                            UTIL_SmartPrint(player, "Couldn't find a player by that name.")
                         end
                     else
                         UTIL_SmartPrint(player, "Usage: /unbanish <player>")
