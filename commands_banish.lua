@@ -24,6 +24,7 @@ function BANISH_AddBanishCommands()
                         return
                     end
                     storage.PData[victim.index].banished = 1000
+                    storage.PData[victim.index].manual_jail = true
                     BANISH_DoJail(victim)
                     UTIL_SmartPrint(player, "Jailed player.")
                 else
@@ -60,7 +61,6 @@ function BANISH_AddBanishCommands()
                         if vote and vote.victim then
                             if vote.victim.index == victim.index then
                                 vote.overruled = true
-                                break
                             end
                         end
                     end
@@ -108,6 +108,11 @@ function BANISH_AddBanishCommands()
                 -- Must have arguments
                 if args and args[1] ~= "" then
                     if args[1] == "clear" then
+                        -- This explicit command promises to clear all banishments.
+                        for _, victim in pairs(game.players) do
+                            STORAGE_MakePlayerStorage(victim)
+                            storage.PData[victim.index].manual_jail = false
+                        end
                         storage.SM_Store.votes = {}
                         UTIL_SmartPrint(player, "All votes cleared.")
                         BANISH_UpdateVotes()
@@ -117,6 +122,7 @@ function BANISH_AddBanishCommands()
 
                     -- If victim found
                     if victim then
+                        STORAGE_MakePlayerStorage(victim)
                         local count = 0
                         for _, vote in ipairs(storage.SM_Store.votes) do
                             if vote and vote.victim then
@@ -255,6 +261,7 @@ function BANISH_AddBanishCommands()
 
                         -- Withdrawing a vote only requires a valid player, not a character.
                         if victim and victim.valid then
+                            STORAGE_MakePlayerStorage(victim)
                             -- Check if we voted against them
                             if storage.SM_Store.votes then
                                 for _, vote in ipairs(storage.SM_Store.votes) do

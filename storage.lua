@@ -127,6 +127,20 @@ function STORAGE_MakePlayerStorage(player)
     end
 
     --state
+    if storage.PData[player.index].manual_jail == nil then
+        -- Legacy /jail used 1000 points, also used by an active moderator vote.
+        local manual_jail = storage.PData[player.index].banished == 1000
+        if manual_jail and storage.SM_Store and storage.SM_Store.votes then
+            for _, vote in ipairs(storage.SM_Store.votes) do
+                if vote.victim == player and vote.voter and vote.voter.valid and vote.voter.admin
+                    and not vote.withdrawn and not vote.overruled then
+                    manual_jail = false
+                    break
+                end
+            end
+        end
+        storage.PData[player.index].manual_jail = manual_jail
+    end
     if not storage.PData[player.index].cleaned then
         storage.PData[player.index].cleaned = false
     end

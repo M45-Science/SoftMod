@@ -4,49 +4,31 @@
 -- License: MPL 2.0
 -- Safe console print
 
-local function UTIL_HasValidItemPrototype(name, quality)
-    if not game or type(name) ~= "string" then
-        return false
+-- Move complete stacks so item data (equipment, blueprints, ammo, etc.) survives.
+-- transfer_stack can move only part of a stack even when it returns false.
+function UTIL_TransferInventory(source_inv, target_inv)
+    if not source_inv or not target_inv then
+        return false, false
     end
 
-    if not prototypes or not prototypes.item or not prototypes.item[name] then
-        return false
-    end
-
-    if quality ~= nil then
-        if type(quality) ~= "string" then
-            return false
-        end
-        return prototypes.quality and prototypes.quality[quality] ~= nil
-    end
-
-    return true
-end
-
-local function UTIL_InsertContentsIntoCorpse(inv_corpse, contents, player)
-    if not inv_corpse or not contents then
-        return
-    end
-
-    local player_name = player and player.name or "<unknown>"
-
-    -- Factorio 2.0: get_contents() returns array entries of {name, quality, count}.
-    for _, entry in ipairs(contents) do
-        if entry and entry.name and entry.count and entry.count > 0 then
-            if UTIL_HasValidItemPrototype(entry.name, entry.quality) then
-                if entry.quality ~= nil then
-                    inv_corpse.insert { name = entry.name, quality = entry.quality, count = entry.count }
-                else
-                    inv_corpse.insert { name = entry.name, count = entry.count }
+    local moved_anything = false
+    local items_remaining = false
+    for i = 1, #source_inv do
+        local stack = source_inv[i]
+        if stack.valid_for_read then
+            local count_before = stack.count
+            for j = 1, #target_inv do
+                target_inv[j].transfer_stack(stack)
+                if not stack.valid_for_read then
+                    break
                 end
-            else
-                UTIL_ConsolePrint("UTIL_DumpInv: skipping invalid item '" .. tostring(entry.name) .. ":" ..
-                    tostring(entry.quality) .. "' from " .. player_name)
             end
-        else
-            -- ignore invalid entries
+            local count_after = stack.valid_for_read and stack.count or 0
+            moved_anything = moved_anything or count_after < count_before
+            items_remaining = items_remaining or count_after > 0
         end
     end
+    return moved_anything, items_remaining
 end
 
 function UTIL_CheckAbandoned()
@@ -74,11 +56,6 @@ function UTIL_DumpInv(player, force)
         return false
     end
 
-    if not prototypes or not prototypes.item or not prototypes.quality then
-        UTIL_ConsolePrint("[ERROR] UTIL_DumpInv: global 'prototypes' is unavailable; aborting inventory dump to avoid item loss.")
-        return false
-    end
-
     if not force and storage and storage.PData and storage.PData[player.index] and storage.PData[player.index].cleaned then
         return false
     end
@@ -86,22 +63,11 @@ function UTIL_DumpInv(player, force)
     local inv_main = player.get_inventory(defines.inventory.character_main)
     local inv_trash = player.get_inventory(defines.inventory.character_trash)
 
-    local inv_main_contents
-    if inv_main and inv_main.valid then
-        inv_main_contents = inv_main.get_contents()
-    end
-
-    local inv_trash_contents
-    if inv_trash and inv_trash.valid then
-        inv_trash_contents = inv_trash.get_contents()
-    end
-
     local inv_corpse_size = 0
-    if inv_main_contents then
+    if inv_main and inv_main.valid then
         inv_corpse_size = inv_corpse_size + (#inv_main - inv_main.count_empty_stacks())
     end
-
-    if inv_trash_contents then
+    if inv_trash and inv_trash.valid then
         inv_corpse_size = inv_corpse_size + (#inv_trash - inv_trash.count_empty_stacks())
     end
 
@@ -135,22 +101,23 @@ function UTIL_DumpInv(player, force)
         return false
     end
 
-    if inv_main_contents then
-        UTIL_InsertContentsIntoCorpse(inv_corpse, inv_main_contents, player)
-        inv_main.clear()
+    local main_moved, main_remaining = false, false
+    local trash_moved, trash_remaining = false, false
+    if inv_main and inv_main.valid then
+        main_moved, main_remaining = UTIL_TransferInventory(inv_main, inv_corpse)
     end
-    if inv_trash_contents then
-        UTIL_InsertContentsIntoCorpse(inv_corpse, inv_trash_contents, player)
-        inv_trash.clear()
+    if inv_trash and inv_trash.valid then
+        trash_moved, trash_remaining = UTIL_TransferInventory(inv_trash, inv_corpse)
     end
-
-
+    local complete = not main_remaining and not trash_remaining
     if storage and storage.PData then
         storage.PData[player.index] = storage.PData[player.index] or {}
-        storage.PData[player.index].cleaned = true
+        storage.PData[player.index].cleaned = complete
     end
-
-    return true
+    if not complete then
+        UTIL_ConsolePrint("[ERROR] UTIL_DumpInv: some items could not be moved for " .. player.name .. "; leaving them in their original inventory.")
+    end
+    return main_moved or trash_moved
 end
 
 function UTIL_MapPin()
@@ -553,6 +520,9 @@ function UTIL_Is_Banished(victim)
 
 
     if storage and storage.PData and storage.PData[victim.index] then
+        if storage.PData[victim.index].manual_jail then
+            return true
+        end
         local pointsNeeded = 1
         local level = storage.PData[victim.index].level
 

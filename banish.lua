@@ -3,22 +3,30 @@
 -- GitHub: https://github.com/M45-Science/SoftMod
 -- License: MPL 2.0
 
+local function queue_relocation(victim, surface, position)
+    local queue = storage.SM_Store.sendToSurface
+    -- A release or re-jail supersedes any older pending relocation for this player.
+    for i = #queue, 1, -1 do
+        if queue[i].victim == victim then
+            table.remove(queue, i)
+        end
+    end
+    table.insert(queue, {victim = victim, surface = surface, position = position})
+end
+
 function BANISH_UnbanishPlayer(victim)
     if not victim then
         return
     end
 
-    table.insert(storage.SM_Store.sendToSurface, {
-        victim = victim,
-        surface = 1,
-        position = UTIL_GetDefaultSpawn()
-    })
+    queue_relocation(victim, 1, UTIL_GetDefaultSpawn())
 
     if victim and victim.permission_group.name == storage.SM_Store.jailGroup.name then
         UTIL_MsgAll(victim.name .. " moved out of jailed group.")
     end
 
     storage.PData[victim.index].banished = 0
+    storage.PData[victim.index].manual_jail = false
     storage.SM_Store.jailGroup.remove_player(victim)
     storage.SM_Store.defGroup.add_player(victim)
 
@@ -97,6 +105,7 @@ function BANISH_UpdateVotes()
     table.sort(player_indices)
     for _, player_index in ipairs(player_indices) do
         local victim = game.players[player_index]
+        STORAGE_MakePlayerStorage(victim)
         local prevstate = 0
         local newstate = 0
         if storage.PData[victim.index].banished then
@@ -105,6 +114,9 @@ function BANISH_UpdateVotes()
 
         if banishedtemp[victim.index] then
             newstate = banishedtemp[victim.index]
+        end
+        if storage.PData[victim.index].manual_jail then
+            newstate = math.max(newstate, 1000)
         end
 
 
@@ -136,11 +148,7 @@ function BANISH_UpdateVotes()
         end
 
         --Apply new state
-        if banishedtemp[victim.index] then
-            storage.PData[victim.index].banished = banishedtemp[victim.index]
-        else
-            storage.PData[victim.index].banished = 0
-        end
+        storage.PData[victim.index].banished = newstate
     end
 end
 
@@ -279,11 +287,7 @@ function BANISH_DoJail(victim)
         "'s inventory has been dumped at spawn so the items can be recovered.")
 
     local newpos = game.surfaces["jail"].find_non_colliding_position("character", { x = 0, y = 0 }, 1024, 1, false)
-    table.insert(storage.SM_Store.sendToSurface, {
-        victim = victim,
-        surface = "jail",
-        position = newpos
-    })
+    queue_relocation(victim, "jail", newpos)
     BANISH_SendToSurface(victim)
     ONLINE_MarkDirty()
 end
@@ -394,6 +398,7 @@ function BANISH_DoBanish(player, victim, reason)
 
                             -- Insert newest vote at the start of the list
                             -- index 1 is the first valid position in Lua
+                            STORAGE_MakePlayerStorage(victim)
                             table.insert(storage.SM_Store.votes, 1, {
                                 voter = player,
                                 victim = victim,
@@ -444,28 +449,29 @@ function BANISH_SendToSurface(player)
                             break
                         end
                         UTIL_ExitRemoteView(player)
+                        local teleported
                         if item.position then
                             local newpos = surf.find_non_colliding_position("character", item.position, 1024, 1,
                                 false)
                             if newpos then
-                                player.teleport(newpos, surf)
+                                teleported = player.teleport(newpos, surf)
                             else
-                                player.teleport(item.position, surf) -- screw it
+                                teleported = player.teleport(item.position, surf) -- screw it
                                 UTIL_ConsolePrint(
                                     "[ERROR] send_to_surface(respawn): unable to find non_colliding_position.")
                             end
-                            ONLINE_MarkDirty()
-
-                            index = i
-                            break
                         else
-                            player.teleport({ x = 0, y = 0 }, surf) -- screw it
+                            teleported = player.teleport({ x = 0, y = 0 }, surf) -- screw it
                             UTIL_ConsolePrint(
                                 "[ERROR] send_to_surface(respawn): invalid position!")
+                        end
+                        if teleported then
                             index = i
                             ONLINE_MarkDirty()
-                            break
+                        else
+                            UTIL_ConsolePrint("[ERROR] send_to_surface(respawn): teleport failed; retaining request for retry.")
                         end
+                        break
                     end
                 end
             end

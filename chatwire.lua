@@ -105,9 +105,8 @@ local function apply_config(data)
         storage.SM_Store.serverName = data.server_name
         LOGO_DrawLogo(true)
     end
-    if data.restrict ~= nil and storage.SM_Store.restrictNew ~= data.restrict then
+    if data.restrict ~= nil then
         storage.SM_Store.restrictNew = data.restrict
-        PERMS_SetPermissions()
     end
     if data.friendly_fire ~= nil then
         game.forces["player"].friendly_fire = data.friendly_fire
@@ -130,13 +129,11 @@ local function apply_config(data)
     if reset_changed then
         refresh_reset_display()
     end
-    if data.blueprints ~= nil and storage.SM_Store.noBlueprints == data.blueprints then
+    if data.blueprints ~= nil then
         storage.SM_Store.noBlueprints = not data.blueprints
-        PERMS_SetBlueprintsAllowed(storage.SM_Store.defGroup, data.blueprints)
-        PERMS_SetBlueprintsAllowed(storage.SM_Store.memGroup, data.blueprints)
-        PERMS_SetBlueprintsAllowed(storage.SM_Store.regGroup, data.blueprints)
-        PERMS_SetBlueprintsAllowed(storage.SM_Store.vetGroup, data.blueprints)
-        PERMS_SetBlueprintsAllowed(storage.SM_Store.modGroup, data.blueprints)
+    end
+    if data.restrict ~= nil or data.blueprints ~= nil then
+        PERMS_SetPermissions()
     end
     if data.cheats ~= nil then
         local cheats_changed = storage.SM_Store.cheats ~= data.cheats
@@ -186,6 +183,9 @@ end
 local function set_player_level(data)
     if type(data.name) ~= "string" or data.name == "" or type(data.level) ~= "number" then
         return false, "name and numeric level are required"
+    end
+    if data.level ~= 0 and data.level ~= 1 and data.level ~= 2 and data.level ~= 3 and data.level ~= 255 then
+        return false, "unsupported player level"
     end
     local player = game.players[data.name]
     if not (player and player.connected) then

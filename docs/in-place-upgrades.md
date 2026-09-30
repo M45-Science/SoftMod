@@ -58,7 +58,8 @@ Permissions are rebuilt as needed in `perms.lua`:
 - `PERMS_ApplyStaticPermissions()` applies the static deny list once per group
   lifecycle.
 - `PERMS_SetPermissions()` toggles the default group based on
-  `storage.SM_Store.restrictNew`.
+  `storage.SM_Store.restrictNew` and applies `storage.SM_Store.noBlueprints` to
+  all normal groups. Overlapping default-group actions must satisfy both settings.
 
 This avoids missing groups after upgrades while keeping expensive permission
 sets from rerunning constantly.
@@ -86,9 +87,10 @@ This allows players to open/close windows safely even if the save is mid-upgrade
 
 ## Factorio 2.0-Specific Guards
 
-- `prototypes` is required for quality-aware inventory logic. If unavailable,
-  functions like `UTIL_DumpInv()` and quickbar import abort rather than risking
-  item loss.
+- Quickbar import requires `prototypes` to validate item and quality names.
+- Inventory dumps and stashes transfer complete item stacks, preserving their
+  equipment grids and other item data. Failed or partial transfers leave unmoved
+  items in their source inventory.
 - `player.physical_surface` is used when listing surfaces or teleporting to
   avoid controller/surface mismatches.
 - When reviving spectators, `onelife.lua` avoids creating characters on

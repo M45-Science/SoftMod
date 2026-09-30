@@ -12,227 +12,79 @@ function is_inventory_empty(inventory)
     return inventory.get_item_count() == 0
 end
 
-local function quality_id_from_stack(stack)
-    if not stack then
-        return nil
-    end
-    local quality = stack.quality
-    if quality == nil then
-        return nil
-    end
-    if type(quality) == "string" then
-        return quality
-    end
-    if quality.name then
-        return quality.name
-    end
-    return nil
-end
-
-local function stack_definition_from_stack(stack)
-    local def = { name = stack.name, count = stack.count }
-    local quality = quality_id_from_stack(stack)
-    if quality ~= nil then
-        def.quality = quality
-    end
-    return def
-end
-
 function ensure_empty_stash(player_index, stash_name, size)
     if storage.PData[player_index][stash_name] then
-        local stash = storage.PData[player_index][stash_name]
-        if not stash.is_empty() then
-            return false
-        end
-        return true
-    else
-        storage.PData[player_index][stash_name] = game.create_inventory(size)
-        return true
+        return storage.PData[player_index][stash_name].is_empty()
     end
+    storage.PData[player_index][stash_name] = game.create_inventory(size)
+    return true
 end
 
 function stash_inventory(source_inv, stash_inv)
-    if not source_inv or not stash_inv then return false, false end
-    local stashed_anything = false
-    local stash_full = false
-
-    for i = 1, #source_inv do
-        local stack = source_inv[i]
-        if stack.valid_for_read then
-            local stack_to_insert = stack_definition_from_stack(stack)
-            if stash_inv.can_insert(stack_to_insert) then
-                local inserted_count = stash_inv.insert(stack_to_insert)
-                if inserted_count > 0 then
-                    if inserted_count < stack.count then
-                        stack.count = stack.count - inserted_count
-                        stash_full = true
-                    else
-                        stack.clear()
-                    end
-                    stashed_anything = true
-                else
-                    stash_full = true
-                end
-            else
-                stash_full = true
-            end
-        end
-    end
-    return stashed_anything, stash_full
+    return UTIL_TransferInventory(source_inv, stash_inv)
 end
 
 function unstash_inventory(stash_inv, target_inv)
-    if not stash_inv or not target_inv then return false, false end
-    local unstashed_anything = false
-    local player_inventory_full = false
-
-    for i = 1, #stash_inv do
-        local stack = stash_inv[i]
-        if stack.valid_for_read then
-            local stack_to_insert = stack_definition_from_stack(stack)
-            if target_inv.can_insert(stack_to_insert) then
-                local inserted_count = target_inv.insert(stack_to_insert)
-                if inserted_count > 0 then
-                    if inserted_count < stack.count then
-                        stack.count = stack.count - inserted_count
-                        player_inventory_full = true
-                    else
-                        stack.clear()
-                    end
-                    unstashed_anything = true
-                else
-                    player_inventory_full = true
-                end
-            else
-                player_inventory_full = true
-            end
-        end
-    end
-    return unstashed_anything, player_inventory_full
+    return UTIL_TransferInventory(stash_inv, target_inv)
 end
 
 function stash_armor(player)
     local armor_inventory = player.get_inventory(defines.inventory.character_armor)
-    if not armor_inventory or armor_inventory.is_empty() then
-        return false, false
+    local pdata = storage.PData[player.index]
+    local moved, remaining = UTIL_TransferInventory(armor_inventory, pdata.armor_stash)
+    if moved then
+        -- New stashes retain the actual equipment grid inside the armor stack.
+        pdata.armor_equipment_data = nil
+    end
+    return moved, remaining
+end
+
+local function restore_legacy_armor_equipment(player)
+    local pdata = storage.PData[player.index]
+    if not pdata.armor_equipment_data then
+        return true
+    end
+    local armor = pdata.armor_stash and pdata.armor_stash[1]
+    if not armor or not armor.valid_for_read or not armor.grid then
+        return false
     end
 
-    local stashed_anything = false
-    local stash_full = false
-
-    for i = 1, #armor_inventory do
-        local stack = armor_inventory[i]
-        if stack.valid_for_read then
-            -- If it's armor with equipment, store equipment data
-            if stack.grid and stack.grid.valid then
-                local equipment_data = {}
-                for _, eq in pairs(stack.grid.equipment) do
-                    equipment_data[#equipment_data + 1] = {
-                        name = eq.name,
-                        position = eq.position,
-                        energy = eq.energy
-                    }
-                end
-                table.sort(equipment_data, function(a, b)
-                    if a.position.y ~= b.position.y then
-                        return a.position.y < b.position.y
-                    end
-                    if a.position.x ~= b.position.x then
-                        return a.position.x < b.position.x
-                    end
-                    return a.name < b.name
-                end)
-                storage.PData[player.index].armor_equipment_data = equipment_data
-            else
-                storage.PData[player.index].armor_equipment_data = nil
-            end
-
-            local armor_stash = storage.PData[player.index].armor_stash
-            local stack_to_insert = stack_definition_from_stack(stack)
-            if armor_stash.can_insert(stack_to_insert) then
-                local inserted_count = armor_stash.insert(stack_to_insert)
-                if inserted_count > 0 then
-                    if inserted_count < stack.count then
-                        stack.count = stack.count - inserted_count
-                        stash_full = true
-                    else
-                        stack.clear()
-                    end
-                    stashed_anything = true
-                else
-                    stash_full = true
-                end
-            else
-                stash_full = true
-            end
+    -- Older saves stored a bare armor stack and serialized its equipment separately.
+    -- Restore that data into the stash before transferring it to the player.
+    local remaining = {}
+    for _, data in ipairs(pdata.armor_equipment_data) do
+        local ok, equipment = pcall(armor.grid.put, {
+            name = data.name,
+            position = data.position,
+            quality = data.quality or "normal"
+        })
+        if ok and equipment then
+            equipment.energy = data.energy or 0
+        else
+            remaining[#remaining + 1] = data
         end
     end
-
-    return stashed_anything, stash_full
+    if #remaining > 0 then
+        pdata.armor_equipment_data = remaining
+        UTIL_SmartPrint(player, "Unable to restore some legacy stashed equipment; your armor remains stashed.")
+        return false
+    end
+    pdata.armor_equipment_data = nil
+    return true
 end
 
 function unstash_armor(player)
-    local armor_inventory = player.get_inventory(defines.inventory.character_armor)
-    local armor_stash = storage.PData[player.index].armor_stash
-    if not armor_stash then return false, false end
-
-    local unstashed_anything = false
-    local player_inventory_full = false
-
-    for i = 1, #armor_stash do
-        local stack = armor_stash[i]
-        if stack.valid_for_read then
-            local stack_to_insert = stack_definition_from_stack(stack)
-            if armor_inventory.can_insert(stack_to_insert) then
-                local inserted_count = armor_inventory.insert(stack_to_insert)
-                if inserted_count > 0 then
-                    if inserted_count < stack.count then
-                        stack.count = stack.count - inserted_count
-                        player_inventory_full = true
-                    else
-                        stack.clear()
-                    end
-                    unstashed_anything = true
-
-                    -- Restore equipment if we have any saved
-                    if storage.PData[player.index].armor_equipment_data then
-                        local new_armor_stack = armor_inventory[1] -- The inserted armor should be here
-                        if new_armor_stack and new_armor_stack.valid_for_read and new_armor_stack.grid then
-                            for _, eq_data in ipairs(storage.PData[player.index].armor_equipment_data) do
-                                local eq = new_armor_stack.grid.put({ name = eq_data.name, position = eq_data.position })
-                                if eq then
-                                    eq.energy = eq_data.energy
-                                end
-                            end
-                        end
-                        storage.PData[player.index].armor_equipment_data = nil
-                    end
-                else
-                    player_inventory_full = true
-                end
-            else
-                player_inventory_full = true
-            end
-        end
+    local pdata = storage.PData[player.index]
+    if is_inventory_empty(pdata.armor_stash) then
+        return false, false
     end
-
-    return unstashed_anything, player_inventory_full
+    if not restore_legacy_armor_equipment(player) then
+        return false, true
+    end
+    local armor_inventory = player.get_inventory(defines.inventory.character_armor)
+    return UTIL_TransferInventory(pdata.armor_stash, armor_inventory)
 end
 
 function move_items_to_inventory_or_leave(source_inv, target_inv)
-    if not source_inv or not target_inv then return end
-    for i = 1, #source_inv do
-        local stack = source_inv[i]
-        if stack.valid_for_read then
-            local stack_to_transfer = stack_definition_from_stack(stack)
-            local inserted = target_inv.insert(stack_to_transfer)
-            if inserted > 0 then
-                if inserted < stack.count then
-                    stack.count = stack.count - inserted
-                else
-                    stack.clear()
-                end
-            end
-        end
-    end
+    return UTIL_TransferInventory(source_inv, target_inv)
 end

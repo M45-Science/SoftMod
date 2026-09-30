@@ -82,6 +82,14 @@ function STASH_AddStashCommands()
                 return
             end
 
+            local gun_stash = storage.PData[player.index].gun_stash
+            local ammo_stash = storage.PData[player.index].ammo_stash
+            local armor_stash = storage.PData[player.index].armor_stash
+            if is_inventory_empty(gun_stash) and is_inventory_empty(ammo_stash) and is_inventory_empty(armor_stash) then
+                UTIL_SmartPrint(player, "No stashed equipment found to unstash.")
+                return
+            end
+
             local gun_inventory = player.get_inventory(defines.inventory.character_guns)
             local ammo_inventory = player.get_inventory(defines.inventory.character_ammo)
             local armor_inventory = player.get_inventory(defines.inventory.character_armor)
@@ -98,15 +106,6 @@ function STASH_AddStashCommands()
                 return
             end
 
-            local gun_stash = storage.PData[player.index].gun_stash
-            local ammo_stash = storage.PData[player.index].ammo_stash
-            local armor_stash = storage.PData[player.index].armor_stash
-
-            if not (gun_stash or ammo_stash or armor_stash) then
-                UTIL_SmartPrint(player, "No stashed equipment found to unstash.")
-                return
-            end
-
             local guns_unstashed, guns_full = unstash_inventory(gun_stash, gun_inventory)
             local ammo_unstashed, ammo_full = unstash_inventory(ammo_stash, ammo_inventory)
             local armor_unstashed, armor_full = unstash_armor(player)
@@ -119,6 +118,8 @@ function STASH_AddStashCommands()
                 if player_inventory_full then
                     UTIL_SmartPrint(player, "Some items could not be unstashed due to insufficient space.")
                 end
+            elseif player_inventory_full then
+                UTIL_SmartPrint(player, "No stashed items could be moved. Check inventory space and saved equipment.")
             else
                 UTIL_SmartPrint(player, "Your stash is empty!")
             end

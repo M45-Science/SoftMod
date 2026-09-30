@@ -436,8 +436,8 @@ function CMD_RegisterCommands()
 
                 if psurface and pforce and center then
                     local area = {
-                        lefttop = { x = center.x - size / 2, y = center.y - size / 2 },
-                        rightbottom = { x = center.x + size / 2, y = center.y + size / 2 }
+                        left_top = { x = center.x - size / 2, y = center.y - size / 2 },
+                        right_bottom = { x = center.x + size / 2, y = center.y + size / 2 }
                     }
 
                     pforce.chart(psurface, area)

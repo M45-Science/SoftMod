@@ -17,6 +17,21 @@ A basic `luacheck` configuration is provided for optional linting:
 luacheck *.lua
 ```
 
+Regression tests use mocked Factorio APIs and run under Lua 5.2 from this directory:
+
+```bash
+lua5.2 tests/regressions.lua
+```
+
+If Lua 5.2 is unavailable locally:
+
+```bash
+docker run --rm -v "$PWD":/work:ro -w /work nickblah/lua:5.2-alpine lua tests/regressions.lua
+```
+
+These tests cover commands, inventory transfers, permissions, and save migrations;
+they do not replace in-game testing.
+
 *banish.lua*<br>
 Allows regulars to vote-ban players,<br>
 <br>

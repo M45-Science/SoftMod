@@ -230,6 +230,12 @@ function PERMS_SetPermissions()
     -- Auto set default group permissions
     PERMS_EnsureGroups()
 
+    local blueprints_allowed = not storage.SM_Store.noBlueprints
+    for _, group in ipairs({storage.SM_Store.defGroup, storage.SM_Store.memGroup,
+        storage.SM_Store.regGroup, storage.SM_Store.vetGroup, storage.SM_Store.modGroup}) do
+        PERMS_SetBlueprintsAllowed(group, blueprints_allowed)
+    end
+
     if storage.SM_Store.defGroup then
         -- If new user restrictions are on, then disable all permissions
         -- Otherwise undo
@@ -239,7 +245,16 @@ function PERMS_SetPermissions()
         end
 
         for _, action in ipairs(DEF_GROUP_TOGGLED) do
-            storage.SM_Store.defGroup.set_allows_action(action, option)
+            local allowed = option
+            if not blueprints_allowed then
+                for _, blueprint_action in ipairs(BLUEPRINT_ACTIONS) do
+                    if action == blueprint_action then
+                        allowed = false
+                        break
+                    end
+                end
+            end
+            storage.SM_Store.defGroup.set_allows_action(action, allowed)
         end
     end
 end
