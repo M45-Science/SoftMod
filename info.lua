@@ -601,7 +601,7 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = {"", "[font=default-large-bold]", {"strings.info_score_l2_decon"}, "[/font]"}
+                caption = {"", "[font=default-large-bold]", {"strings.info_score_l2_decon", {"item-name.deconstruction-planner"}}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
@@ -637,7 +637,7 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
-                caption = {"", "[font=default-large]", {"strings.info_score_l3_decon"}, "[/font]"}
+                caption = {"", "[font=default-large]", {"strings.info_score_l3_decon", {"item-name.deconstruction-planner"}}, "[/font]"}
             }
             tab2_main_frame.add {
                 type = "label",
