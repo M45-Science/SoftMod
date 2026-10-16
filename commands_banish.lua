@@ -15,7 +15,7 @@ function BANISH_AddBanishCommands()
 
             -- Only if name provided
             if param.parameter then
-                local victim = game.players[param.parameter]
+                local victim = UTIL_FindPlayer(param.parameter)
 
                 if (victim) then
                     STORAGE_MakePlayerStorage(victim)
@@ -48,7 +48,7 @@ function BANISH_AddBanishCommands()
 
             -- Only if name provided
             if param.parameter then
-                local victim = game.players[param.parameter]
+                local victim = UTIL_FindPlayer(param.parameter)
 
                 if (victim) then
                     STORAGE_MakePlayerStorage(victim)
@@ -118,7 +118,7 @@ function BANISH_AddBanishCommands()
                         BANISH_UpdateVotes()
                         return
                     end
-                    local victim = game.players[args[1]]
+                    local victim = UTIL_FindPlayer(args[1])
 
                     -- If victim found
                     if victim then
@@ -257,7 +257,7 @@ function BANISH_AddBanishCommands()
 
                     -- Must have arguments
                     if args and args[1] ~= "" then
-                        local victim = game.players[args[1]]
+                        local victim = UTIL_FindPlayer(args[1])
 
                         -- Withdrawing a vote only requires a valid player, not a character.
                         if victim and victim.valid then
@@ -322,7 +322,7 @@ function BANISH_AddBanishCommands()
                 UTIL_SmartPrint(player, "You must specify a reason.")
                 return
             end
-            local victim = game.players[args[1]]
+            local victim = UTIL_FindPlayer(args[1])
 
             -- Quick arg combine
             local reason = table.concat(args, " ", 2)

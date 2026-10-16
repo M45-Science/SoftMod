@@ -165,7 +165,7 @@ end
 
 -- Global, called from control.lua
 function ONLINE_MakeM45OnlineSub(player, target_name)
-    local target = game.players[target_name]
+    local target = UTIL_FindPlayer(target_name)
 
     -- make online root submenu
     if player and target and target.valid then
@@ -542,7 +542,7 @@ function ONLINE_Window(player)
                     if not storage.PData[player.index].onlineBrief then
                         local submenu
                         -- Yeah don't need this menu for ourself
-                        if victim.name == player.name then
+                        if UTIL_PlayerNamesEqual(victim.name, player.name) then
                             submenu = pframe.add {
                                 type = "sprite-button",
                                 sprite = "utility/player_force_icon",
@@ -749,7 +749,7 @@ function ONLINE_Clicks(event)
             local victim
             if storage.PData[player.index].onlineSub then
                 victim_name = storage.PData[player.index].onlineSub
-                victim = game.players[victim_name]
+                victim = UTIL_FindPlayer(victim_name)
             end
 
             if args and args[1] == "m45_online_submenu_open" then

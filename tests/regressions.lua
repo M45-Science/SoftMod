@@ -444,6 +444,72 @@ test("invalid player levels leave admin and pending-change state untouched", fun
     assert(not p.admin and e.CW_ConsumeAdminChange(p.index) and e.storage.PData[p.index].level == 2)
 end)
 
+test("player names match case-insensitively without partial matches", function()
+    local e = environment()
+    local p = e.player("AlIcE")
+    assert(e.UTIL_PlayerNamesEqual("ALICE", "alice"))
+    assert(not e.UTIL_PlayerNamesEqual(nil, nil))
+    assert(not e.UTIL_PlayerNamesEqual("alice", "ali"))
+    for _, name in ipairs({"alice", "ALICE", "AlIcE"}) do
+        assert(e.UTIL_FindPlayer(name) == p)
+    end
+    p.connected = false
+    assert(e.UTIL_FindPlayer("alice") == p)
+    assert(e.UTIL_FindPlayer("ali") == nil and e.UTIL_FindPlayer("missing") == nil)
+    assert(e.UTIL_FindPlayer(nil) == nil and e.UTIL_FindPlayer(1) == nil)
+    assert(p.name == "AlIcE")
+end)
+
+test("ChatWire levels accept database casing and emit canonical player names", function()
+    local e = chatwire_env()
+    local p = e.player("AlIcE")
+    local last_event
+    e.CW_EmitEvent = function(event, data) last_event = {event = event, data = data} end
+    for _, assignment in ipairs({
+        {1, "memGroup"}, {2, "regGroup"}, {3, "vetGroup"},
+        {255, "modGroup"}, {2, "regGroup"}, {0, "defGroup"},
+    }) do
+        last_event = nil
+        local level, group = assignment[1], assignment[2]
+        local result = e.request_command("player-level", {name = "alice", level = level})
+        assert(result.ok, result.error)
+        assert(p.permission_group == e.storage.SM_Store[group])
+        assert(p.admin == (level == 255))
+        if level ~= 255 then assert(e.storage.PData[p.index].level == level) end
+        assert(last_event.event == "player-level" and last_event.data.name == "AlIcE" and last_event.data.level == level)
+    end
+    p.connected = false
+    for _, name in ipairs({"alice", "AlIcE", "missing"}) do
+        local result = e.request_command("player-level", {name = name, level = 1})
+        assert(not result.ok and result.error == "player is not online")
+    end
+    assert(e.storage.PData[p.index].level == 0)
+end)
+
+test("ChatWire whispers and supporter flags accept mixed player-name casing", function()
+    local e = chatwire_env()
+    local p = e.player("AlIcE")
+    local recipient, message
+    e.UTIL_SmartPrint = function(player, text) recipient, message = player, text end
+    assert(e.request_command("whisper", {name = "ALICE", text = "Hello"}).ok)
+    assert(recipient == p and message == "Hello")
+    assert(e.request_command("supporter", {name = "alice", patreon = true, nitro = true}).ok)
+    assert(e.storage.PData[p.index].patreon and e.storage.PData[p.index].nitro)
+end)
+
+test("moderator commands accept mixed player-name casing", function()
+    local e = banish_env()
+    local p = e.player("AlIcE")
+    e.registered.member({parameter = "ALICE"})
+    assert(e.storage.PData[p.index].level == 1)
+    e.registered.reset({parameter = "alice"})
+    assert(e.storage.PData[p.index].level == 0)
+    e.registered.jail({parameter = "aLiCe"})
+    assert(e.storage.PData[p.index].manual_jail)
+    e.registered.unjail({parameter = "ALICE"})
+    assert(not e.storage.PData[p.index].manual_jail)
+end)
+
 test("reveal supplies valid bounds from console and from a player", function()
     local e = environment()
     e.registered.reveal({name = "reveal", parameter = "1024"})

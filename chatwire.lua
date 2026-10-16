@@ -187,7 +187,7 @@ local function set_player_level(data)
     if data.level ~= 0 and data.level ~= 1 and data.level ~= 2 and data.level ~= 3 and data.level ~= 255 then
         return false, "unsupported player level"
     end
-    local player = game.players[data.name]
+    local player = UTIL_FindPlayer(data.name)
     if not (player and player.connected) then
         return false, "player is not online"
     end
@@ -227,7 +227,7 @@ local function set_supporter(data)
         (data.nitro ~= nil and type(data.nitro) ~= "boolean") then
         return false, "supporter flags must be boolean"
     end
-    local player = game.players[data.name]
+    local player = UTIL_FindPlayer(data.name)
     if not (player and player.connected and storage.PData[player.index]) then
         return false, "player is not online"
     end
@@ -276,7 +276,7 @@ local handlers = {
         if type(data.name) ~= "string" or type(data.text) ~= "string" then
             return false, {}, "name and text are required"
         end
-        local player = game.players[data.name]
+        local player = UTIL_FindPlayer(data.name)
         if not (player and player.connected) then
             return false, {}, "player is not online"
         end

@@ -65,7 +65,7 @@ local function isUnreadVictim(victim, id)
         return false
     end
 
-    if note.last_user == victim.name then
+    if UTIL_PlayerNamesEqual(note.last_user, victim.name) then
         return false
     end
 
@@ -202,7 +202,7 @@ local function makeTodoSubmenu(player, i, edit_mode)
 
             local no_edit = false
             if not edit_mode or UTIL_Is_New(player) or
-                (not player.admin and player.name ~= target.owner and not target.can_edit) then
+                (not player.admin and not UTIL_PlayerNamesEqual(player.name, target.owner) and not target.can_edit) then
                 no_edit = true
             end
             local editing_id = storage.todo_player_editing_id and storage.todo_player_editing_id[player.index] or nil
@@ -309,7 +309,7 @@ local function makeTodoSubmenu(player, i, edit_mode)
                         lock_spacer.style.width = 32
 
                         local is_owner = false
-                        if target and target.owner and target.owner == player.name then
+                        if target and target.owner and UTIL_PlayerNamesEqual(target.owner, player.name) then
                             is_owner = true
                         end
 
@@ -606,7 +606,7 @@ function TODO_MakeWindow(player)
                         submenu_edit.style.padding = 4
                         local can_edit = true
                         -- Disable button if we can't edit
-                        if UTIL_Is_New(player) or (not player.admin and player.name ~= target.owner and not target.can_edit) then
+                        if UTIL_Is_New(player) or (not player.admin and not UTIL_PlayerNamesEqual(player.name, target.owner) and not target.can_edit) then
                             submenu_edit.enabled = false
                             can_edit = false
                         end

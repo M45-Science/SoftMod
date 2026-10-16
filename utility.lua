@@ -4,6 +4,29 @@
 -- License: MPL 2.0
 -- Safe console print
 
+function UTIL_PlayerNamesEqual(left, right)
+    return type(left) == "string" and type(right) == "string" and
+        string.lower(left) == string.lower(right)
+end
+
+-- Resolve names from commands, ChatWire, and saved UI state without requiring
+-- callers to know the player's capitalization. Keep the LuaPlayer's real name.
+function UTIL_FindPlayer(name)
+    if type(name) ~= "string" or name == "" then
+        return nil
+    end
+    local player = game.players[name]
+    if player then
+        return player
+    end
+    for _, candidate in pairs(game.players) do
+        if UTIL_PlayerNamesEqual(candidate.name, name) then
+            return candidate
+        end
+    end
+    return nil
+end
+
 -- Move complete stacks so item data (equipment, blueprints, ammo, etc.) survives.
 -- transfer_stack can move only part of a stack even when it returns false.
 function UTIL_TransferInventory(source_inv, target_inv)
