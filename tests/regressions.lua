@@ -556,5 +556,72 @@ test("offline release supersedes a pending jail teleport", function()
     assert(p.physical_surface.name == "nauvis" and #e.storage.SM_Store.sendToSurface == 0)
 end)
 
+test("new map preview is sent once after ChatWire hello", function()
+    local e = chatwire_env()
+    e.RunSetup = noop
+    assert(e.storage.CW_MapPreviewPending)
+    local reads, events = 0, {}
+    e.game.get_map_exchange_string = function()
+        reads = reads + 1
+        return ">>>actual-map-settings-and-seed<<<"
+    end
+    e.CW_EmitEvent = function(event, data)
+        events[#events + 1] = {event = event, data = data}
+    end
+    assert(e.request_command("hello", {}).ok)
+    assert(reads == 1 and #events == 1)
+    assert(events[1].event == "map-preview")
+    assert(events[1].data.exchange_string == ">>>actual-map-settings-and-seed<<<")
+    assert(not e.storage.CW_MapPreviewPending)
+    e.STORAGE_EnsureGlobal()
+    assert(not e.storage.CW_MapPreviewPending)
+    assert(e.request_command("hello", {}).ok)
+    assert(reads == 1 and #events == 1)
+end)
+
+test("existing maps do not announce a preview on hello", function()
+    local e = chatwire_env()
+    e.storage.CW_MapPreviewPending = nil
+    e.STORAGE_EnsureGlobal()
+    e.RunSetup = noop
+    e.game.get_map_exchange_string = function() error("must not read existing map") end
+    e.CW_EmitEvent = function() error("must not announce existing map") end
+    assert(e.request_command("hello", {}).ok)
+end)
+
+test("failed map exchange remains pending without breaking hello", function()
+    local e = chatwire_env()
+    e.RunSetup = noop
+    e.storage.CW_MapPreviewPending = true
+    e.game.get_map_exchange_string = function() error("not ready") end
+    local errors = 0
+    e.CW_EmitText = function(event) assert(event == "error"); errors = errors + 1 end
+    assert(e.request_command("hello", {}).ok)
+    assert(errors == 1 and e.storage.CW_MapPreviewPending)
+end)
+
+test("map-preview returns a copyable URL to the requesting player", function()
+    local e = chatwire_env()
+    local player = e.player("preview-player")
+    e.game.get_map_exchange_string = function() return ">>>+//v\r\nYQ==<<<" end
+    local recipient, text
+    e.UTIL_SmartPrint = function(p, message) recipient, text = p, message end
+    e.registered["map-preview"]({player_index = player.index})
+    assert(recipient == player and text == "https://mapgen.m45sci.xyz/#m=-__vYQ")
+    assert(e.storage.CW_MapPreviewPending) -- manual requests do not consume the announcement
+end)
+
+test("map-preview supports console and RCON and handles export errors", function()
+    local e = chatwire_env()
+    local recipient, text
+    e.UTIL_SmartPrint = function(p, message) recipient, text = p, message end
+    e.game.get_map_exchange_string = function() return ">>>YWJj<<<" end
+    e.registered["map-preview"]({})
+    assert(recipient == nil and text == "https://mapgen.m45sci.xyz/#m=YWJj")
+    e.game.get_map_exchange_string = function() error("unavailable") end
+    e.registered["map-preview"]({})
+    assert(text:match("^Map preview unavailable:"))
+end)
+
 print(string.format("%d passed; %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

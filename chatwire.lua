@@ -31,6 +31,33 @@ function CW_EmitText(event_name, text)
     CW_EmitEvent(event_name, { text = text or "" })
 end
 
+function CW_AnnounceNewMapPreview()
+    if not storage.CW_MapPreviewPending then return end
+    local ok, exchange = pcall(game.get_map_exchange_string)
+    if not ok or type(exchange) ~= "string" or exchange == "" then
+        CW_EmitText("error", "Unable to read the new map's exchange string.")
+        return
+    end
+    CW_EmitEvent("map-preview", { exchange_string = exchange })
+    storage.CW_MapPreviewPending = nil
+end
+
+function CW_MapPreviewURL()
+    local exchange = game.get_map_exchange_string():gsub("%s", "")
+    local encoded = exchange:match("^>>>([%w+/=]+)<<<$")
+    if not encoded then error("Invalid map exchange string.") end
+    encoded = encoded:gsub("%+", "-"):gsub("/", "_"):gsub("=+$", "")
+    return "https://mapgen.m45sci.xyz/#m=" .. encoded
+end
+
+-- Player command also serves the read-only Discord request over RCON.
+commands.remove_command("map-preview")
+commands.add_command("map-preview", "Get a FactMapGen preview link for this map.", function(param)
+    local player = param and param.player_index and game.players[param.player_index] or nil
+    local ok, url = pcall(CW_MapPreviewURL)
+    UTIL_SmartPrint(player, ok and url or "Map preview unavailable: unable to read the map exchange string.")
+end)
+
 local function response(request, ok, data, error_message)
     local envelope = {
         id = request and request.id or nil,
@@ -247,6 +274,7 @@ end
 local handlers = {
     hello = function()
         RunSetup()
+        CW_AnnounceNewMapPreview()
         return true, { softmod_version = storage.SM_Version or SM_VERSION or "?" }
     end,
     status = function()

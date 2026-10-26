@@ -8,6 +8,9 @@ local function ensure_global_tables()
     end
     if not storage.SM_Store then
         storage.SM_Store = {}
+        -- ChatWire injects SoftMod into an already-created save, so on_init
+        -- may have run before our scripts were installed.
+        storage.CW_MapPreviewPending = true
     end
 
     if not storage.SM_Store.resetDuration then
