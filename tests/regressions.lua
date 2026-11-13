@@ -623,5 +623,27 @@ test("map-preview supports console and RCON and handles export errors", function
     assert(text:match("^Map preview unavailable:"))
 end)
 
+test("asteroid deaths survive save/load and flush once per nonempty interval", function()
+    local e = environment()
+    e.load("storage")
+    e.load("log")
+    local lines = {}
+    e.UTIL_ConsolePrint = function(line) table.insert(lines, line) end
+    local asteroid = {entity = {name = "modded-rock", type = "asteroid"}}
+    e.LOG_EntDied(asteroid)
+    e.storage = copy(e.storage)
+    e.STORAGE_EnsureGlobal()
+    e.LOG_EntDied(asteroid)
+    e.LOG_EntDied({entity = {name = "character", type = "character"}})
+    e.LOG_EntDied({entity = {name = "asteroid-collector", type = "asteroid-collector", gps_tag = "[gps=1,2]"}})
+    assert(#lines == 1 and lines[1] == "asteroid-collector died at [gps=1,2]")
+    e.LOG_FlushAsteroidDeaths()
+    e.LOG_FlushAsteroidDeaths()
+    assert(#lines == 2 and lines[2] == "Asteroid deaths this interval: 2")
+    e.LOG_EntDied(asteroid)
+    e.LOG_FlushAsteroidDeaths()
+    assert(#lines == 3 and lines[3] == "Asteroid deaths this interval: 1")
+end)
+
 print(string.format("%d passed; %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

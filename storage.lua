@@ -16,6 +16,7 @@ local function ensure_global_tables()
     if not storage.SM_Store.resetDuration then
         storage.SM_Store.resetDuration = ""
     end
+    storage.SM_Store.asteroidDeaths = storage.SM_Store.asteroidDeaths or 0
     if not storage.SM_Store.purge_tasks then
         storage.SM_Store.purge_tasks = {}
     end

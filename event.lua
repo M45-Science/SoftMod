@@ -83,6 +83,7 @@ script.on_nth_tick(599, function(event)
 
     --1 min
     if storage.SM_Store.tickDiv % 6 == 0 then
+        LOG_FlushAsteroidDeaths()
         if storage.SM_Store.online_dirty then
             ONLINE_UpdatePlayerList() -- online.lua
         end

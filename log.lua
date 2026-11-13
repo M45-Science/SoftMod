@@ -195,10 +195,26 @@ end
 
 function LOG_EntDied(event)
     if event and event.entity then
+        if event.entity.type == "asteroid" then
+            -- Injected saves can receive events before setup or the first timer tick.
+            if not storage.SM_Store or not storage.SM_Store.asteroidDeaths then
+                STORAGE_EnsureGlobal()
+            end
+            storage.SM_Store.asteroidDeaths = storage.SM_Store.asteroidDeaths + 1
+            return
+        end
         if event.entity.name == "character" then
             return
         end
         UTIL_ConsolePrint(event.entity.name .. " died at " .. event.entity.gps_tag)
+    end
+end
+
+function LOG_FlushAsteroidDeaths()
+    local count = storage.SM_Store.asteroidDeaths
+    if count > 0 then
+        UTIL_ConsolePrint("Asteroid deaths this interval: " .. count)
+        storage.SM_Store.asteroidDeaths = 0
     end
 end
 
