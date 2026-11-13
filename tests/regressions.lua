@@ -623,12 +623,17 @@ test("map-preview supports console and RCON and handles export errors", function
     assert(text:match("^Map preview unavailable:"))
 end)
 
-test("public activity notices back off per player and activity while logging each event", function()
+test("Discord activity notices back off per player and activity while logging each event", function()
     local e = environment()
     e.load("log")
     local player, other = e.player("pilot"), e.player("other")
     local notices, logged = {}, {}
-    e.UTIL_MsgAll = function(msg) table.insert(notices, msg) end
+    e.game.print = function() error("routine activity was broadcast in game") end
+    e.CW_EmitText = function(event, msg)
+        assert(event == "message")
+        table.insert(notices, msg)
+    end
+    e.UTIL_MsgAll = function() error("routine activity was broadcast in game") end
     e.UTIL_ConsolePrint = function(msg) table.insert(logged, msg) end
     e.UTIL_Is_New = function(p) return p == player end
     e.UTIL_Is_Member = function(p) return p == other end
@@ -662,11 +667,17 @@ test("public activity notices back off per player and activity while logging eac
     drive(player, 19299)
     drive(player, 19300)
     assert(#notices == 11 and #logged == 21)
+    e.game.tick = 19301
+    e.LOG_MarkedUpgrade(mark)
+    e.game.tick = 19302
+    e.LOG_CancelUpgrade(mark)
+    e.LOG_Flushed({player_index=player.index, entity=building, amount=10, fluid="water"})
+    assert(#notices == 14 and #logged == 24)
     e.UTIL_Is_New = function() return false end
     e.game.tick = 40000
     drive(player, 40000)
     e.LOG_MarkDecon(mark)
-    assert(#notices == 11 and #logged == 23)
+    assert(#notices == 14 and #logged == 26)
 end)
 
 test("asteroid deaths survive save/load and flush once per nonempty interval", function()

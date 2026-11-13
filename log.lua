@@ -264,7 +264,7 @@ function LOG_DroppedItem(event)
     end
 end
 
--- Public notices share a timer within each activity, including planner/entity
+-- Discord notices share a timer within each activity, including planner/entity
 -- events from one selection. ChatWire still receives the original activity events.
 local noticeFirstDelay = 5 * 60
 local noticeMaxDelay = 60 * 60
@@ -288,7 +288,7 @@ local function announceActivity(player, activity, message)
         state.nextNotice = now + state.delay
     end
     state.lastAction = now
-    UTIL_MsgAll(message)
+    UTIL_MsgDiscord(message)
 end
 
 -- Deconstruction planner warning
@@ -367,7 +367,7 @@ function LOG_MarkedUpgrade(event)
             if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
                 if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
                     if UTIL_WarnOkay(event.player_index) then
-                        UTIL_MsgAll(msg)
+                        UTIL_MsgDiscord(msg)
                     end
                 end
             end
@@ -388,7 +388,7 @@ function LOG_CancelUpgrade(event)
             if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
                 if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
                     if UTIL_WarnOkay(event.player_index) then
-                        UTIL_MsgAll(msg)
+                        UTIL_MsgDiscord(msg)
                     end
                 end
             end
@@ -457,7 +457,7 @@ function LOG_Flushed(event)
 
 
             if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
-                UTIL_MsgAll(msg)
+                UTIL_MsgDiscord(msg)
             end
 
             UTIL_ConsolePrint(msg)
