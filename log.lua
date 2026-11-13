@@ -634,20 +634,21 @@ function LOG_PreMined(event)
 end
 
 function LOG_Rotated(event)
-    if not event or not event.player_index or not event.previous_direction then
+    if not event or not event.player_index or (event.previous_direction == nil and event.horizontal == nil) then
         return
     end
 
     local player = game.players[event.player_index]
     local obj = event.entity
 
+    local action = event.horizontal ~= nil and " flipped " or " rotated "
     -- If player and object are valid
     if obj.name ~= "tile-ghost" and obj.name ~= "tile" then
         if obj.name ~= "entity-ghost" then
-            UTIL_ConsolePrint("[ACT] " .. player.name .. " rotated " .. obj.name .. " " .. obj.gps_tag)
+            UTIL_ConsolePrint("[ACT] " .. player.name .. action .. obj.name .. " " .. obj.gps_tag)
         else
             UTIL_ConsolePrint("[ACT] " ..
-                player.name .. " rotated ghost " .. obj.name .. obj.gps_tag ..
+                player.name .. action .. "ghost " .. obj.name .. obj.gps_tag ..
                 " " .. obj.ghost_name)
         end
     end
@@ -659,6 +660,15 @@ function LOG_Banned(event)
     end
     local player = game.players[event.player_index]
     local player_name = (player and player.name) or event.player_name or "<unknown player>"
-    UTIL_DumpInv(player, true)
-    UTIL_MsgAllSys(player_name .. "'s items have been left at spawn, so they can be recovered.")
+    local moved = UTIL_DumpInv(player, true)
+    if moved then
+        local complete = storage.PData and storage.PData[player.index] and storage.PData[player.index].cleaned
+        if complete then
+            UTIL_MsgAllSys(player_name .. "'s items have been left at spawn, so they can be recovered.")
+        else
+            UTIL_MsgAllSys("Some of " .. player_name .. "'s items were left at spawn. Remaining items are still in their original inventory.")
+        end
+    else
+        UTIL_ConsolePrint("[AUDIT] No items moved to spawn for banned player " .. player_name .. ".")
+    end
 end

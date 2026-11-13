@@ -702,5 +702,36 @@ test("asteroid deaths survive save/load and flush once per nonempty interval", f
     assert(#lines == 3 and lines[3] == "Asteroid deaths this interval: 1")
 end)
 
+test("flips and rotations both produce activity records", function()
+    local e = environment()
+    e.load("log")
+    local p = e.player("builder")
+    local lines = {}
+    e.UTIL_ConsolePrint = function(msg) lines[#lines+1] = msg end
+    local entity = {name="splitter", gps_tag="[gps=1,2]"}
+    e.LOG_Rotated({player_index=p.index, entity=entity, horizontal=false})
+    e.LOG_Rotated({player_index=p.index, entity=entity, horizontal=true})
+    e.LOG_Rotated({player_index=p.index, entity=entity, previous_direction=0})
+    assert(#lines==3 and lines[1]:find(" flipped ") and lines[2]:find(" flipped ") and lines[3]:find(" rotated "))
+end)
+
+test("ban recovery announcements reflect the inventory transfer outcome", function()
+    local e = environment()
+    e.load("log")
+    local p = e.player("banned")
+    local messages = {}
+    e.UTIL_MsgAllSys = function(msg) messages[#messages+1] = msg end
+    e.UTIL_DumpInv = function() return false end
+    e.LOG_Banned({player_index=p.index})
+    assert(#messages==0)
+    e.UTIL_DumpInv = function() return true end
+    e.storage.PData[p.index].cleaned = false
+    e.LOG_Banned({player_index=p.index})
+    assert(#messages==1 and messages[1]:find("Remaining items"))
+    e.storage.PData[p.index].cleaned = true
+    e.LOG_Banned({player_index=p.index})
+    assert(#messages==2 and messages[2]:find("so they can be recovered"))
+end)
+
 print(string.format("%d passed; %d failed", passed, failed))
 if failed > 0 then os.exit(1) end
