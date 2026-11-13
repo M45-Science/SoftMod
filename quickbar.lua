@@ -480,7 +480,7 @@ local function QUICKBAR_MakeSlotFilter(item, quality)
     return item
 end
 
-function ExportQuickbar(player, limit)
+local function encode_quickbar(player, limit)
     if not player or not player.valid then
         return
     end
@@ -521,119 +521,254 @@ function ExportQuickbar(player, limit)
         outbuf = outbuf .. ","
     end
 
-    UTIL_SmartPrint(player,"Quickbar Exported!")
     return helpers.encode_string("M45-QB2=" .. outbuf)
 end
 
 
---Split with empty strings
-function SplitStr(str, delimiter)
-    local result = {}
-    for match in (str..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match)
+function ExportQuickbar(player, limit)
+    local exchange = encode_quickbar(player, limit)
+    if exchange then UTIL_SmartPrint(player, "Quickbar Exported!") end
+    return exchange
+end
+
+-- Resolve every filter before replacing any slots. QB1 and QB2 both allow a trailing comma.
+local function decode_quickbar(data)
+    if type(data) ~= "string" or #data > 10240 then return nil, "Invalid quickbar string size." end
+    local ok, decoded = pcall(helpers.decode_string, data)
+    if not ok or type(decoded) ~= "string" or #decoded > 10240 then
+        return nil, "Could not decode that quickbar string."
     end
-    return result
+    local version, payload = decoded:match("^(M45%-QB[12])=(.*)$")
+    if not version then return nil, "Invalid quickbar exchange header." end
+    if not next(ITEM_ALIAS) then QUICKBAR_GenerateItemAliases() end
+    if not prototypes or not prototypes.item or not prototypes.quality then
+        return nil, "Item and quality prototypes are unavailable."
+    end
+    if payload:sub(-1) ~= "," then payload = payload .. "," end
+    local slots, missing, index = {}, {}, 0
+    for entry in payload:gmatch("(.-),") do
+        index = index + 1
+        if index > 100 then return nil, "Quickbar exceeds 100 slots." end
+        if entry ~= "" then
+            local item, quality = entry, "normal"
+            if version == "M45-QB2" then
+                local name, q = entry:match("^([^:]+):([^:]+)$")
+                if name then item, quality = name, QUALITY_FROM_ALIAS[q] or q end
+            end
+            item = ITEM_FROM_ALIAS[item] or item
+            if prototypes.item[item] and prototypes.quality[quality] then
+                slots[index] = QUICKBAR_MakeSlotFilter(item, quality)
+            else
+                missing[#missing + 1] = item .. (quality ~= "normal" and ":" .. quality or "")
+            end
+        end
+    end
+    return slots, missing
+end
+
+local function apply_quickbar(player, slots)
+    for i = 1, 100 do QUICKBAR_SetSlot(player, i, slots[i]) end
 end
 
 function ImportQuickbar(player, data)
-    if not player or not player.valid then
+    if not player or not player.valid or not data or data == "" then return false end
+    local slots, missing = decode_quickbar(data)
+    if not slots then
+        UTIL_SmartPrint(player, missing)
         return false
     end
-    if data == nil or data == "" then
-        return false
-    end
-
-    if not next(ITEM_ALIAS) then
-        QUICKBAR_GenerateItemAliases()
-    end
-
-    --Limit compressed size
-    if string.len(data) > 10240 then
-        UTIL_SmartPrint(player, "String too long.")
-        return false
-    end
-
-    local decoded = helpers.decode_string(data)
-    if decoded == nil or decoded == "" then
-        UTIL_SmartPrint(player, "Could not decode that string.")
-        return false
-    end
-
-    --Limit decompressed size
-    if string.len(decoded) > 10240 then
-        UTIL_SmartPrint(player, "String too long.")
-        return false
-    end
-
-    local version, payload = decoded:match("^([^=]+)=(.*)$")
-    if not version then
-        UTIL_SmartPrint(player, "That isn't a valid M45 quickbar exchange string! (No Header)")
-        return false
-    end
-    if version ~= "M45-QB1" and version ~= "M45-QB2" then
-        UTIL_SmartPrint(player, "That isn't a valid M45 quickbar exchange string! (Invalid Header)")
-        return false
-    end
-
-    --Clear all bars
-    for i = 1, 100 do
-        QUICKBAR_SetSlot(player, i, nil)
-    end
-
-    --Restore from string
-    local items = SplitStr(payload or "", ",")
-    if not prototypes or not prototypes.item or not prototypes.quality then
-        UTIL_SmartPrint(player, "Quickbar Import: global 'prototypes' unavailable; aborting import.")
-        return false
-    end
-
-    local error_list = ""
-    for i, entry in ipairs(items) do
-        if i > 100 then
-            return
-        end
-
-        if entry ~= "" then
-            local item = entry
-            local quality = "normal"
-
-            if version == "M45-QB2" then
-                local parts = UTIL_SplitStr(entry, ":")
-                local ialias = parts[1] or ""
-                item = ITEM_FROM_ALIAS[ialias] or ialias
-                local qalias = parts[2]
-                if qalias ~= nil then
-                    quality = QUALITY_FROM_ALIAS[qalias] or qalias
-                end
-            else
-                item = ITEM_FROM_ALIAS[item] or item
-            end
-
-            local valid_item = prototypes.item[item]
-            local valid_quality = prototypes.quality[quality]
-
-            if valid_item and valid_quality then
-                QUICKBAR_SetSlot(player, i, QUICKBAR_MakeSlotFilter(item, quality))
-            else
-                if error_list ~= "" then
-                    error_list = error_list .. ", "
-                end
-                if not valid_item then
-                    error_list = error_list .. item
-                else
-                    error_list = error_list .. item .. ":" .. quality
-                end
-            end
-        end
-    end
-
-    if error_list ~= "" then
-        UTIL_SmartPrint(player, "Quickbar Import: Invalid items/qualities skipped: " .. error_list)
+    apply_quickbar(player, slots)
+    if #missing > 0 then
+        UTIL_SmartPrint(player, "Quickbar Import: Invalid items/qualities skipped: " .. table.concat(missing, ", "))
     else
         UTIL_SmartPrint(player, "Quickbar imported!")
     end
-
     return true
+end
+
+local function preset_request(player, action, slot, label)
+    local pdata = storage.PData[player.index]
+    if not storage.SM_Store.quickbar_presets or not pdata then return end
+    local request = {name = player.name, action = action, slot = slot, admin = player.admin}
+    if action == "store" then
+        request.exchange = encode_quickbar(player, false)
+    end
+    request.label = label
+    request.first_join = action == "access" and pdata.qb_first_join == true
+    storage.SM_Store.qb_sequence = (storage.SM_Store.qb_sequence or 0) + 1
+    request.id = storage.SM_Store.qb_sequence
+    pdata.qb_pending = {id = request.id, action = action, slot = slot, first_join = request.first_join,
+        confirm = action == "load" and pdata.qb_partial or nil}
+    CW_EmitEvent("quickbar-preset", request)
+end
+
+function QUICKBAR_CheckAccess(player)
+    preset_request(player, "access")
+end
+
+-- Each public layout fills the first 20 positions; the remaining shortcuts stay personal.
+local public_presets = {
+    {
+        name = "Starter base",
+        items = {
+            "transport-belt", "underground-belt", "splitter", "inserter", "small-electric-pole",
+            "assembling-machine-1", "electric-mining-drill", "stone-furnace", "wooden-chest", "repair-pack",
+            "burner-mining-drill", "burner-inserter", "long-handed-inserter", "pipe", "pipe-to-ground",
+            "offshore-pump", "boiler", "steam-engine", "lab", "gun-turret"
+        }
+    },
+    {
+        name = "Factory and oil",
+        items = {
+            "fast-transport-belt", "fast-underground-belt", "fast-splitter", "fast-inserter", "medium-electric-pole",
+            "assembling-machine-2", "electric-mining-drill", "steel-furnace", "steel-chest", "repair-pack",
+            "pipe", "pipe-to-ground", "pump", "storage-tank", "pumpjack",
+            "oil-refinery", "chemical-plant", "long-handed-inserter", "bulk-inserter", "substation"
+        }
+    },
+    {
+        name = "Rail outpost",
+        items = {
+            "rail", "rail-chain-signal", "rail-signal", "train-stop", "big-electric-pole",
+            "locomotive", "cargo-wagon", "fluid-wagon", "radar", "repair-pack",
+            "fast-transport-belt", "fast-underground-belt", "fast-splitter", "bulk-inserter", "medium-electric-pole",
+            "electric-mining-drill", "steel-chest", "pump", "storage-tank", "pipe-to-ground"
+        }
+    }
+}
+
+local function load_public_preset(player, element)
+    local window = player.gui.screen.quickbar_manager
+    local section = window and window.qb_preset_section
+    local row = section and section.qb_public
+    if not row or element ~= row.qb_public_load then return end
+    local preset = public_presets[row.choice.selected_index]
+    if not preset then return end
+    local loaded = 0
+    for i, item in ipairs(preset.items) do
+        if prototypes.item[item] then
+            QUICKBAR_SetSlot(player, i, QUICKBAR_MakeSlotFilter(item, "normal"))
+            loaded = loaded + 1
+        end
+    end
+    UTIL_SmartPrint(player, preset.name .. ": loaded " .. loaded .. " of " .. #preset.items .. " shortcuts.")
+end
+
+local function preset_row(player)
+    local window = player.gui.screen.quickbar_manager
+    local section = window and window.qb_preset_section
+    return section and section.qb_presets
+end
+
+local function select_preset(row, pdata)
+    row.qb_rename.enabled = row.slot.enabled and row.slot.selected_index > 1
+    row.load.caption = "Load"
+    pdata.qb_partial = nil
+end
+
+local function refresh_presets(player, pdata)
+    local window = player.gui.screen.quickbar_manager
+    local section = window and window.qb_preset_section
+    if not section then return end
+    local allowed = storage.SM_Store.quickbar_presets == true and pdata.qb_allowed == true
+    section.access_note.visible = not allowed
+    local row = section.qb_presets
+    local selected = row and row.slot.selected_index or 1
+    if not row then
+        row = section.add{type = "flow", name = "qb_presets", direction = "horizontal"}
+        row.add{type = "drop-down", name = "slot", tooltip = "Default loads on your first visit to each map."}
+        row.add{type = "button", name = "load", caption = "Load", tooltip = "Replace your quickbar with this preset."}
+        row.add{type = "button", name = "store", caption = "Store", tooltip = "Store your current quickbar in this slot."}
+    end
+    if not row.qb_rename then
+        row.add{type = "button", name = "qb_rename", caption = "Rename", tooltip = "Rename the selected personal preset."}
+    end
+    -- Older saves can contain an open manager with the previous inline editor.
+    if row.preset_name then row.preset_name.destroy() end
+    row.slot.enabled, row.load.enabled, row.store.enabled = allowed, allowed, allowed
+    local labels = {"Default"}
+    local count = allowed and math.max(3, #(pdata.qb_labels or {})) or 3
+    for i = 2, count do
+        local label = pdata.qb_labels and pdata.qb_labels[i]
+        labels[i] = label and label ~= "" and (i .. ". " .. label) or ("Preset " .. i)
+    end
+    row.slot.items = labels
+    row.slot.selected_index = math.min(selected, count)
+    select_preset(row, pdata)
+end
+
+function QUICKBAR_SelectPreset(event)
+    local player = game.get_player(event.player_index)
+    local row = preset_row(player)
+    if row and event.element == row.slot then
+        storage.PData[player.index].qb_pending = nil
+        select_preset(row, storage.PData[player.index])
+    end
+end
+
+local function close_rename(player)
+    local screen = player.gui.screen
+    if screen.qb_rename_dialog then screen.qb_rename_dialog.destroy() end
+    if screen.quickbar_manager then screen.quickbar_manager.visible = true end
+end
+
+function QUICKBAR_Result(data)
+    local player = UTIL_FindPlayer(data.name)
+    if not (player and player.connected) then return end
+    local pdata = storage.PData[player.index]
+    local pending = pdata and pdata.qb_pending
+    if not pending or pending.id ~= data.id then return end
+    pdata.qb_pending = nil
+    pdata.qb_allowed = data.allowed == true
+    if not data.error then pdata.qb_labels = data.labels or {} end
+    if pending.first_join and not data.error then pdata.qb_first_join = nil end
+    if pending.action == "load" and not preset_row(player) then return end
+    refresh_presets(player, pdata)
+    local dialog = player.gui.screen.qb_rename_dialog
+    if dialog then
+        if not pdata.qb_allowed or dialog.tags.slot > #pdata.qb_labels then
+            close_rename(player)
+        elseif pending.action == "rename" and dialog.tags.slot == pending.slot then
+            if data.error then
+                dialog.actions.qb_rename_save.enabled = true
+                dialog.slot_name.focus()
+            else
+                close_rename(player)
+            end
+        end
+    end
+    if not pdata.qb_allowed then
+        if pending.action ~= "access" then UTIL_SmartPrint(player, "Preset access is unavailable.") end
+        return
+    end
+    if data.error then UTIL_SmartPrint(player, data.error); return end
+    if pending.action == "rename" or pending.action == "store" then
+        UTIL_SmartPrint(player, pending.action == "rename" and "Preset name saved." or "Quickbar stored.")
+        return
+    end
+    if pending.action == "access" and not pending.first_join then return end
+    if not data.exchange then
+        if pending.action == "load" then UTIL_SmartPrint(player, "This preset is empty.") end
+        return
+    end
+    local slots, missing = decode_quickbar(data.exchange)
+    if not slots then UTIL_SmartPrint(player, missing); return end
+    if #missing > 0 and pending.confirm ~= data.exchange then
+        local message = #missing .. " quickbar slots use items or qualities unavailable on this map."
+        if pending.first_join then
+            UTIL_SmartPrint(player, message .. " Load Default manually to apply the compatible slots.")
+        else
+            local row = preset_row(player)
+            if row and row.slot.selected_index == pending.slot then
+                pdata.qb_partial = data.exchange
+                row.load.caption = "Load compatible"
+                UTIL_SmartPrint(player, message .. " Choose Load compatible to skip them.")
+            end
+        end
+        return
+    end
+    apply_quickbar(player, slots)
+    UTIL_SmartPrint(player, pending.first_join and "Default quickbar loaded." or "Quickbar loaded.")
 end
 
 function QUICKBAR_MakeExchangeButton(player)
@@ -650,25 +785,15 @@ function QUICKBAR_MakeExchangeButton(player)
             type = "sprite-button",
             name = "qb_exchange_button",
             sprite = "file/img/buttons/exchange-64.png",
-            tooltip = "Import or Export a M45 quickbar exchange string."
+            tooltip = "Open M45 Quickbar Manager."
         }
         ex_button.style.size = { 64, 64 }
     end
 end
 
-function QUICKBAR_MakeExchangeWindow(player, exportMode)
-    QUICKBAR_ClearString(player)
-
-    if not (player and player.valid and player.gui and player.gui.screen) then
-        return
-    end
-    if player.gui.screen.quickbar_exchange then
-        player.gui.screen.quickbar_exchange.destroy()
-    end
+local function make_window(player, name, title)
     local main_flow = player.gui.screen.add {
-        type = "frame",
-        name = "quickbar_exchange",
-        direction = "vertical"
+        type = "frame", name = name, direction = "vertical"
     }
     main_flow.style.horizontal_align = "center"
     main_flow.style.vertical_align = "center"
@@ -685,9 +810,9 @@ function QUICKBAR_MakeExchangeWindow(player, exportMode)
 
     info_titlebar.add {
         type = "label",
-        name = "online_title",
+        name = "qb_title",
         style = "frame_title",
-        caption = "M45 Quickbar Exchange String"
+        caption = title
     }
     local pusher = info_titlebar.add {
         type = "empty-widget",
@@ -707,12 +832,69 @@ function QUICKBAR_MakeExchangeWindow(player, exportMode)
     }
 
     main_flow.style.padding = 4
-    local mframe = main_flow.add {
-        type = "flow",
-        direction = "vertical"
+    return main_flow
+end
+
+local function click_preset(player, element)
+    local row = preset_row(player)
+    if not row or element.parent ~= row then return end
+    local pdata = storage.PData[player.index]
+    if not pdata.qb_allowed then return end
+    local slot = row.slot.selected_index
+    if element == row.store then
+        preset_request(player, "store", slot)
+    elseif element == row.load then
+        preset_request(player, "load", slot)
+    elseif element == row.qb_rename and slot > 1 then
+        local screen = player.gui.screen
+        if screen.qb_rename_dialog then return end
+        local dialog = make_window(player, "qb_rename_dialog", "Rename preset " .. slot)
+        dialog.tags = {slot = slot}
+        local field = dialog.add{type = "textfield", name = "slot_name",
+            text = pdata.qb_labels[slot] or "", tooltip = "Up to 32 characters. Leave blank to reset the name."}
+        local actions = dialog.add{type = "flow", name = "actions", direction = "horizontal"}
+        actions.add{type = "button", name = "qb_rename_cancel", caption = "Cancel"}
+        actions.add{type = "button", name = "qb_rename_save", caption = "Save", style = "confirm_button"}
+        screen.quickbar_manager.visible = false
+        field.focus()
+        field.select_all()
+    end
+end
+
+local function open_manager(player)
+    local manager = make_window(player, "quickbar_manager", "M45 Quickbar Manager")
+    local section = manager.add {
+        type = "frame", name = "qb_preset_section", direction = "vertical",
+        style = "inside_shallow_frame_with_padding", caption = "Quickbar presets"
     }
-    mframe.style.minimal_height = 75
-    mframe.style.horizontally_squashable = false
+    section.style.horizontally_stretchable = true
+    section.add{type = "label", caption = "Global presets", style = "bold_label"}
+    local public = section.add{type = "flow", name = "qb_public", direction = "horizontal"}
+    local names = {}
+    for i, preset in ipairs(public_presets) do names[i] = i .. ". " .. preset.name end
+    public.add{type = "drop-down", name = "choice", items = names, selected_index = 1}
+    public.add{type = "button", name = "qb_public_load", caption = "Load",
+        tooltip = "Replace the first 20 shortcuts. Items unavailable on this map are skipped."}
+    section.add{type = "line", direction = "horizontal"}
+    section.add{type = "label", caption = "Personal presets", style = "bold_label"}
+    section.add{type = "label", caption = "Your saved Default quickbar loads automatically the first time you join each map."}
+    section.add{type = "label", name = "access_note", caption = "Available to Regulars, Veterans, supporters, and admins."}
+    refresh_presets(player, storage.PData[player.index])
+    manager.add{type = "button", name = "qb_open_exchange", caption = "Import / export string"}
+    QUICKBAR_CheckAccess(player)
+end
+
+function QUICKBAR_MakeExchangeWindow(player, exportMode)
+    if not (player and player.valid and player.gui and player.gui.screen) then return end
+    local screen = player.gui.screen
+    if screen.quickbar_exchange then screen.quickbar_exchange.destroy() end
+    if screen.quickbar_manager then screen.quickbar_manager.visible = false end
+    local main_flow = make_window(player, "quickbar_exchange", "M45 Quickbar Exchange String")
+    local mframe = main_flow.add {
+        type = "frame", name = "qb_exchange_section", direction = "vertical",
+        style = "inside_shallow_frame_with_padding"
+    }
+    mframe.style.horizontally_stretchable = true
 
     local qbes = ""
     if exportMode then
@@ -750,6 +932,19 @@ function QUICKBAR_MakeExchangeWindow(player, exportMode)
         name = "export_qb",
         tooltip = "Export current quickbars."
     }
+    bframe.add{type = "button", name = "qb_exchange_back", caption = "Back to presets"}
+    mframe.quickbar_string.focus()
+    if exportMode then mframe.quickbar_string.select_all() end
+end
+
+local function back_to_presets(player)
+    local screen = player.gui.screen
+    screen.quickbar_exchange.destroy()
+    if screen.quickbar_manager then
+        screen.quickbar_manager.visible = true
+    else
+        open_manager(player)
+    end
 end
 
 function QUICKBAR_Clicks(event)
@@ -757,36 +952,41 @@ function QUICKBAR_Clicks(event)
         local player = game.players[event.player_index]
 
         if player and player.valid and event.element.name then
-            if event.element.name == "quickbar_string" then
+            if event.element.name == "qb_public_load" then
+                load_public_preset(player, event.element)
+            elseif event.element.name == "load" or event.element.name == "store" or event.element.name == "qb_rename" then
+                click_preset(player, event.element)
+            elseif event.element.name == "quickbar_string" then
                 event.element.select_all()
             end
 
-            if event.element.name == "qb_exchange_close" and player.gui and player.gui.screen and
-                player.gui.screen.quickbar_exchange then
+            local screen = player.gui.screen
+            local action = event.element.name
+            local dialog = screen.qb_rename_dialog
+            if dialog and (action == "qb_rename_cancel" or action == "qb_exchange_close") then
+                close_rename(player)
+            elseif dialog and action == "qb_rename_save" and event.element == dialog.actions.qb_rename_save then
+                if event.element.enabled then
+                    event.element.enabled = false
+                    preset_request(player, "rename", dialog.tags.slot, dialog.slot_name.text)
+                end
+            elseif action == "qb_exchange_button" or action == "qb_exchange_close" then
+                if dialog then close_rename(player) end
+                local was_open = screen.quickbar_manager or screen.quickbar_exchange
+                if screen.quickbar_exchange then screen.quickbar_exchange.destroy() end
+                if screen.quickbar_manager then screen.quickbar_manager.destroy() end
                 QUICKBAR_ClearString(player)
-                player.gui.screen.quickbar_exchange.destroy()
-            elseif event.element.name == "qb_exchange_button" and player.gui and player.gui.screen then
-                if player.gui.screen.quickbar_exchange then
-                    player.gui.screen.quickbar_exchange.destroy()
-                    QUICKBAR_ClearString(player)
-                else
-                    QUICKBAR_MakeExchangeWindow(player, false)
-                end
-            elseif event.element.name == "export_qb" and player.gui and player.gui.screen then
-                if player.gui.screen.quickbar_exchange then
-                    QUICKBAR_ClearString(player)
-                    player.gui.screen.quickbar_exchange.destroy()
-                end
+                if not was_open and action == "qb_exchange_button" then open_manager(player) end
+            elseif action == "qb_open_exchange" and screen.quickbar_manager then
+                QUICKBAR_MakeExchangeWindow(player, false)
+            elseif action == "qb_exchange_back" and screen.quickbar_exchange then
+                back_to_presets(player)
+            elseif action == "export_qb" and screen.quickbar_exchange then
                 QUICKBAR_MakeExchangeWindow(player, true)
-            elseif event.element.name == "import_qb" and player.gui and player.gui.screen then
-                if storage.PData and storage.PData[player.index] and
-                    storage.PData[event.player_index].qb_import_string then
-                    ImportQuickbar(player, storage.PData[event.player_index].qb_import_string)
-                    QUICKBAR_ClearString(player)
-
-                    if player.gui.screen.quickbar_exchange then
-                        player.gui.screen.quickbar_exchange.destroy()
-                    end
+            elseif action == "import_qb" and screen.quickbar_exchange then
+                local section = screen.quickbar_exchange.qb_exchange_section
+                if section and ImportQuickbar(player, section.quickbar_string.text) then
+                    back_to_presets(player)
                 end
             end
         end
@@ -797,26 +997,9 @@ function QUICKBAR_ClearString(player)
     if not player or not player.valid then
         return
     end
-    if storage.PData and storage.PData[player.index] and
-        storage.PData[player.index].qb_import_string then
-        storage.PData[player.index].qb_import_string = ""
-    end
-end
-
--- Grab text from text box
-function QUICKBAR_TextChanged(event)
-    if event and event.element and event.player_index and event.text and event.element.name then
-        local player = game.players[event.player_index]
-
-        if event.element.name == "quickbar_string" then
-            if storage.PData and storage.PData[event.player_index] then
-                --Limit import size
-                if string.len(event.element.text) > 10240 then
-                    event.element.text = "String too long."
-                    return
-                end
-                storage.PData[event.player_index].qb_import_string = event.element.text
-            end
-        end
+    local pdata = storage.PData and storage.PData[player.index]
+    if pdata then
+        pdata.qb_partial = nil
+        if pdata.qb_pending and pdata.qb_pending.action == "load" then pdata.qb_pending = nil end
     end
 end

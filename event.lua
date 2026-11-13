@@ -191,6 +191,7 @@ local function e_joined(event)
     local player = game.players[event.player_index]
 
     EVENT_PlayerInit(player)
+    QUICKBAR_CheckAccess(player)
     BANISH_SendToSurface(player)
     ONLINE_UpdatePlayerList()
     if not UTIL_Is_Regular(player) and not UTIL_Is_Veteran(player) and not player.admin then
@@ -207,6 +208,7 @@ local function e_playerCreated(event)
     local player = game.players[event.player_index]
 
     EVENT_PlayerInit(player)
+    storage.PData[player.index].qb_first_join = true
     UTIL_SendToDefaultSpawn(player)
     INFO_InfoWin(player)
 
@@ -272,7 +274,7 @@ script.on_event(
 	        .events.on_player_joined_game, defines.events.on_player_left_game, defines.events
 	        .on_player_main_inventory_changed, defines.events.on_player_changed_position, defines.events.on_console_chat,
 	        defines.events.on_player_repaired_entity, defines.events.on_gui_click, defines.events.on_gui_text_changed,
-	        defines.events.on_gui_selected_tab_changed,
+	        defines.events.on_gui_selected_tab_changed, defines.events.on_gui_selection_state_changed,
 		        defines.events.on_player_fast_transferred, defines.events.on_console_command, defines.events
 		        .on_chart_tag_removed, defines.events.on_chart_tag_modified, defines.events.on_chart_tag_added, defines.events
 		        .on_research_finished, defines.events.on_redo_applied, defines.events.on_undo_applied, defines.events
@@ -323,6 +325,10 @@ script.on_event(
             -- repaired_entity
             --
             -- gui
+            local pdata = storage.PData and storage.PData[event.player_index]
+            if pdata then
+                pdata.qb_first_join, pdata.qb_pending, pdata.qb_partial, pdata.qb_allowed = nil, nil, nil, nil
+            end
             LOG_PlayerLeft(event)
         elseif event.name == defines.events.on_gui_click then
             INFO_Clicks(event)     --info.lua
@@ -339,13 +345,15 @@ script.on_event(
                     if not (CW_ConsumeAdminChange and CW_ConsumeAdminChange(player.index)) then
                         PERMS_PromotePlayer(player)
                     end
+                    QUICKBAR_CheckAccess(player)
                     FORCEDEL_MakeButton(player)
                 end
             end
         elseif event.name == defines.events.on_gui_text_changed then
             -- log
             INFO_TextChanged(event) --info.lua
-            QUICKBAR_TextChanged(event)
+        elseif event.name == defines.events.on_gui_selection_state_changed then
+            QUICKBAR_SelectPreset(event)
         elseif event.name == defines.events.on_gui_selected_tab_changed then
             INFO_TabChanged(event)
         elseif event.name == defines.events.on_console_command then

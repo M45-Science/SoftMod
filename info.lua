@@ -664,12 +664,12 @@ function INFO_InfoWin(player)
             if UTIL_Is_Veteran(player) then
                 tab2_main_frame.add {
                     type = "label",
-                    caption = {"", "[recipe=stack-inserter]   [font=default-large-bold][color=red]", {"strings.info_score_level4"}, "[/color][/font]"}
+                    caption = {"", "[recipe=bulk-inserter]   [font=default-large-bold][color=red]", {"strings.info_score_level4"}, "[/color][/font]"}
                 }
             else
                 tab2_main_frame.add {
                     type = "label",
-                    caption = {"", "[recipe=stack-inserter]   [font=default-large-bold]", {"strings.info_score_level4"}, "[/font] "}
+                    caption = {"", "[recipe=bulk-inserter]   [font=default-large-bold]", {"strings.info_score_level4"}, "[/font] "}
                 }
             end
             tab2_main_frame.add {

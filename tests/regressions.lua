@@ -733,5 +733,131 @@ test("ban recovery announcements reflect the inventory transfer outcome", functi
     assert(#messages==2 and messages[2]:find("so they can be recovered"))
 end)
 
+test("Default is requested once for a new player and never overwrites an existing map player on join", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    p.gui = {screen = {}}
+    e.prototypes.item = {["iron-plate"] = true}
+    e.prototypes.quality = {normal = true}
+    local slots = {}
+    p.set_quick_bar_slot = function(i, filter) slots[i] = filter end
+    local request
+    e.CW_EmitEvent = function(_, data) request = data end
+    e.storage.SM_Store.quickbar_presets = true
+    local pdata = e.storage.PData[p.index]
+    e.QUICKBAR_CheckAccess(p)
+    assert(not request.first_join)
+    pdata.qb_first_join = true
+    e.QUICKBAR_CheckAccess(p)
+    assert(request.first_join)
+    local result = {id = request.id, name = "Alice", allowed = true, labels = {}, exchange = "M45-QB2=iron-plate,"}
+    assert(e.request_command("quickbar-result", result).ok)
+    assert(slots[1] == "iron-plate" and not pdata.qb_first_join)
+    slots[1] = "copper-plate"
+    assert(e.request_command("quickbar-result", result).ok and slots[1] == "copper-plate")
+    e.QUICKBAR_CheckAccess(p)
+    assert(not request.first_join)
+    result.id = request.id
+    assert(e.request_command("quickbar-result", result).ok and slots[1] == "copper-plate")
+end)
+
+test("incompatible Default and denied or stale replies preserve current quickbar", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    p.gui = {screen = {}}
+    p.set_quick_bar_slot = function() error("unexpected quickbar modification") end
+    e.prototypes.item, e.prototypes.quality = {}, {normal = true}
+    e.storage.SM_Store.quickbar_presets = true
+    local pdata = e.storage.PData[p.index]
+    pdata.qb_first_join = true
+    e.QUICKBAR_CheckAccess(p)
+    local id = pdata.qb_pending.id
+    local result = {id = id, name = "Alice", allowed = true, exchange = "M45-QB2=unavailable,"}
+    assert(e.request_command("quickbar-result", result).ok and not pdata.qb_first_join)
+    pdata.qb_first_join = true
+    e.QUICKBAR_CheckAccess(p)
+    assert(e.request_command("quickbar-result", result).ok and pdata.qb_first_join)
+    result.id, result.allowed = pdata.qb_pending.id, false
+    assert(e.request_command("quickbar-result", result).ok and not pdata.qb_allowed)
+end)
+
+test("personal preset selector uses the granted slot count and clamps selection after downgrade", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local player = e.player("Alice")
+    local row = {slot = {selected_index = 3}, load = {}, store = {}, qb_rename = {}}
+    player.gui = {screen = {quickbar_manager = {qb_preset_section = {qb_presets = row, access_note = {}}}}}
+    e.storage.SM_Store.quickbar_presets = true
+    local pdata = e.storage.PData[player.index]
+    local function grant(labels)
+        pdata.qb_pending = {id = 1, action = "access"}
+        e.QUICKBAR_Result({name = "Alice", id = 1, allowed = true, labels = labels})
+    end
+    grant({"", "", "", "", "", "", "", "", "", "Oil"})
+    assert(#row.slot.items == 10 and row.slot.items[10] == "10. Oil")
+    assert(row.slot.items[1] == "Default" and row.slot.selected_index == 3 and row.qb_rename.enabled)
+    row.slot.selected_index = 1
+    grant({"Old default name", "", ""})
+    assert(row.slot.items[1] == "Default" and not row.qb_rename.enabled)
+    row.slot.selected_index = 10
+    grant({"", "", "Rails", "", "Oil"})
+    assert(#row.slot.items == 5 and row.slot.selected_index == 5 and row.slot.items[5] == "5. Oil")
+    grant({"", "", "Rails"})
+    assert(#row.slot.items == 3 and row.slot.selected_index == 3 and row.slot.items[3] == "3. Rails")
+end)
+
+test("renaming a personal preset opens an editor and only Save submits the selected slot", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local player = e.player("Alice")
+    local function element(parent, spec)
+        local node = {valid = true, parent = parent, name = spec.name, style = {}, text = spec.text, enabled = true}
+        node.add = function(child)
+            local added = element(node, child)
+            if child.name then node[child.name] = added end
+            return added
+        end
+        node.destroy = function() node.valid = false; parent[node.name] = nil end
+        node.focus, node.select_all, node.force_auto_center = noop, noop, noop
+        return node
+    end
+    local screen = element(nil, {})
+    player.gui = {screen = screen}
+    local manager = screen.add{name = "quickbar_manager"}
+    local section = manager.add{name = "qb_preset_section"}
+    section.add{name = "access_note"}
+    local row = section.add{name = "qb_presets"}
+    for _, name in ipairs({"slot", "load", "store", "qb_rename"}) do row.add{name = name} end
+    local pdata = e.storage.PData[player.index]
+    pdata.qb_labels, pdata.qb_allowed = {"", "Rails", ""}, true
+    e.storage.SM_Store.quickbar_presets = true
+    local sent
+    e.CW_EmitEvent = function(_, data) sent = data end
+    local function click(button) e.QUICKBAR_Clicks{element = button, player_index = player.index} end
+    row.slot.selected_index = 1
+    click(row.qb_rename)
+    assert(not screen.qb_rename_dialog)
+    row.slot.selected_index = 2
+    click(row.qb_rename)
+    local dialog = screen.qb_rename_dialog
+    assert(dialog.slot_name.text == "Rails" and not manager.visible)
+    dialog.slot_name.text = "Discarded"
+    click(dialog.actions.qb_rename_cancel)
+    assert(not sent and manager.visible and not screen.qb_rename_dialog)
+    click(row.qb_rename)
+    dialog = screen.qb_rename_dialog
+    assert(dialog.slot_name.text == "Rails")
+    dialog.slot_name.text = "Oil"
+    click(dialog.actions.qb_rename_save)
+    assert(sent.action == "rename" and sent.slot == 2 and sent.label == "Oil" and not sent.exchange)
+    e.QUICKBAR_Result{name = player.name, id = sent.id, allowed = true, error = "Try again"}
+    assert(dialog.valid and dialog.slot_name.text == "Oil" and dialog.actions.qb_rename_save.enabled)
+    click(dialog.actions.qb_rename_save)
+    e.QUICKBAR_Result{name = player.name, id = sent.id, allowed = true, labels = {"", "Oil", ""}}
+    assert(manager.visible and not screen.qb_rename_dialog and row.slot.items[2] == "2. Oil")
+end)
+
 print(string.format("%d passed; %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

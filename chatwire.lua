@@ -109,6 +109,7 @@ end
 
 local function apply_config(data)
     if not string_field(data, "server_name") or
+        not bool_field(data, "quickbar_presets") or
         not bool_field(data, "restrict") or
         not bool_field(data, "friendly_fire") or
         not bool_field(data, "one_life") or
@@ -170,6 +171,13 @@ local function apply_config(data)
         end
         if data.cheats and cheats_changed then
             game.forces["player"].research_all_technologies()
+        end
+    end
+    if data.quickbar_presets ~= nil then
+        local newly_enabled = data.quickbar_presets and not storage.SM_Store.quickbar_presets
+        storage.SM_Store.quickbar_presets = data.quickbar_presets
+        if newly_enabled then
+            for _, player in pairs(game.connected_players) do QUICKBAR_CheckAccess(player) end
         end
     end
     if data.supporters ~= nil then
@@ -274,6 +282,7 @@ end
 local handlers = {
     hello = function()
         RunSetup()
+        storage.SM_Store.quickbar_presets = nil
         CW_AnnounceNewMapPreview()
         return true, { softmod_version = storage.SM_Version or SM_VERSION or "?" }
     end,
@@ -314,6 +323,10 @@ local handlers = {
     ["player-level"] = function(data)
         local ok, err = set_player_level(data)
         return ok, {}, err
+    end,
+    ["quickbar-result"] = function(data)
+        QUICKBAR_Result(data)
+        return true, {}
     end,
     supporter = function(data)
         local ok, err = set_supporter(data)
