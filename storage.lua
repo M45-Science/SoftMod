@@ -156,6 +156,7 @@ function STORAGE_MakePlayerStorage(player)
     end
 
     --throttle
+    storage.PData[player.index].activityNotices = storage.PData[player.index].activityNotices or {}
     if not storage.PData[player.index].regAttempts then
         storage.PData[player.index].regAttempts = 0
     end

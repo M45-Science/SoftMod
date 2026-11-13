@@ -541,6 +541,16 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
+                caption = {"", "[font=default-large-bold]", {"strings.info_activity_title"}, "[/font]"}
+            }
+            local activity_note = tab2_main_frame.add {
+                type = "label",
+                caption = {"strings.info_activity_notices"}
+            }
+            activity_note.style.single_line = false
+            activity_note.style.maximal_width = 550
+            tab2_main_frame.add {
+                type = "label",
                 caption = ""
             }
             tab2_main_frame.add {

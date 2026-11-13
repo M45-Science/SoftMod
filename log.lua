@@ -264,6 +264,33 @@ function LOG_DroppedItem(event)
     end
 end
 
+-- Public notices share a timer within each activity, including planner/entity
+-- events from one selection. ChatWire still receives the original activity events.
+local noticeFirstDelay = 5 * 60
+local noticeMaxDelay = 60 * 60
+local noticeQuietReset = 2 * 60 * 60
+
+local function announceActivity(player, activity, message)
+    local pdata = storage.PData and storage.PData[player.index]
+    if not pdata then return end
+    pdata.activityNotices = pdata.activityNotices or {}
+    local state = pdata.activityNotices[activity]
+    local now = game.tick
+
+    if not state or now - state.lastAction >= noticeQuietReset then
+        state = {delay = noticeFirstDelay, nextNotice = now + noticeFirstDelay}
+        pdata.activityNotices[activity] = state
+    elseif now < state.nextNotice then
+        state.lastAction = now
+        return
+    else
+        state.delay = math.min(state.delay * 2, noticeMaxDelay)
+        state.nextNotice = now + state.delay
+    end
+    state.lastAction = now
+    UTIL_MsgAll(message)
+end
+
 -- Deconstruction planner warning
 function LOG_Decon(event)
     if event and event.player_index and event.area then
@@ -319,7 +346,7 @@ function LOG_Decon(event)
 
                 if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
                     if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
-                        UTIL_MsgAll(msg)
+                        announceActivity(player, "deconstruction", msg)
                     end
                 end
             end
@@ -384,9 +411,7 @@ function LOG_MarkDecon(event)
 
             if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
                 if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
-                    if UTIL_WarnOkay(event.player_index) then
-                        UTIL_MsgAll(msg)
-                    end
+                    announceActivity(player, "deconstruction", msg)
                 end
             end
 
@@ -409,9 +434,7 @@ function LOG_CancelDecon(event)
 
             if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
                 if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
-                    if UTIL_WarnOkay(event.player_index) then
-                        UTIL_MsgAll(msg)
-                    end
+                    announceActivity(player, "deconstruction", msg)
                 end
             end
 
@@ -461,7 +484,7 @@ function LOG_PlayerDrive(event)
             end
 
             if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
-                UTIL_MsgAll(msg)
+                announceActivity(player, "vehicle", msg)
             end
 
             UTIL_ConsolePrint(msg)

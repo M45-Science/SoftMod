@@ -623,6 +623,52 @@ test("map-preview supports console and RCON and handles export errors", function
     assert(text:match("^Map preview unavailable:"))
 end)
 
+test("public activity notices back off per player and activity while logging each event", function()
+    local e = environment()
+    e.load("log")
+    local player, other = e.player("pilot"), e.player("other")
+    local notices, logged = {}, {}
+    e.UTIL_MsgAll = function(msg) table.insert(notices, msg) end
+    e.UTIL_ConsolePrint = function(msg) table.insert(logged, msg) end
+    e.UTIL_Is_New = function(p) return p == player end
+    e.UTIL_Is_Member = function(p) return p == other end
+    e.UTIL_Is_Banished = function() return false end
+    e.UTIL_IsNatural = function() return false end
+    e.UTIL_GPSObj = function(obj) return obj.gps_tag end
+    e.UTIL_Area = function() return "[gps=0,0]" end
+    local vehicle = {name = "car", gps_tag = "[gps=0,0]"}
+    local building = {name = "steel-chest", gps_tag = "[gps=1,2]"}
+    local function drive(p, tick)
+        e.game.tick = tick
+        e.LOG_PlayerDrive({player_index=p.index, entity=vehicle})
+    end
+    e.storage.PData[player.index].activityNotices = nil -- pre-upgrade save
+    drive(player, 100)
+    drive(player, 101)
+    drive(other, 101)
+    local mark = {player_index=player.index, entity=building}
+    e.LOG_MarkDecon(mark)
+    e.LOG_CancelDecon(mark)
+    e.LOG_Decon({player_index=player.index, area={left_top={x=0,y=0},right_bottom={x=2,y=2}},
+        surface={find_entities_filtered=function() return {building} end}})
+    assert(#notices == 3 and #logged == 6)
+    for _,tick in ipairs({400,1000,2200,4600,8200,11800}) do
+        local previous = #notices
+        drive(player, tick-1)
+        drive(player, tick)
+        assert(#notices == previous + 1 and notices[#notices] == logged[#logged])
+    end
+    drive(player, 19000) -- quiet for exactly two game minutes
+    drive(player, 19299)
+    drive(player, 19300)
+    assert(#notices == 11 and #logged == 21)
+    e.UTIL_Is_New = function() return false end
+    e.game.tick = 40000
+    drive(player, 40000)
+    e.LOG_MarkDecon(mark)
+    assert(#notices == 11 and #logged == 23)
+end)
+
 test("asteroid deaths survive save/load and flush once per nonempty interval", function()
     local e = environment()
     e.load("storage")
