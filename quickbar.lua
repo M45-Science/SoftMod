@@ -586,20 +586,56 @@ function ImportQuickbar(player, data)
     return true
 end
 
+local preset_save_interval = 60 -- one game second
+-- Session-only snapshots, populated only after ChatWire confirms a store.
+-- Reopening the manager or loading a slot discards the relevant snapshot.
+local saved_preset_exchanges = {}
+
 local function preset_request(player, action, slot, label)
     local pdata = storage.PData[player.index]
-    if not storage.SM_Store.quickbar_presets or not pdata then return end
+    if not storage.SM_Store.quickbar_presets or not pdata then return false end
+    if action == "store" or action == "rename" then
+        if pdata.qb_next_save_tick and game.tick < pdata.qb_next_save_tick then
+            if not pdata.qb_save_warned then
+                UTIL_SmartPrint(player, "Please wait one second before saving another quickbar preset.")
+                pdata.qb_save_warned = true
+            end
+            return false
+        end
+        pdata.qb_next_save_tick = game.tick + preset_save_interval
+        pdata.qb_save_warned = nil
+    end
     local request = {name = player.name, action = action, slot = slot, admin = player.admin}
-    if action == "store" then
+    if action == "access" then
+        saved_preset_exchanges[player.index] = nil
+    elseif action == "load" then
+        local saved = saved_preset_exchanges[player.index]
+        if saved then saved[slot] = nil end
+    elseif action == "store" then
         request.exchange = encode_quickbar(player, false)
+        local saved = saved_preset_exchanges[player.index]
+        if saved and saved[slot] == request.exchange then
+            UTIL_SmartPrint(player, "Quickbar unchanged; already saved in this slot.")
+            return false
+        end
+        local pending = pdata.qb_pending
+        if pending and pending.action == "store" and pending.slot == slot and pending.exchange == request.exchange then
+            UTIL_SmartPrint(player, "This quickbar is already being saved.")
+            return false
+        end
+        -- A new write makes the previous snapshot obsolete immediately, even
+        -- before its reply arrives (the player may change back while waiting).
+        if saved then saved[slot] = nil end
     end
     request.label = label
     request.first_join = action == "access" and pdata.qb_first_join == true
     storage.SM_Store.qb_sequence = (storage.SM_Store.qb_sequence or 0) + 1
     request.id = storage.SM_Store.qb_sequence
     pdata.qb_pending = {id = request.id, action = action, slot = slot, first_join = request.first_join,
+        exchange = request.exchange,
         confirm = action == "load" and pdata.qb_partial or nil}
     CW_EmitEvent("quickbar-preset", request)
+    return true
 end
 
 function QUICKBAR_CheckAccess(player)
@@ -723,7 +759,7 @@ local function refresh_presets(player, pdata)
     if row.preset_name then row.preset_name.destroy() end
     row.slot.enabled, row.load.enabled, row.store.enabled = allowed, allowed, allowed
     local labels = {"Default"}
-    local count = allowed and math.max(3, #(pdata.qb_labels or {})) or 3
+    local count = allowed and math.max(1, #(pdata.qb_labels or {})) or 2
     for i = 2, count do
         local label = pdata.qb_labels and pdata.qb_labels[i]
         labels[i] = label and label ~= "" and (i .. ". " .. label) or ("Preset " .. i)
@@ -754,8 +790,21 @@ function QUICKBAR_Result(data)
     local pdata = storage.PData[player.index]
     local pending = pdata and pdata.qb_pending
     if not pending or pending.id ~= data.id then return end
+    if data.pending == true then
+        if not pending.saving_notified then
+            UTIL_SmartPrint(player, "Saving quickbar preset...")
+            pending.saving_notified = true
+        end
+        return
+    end
     pdata.qb_pending = nil
     pdata.qb_allowed = data.allowed == true
+    if not pdata.qb_allowed then
+        saved_preset_exchanges[player.index] = nil
+    elseif pending.action == "store" then
+        saved_preset_exchanges[player.index] = saved_preset_exchanges[player.index] or {}
+        saved_preset_exchanges[player.index][pending.slot] = not data.error and pending.exchange or nil
+    end
     if not data.error then pdata.qb_labels = data.labels or {} end
     if pending.first_join and not data.error then pdata.qb_first_join = nil end
     if pending.action == "load" and not preset_row(player) then return end
@@ -917,7 +966,7 @@ local function open_manager(player)
     section.add{type = "line", direction = "horizontal"}
     section.add{type = "label", caption = "Personal presets", style = "bold_label"}
     section.add{type = "label", caption = "Your saved Default quickbar loads automatically the first time you join each map."}
-    section.add{type = "label", name = "access_note", caption = "Available to Regulars, Veterans, supporters, and admins."}
+    section.add{type = "label", name = "access_note", caption = "Available to Members, Regulars, Veterans, supporters, and admins."}
     refresh_presets(player, storage.PData[player.index])
     manager.add{type = "button", name = "qb_open_exchange", caption = "Import / export string"}
     QUICKBAR_CheckAccess(player)
@@ -1017,8 +1066,9 @@ function QUICKBAR_Clicks(event)
                 close_rename(player)
             elseif dialog and action == "qb_rename_save" and event.element == dialog.actions.qb_rename_save then
                 if event.element.enabled then
-                    event.element.enabled = false
-                    preset_request(player, "rename", dialog.tags.slot, dialog.slot_name.text)
+                    if preset_request(player, "rename", dialog.tags.slot, dialog.slot_name.text) then
+                        event.element.enabled = false
+                    end
                 end
             elseif action == "qb_exchange_button" or action == "qb_exchange_close" then
                 if dialog then close_rename(player) end

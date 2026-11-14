@@ -804,8 +804,17 @@ test("personal preset selector uses the granted slot count and clamps selection 
     row.slot.selected_index = 10
     grant({"", "", "Rails", "", "Oil"})
     assert(#row.slot.items == 5 and row.slot.selected_index == 5 and row.slot.items[5] == "5. Oil")
-    grant({"", "", "Rails"})
-    assert(#row.slot.items == 3 and row.slot.selected_index == 3 and row.slot.items[3] == "3. Rails")
+    grant({"", "", "", "Rails"})
+    assert(#row.slot.items == 4 and row.slot.selected_index == 4 and row.slot.items[4] == "4. Rails")
+    grant({"", "Rails"})
+    assert(#row.slot.items == 2 and row.slot.selected_index == 2 and row.slot.items[2] == "2. Rails")
+    local labels = {}
+    for i = 1, 16 do labels[i] = "" end
+    labels[16] = "Space"
+    grant(labels)
+    assert(#row.slot.items == 16 and row.slot.items[16] == "16. Space")
+    grant({"", "", "", "", "", "", "", "Oil"})
+    assert(#row.slot.items == 8 and row.slot.items[8] == "8. Oil")
 end)
 
 test("renaming a personal preset opens an editor and only Save submits the selected slot", function()
@@ -854,9 +863,124 @@ test("renaming a personal preset opens an editor and only Save submits the selec
     assert(sent.action == "rename" and sent.slot == 2 and sent.label == "Oil" and not sent.exchange)
     e.QUICKBAR_Result{name = player.name, id = sent.id, allowed = true, error = "Try again"}
     assert(dialog.valid and dialog.slot_name.text == "Oil" and dialog.actions.qb_rename_save.enabled)
+    local previous_id = sent.id
     click(dialog.actions.qb_rename_save)
+    assert(sent.id == previous_id and dialog.actions.qb_rename_save.enabled and not pdata.qb_pending)
+    e.game.tick = e.game.tick + 60
+    click(dialog.actions.qb_rename_save)
+    assert(sent.id ~= previous_id and not dialog.actions.qb_rename_save.enabled)
     e.QUICKBAR_Result{name = player.name, id = sent.id, allowed = true, labels = {"", "Oil", ""}}
     assert(manager.visible and not screen.qb_rename_dialog and row.slot.items[2] == "2. Oil")
+end)
+
+test("quickbar Store blocks per-frame clicks before encoding and sending for one second", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    e.storage.SM_Store.quickbar_presets = true
+    local sent, encoded, notices = 0, 0, 0
+    e.CW_EmitEvent = function() sent = sent + 1 end
+    e.helpers.encode_string = function(value) encoded = encoded + 1; return value end
+    e.UTIL_SmartPrint = function() notices = notices + 1 end
+    local function setup(name)
+        local player = e.player(name)
+        player.get_quick_bar_slot = function() return nil end
+        local row = {slot = {selected_index = 1}}
+        row.store = {valid = true, name = "store", parent = row}
+        row.load = {valid = true, name = "load", parent = row}
+        player.gui = {screen = {quickbar_manager = {qb_preset_section = {qb_presets = row}}}}
+        e.storage.PData[player.index].qb_allowed = true
+        return function(button) e.QUICKBAR_Clicks{element = row[button], player_index = player.index} end
+    end
+    local click = setup("Alice")
+    e.game.tick = 100
+    click("store")
+    local pending_id = e.storage.PData[1].qb_pending.id
+    for tick = 101, 159 do
+        e.game.tick = tick
+        click("store")
+    end
+    assert(sent == 1 and encoded == 1 and notices == 1)
+    assert(e.storage.PData[1].qb_pending.id == pending_id)
+    -- Cooldowns are local to each player; loading is unrestricted.
+    local other_click = setup("Bob")
+    other_click("store")
+    click("load")
+    assert(sent == 3 and encoded == 2)
+    e.game.tick = 160
+    click("store")
+    assert(sent == 4 and encoded == 3)
+end)
+
+test("Store skips unchanged confirmed and pending saves but retries failures and refreshed slots", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    e.storage.SM_Store.quickbar_presets = true
+    local player = e.player("Alice")
+    local item = "iron-plate"
+    player.get_quick_bar_slot = function(index) if index == 1 then return item end end
+    e.helpers.encode_string = function(value) return value end
+    local row = {slot = {selected_index = 1}, qb_rename = {}}
+    row.store = {valid = true, name = "store", parent = row}
+    row.load = {valid = true, name = "load", parent = row}
+    player.gui = {screen = {quickbar_manager = {qb_preset_section = {qb_presets = row, access_note = {}}}}}
+    local pdata = e.storage.PData[player.index]
+    pdata.qb_allowed = true
+    local sent, request = 0
+    e.CW_EmitEvent = function(_, data) sent = sent + 1; request = data end
+    local function click(button)
+        e.game.tick = e.game.tick + 60
+        e.QUICKBAR_Clicks{element = row[button], player_index = player.index}
+    end
+    local function reply(error)
+        e.QUICKBAR_Result{name = player.name, id = request.id, allowed = true,
+            labels = {"", "", "", ""}, error = error}
+    end
+    click("store")
+    assert(sent == 1)
+    local first_id = request.id
+    e.QUICKBAR_Result{name = player.name, id = first_id, allowed = true, pending = true}
+    assert(pdata.qb_pending.id == first_id and pdata.qb_pending.saving_notified)
+    click("store") -- identical request still in flight
+    assert(sent == 1 and pdata.qb_pending.id == first_id)
+    reply()
+    click("store") -- confirmed identical save
+    assert(sent == 1 and not pdata.qb_pending)
+    item = "copper-plate"
+    click("store")
+    assert(sent == 2)
+    reply("Save failed")
+    click("store") -- failures never become confirmed snapshots
+    assert(sent == 3)
+    reply()
+    click("store")
+    assert(sent == 3)
+    row.slot.selected_index = 2
+    click("store") -- identical toolbar, different destination
+    assert(sent == 4 and request.slot == 2)
+    reply()
+    click("store")
+    assert(sent == 4)
+    e.QUICKBAR_CheckAccess(player) -- opening/refreshing the manager invalidates snapshots
+    assert(sent == 5)
+    reply()
+    click("store")
+    assert(sent == 6)
+    reply()
+    click("load") -- a slot may have changed on another map
+    assert(sent == 7)
+    reply()
+    click("store")
+    assert(sent == 8)
+    reply()
+    item = "iron-plate"
+    click("store")
+    assert(sent == 9)
+    local stale_id = request.id
+    item = "copper-plate" -- return to the old saved toolbar while a different write is pending
+    click("store")
+    assert(sent == 10 and request.id ~= stale_id)
+    e.QUICKBAR_Result{name = player.name, id = stale_id, allowed = true, labels = {"", "", "", ""}}
+    assert(pdata.qb_pending.id == request.id)
 end)
 
 print(string.format("%d passed; %d failed", passed, failed))

@@ -541,6 +541,16 @@ function INFO_InfoWin(player)
             }
             tab2_main_frame.add {
                 type = "label",
+                caption = {"", "[font=default-large-bold]", {"strings.info_quickbar_title"}, "[/font]"}
+            }
+            local quickbar_note = tab2_main_frame.add {
+                type = "label",
+                caption = {"strings.info_quickbar_slots"}
+            }
+            quickbar_note.style.single_line = false
+            quickbar_note.style.maximal_width = 550
+            tab2_main_frame.add {
+                type = "label",
                 caption = {"", "[font=default-large-bold]", {"strings.info_activity_title"}, "[/font]"}
             }
             local activity_note = tab2_main_frame.add {
