@@ -733,6 +733,124 @@ test("ban recovery announcements reflect the inventory transfer outcome", functi
     assert(#messages==2 and messages[2]:find("so they can be recovered"))
 end)
 
+local function quickbar_gui_element(parent, spec)
+    local node = {valid = true, parent = parent, name = spec.name, style = {}, text = spec.text, caption = spec.caption, enabled = true}
+    node.add = function(child)
+        local added = quickbar_gui_element(node, child)
+        if child.name then node[child.name] = added end
+        return added
+    end
+    node.destroy = function() node.valid = false; parent[node.name] = nil end
+    node.focus, node.select_all, node.force_auto_center = noop, noop, noop
+    return node
+end
+
+local function click_quickbar(e, p, button)
+    e.QUICKBAR_Clicks{element = button, player_index = p.index}
+end
+
+local function overwrite_button(player, confirm)
+    local actions = assert(player.gui.screen.qb_overwrite).actions
+    return confirm and actions.qb_confirm_overwrite or actions.qb_keep_toolbar
+end
+
+test("V1 and V2 imports and the published V3 vector use the same quickbar paths", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    p.gui = {screen = quickbar_gui_element(nil, {})}
+    local bar = {}
+    p.set_quick_bar_slot = function(i, filter) bar[i] = filter end
+    p.get_quick_bar_slot = function(i) return bar[i] end
+    e.helpers.encode_string = function(value) return value end
+    e.prototypes.item = {["transport-belt"] = true, inserter = true}
+    e.prototypes.quality = {normal = true, legendary = true}
+    e.UTIL_SmartPrint = noop
+
+    assert(e.ImportQuickbar(p, "M45-QB1=transport-belt,,inserter"))
+    assert(bar[1] == "transport-belt" and not bar[2] and bar[3] == "inserter")
+    assert(not e.ImportQuickbar(p, "M45-QB2=MB,FN:l,"))
+    assert(bar[3] == "inserter")
+    click_quickbar(e, p, overwrite_button(p, false))
+    assert(not p.gui.screen.qb_overwrite and bar[3] == "inserter")
+    assert(not e.ImportQuickbar(p, "M45-QB2=MB,FN:l,"))
+    click_quickbar(e, p, overwrite_button(p, true))
+    assert(e.ExportQuickbar(p) == "Q3:BA0VrE" and not bar[3])
+    bar = {}
+    assert(e.ImportQuickbar(p, "Q3:BA0VrE"))
+    assert(bar[1] == "transport-belt" and bar[2].name == "inserter" and bar[2].quality == "legendary")
+    for _, bad in ipairs({"Q3:", "Q3:BA0Vr", "Q3:BA0VrEA", "Q3:!!", "Q3:AB", "Q3:_A"}) do
+        assert(not e.ImportQuickbar(p, bad))
+        assert(e.ExportQuickbar(p) == "Q3:BA0VrE")
+    end
+    assert(not e.ImportQuickbar(p, "Q3:AA") and bar[1])
+    click_quickbar(e, p, overwrite_button(p, true))
+    assert(next(bar) == nil)
+end)
+
+test("V3 compact modes preserve repeated items, strided slots and sparse quality exceptions", function()
+    local e = chatwire_env()
+    local codec = e.require("quickbar_v3")
+    local catalog = e.require("quickbar_v3_items")
+    local function check(slots, expected)
+        assert(codec.encode(slots) == expected)
+        local decoded = assert(codec.decode(expected))
+        for i = 1, 100 do
+            if slots[i] then
+                assert(decoded[i].name == slots[i].name and decoded[i].quality == slots[i].quality)
+            else
+                assert(not decoded[i])
+            end
+        end
+    end
+    local repeated, strided, distinct, mixed = {}, {}, {}, {}
+    local qualities = {"normal", "uncommon", "rare", "epic", "legendary", "quality-unknown"}
+    for i = 0, 99 do
+        repeated[i + 1] = {name = "transport-belt", quality = "epic"}
+        if i % 10 == 2 then strided[i + 1] = {name = "rail", quality = "normal"} end
+        distinct[i + 1] = {name = catalog[i + 1], quality = i == 17 and "rare" or "normal"}
+        if (i * 37 % 101) % 3 == 0 then
+            mixed[i + 1] = {name = catalog[i + 1], quality = qualities[i % 6 + 1]}
+        end
+    end
+    check(repeated, "Q3:yCBOVg")
+    check(strided, "Q3:FIJKA6Q")
+    check(distinct, "Q3:yB" .. string.rep("A", 138) .. "w7JQ")
+    check(mixed, "Q3:RZi_L8vy_L8vxeLxfgAgACVKSwQgKu4Bng0T3vs2hF7PhDTRVNcVWaBtsBKncxnWudrhsTXuo62tN1Izd-g")
+end)
+
+test("V3 preserves modded items and qualities, sparse and limited exports, and V2 name collisions", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    p.gui = {screen = quickbar_gui_element(nil, {})}
+    local bar = {[100] = {name = "example-belt", quality = "example-quality"}}
+    p.set_quick_bar_slot = function(i, filter) bar[i] = filter end
+    p.get_quick_bar_slot = function(i) return bar[i] end
+    e.helpers.encode_string = function(value) return value end
+    local notice
+    e.UTIL_SmartPrint = function(_, text) notice = text end
+    local export = "Q3:A8AnBYyvDC2uDYylrEytjoF7K8MLa4NjKWuLqwtjS6PJVmg"
+    assert(e.ExportQuickbar(p) == export and e.ExportQuickbar(p, true) == "Q3:AA")
+    e.prototypes.item = {["example-belt"] = true, AA = true}
+    e.prototypes.quality = {normal = true, ["example-quality"] = true, r = true}
+    bar = {}
+    assert(e.ImportQuickbar(p, export))
+    assert(bar[100].name == "example-belt" and bar[100].quality == "example-quality")
+    e.prototypes.quality["example-quality"] = nil
+    assert(not e.ImportQuickbar(p, export) and bar[100])
+    click_quickbar(e, p, overwrite_button(p, true))
+    assert(not bar[100] and notice:find("example%-belt:example%-quality"))
+    e.helpers.encode_string = function() return "short" end
+    bar[50] = {name = "AA", quality = "r"}
+    local escaped = e.ExportQuickbar(p)
+    bar = {}
+    assert(escaped:sub(1,3) == "Q3:" and e.ImportQuickbar(p, escaped))
+    assert(bar[50].name == "AA" and bar[50].quality == "r")
+    bar[50] = "transport-belt"
+    assert(e.ExportQuickbar(p) == "short")
+end)
+
 test("Default is requested once for a new player and never overwrites an existing map player on join", function()
     local e = chatwire_env()
     e.load("quickbar")
@@ -741,6 +859,7 @@ test("Default is requested once for a new player and never overwrites an existin
     e.prototypes.item = {["iron-plate"] = true}
     e.prototypes.quality = {normal = true}
     local slots = {}
+    p.get_quick_bar_slot = function(i) return slots[i] end
     p.set_quick_bar_slot = function(i, filter) slots[i] = filter end
     local request
     e.CW_EmitEvent = function(_, data) request = data end
@@ -767,6 +886,7 @@ test("incompatible Default and denied or stale replies preserve current quickbar
     e.load("quickbar")
     local p = e.player("Alice")
     p.gui = {screen = {}}
+    p.get_quick_bar_slot = function() return nil end
     p.set_quick_bar_slot = function() error("unexpected quickbar modification") end
     e.prototypes.item, e.prototypes.quality = {}, {normal = true}
     e.storage.SM_Store.quickbar_presets = true
@@ -781,6 +901,97 @@ test("incompatible Default and denied or stale replies preserve current quickbar
     assert(e.request_command("quickbar-result", result).ok and pdata.qb_first_join)
     result.id, result.allowed = pdata.qb_pending.id, false
     assert(e.request_command("quickbar-result", result).ok and not pdata.qb_allowed)
+end)
+
+test("first-join Default preserves shortcuts added while the access request was in flight", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    p.gui = {screen = {}}
+    local bar = {}
+    p.get_quick_bar_slot = function(i) return bar[i] end
+    p.set_quick_bar_slot = function() error("overwrote a first-join toolbar") end
+    e.storage.SM_Store.quickbar_presets = true
+    local pdata = e.storage.PData[p.index]
+    pdata.qb_first_join = true
+    e.QUICKBAR_CheckAccess(p)
+    bar[100] = "rail"
+    local notice
+    e.UTIL_SmartPrint = function(_, text) notice = text end
+    e.QUICKBAR_Result{name = p.name, id = pdata.qb_pending.id, allowed = true, exchange = "Q3:BA0VrE"}
+    assert(not pdata.qb_first_join and notice:find("load it manually", 1, true) and bar[100] == "rail")
+end)
+
+test("global loads check only writable positions and Clear requires its own confirmation", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    local screen = quickbar_gui_element(nil, {})
+    p.gui = {screen = screen}
+    local section = screen.add{name = "quickbar_manager"}.add{name = "qb_preset_section"}
+    local row = section.add{name = "qb_public"}
+    row.add{name = "choice"}.selected_index = 1
+    row.add{name = "qb_public_load"}
+    row.add{name = "qb_clear_toolbar"}
+    e.prototypes.item = {["transport-belt"] = true}
+    local bar = {[2] = "personal", [98] = "rail"}
+    p.get_quick_bar_slot = function(i) return bar[i] end
+    p.set_quick_bar_slot = function(i, value) bar[i] = value end
+    click_quickbar(e, p, row.qb_public_load)
+    assert(bar[1] == "transport-belt" and bar[2] == "personal" and not screen.qb_overwrite)
+    bar[1] = "inserter"
+    click_quickbar(e, p, row.qb_public_load)
+    assert(screen.qb_overwrite and bar[1] == "inserter")
+    click_quickbar(e, p, overwrite_button(p, true))
+    assert(bar[1] == "transport-belt" and bar[98] == "rail")
+    click_quickbar(e, p, row.qb_clear_toolbar)
+    click_quickbar(e, p, overwrite_button(p, false))
+    assert(bar[98] == "rail")
+    click_quickbar(e, p, row.qb_clear_toolbar)
+    click_quickbar(e, p, overwrite_button(p, true))
+    assert(next(bar) == nil)
+    click_quickbar(e, p, row.qb_clear_toolbar)
+    assert(not screen.qb_overwrite)
+end)
+
+test("personal overwrite confirmation checks the current grant and exact saved layout", function()
+    local e = chatwire_env()
+    e.load("quickbar")
+    local p = e.player("Alice")
+    local screen = quickbar_gui_element(nil, {})
+    p.gui = {screen = screen}
+    local section = screen.add{name = "quickbar_manager"}.add{name = "qb_preset_section"}
+    section.add{name = "access_note"}
+    local row = section.add{name = "qb_presets"}
+    for _, name in ipairs({"slot", "load", "store", "qb_rename"}) do row.add{name = name} end
+    row.slot.selected_index = 2
+    local bar = {[100] = "rail"}
+    p.get_quick_bar_slot = function(i) return bar[i] end
+    p.set_quick_bar_slot = function(i, value) bar[i] = value end
+    e.storage.SM_Store.quickbar_presets = true
+    local pdata = e.storage.PData[p.index]
+    pdata.qb_allowed = true
+    e.prototypes.item = {rail = true}
+    local function reply(allowed, layout)
+        e.QUICKBAR_Result{name = p.name, id = pdata.qb_pending.id, allowed = allowed,
+            labels = {"", ""}, exchange = layout}
+    end
+    local partial = "M45-QB2=rail,,missing,"
+    click_quickbar(e, p, row.load)
+    reply(true, partial)
+    assert(screen.qb_overwrite.actions.qb_confirm_overwrite.caption == "Load compatible slots")
+    click_quickbar(e, p, overwrite_button(p, true))
+    reply(true, "Q3:AA") -- A different saved layout requires fresh confirmation.
+    assert(screen.qb_overwrite and bar[100])
+    click_quickbar(e, p, overwrite_button(p, true))
+    reply(false, nil)
+    assert(not screen.qb_overwrite and bar[100])
+    pdata.qb_allowed, row.slot.selected_index = true, 2
+    click_quickbar(e, p, row.load)
+    reply(true, partial)
+    click_quickbar(e, p, overwrite_button(p, true))
+    reply(true, partial)
+    assert(not screen.qb_overwrite and bar[1] == "rail" and not bar[100])
 end)
 
 test("personal preset selector uses the granted slot count and clamps selection after downgrade", function()
@@ -824,18 +1035,7 @@ test("renaming a personal preset opens an editor and only Save submits the selec
     local e = chatwire_env()
     e.load("quickbar")
     local player = e.player("Alice")
-    local function element(parent, spec)
-        local node = {valid = true, parent = parent, name = spec.name, style = {}, text = spec.text, enabled = true}
-        node.add = function(child)
-            local added = element(node, child)
-            if child.name then node[child.name] = added end
-            return added
-        end
-        node.destroy = function() node.valid = false; parent[node.name] = nil end
-        node.focus, node.select_all, node.force_auto_center = noop, noop, noop
-        return node
-    end
-    local screen = element(nil, {})
+    local screen = quickbar_gui_element(nil, {})
     player.gui = {screen = screen}
     local manager = screen.add{name = "quickbar_manager"}
     local section = manager.add{name = "qb_preset_section"}

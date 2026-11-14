@@ -75,5 +75,4 @@ permadeath-onelife mode<br>
 PlanetPicker note: SoftMod avoids teleporting players off the `empty_void` surface or forcing controller changes while PlanetPicker is using it for planet selection / limbo.<br>
 <br>
 *quickbar.lua*<br>
-save/restore quickbar via chatwire. Exchange strings now use the `M45-QB2` format. Item names are shortened to two-letter aliases (AA, AB, ...) from a predefined list and qualities use (`u`, `r`, `e`, `l`) when present (e.g. `IP:l` for `iron-plate`).<br>
-[Quickbar Format](https://raw.githubusercontent.com/M45-Science/QuickbarExchange/)
+Save and restore quickbars through ChatWire. Exports use packed V3 (`Q3:`) or V2 when its compressed string is shorter. Imports accept V1, V2 and V3. V3 preserves modded item and quality names and up to 100 slot positions. [Quickbar Exchange specification](https://github.com/M45-Science/QuickbarExchange)

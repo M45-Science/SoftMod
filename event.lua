@@ -327,7 +327,7 @@ script.on_event(
             -- gui
             local pdata = storage.PData and storage.PData[event.player_index]
             if pdata then
-                pdata.qb_first_join, pdata.qb_pending, pdata.qb_partial, pdata.qb_allowed = nil, nil, nil, nil
+                pdata.qb_first_join, pdata.qb_pending, pdata.qb_allowed = nil, nil, nil
             end
             LOG_PlayerLeft(event)
         elseif event.name == defines.events.on_gui_click then
