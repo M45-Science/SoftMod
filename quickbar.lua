@@ -606,7 +606,7 @@ function QUICKBAR_CheckAccess(player)
     preset_request(player, "access")
 end
 
--- Each public layout fills the first 20 positions; the remaining shortcuts stay personal.
+-- Each public layout fills the first 60 positions; the remaining shortcuts stay personal.
 local public_presets = {
     {
         name = "Starter base",
@@ -614,7 +614,19 @@ local public_presets = {
             "transport-belt", "underground-belt", "splitter", "inserter", "small-electric-pole",
             "assembling-machine-1", "electric-mining-drill", "stone-furnace", "wooden-chest", "repair-pack",
             "burner-mining-drill", "burner-inserter", "long-handed-inserter", "pipe", "pipe-to-ground",
-            "offshore-pump", "boiler", "steam-engine", "lab", "gun-turret"
+            "offshore-pump", "boiler", "steam-engine", "lab", "gun-turret",
+            -- Power and lighting.
+            "medium-electric-pole", "big-electric-pole", "small-lamp", "power-switch", "copper-wire",
+            "solar-panel", "accumulator", "substation", "radar", "lightning-rod",
+            -- Construction and terrain.
+            "iron-chest", "steel-chest", "steel-furnace", "assembling-machine-2", "storage-tank",
+            "stone-brick", "concrete", "hazard-concrete", "landfill", "cliff-explosives",
+            -- Transport and basic oil.
+            "fast-transport-belt", "fast-underground-belt", "fast-splitter", "fast-inserter", "bulk-inserter",
+            "pump", "pumpjack", "oil-refinery", "chemical-plant", "car",
+            -- Defense and building tools.
+            "stone-wall", "gate", "firearm-magazine", "piercing-rounds-magazine", "grenade",
+            "blueprint", "blueprint-book", "deconstruction-planner", "upgrade-planner", "copy-paste-tool"
         }
     },
     {
@@ -623,7 +635,19 @@ local public_presets = {
             "fast-transport-belt", "fast-underground-belt", "fast-splitter", "fast-inserter", "medium-electric-pole",
             "assembling-machine-2", "electric-mining-drill", "steel-furnace", "steel-chest", "repair-pack",
             "pipe", "pipe-to-ground", "pump", "storage-tank", "pumpjack",
-            "oil-refinery", "chemical-plant", "long-handed-inserter", "bulk-inserter", "substation"
+            "oil-refinery", "chemical-plant", "long-handed-inserter", "bulk-inserter", "substation",
+            -- High-throughput production.
+            "express-transport-belt", "express-underground-belt", "express-splitter", "stack-inserter", "assembling-machine-3",
+            "electric-furnace", "beacon", "speed-module-3", "productivity-module-3", "efficiency-module-3",
+            -- Logistics and construction.
+            "roboport", "construction-robot", "logistic-robot", "passive-provider-chest", "requester-chest",
+            "storage-chest", "buffer-chest", "active-provider-chest", "radar", "small-lamp",
+            -- Power generation and distribution.
+            "big-electric-pole", "solar-panel", "accumulator", "nuclear-reactor", "heat-pipe",
+            "heat-exchanger", "steam-turbine", "offshore-pump", "boiler", "steam-engine",
+            -- Circuit control and building tools.
+            "red-wire", "green-wire", "constant-combinator", "arithmetic-combinator", "decider-combinator",
+            "programmable-speaker", "blueprint", "blueprint-book", "deconstruction-planner", "upgrade-planner"
         }
     },
     {
@@ -632,7 +656,19 @@ local public_presets = {
             "rail", "rail-chain-signal", "rail-signal", "train-stop", "big-electric-pole",
             "locomotive", "cargo-wagon", "fluid-wagon", "radar", "repair-pack",
             "fast-transport-belt", "fast-underground-belt", "fast-splitter", "bulk-inserter", "medium-electric-pole",
-            "electric-mining-drill", "steel-chest", "pump", "storage-tank", "pipe-to-ground"
+            "electric-mining-drill", "steel-chest", "pump", "storage-tank", "pipe-to-ground",
+            -- Elevated rail and train supplies.
+            "rail-ramp", "rail-support", "artillery-wagon", "artillery-shell", "artillery-targeting-remote",
+            "coal", "solid-fuel", "rocket-fuel", "nuclear-fuel", "small-lamp",
+            -- Mining and high-throughput loading.
+            "big-mining-drill", "express-transport-belt", "express-underground-belt", "express-splitter", "stack-inserter",
+            "inserter", "fast-inserter", "long-handed-inserter", "wooden-chest", "iron-chest",
+            -- Outpost defense.
+            "stone-wall", "gate", "gun-turret", "laser-turret", "flamethrower-turret",
+            "piercing-rounds-magazine", "uranium-rounds-magazine", "land-mine", "artillery-turret", "cliff-explosives",
+            -- Remote construction and station control.
+            "roboport", "construction-robot", "storage-chest", "passive-provider-chest", "requester-chest",
+            "constant-combinator", "decider-combinator", "red-wire", "green-wire", "blueprint-book"
         }
     }
 }
@@ -788,6 +824,7 @@ function QUICKBAR_MakeExchangeButton(player)
             tooltip = "Open M45 Quickbar Manager."
         }
         ex_button.style.size = { 64, 64 }
+        ex_button.style.padding = 0
     end
 end
 
@@ -874,7 +911,9 @@ local function open_manager(player)
     for i, preset in ipairs(public_presets) do names[i] = i .. ". " .. preset.name end
     public.add{type = "drop-down", name = "choice", items = names, selected_index = 1}
     public.add{type = "button", name = "qb_public_load", caption = "Load",
-        tooltip = "Replace the first 20 shortcuts. Items unavailable on this map are skipped."}
+        tooltip = "Replace the first 60 shortcuts (6 standard rows). The last 40 stay personal. Items unavailable on this map are skipped."}
+    public.add{type = "button", name = "qb_clear_toolbar", caption = "Clear toolbar",
+        tooltip = "Clear all 100 quickbar shortcuts. Saved presets are kept."}
     section.add{type = "line", direction = "horizontal"}
     section.add{type = "label", caption = "Personal presets", style = "bold_label"}
     section.add{type = "label", caption = "Your saved Default quickbar loads automatically the first time you join each map."}
@@ -954,6 +993,17 @@ function QUICKBAR_Clicks(event)
         if player and player.valid and event.element.name then
             if event.element.name == "qb_public_load" then
                 load_public_preset(player, event.element)
+            elseif event.element.name == "qb_clear_toolbar" then
+                local window = player.gui.screen.quickbar_manager
+                local section = window and window.qb_preset_section
+                local row = section and section.qb_public
+                if row and event.element == row.qb_clear_toolbar then
+                    QUICKBAR_ClearString(player)
+                    apply_quickbar(player, {})
+                    local presets = preset_row(player)
+                    if presets then select_preset(presets, storage.PData[player.index]) end
+                    UTIL_SmartPrint(player, "Toolbar cleared.")
+                end
             elseif event.element.name == "load" or event.element.name == "store" or event.element.name == "qb_rename" then
                 click_preset(player, event.element)
             elseif event.element.name == "quickbar_string" then
