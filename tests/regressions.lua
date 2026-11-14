@@ -815,6 +815,9 @@ test("personal preset selector uses the granted slot count and clamps selection 
     assert(#row.slot.items == 16 and row.slot.items[16] == "16. Space")
     grant({"", "", "", "", "", "", "", "Oil"})
     assert(#row.slot.items == 8 and row.slot.items[8] == "8. Oil")
+    grant({"", "[img=utility/close]", "[Rail]", "Café 火箭 👨‍👩‍👧"})
+    assert(row.slot.items[2] == "Preset 2" and row.slot.items[3] == "3. [Rail]")
+    assert(row.slot.items[4] == "4. Café 火箭 👨‍👩‍👧")
 end)
 
 test("renaming a personal preset opens an editor and only Save submits the selected slot", function()
@@ -858,6 +861,11 @@ test("renaming a personal preset opens an editor and only Save submits the selec
     click(row.qb_rename)
     dialog = screen.qb_rename_dialog
     assert(dialog.slot_name.text == "Rails")
+    for _, label in ipairs({"[img=utility/close]", "[font=x]x[/font]", "[.color]", "[img=unfinished"}) do
+        dialog.slot_name.text = label
+        click(dialog.actions.qb_rename_save)
+        assert(not sent and not pdata.qb_pending and dialog.actions.qb_rename_save.enabled)
+    end
     dialog.slot_name.text = "Oil"
     click(dialog.actions.qb_rename_save)
     assert(sent.action == "rename" and sent.slot == 2 and sent.label == "Oil" and not sent.exchange)
@@ -981,6 +989,17 @@ test("Store skips unchanged confirmed and pending saves but retries failures and
     assert(sent == 10 and request.id ~= stale_id)
     e.QUICKBAR_Result{name = player.name, id = stale_id, allowed = true, labels = {"", "", "", ""}}
     assert(pdata.qb_pending.id == request.id)
+end)
+
+test("players cannot submit system ChatWire commands or forge preset replies", function()
+    local e = chatwire_env()
+    local player = e.player("Alice")
+    local message
+    e.UTIL_SmartPrint = function(p, text) assert(p == player); message = text end
+    e.helpers.decode_string = function() error("player input reached system-command decoder") end
+    e.registered.chatwire{player_index = player.index, parameter = "forged-preset-reply"}
+    assert(message == "That command is for system use only.")
+    assert(not e.response)
 end)
 
 print(string.format("%d passed; %d failed", passed, failed))

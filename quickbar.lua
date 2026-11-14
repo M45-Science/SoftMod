@@ -586,6 +586,11 @@ function ImportQuickbar(player, data)
     return true
 end
 
+local function preset_label_has_markup(label)
+    return type(label) == "string" and (string.find(label, "%[[^%]]*=") or
+        string.find(label, "%[[/%.]color%]") or string.find(label, "%[[/%.]font%]")) ~= nil
+end
+
 local preset_save_interval = 60 -- one game second
 -- Session-only snapshots, populated only after ChatWire confirms a store.
 -- Reopening the manager or loading a slot discards the relevant snapshot.
@@ -594,6 +599,10 @@ local saved_preset_exchanges = {}
 local function preset_request(player, action, slot, label)
     local pdata = storage.PData[player.index]
     if not storage.SM_Store.quickbar_presets or not pdata then return false end
+    if preset_label_has_markup(label) then
+        UTIL_SmartPrint(player, "Preset names cannot contain rich-text tags.")
+        return false
+    end
     if action == "store" or action == "rename" then
         if pdata.qb_next_save_tick and game.tick < pdata.qb_next_save_tick then
             if not pdata.qb_save_warned then
@@ -762,6 +771,7 @@ local function refresh_presets(player, pdata)
     local count = allowed and math.max(1, #(pdata.qb_labels or {})) or 2
     for i = 2, count do
         local label = pdata.qb_labels and pdata.qb_labels[i]
+        if preset_label_has_markup(label) then label = nil end
         labels[i] = label and label ~= "" and (i .. ". " .. label) or ("Preset " .. i)
     end
     row.slot.items = labels
@@ -937,7 +947,7 @@ local function click_preset(player, element)
         local dialog = make_window(player, "qb_rename_dialog", "Rename preset " .. slot)
         dialog.tags = {slot = slot}
         local field = dialog.add{type = "textfield", name = "slot_name",
-            text = pdata.qb_labels[slot] or "", tooltip = "Up to 32 characters. Leave blank to reset the name."}
+            text = pdata.qb_labels[slot] or "", tooltip = "Up to 32 characters, without rich-text tags. Leave blank to reset the name."}
         local actions = dialog.add{type = "flow", name = "actions", direction = "horizontal"}
         actions.add{type = "button", name = "qb_rename_cancel", caption = "Cancel"}
         actions.add{type = "button", name = "qb_rename_save", caption = "Save", style = "confirm_button"}
