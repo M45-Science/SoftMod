@@ -680,6 +680,38 @@ test("Discord activity notices back off per player and activity while logging ea
     assert(#notices == 14 and #logged == 26)
 end)
 
+test("depleted drill cleanup stays auditable without activity notices", function()
+    local e = environment()
+    e.load("log")
+    local player = e.player("pilot")
+    local notices, logged, resources = {}, {}, 0
+    e.UTIL_ConsolePrint = function(msg) logged[#logged + 1] = msg end
+    e.UTIL_MsgDiscord = function(msg) notices[#notices + 1] = msg end
+    e.UTIL_Is_New = function() return true end
+    e.UTIL_Is_Member = function() return false end
+    e.UTIL_Is_Banished = function() return false end
+    e.UTIL_IsNatural = function() return false end
+    e.UTIL_GPSObj = function() return "[gps=1,2]" end
+    local area = {{0, 0}, {5, 5}}
+    local drill = {type = "mining-drill", name = "electric-mining-drill", mining_area = area,
+        -- A nil target alone must never exempt a powerless/blocked live drill.
+        surface = {count_entities_filtered = function(filter)
+            assert(filter.area == area and filter.type == "resource" and filter.limit == 1)
+            return resources
+        end}}
+    local mark = {player_index = player.index, entity = drill}
+    e.LOG_MarkDecon(mark)
+    e.LOG_CancelDecon(mark)
+    assert(#notices == 0 and #logged == 2)
+    assert(logged[1]:find(" decon%-depleted ") and logged[2]:find(" undecon%-depleted "))
+    resources = 1
+    e.LOG_MarkDecon(mark)
+    assert(#notices == 1 and logged[3]:find(" decon electric%-mining%-drill "))
+    mark.entity = {type = "container", name = "steel-chest"}
+    e.LOG_MarkDecon(mark)
+    assert(logged[4]:find(" decon steel%-chest "))
+end)
+
 test("asteroid deaths survive save/load and flush once per nonempty interval", function()
     local e = environment()
     e.load("storage")

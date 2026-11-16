@@ -13,6 +13,21 @@ Player names in `whisper`, `player-level`, and `supporter` are matched
 case-insensitively. Responses and events that include player names preserve
 their in-game capitalization. These requests still require an online player.
 
+Build 698 and newer emits `decon-depleted` and `undecon-depleted` activity
+actions for mining drills with no resource entities anywhere in their mining
+area. Cleanup remains auditable without per-entity deconstruction notices or
+ChatWire suspicion/incident counts. A missing mining target alone is not enough:
+unpowered or blocked drills with resources retain ordinary `decon`/`undecon`
+actions. These actions use the existing version 1 activity envelope, and older
+ChatWire builds already ignore them for scoring.
+
+Real-engine validation lives in ChatWire's `support/native_factorio_test.go`.
+See the sibling repository's `docs/native-factorio-tests.md` for the opt-in
+command. It stages this source tree in temporary scenarios and covers engine
+handshakes, quickbar storage/loading, previews, quit-save reloads and cleanup
+moderation. The mock regression suite remains available with
+`lua5.2 tests/regressions.lua` from this repository.
+
 The existing player and moderator commands remain player-facing. In particular,
 `/online` still opens or prints the in-game player list and retains its moderator
 actions; only ChatWire's machine-side player-list transport uses `/chatwire`.

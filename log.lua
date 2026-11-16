@@ -398,6 +398,14 @@ function LOG_CancelUpgrade(event)
     end
 end
 
+-- A missing mining_target can also mean no power, no fluid or blocked output.
+-- Only exempt drills whose entire mining area contains no resources. Keep the
+-- distinct action in the audit stream; ChatWire does not score cleanup actions.
+local function depleted_drill(entity)
+    return entity.type == "mining-drill" and
+        entity.surface.count_entities_filtered { area = entity.mining_area, type = "resource", limit = 1 } == 0
+end
+
 function LOG_MarkDecon(event)
     if event and event.player_index and event.entity then
         local player = game.players[event.player_index]
@@ -407,9 +415,11 @@ function LOG_MarkDecon(event)
             if UTIL_IsNatural(obj) then
                 return
             end
-            local msg = "[ACT] " .. player.name .. " decon " .. obj.name .. " at " .. UTIL_GPSObj(obj)
+            local depleted = depleted_drill(obj)
+            local action = depleted and "decon-depleted" or "decon"
+            local msg = "[ACT] " .. player.name .. " " .. action .. " " .. obj.name .. " at " .. UTIL_GPSObj(obj)
 
-            if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
+            if not depleted and (UTIL_Is_New(player) or UTIL_Is_Member(player)) then -- Dont bother with regulars/moderators
                 if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
                     announceActivity(player, "deconstruction", msg)
                 end
@@ -430,9 +440,11 @@ function LOG_CancelDecon(event)
         end
 
         if player then
-            local msg = "[ACT] " .. player.name .. " undecon " .. obj.name .. " at " .. UTIL_GPSObj(obj)
+            local depleted = depleted_drill(obj)
+            local action = depleted and "undecon-depleted" or "undecon"
+            local msg = "[ACT] " .. player.name .. " " .. action .. " " .. obj.name .. " at " .. UTIL_GPSObj(obj)
 
-            if UTIL_Is_New(player) or UTIL_Is_Member(player) then -- Dont bother with regulars/moderators
+            if not depleted and (UTIL_Is_New(player) or UTIL_Is_Member(player)) then -- Dont bother with regulars/moderators
                 if not UTIL_Is_Banished(player) then              -- Don't let bansihed players use this to spam
                     announceActivity(player, "deconstruction", msg)
                 end
