@@ -190,11 +190,6 @@ function STORAGE_MakePlayerStorage(player)
         storage.PData[player.index].lastPromoScore = 0
     end
 
-    --ui state
-    if not storage.PData[player.index].info_tab_index then
-        storage.PData[player.index].info_tab_index = 1
-    end
-
     --admin tools
     if storage.PData[player.index].force_delete_armed == nil then
         storage.PData[player.index].force_delete_armed = false

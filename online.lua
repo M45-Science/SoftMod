@@ -35,7 +35,8 @@ function ONLINE_MakeOnlineButton(player)
             sprite = "file/img/buttons/online-64.png",
             tooltip = "See players online, report and banish."
         }
-        online_32.style.size = { 64, 64 }
+        online_32.style.size = { 72, 72 }
+        online_32.style.padding = 0
     end
 end
 
@@ -861,6 +862,12 @@ function ONLINE_Clicks(event)
                 if player.gui and player.gui.left and player.gui.left.m45_online then
                     player.gui.left.m45_online.destroy()
                 end
+            elseif event.element.name == "m45_banish_discord" then
+                local window = player.gui.screen.banished_inform
+                if window then
+                    window.destroy()
+                    ESSENTIALS_OpenDiscord(player)
+                end
             elseif event.element.name == "m45_banish_close_button" then
                 if player.gui and player.gui.screen and player.gui.screen.banished_inform then
                     player.gui.screen.banished_inform.destroy()
@@ -871,6 +878,8 @@ function ONLINE_Clicks(event)
             elseif event.element.name == "m45_online_brief" then
                 storage.PData[player.index].onlineBrief = event.element.state
                 ONLINE_Window(player)
+            elseif event.element.name == "m45_member_welcome_details" then
+                ESSENTIALS_OpenMembership(player)
             elseif event.element.name == "m45_member_welcome_close" then
                 if player and player.gui and player.gui.screen and player.gui.screen.member_welcome then
                     player.gui.screen.member_welcome.destroy()

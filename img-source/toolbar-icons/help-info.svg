@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect x="1.5" y="1.5" width="61" height="61" rx="5" fill="#30363e" stroke="#f4a136" stroke-width="3"/>
+<path d="M7 5h50" stroke="#fff" stroke-opacity=".14" stroke-width="1"/>
+<rect x="6" y="46" width="52" height="12" rx="2" fill="#1d2228"/>
+<circle cx="32" cy="25" r="15" fill="#2c3035" stroke="#f4a136" stroke-width="3"/><circle cx="32" cy="17" r="2" fill="#fff5dd"/><path d="M30 24h3v10m-5 0h9" fill="none" stroke="#fff5dd" stroke-width="3" stroke-linecap="round"/>
+<text x="32" y="55" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="8" fill="#f0eee5">HELP / INFO</text></svg>

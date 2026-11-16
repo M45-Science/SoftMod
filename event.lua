@@ -194,9 +194,7 @@ local function e_joined(event)
     QUICKBAR_CheckAccess(player)
     BANISH_SendToSurface(player)
     ONLINE_UpdatePlayerList()
-    if not UTIL_Is_Regular(player) and not UTIL_Is_Veteran(player) and not player.admin then
-        INFO_InfoWin(player)
-    end
+    ESSENTIALS_Join(player)
 end
 
 -- New player created, insert items set perms, show players online, welcome to map.
@@ -210,7 +208,6 @@ local function e_playerCreated(event)
     EVENT_PlayerInit(player)
     storage.PData[player.index].qb_first_join = true
     UTIL_SendToDefaultSpawn(player)
-    INFO_InfoWin(player)
 
     -- Cutoff-point, just becomes annoying.
     if not player.force.technologies["military-2"].researched then
@@ -285,12 +282,22 @@ script.on_event(
 		        .on_player_flushed_fluid, defines.events.on_player_driving_changed_state, defines.events.on_player_banned,
 		        defines.events.on_player_rotated_entity, defines.events.on_player_flipped_entity, defines.events
 	        .on_pre_player_mined_item, defines.events.on_built_entity, defines.events.on_gui_opened,
-		        defines.events.on_player_promoted, defines.events.on_player_demoted, defines.events.on_tick}, function(event)
+		        defines.events.on_player_promoted, defines.events.on_player_demoted,
+                defines.events.on_player_changed_surface, defines.events.on_player_display_resolution_changed,
+                defines.events.on_player_display_scale_changed, defines.events.on_tick}, function(event)
 	        -- If no event, or event is a tick
 	        if not event or (event and event.name == defines.events.on_tick) then
 	            ChunkPurge()
 	            return
 	        end
+
+        if event.name == defines.events.on_player_changed_surface
+            or event.name == defines.events.on_player_joined_game
+            or event.name == defines.events.on_player_demoted then
+            ADMIN_ISLAND_CheckAccess(game.players[event.player_index])
+        end
+
+        ESSENTIALS_Activity(event)
 
         -- Mark player active
         if event.player_index then
@@ -329,13 +336,19 @@ script.on_event(
             if pdata then
                 pdata.qb_first_join, pdata.qb_pending, pdata.qb_allowed = nil, nil, nil
             end
+            ESSENTIALS_Leave(game.players[event.player_index])
             LOG_PlayerLeft(event)
         elseif event.name == defines.events.on_gui_click then
+            ESSENTIALS_Click(event)
             INFO_Clicks(event)     --info.lua
             QUICKBAR_Clicks(event) --quickbar.lua
             ONLINE_Clicks(event)   -- online.lua
             ONELIFE_Clicks(event)  --onelife.lua
             FORCEDEL_Clicks(event) --forcedel.lua
+        elseif event.name == defines.events.on_player_display_resolution_changed
+            or event.name == defines.events.on_player_display_scale_changed then
+            ESSENTIALS_Resize(game.players[event.player_index])
+            PERMS_ResizeWelcome(game.players[event.player_index])
         elseif event.name == defines.events.on_gui_opened then
             FORCEDEL_OnGuiOpened(event) --forcedel.lua
         elseif event.name == defines.events.on_player_promoted or event.name == defines.events.on_player_demoted then

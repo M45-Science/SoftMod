@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect x="1.5" y="1.5" width="61" height="61" rx="5" fill="#30363e" stroke="#64bce8" stroke-width="3"/>
+<path d="M7 5h50" stroke="#fff" stroke-opacity=".14" stroke-width="1"/>
+<rect x="6" y="46" width="52" height="12" rx="2" fill="#1d2228"/>
+<rect x="11" y="12" width="42" height="28" rx="3" fill="#20262d" stroke="#dce9ed" stroke-width="3"/>
+<g fill="#3f5968"><rect x="16" y="17" width="6" height="7" rx="1"/><rect x="25" y="17" width="6" height="7" rx="1"/><rect x="34" y="17" width="6" height="7" rx="1"/><rect x="43" y="17" width="6" height="7" rx="1"/><rect x="16" y="28" width="6" height="7" rx="1"/><rect x="25" y="28" width="6" height="7" rx="1"/><rect x="34" y="28" width="6" height="7" rx="1"/><rect x="43" y="28" width="6" height="7" rx="1"/></g><rect x="25" y="17" width="6" height="7" rx="1" fill="#82d2f3"/><path d="m36 29 1 14 4-4 5 2-10-12Z" fill="#fff5dd" stroke="#20262d" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="32" y="55" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="8" fill="#f0eee5">TOOLBAR</text></svg>

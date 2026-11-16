@@ -655,7 +655,7 @@ function QUICKBAR_MakeExchangeButton(player)
             sprite = "file/img/buttons/exchange-64.png",
             tooltip = "Open M45 Quickbar Manager."
         }
-        ex_button.style.size = { 64, 64 }
+        ex_button.style.size = { 72, 72 }
         ex_button.style.padding = 0
     end
 end
@@ -686,7 +686,13 @@ local function click_preset(player, element)
     end
 end
 
-local function open_manager(player)
+function QUICKBAR_OpenManager(player)
+    local existing = player.gui.screen.quickbar_manager
+    if existing then
+        existing.visible = true
+        existing.bring_to_front()
+        return
+    end
     local manager = make_window(player, "quickbar_manager", "M45 Quickbar Manager")
     local section = manager.add {
         type = "frame", name = "qb_preset_section", direction = "vertical",
@@ -852,7 +858,7 @@ function QUICKBAR_Clicks(event)
                 if screen.quickbar_exchange then screen.quickbar_exchange.destroy() end
                 if screen.quickbar_manager then screen.quickbar_manager.destroy() end
                 QUICKBAR_ClearString(player)
-                if not was_open and action == "qb_exchange_button" then open_manager(player) end
+                if not was_open and action == "qb_exchange_button" then QUICKBAR_OpenManager(player) end
             elseif action == "qb_open_exchange" and screen.quickbar_manager then
                 QUICKBAR_MakeExchangeWindow(player, false)
             elseif action == "qb_exchange_back" and screen.quickbar_exchange then

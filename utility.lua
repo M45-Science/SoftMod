@@ -663,7 +663,7 @@ function UTIL_DrawMapClock(target)
                 target.gui.top.reset_clock.caption = ">"
                 target.gui.top.reset_clock.style      = "mini_tool_button_red"
             else
-                target.gui.top.reset_clock.caption = "MAP RESET: " .. storage.SM_Store.resetDuration
+                target.gui.top.reset_clock.caption = {"strings.reset_clock_caption", storage.SM_Store.resetDuration}
                 target.gui.top.reset_clock.style      = "red_button"
             end
         end

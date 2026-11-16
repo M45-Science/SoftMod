@@ -100,9 +100,6 @@ end
 
 local function refresh_reset_display()
     for _, player in pairs(game.connected_players) do
-        if player.gui and player.gui.screen and player.gui.screen.m45_info_window then
-            INFO_InfoWin(player)
-        end
         UTIL_DrawMapClock(player)
     end
 end
@@ -110,6 +107,7 @@ end
 local function apply_config(data)
     if not string_field(data, "server_name") or
         not bool_field(data, "quickbar_presets") or
+        not bool_field(data, "tool_hints") or
         not bool_field(data, "restrict") or
         not bool_field(data, "friendly_fire") or
         not bool_field(data, "one_life") or
@@ -173,6 +171,7 @@ local function apply_config(data)
             game.forces["player"].research_all_technologies()
         end
     end
+    if data.tool_hints ~= nil then storage.SM_Store.tool_hints = data.tool_hints end
     if data.quickbar_presets ~= nil then
         local newly_enabled = data.quickbar_presets and not storage.SM_Store.quickbar_presets
         storage.SM_Store.quickbar_presets = data.quickbar_presets
@@ -182,6 +181,7 @@ local function apply_config(data)
     end
     if data.supporters ~= nil then
         storage.SM_Store.patreonCredits = data.supporters
+        for _, player in pairs(game.connected_players) do ESSENTIALS_RefreshCredits(player) end
     end
     if data.nitro ~= nil then
         storage.SM_Store.nitroCredits = data.nitro
@@ -283,6 +283,7 @@ local handlers = {
     hello = function()
         RunSetup()
         storage.SM_Store.quickbar_presets = nil
+        storage.SM_Store.tool_hints = nil
         CW_AnnounceNewMapPreview()
         return true, { softmod_version = storage.SM_Version or SM_VERSION or "?" }
     end,
@@ -323,6 +324,10 @@ local handlers = {
     ["player-level"] = function(data)
         local ok, err = set_player_level(data)
         return ok, {}, err
+    end,
+    ["tool-hint-result"] = function(data)
+        ESSENTIALS_Result(data)
+        return true, {}
     end,
     ["quickbar-result"] = function(data)
         QUICKBAR_Result(data)

@@ -153,123 +153,48 @@ function BANISH_UpdateVotes()
 end
 
 local function informBanished(victim)
-    if victim and victim.gui and victim.gui.screen then
-        if victim.gui.screen.banished_inform then
-            victim.gui.screen.banished_inform.destroy()
-        end
-        if not victim.gui.screen.banished_inform then
-            local main_flow = victim.gui.screen.add {
-                type = "frame",
-                name = "banished_inform",
-                direction = "vertical"
-            }
-            main_flow.force_auto_center()
-            local banished_titlebar = main_flow.add {
-                type = "frame",
-                direction = "horizontal"
-            }
-            banished_titlebar.style.horizontal_align = "center"
-            banished_titlebar.style.horizontally_stretchable = true
+    if not (victim and victim.gui and victim.gui.screen) then return end
+    if victim.gui.screen.banished_inform then victim.gui.screen.banished_inform.destroy() end
 
-            banished_titlebar.add {
-                type = "label",
-                style = "frame_title",
-                caption = "YOU HAVE BEEN BANISHED!"
-            }
+    local window = victim.gui.screen.add{type = "frame", name = "banished_inform", direction = "vertical"}
+    window.style.width = 760
+    local titlebar = window.add{type = "flow", direction = "horizontal"}
+    titlebar.drag_target = window
+    local title = titlebar.add{type = "label", style = "frame_title", caption = "You've been banished"}
+    title.style.font_color = {1, 0.65, 0.25}
+    local drag = titlebar.add{type = "empty-widget", style = "draggable_space_header"}
+    drag.style.horizontally_stretchable = true
+    drag.style.height = 24
+    drag.drag_target = window
+    titlebar.add{type = "sprite-button", name = "m45_banish_close_button", sprite = "utility/close",
+        style = "frame_action_button", tooltip = "Close this window"}
 
-            local pusher = banished_titlebar.add {
-                type = "empty-widget",
-                style = "draggable_space_header"
-            }
-            pusher.style.vertically_stretchable = true
-            pusher.style.horizontally_stretchable = true
-            pusher.drag_target = main_flow
-
-            banished_titlebar.add {
-                type = "sprite-button",
-                name = "m45_banish_close_button",
-                sprite = "utility/close",
-                style = "frame_action_button",
-                tooltip = "Close this window"
-            }
-
-            local banished_main = main_flow.add {
-                type = "frame",
-                name = "main",
-                direction = "vertical"
-            }
-            banished_main.style.horizontal_align = "center"
-
-            banished_main.add {
-                type = "sprite",
-                sprite = "file/img/world/turd.png"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]Moderators will review the public action-logs on m45sci.xyz and perm-ban you if the vote-banish was for good a reason.[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]We share our ban list with many other factorio communities. We put the reason, date and a link to the log file in the ban.[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]Any items you took have been left at the spawn area so they can be retrieved.[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]Players can simply vote to rewind to the previous autosave... or moderators can do it with a single command.[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]If you were griefing, I hope you think carefully about why you were doing this.[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]It seems most of you are like a little kid kicking a sand castle... angry because you do not have the skills to contribute.[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]I hope you learn from this, and eventually become a functioning adult...[/font]"
-            }
-            banished_main.add {
-                type = "label",
-                caption = ""
-            }
-            banished_main.add {
-                type = "label",
-                caption = "[font=default-large]Before you suffer real-world consequences for this type of behavior elsewhere.[/font]"
-            }
-        end
+    local body = window.add{type = "frame", name = "main", direction = "horizontal",
+        style = "inside_shallow_frame_with_padding"}
+    body.style.horizontally_stretchable = true
+    body.style.minimal_height = 260
+    body.add{type = "sprite", sprite = "file/img/world/turd.png"}
+    local content = body.add{type = "flow", direction = "vertical"}
+    content.style.horizontally_stretchable = true
+    content.style.vertical_spacing = 12
+    content.style.left_margin = 16
+    local function paragraph(text)
+        local label = content.add{type = "label", caption = text}
+        label.style.single_line = false
+        label.style.horizontally_stretchable = true
+        return label
     end
+    local manual = storage.PData[victim.index].manual_jail
+    paragraph(manual and "A moderator removed you from the active map. You are now in the holding area."
+        or "Players have voted to remove you from the active map. You are now in the holding area.").style.font = "default-bold"
+    paragraph("[font=default-bold]What happens next[/font]\nModerators will review the activity logs and decide whether further action is needed.")
+    paragraph("[font=default-bold]Your items[/font]\nYour inventory was left at spawn so other players can recover it.")
+    paragraph("[font=default-bold]Think this was a mistake?[/font]\nContact the moderation team on Discord and include your Factorio username.")
+
+    local actions = window.add{type = "flow", direction = "horizontal"}
+    actions.style.horizontally_stretchable = true
+    actions.add{type = "button", name = "m45_banish_discord", caption = "Discord"}
+    window.force_auto_center()
 end
 
 function BANISH_DoJail(victim)

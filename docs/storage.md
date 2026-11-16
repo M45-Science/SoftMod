@@ -29,3 +29,13 @@ Weapon, ammo, and armor stashes store complete item stacks in their LuaInventori
 Older saves may also have `armor_equipment_data`; unstashing restores that data into
 the stored armor before transferring it. Entries that cannot be restored remain
 saved for another attempt.
+
+Admin Island stores each visitor’s return surface index and position in
+`storage.PData[player.index].admin_island_return`. It is cleared only after a
+successful return teleport. The island itself is a persistent `admin-island` surface.
+
+`storage.PData[player.index].essentials` holds the current join session's activity
+wait, eight-second countdown, pending request ID, and ready flag. It is reset on
+join and cleared on disconnect. `storage.SM_Store.tool_hints` is ChatWire's runtime
+capability flag; `tool_hint_sequence` supplies persistent per-map request IDs.
+The cross-map reminder timestamp lives in ChatWire's player database.

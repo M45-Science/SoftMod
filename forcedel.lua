@@ -5,6 +5,7 @@
 
 local FORCEDEL_BUTTON_NAME = "m45_force_delete_toggle"
 local FORCEDEL_SPRITE = "file/img/buttons/force-delete-64.png"
+local FORCEDEL_ARMED_SPRITE = "file/img/buttons/force-delete-armed-64.png"
 
 local FORCEDEL_CONFIRM_WINDOW = "m45_force_delete_confirm_window"
 local FORCEDEL_CONFIRM_CLOSE = "m45_force_delete_confirm_close"
@@ -184,11 +185,17 @@ local function draw_button(player)
             sprite = FORCEDEL_SPRITE,
             tooltip = "Force delete (admin): arm, click entity, confirm"
         }
-        button.style.size = { 64, 64 }
+        button.style.size = { 72, 72 }
     end
 
-    -- Use toggled state for the orange highlight (matches other top-bar tool buttons).
-    button.toggled = is_armed(player) and true or false
+    button.style.size = {72, 72}
+    button.style.padding = 0
+
+    local armed = is_armed(player) and true or false
+    button.sprite = armed and FORCEDEL_ARMED_SPRITE or FORCEDEL_SPRITE
+    button.tooltip = armed and "ARMED: click an entity to force-delete it. Click here to disarm."
+        or "Force delete (admin): click to arm, then click an entity to confirm deletion."
+    button.toggled = armed
 end
 
 function FORCEDEL_MakeButton(player)

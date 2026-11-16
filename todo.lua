@@ -781,7 +781,8 @@ function TODO_Setup(player)
             sprite = "file/img/buttons/todo2-64.png",
             tooltip = {"strings.todo_button_tooltip"}
         }
-        todo_64.style.size = { 64, 64 }
+        todo_64.style.size = { 72, 72 }
+        todo_64.style.padding = 0
         if not storage.todo_unread then
             storage.todo_unread = {}
         end

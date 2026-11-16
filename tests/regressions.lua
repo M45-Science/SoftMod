@@ -158,7 +158,14 @@ local function environment()
         e.storage.SM_OldVersion = "review"
         e.load("control")
         e.require = require_module
+        -- Setup removes legacy windows; other tests intentionally omit GUI mocks.
+        local guis = {}
+        for _, player in pairs(e.game.players) do
+            guis[player.index] = player.gui
+            player.gui = player.gui or {screen = {}}
+        end
         e.RunSetup()
+        for _, player in pairs(e.game.players) do player.gui = guis[player.index] end
     end
     return e
 end

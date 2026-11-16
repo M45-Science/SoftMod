@@ -5,6 +5,7 @@
 local SM_VERSION = require("version")
 require "banish"   -- Banish system
 require "commands" -- Slash commands
+require "admin_island" -- Lazy admin retreat
 require "event"    -- Event/tick handler
 require "info"     -- Welcome/Info window
 require "log"      -- Action logging
@@ -18,6 +19,7 @@ require "utility"  -- Widely used general utility
 require "quickbar" -- Save or Restore Quickbar
 require "stash" -- Save or Restore Weapon/Ammo/Armor
 require "forcedel" -- Admin force-delete helper
+require "essentials" -- Delayed, non-modal join introduction
 require "chatwire" -- ChatWire machine protocol (load after command dependencies)
 
 script.on_init(function()
@@ -41,6 +43,8 @@ function RunSetup()
     PERMS_SetPermissions()
 
     for _, player in pairs(game.players) do
+        local old_info = player.gui.screen.m45_info_window
+        if old_info then old_info.destroy() end
         FORCEDEL_MakeButton(player)
     end
 

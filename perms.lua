@@ -383,123 +383,64 @@ function PERMS_PromoteAllPlayers()
     end
 end
 
-function PERMS_WelcomeMember(player)
-    if player then
-        if player.gui.screen then
-            if player.gui.screen.member_welcome then
-                player.gui.screen.member_welcome.destroy()
-            else
-                local tfont = "[font=default-large-bold]"
-                local efont = "[/font]"
-
-                local lname = "members"
-                if UTIL_Is_Regular(player) then
-                    lname = "regulars"
-                end
-
-                local main_flow = player.gui.screen.add {
-                    type = "frame",
-                    name = "member_welcome",
-                    direction = "vertical"
-                }
-
-                local info_titlebar = main_flow.add {
-                    type = "flow",
-                    direction = "horizontal"
-                }
-
-                info_titlebar.drag_target = main_flow
-                info_titlebar.add {
-                    type = "label",
-                    name = "member_welcome_title",
-                    style = "frame_title",
-                    caption = "Congratulations!"
-                }
-
-                local pusher = info_titlebar.add {
-                    type = "empty-widget",
-                    style = "draggable_space_header"
-                }
-
-                pusher.style.vertically_stretchable = true
-                pusher.style.horizontally_stretchable = true
-                pusher.drag_target = main_flow
-
-                info_titlebar.add {
-                    type = "sprite-button",
-                    name = "m45_member_welcome_close",
-                    sprite = "utility/close",
-                    style = "frame_action_button",
-                    tooltip = "Close this window"
-                }
-
-                main_flow.style.padding = 4
-                local mframe = main_flow.add {
-                    type = "flow",
-                    direction = "horizontal"
-                }
-                local lframe = mframe.add {
-                    type = "flow",
-                    direction = "vertical"
-                }
-                lframe.style.padding = 4
-                lframe.add {
-                    type = "sprite",
-                    sprite = "file/img/info-win/m45-128.png",
-                    tooltip = ""
-                }
-
-                local rframe = mframe.add {
-                    type = "flow",
-                    direction = "vertical"
-                }
-                rframe.add {
-                    type = "label",
-                    caption = tfont .. "You have been active enough, that you have automatically been promoted to the '" ..
-                        lname .. "' group!" .. efont
-                }
-                rframe.add {
-                    type = "label",
-                    caption = tfont .. "You can now access members-only servers and have increased permissions!" ..
-                        efont
-                }
-
-                if UTIL_Is_Regular(player) then
-                    rframe.add {
-                        type = "label",
-                        caption = tfont .. "You now also have access to BANISH in the players-online window:" .. efont
-                    }
-                    local online_32 = rframe.add {
-                        type = "sprite-button",
-                        name = "online_button",
-                        sprite = "file/img/buttons/online-64.png",
-                        tooltip = "See players online, report and banish."
-                    }
-                    online_32.style.size = { 64, 64 }
-                    rframe.add {
-                        type = "label",
-                        caption = tfont .. "You can also vote to rewind, reset, or skip-reset the map on Discord." ..
-                            efont
-                    }
-                end
-
-                rframe.add {
-                    type = "label",
-                    caption = ""
-                }
-
-                rframe.add {
-                    type = "label",
-                    caption = tfont .. "To find out more, click the HELP-INFO button here: " .. efont
-                }
-                local m45_32 = rframe.add {
-                    type = "sprite-button",
-                    name = "m45_button",
-                    sprite = "file/img/buttons/m45-64.png",
-                    tooltip = "Opens the server-info window."
-                }
-                m45_32.style.size = { 64, 64 }
-            end
+-- Keep promotion notices beside play, using the same right margin as Essentials.
+function PERMS_ResizeWelcome(player)
+    local window = player.gui.screen.member_welcome
+    if not (window and window.body) then return end
+    local scale = player.display_scale
+    local resolution = player.display_resolution
+    local width = math.floor(math.min(480, resolution.width / scale - 24))
+    window.style.width = width
+    window.body.style.width = width - 24
+    for _, child in pairs(window.body.children) do
+        if child.type == "label" then
+            child.style.bottom_margin = 8
+            child.style.single_line = false
+            child.style.maximal_width = width - 40
+            child.style.horizontally_squashable = true
         end
     end
+    local top = math.max(12, math.min(400, resolution.height / scale - 320))
+    window.location = {x = math.max(0, math.floor(resolution.width - (width + 12) * scale)),
+        y = math.floor(top * scale)}
+end
+
+function PERMS_WelcomeMember(player)
+    if not (player and player.gui.screen) then return end
+    local screen = player.gui.screen
+    if screen.member_welcome then screen.member_welcome.destroy(); return end
+    local regular = UTIL_Is_Regular(player)
+    local window = screen.add{type = "frame", name = "member_welcome", direction = "vertical"}
+    local titlebar = window.add{type = "flow", direction = "horizontal"}
+    titlebar.drag_target = window
+    titlebar.add{type = "label", name = "member_welcome_title", style = "frame_title",
+        caption = regular and "You're now a Regular!" or "You're now a Member!"}
+    local drag = titlebar.add{type = "empty-widget", style = "draggable_space_header"}
+    drag.style.horizontally_stretchable = true
+    drag.style.height = 24
+    drag.drag_target = window
+    titlebar.add{type = "sprite-button", name = "m45_member_welcome_close", sprite = "utility/close",
+        style = "frame_action_button", tooltip = "Close this window"}
+
+    local body = window.add{type = "frame", name = "body", direction = "vertical",
+        style = "inside_shallow_frame_with_padding"}
+    body.add{type = "label", caption = "Your activity has unlocked:"}
+    if regular then
+        body.add{type = "label", caption = "[img=utility/check_mark] Banish voting through Players"}
+        body.add{type = "label", caption = "[img=utility/check_mark] Map voting on Discord with a linked account"}
+        body.add{type = "label", caption = "[img=utility/check_mark] 4 personal toolbar presets"}
+    else
+        body.add{type = "label", caption = "[img=utility/check_mark] Standard building permissions"}
+        body.add{type = "label", caption = "[img=utility/check_mark] 2 personal toolbar presets"}
+    end
+    local note = body.add{type = "label",
+        caption = "Your level carries across maps. Activity score resets each map."}
+    note.style.top_margin = 8
+    local actions = window.add{type = "flow", direction = "horizontal"}
+    actions.add{type = "button", name = "m45_member_welcome_details",
+        caption = "[virtual-signal=signal-info] Membership & Voting"}
+    if regular then
+        actions.add{type = "button", name = "online_button", caption = "[img=utility/side_menu_players_icon] Players"}
+    end
+    PERMS_ResizeWelcome(player)
 end

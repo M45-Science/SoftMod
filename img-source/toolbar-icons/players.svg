@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+<rect x="1.5" y="1.5" width="61" height="61" rx="5" fill="#30363e" stroke="#b59bde" stroke-width="3"/>
+<path d="M7 5h50" stroke="#fff" stroke-opacity=".14" stroke-width="1"/>
+<rect x="6" y="46" width="52" height="12" rx="2" fill="#1d2228"/>
+<g fill="#b59bde"><circle cx="17" cy="20" r="5"/><circle cx="47" cy="20" r="5"/>
+<path d="M8 38v-5a9 9 0 0 1 18 0v5Zm30 0v-5a9 9 0 0 1 18 0v5Z"/></g>
+<circle cx="32" cy="17" r="6" fill="#f0eee5" stroke="#30363e" stroke-width="2"/>
+<path d="M20 41v-6a12 12 0 0 1 24 0v6Z" fill="#f0eee5" stroke="#30363e" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="32" y="55" text-anchor="middle" font-family="DejaVu Sans" font-weight="bold" font-size="8" fill="#f0eee5">PLAYERS</text>
+</svg>
