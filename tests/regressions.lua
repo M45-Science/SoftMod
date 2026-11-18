@@ -1241,5 +1241,55 @@ test("players cannot submit system ChatWire commands or forge preset replies", f
     assert(not e.response)
 end)
 
+test("queued cleanup skips removed objects and protects neighboring buildings", function()
+    local e = environment()
+    local dispatch
+    e.defines.events = enums()
+    e.script = {on_nth_tick = noop, on_event = function(_, callback) dispatch = callback end}
+    e.load("event")
+    local deleted, message = {}, nil
+    local force = {valid = true, name = "team", is_chunk_charted = function() return false end}
+    local surface = {valid = true, name = "nauvis"}
+    surface.get_chunks = function()
+        local chunks = {{x = 0, y = 0}, {x = 10, y = 0}}
+        local i = 0
+        return function() i = i + 1; return chunks[i] end
+    end
+    surface.count_entities_filtered = function(filter)
+        assert(filter.limit == 1 and filter.force[1] == "player" and filter.force[2] == "team")
+        -- A building in the southeast neighboring chunk.
+        local area = filter.area
+        return area.left_top.x <= 40 and area.left_top.y <= 40
+            and area.right_bottom.x > 40 and area.right_bottom.y > 40 and 1 or 0
+    end
+    surface.delete_chunk = function(chunk) deleted[#deleted + 1] = chunk.x end
+    e.UTIL_MsgAll = function(text) message = text end
+    local queue = {
+        {delay = 0, surface = {valid = false}, force = force},
+        {delay = 0, surface = surface, force = {valid = false}},
+        {delay = 0, surface = surface, force = force, victim = {valid = false}},
+    }
+    e.storage.SM_Store.purge_tasks = queue
+    for i = 1, 3 do dispatch{name = e.defines.events.on_tick} end
+    assert(#queue == 0 and #deleted == 1 and deleted[1] == 10)
+    assert(message:match("^System deleted 1 "))
+end)
+
+test("one-life spectators can click other controls without a death notice", function()
+    local e = environment()
+    local player = e.player("Spectator")
+    player.character = nil
+    e.storage.SM_Store.oneLifeMode = true
+    e.load("onelife")
+    local message
+    e.UTIL_SmartPrint = function(_, text) message = text end
+    local event = {player_index = player.index, element = {valid = true, name = "m45_button"}}
+    e.ONELIFE_Clicks(event)
+    assert(message == nil)
+    event.element.name = "spec_button"
+    e.ONELIFE_Clicks(event)
+    assert(message == "You are already dead!")
+end)
+
 print(string.format("%d passed; %d failed", passed, failed))
 if failed > 0 then os.exit(1) end

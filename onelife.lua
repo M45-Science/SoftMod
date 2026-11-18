@@ -76,7 +76,7 @@ function ONELIFE_Clicks(event)
         return
     end
 
-    if not event or not event.player_index then
+    if not (event and event.player_index and event.element and event.element.valid and event.element.name == "spec_button") then
         return
     end
     local player = game.players[event.player_index]
@@ -96,25 +96,23 @@ function ONELIFE_Clicks(event)
         UTIL_SmartPrint(player, "You are already dead!")
         return
     end
-    if event.element and event.element.valid and event.element.name == "spec_button" then
-        if not (storage and storage.PData and storage.PData[player.index]) then
+    if not (storage and storage.PData and storage.PData[player.index]) then
+        return
+    end
+    -- Otherwise confirm
+    if storage.PData[player.index].permDeath then
+        if storage.PData[player.index].permDeath >= 2 then
+            storage.PData[player.index].permDeath = 0
+            player.character.die("player")
+            ONELIFE_Main(event)
             return
+        elseif storage.PData[player.index].permDeath < 2 then
+            UTIL_SmartPrintColor(player,
+                "[color=red](NO UNDO, PERM-DEATH) -- click " .. 2 - storage.PData[player.index].permDeath ..
+                " more times to confirm.[/color]")
         end
-        -- Otherwise confirm
-        if storage.PData[player.index].permDeath then
-            if storage.PData[player.index].permDeath >= 2 then
-                storage.PData[player.index].permDeath = 0
-                player.character.die("player")
-                ONELIFE_Main(event)
-                return
-            elseif storage.PData[player.index].permDeath < 2 then
-                UTIL_SmartPrintColor(player,
-                    "[color=red](NO UNDO, PERM-DEATH) -- click " .. 2 - storage.PData[player.index].permDeath ..
-                    " more times to confirm.[/color]")
-            end
 
-            storage.PData[player.index].permDeath = storage.PData[player.index].permDeath + 1
-        end
+        storage.PData[player.index].permDeath = storage.PData[player.index].permDeath + 1
     end
 end
 

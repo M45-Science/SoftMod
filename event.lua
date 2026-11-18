@@ -39,11 +39,20 @@ local function ChunkPurge()
     local task = queue[1]
     if game.tick < task.delay then return end
 
+    -- A mod can remove the surface or merge the force during the delay.
+    if not (task.surface.valid and task.force.valid) then
+        table.remove(queue, 1)
+        return
+    end
+    local protected_forces = "player"
+    if task.force.name ~= "player" then
+        protected_forces = {"player", task.force.name}
+    end
     local deleted = 0
 
     for chunk in task.surface.get_chunks() do
         if not task.force.is_chunk_charted(task.surface, chunk) then
-            -- 64x64 area = 1 chunk buffer in all directions
+            -- Include the chunk and a one-chunk buffer on every side.
             local area = {
                 left_top = { x = (chunk.x - 1) * 32, y = (chunk.y - 1) * 32 },
                 right_bottom = { x = (chunk.x + 2) * 32, y = (chunk.y + 2) * 32 }
@@ -51,7 +60,8 @@ local function ChunkPurge()
 
             local count = task.surface.count_entities_filtered{
                 area = area,
-                force = "player"
+                force = protected_forces,
+                limit = 1
             }
 
             if count == 0 then
@@ -61,7 +71,7 @@ local function ChunkPurge()
         end
     end
 
-    if task.victim and task.victim.name then
+    if task.victim and task.victim.valid then
         UTIL_MsgAll(task.victim.name .. " deleted " .. deleted .. " unused chunks from surface '" .. task.surface.name .. "'.")
     else
         UTIL_MsgAll("System deleted " .. deleted .. " unused chunks from surface '" .. task.surface.name .. "'.")
