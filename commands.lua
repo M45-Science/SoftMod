@@ -32,6 +32,39 @@ function CMD_RejectConsole(message)
     UTIL_SmartPrint(nil, message or "This command can only be used in-game.")
 end
 
+-- Resolve a named surface, coordinate pair, or Factorio GPS tag.
+local function mapLocation(target, default_surface)
+    target = target:match("^%s*(.-)%s*$")
+    local surface = game.surfaces[target]
+    if surface then return surface, { x = 0, y = 0 } end
+
+    local gps = target:match("^%[gps=(.+)%]$")
+    local coordinates, surface_name
+    if gps then coordinates, surface_name = gps:match("^([^,]+,[^,]+),(.+)$") end
+    local x, y = (coordinates or gps or target):match("^([-%d%.]+),([-%d%.]+)$")
+    x, y = tonumber(x), tonumber(y)
+    if not x or not y or math.abs(x) == math.huge or math.abs(y) == math.huge then
+        return nil, nil, "Invalid location: " .. target
+    end
+    if surface_name then
+        surface = game.surfaces[surface_name]
+        if not surface then return nil, nil, "Invalid surface: " .. surface_name end
+    end
+    return surface or default_surface, { x = x, y = y }
+end
+
+local function teleportToLocation(player, target)
+    local surface, position, err = mapLocation(target, player.surface)
+    if not surface then return nil, nil, err end
+
+    local destination = surface.find_non_colliding_position("character", position, 1024, 1, false) or position
+    UTIL_ExitRemoteView(player)
+    if not player.teleport(destination, surface) then
+        return nil, nil, "Unable to teleport to the requested location."
+    end
+    return surface, destination
+end
+
 local function cleanSurface(psurface, pforce, delayTick, victim)
     -- Phase 1: Unchart all
     pforce.clear_chart(psurface)
@@ -405,27 +438,11 @@ function CMD_RegisterCommands()
                 end
 
                 if target ~= "" then
-                    if game.surfaces[target] then
-                        psurface = game.surfaces[target]
-                        center = { x = 0, y = 0 }
-                    else
-                        local gps = target:match("^%[gps=(.+)%]$")
-                        local coordinates, surface_name
-                        if gps then coordinates, surface_name = gps:match("^([^,]+,[^,]+),(.+)$") end
-                        local x, y = (coordinates or gps or target):match("^([-%d%.]+),([-%d%.]+)$")
-                        x, y = tonumber(x), tonumber(y)
-                        if not x or not y or math.abs(x) == math.huge or math.abs(y) == math.huge then
-                            UTIL_SmartPrint(victim, "Invalid reveal location: " .. target)
-                            return
-                        end
-                        if surface_name then
-                            psurface = game.surfaces[surface_name]
-                            if not psurface then
-                                UTIL_SmartPrint(victim, "Invalid surface: " .. surface_name)
-                                return
-                            end
-                        end
-                        center = { x = x, y = y }
+                    local err
+                    psurface, center, err = mapLocation(target, psurface)
+                    if not psurface then
+                        UTIL_SmartPrint(victim, err)
+                        return
                     end
                 end
 
@@ -714,60 +731,13 @@ function CMD_RegisterCommands()
                     return
                 end
 
-                local str = param.parameter
-                local surface = player.surface -- default surface
-                local xpos, ypos
-
-                -- Try [gps=x,y] or [gps=x,y,surface]
-                local gx, gy, gsurf = str:match("%[gps=([-%d%.]+),([-%d%.]+),([%w_]+)%]")
-                if not gx then
-                    gx, gy = str:match("%[gps=([-%d%.]+),([-%d%.]+)%]")
+                local surface, position, err = teleportToLocation(player, param.parameter)
+                if not surface then
+                    UTIL_SmartPrint(player, err)
+                    return
                 end
-                if gx and gy then
-                    xpos = tonumber(gx)
-                    ypos = tonumber(gy)
-                    if gsurf and game.surfaces[gsurf] then
-                        surface = game.surfaces[gsurf]
-                    end
-                else
-                    -- Try x,y format
-                    local x, y = str:match("([-%d%.]+),([-%d%.]+)")
-                    if x and y then
-                        xpos = tonumber(x)
-                        ypos = tonumber(y)
-                    else
-                        -- Try surface name
-                        local named_surface = game.surfaces[str]
-                        if named_surface then
-                            surface = named_surface
-                            xpos = 0
-                            ypos = 0
-                        end
-                    end
-                end
-
-                if xpos and ypos then
-                    local position = { x = xpos, y = ypos }
-                    local newpos = surface.find_non_colliding_position("character", position, 1024, 1, false)
-                    UTIL_ExitRemoteView(player)
-                    if newpos then
-                        player.teleport(newpos, surface)
-                        UTIL_SmartPrint(player,
-                            "You teleport to (" .. xpos .. "," .. ypos .. ") on surface '" .. surface.name .. "'.")
-                    else
-                        player.teleport(position, surface)
-                        UTIL_SmartPrint(player, "Area appears to be full.")
-                        UTIL_ConsolePrint("[ERROR] tp: unable to find non_colliding_position.")
-                    end
-                elseif surface then
-                    local position = { x = 0, y = 0 }
-                    local newpos = surface.find_non_colliding_position("character", position, 1024, 1, false)
-                    UTIL_ExitRemoteView(player)
-                    player.teleport(newpos or position, surface)
-                    UTIL_SmartPrint(player, "You teleport to spawn of surface '" .. surface.name .. "'.")
-                else
-                    UTIL_SmartPrint(player, "Invalid location or surface.")
-                end
+                UTIL_SmartPrint(player,
+                    "You teleport to (" .. position.x .. "," .. position.y .. ") on surface '" .. surface.name .. "'.")
             end)
 
         -- Teleport player to me
@@ -829,9 +799,7 @@ function CMD_RegisterCommands()
                     return
                 end
 
-                local args = UTIL_SplitStr(param.parameter, " ")
-                local victim_name = args[1]
-                local target = args[2]
+                local victim_name, target = param.parameter:match("^%s*(%S+)%s+(.+)$")
 
                 if not victim_name or not target then
                     UTIL_SmartPrint(player, "Usage: /transport <player> <x,y>, <surface>, or [gps=x,y,surface]")
@@ -847,61 +815,14 @@ function CMD_RegisterCommands()
                     return
                 end
 
-                local surface = victim.surface
-                local xpos, ypos
-
-                -- Try GPS tag [gps=x,y,surface]
-                local gx, gy, gsurf = target:match("%[gps=([-%d%.]+),([-%d%.]+),([%w_]+)%]")
-                if not gx then
-                    gx, gy = target:match("%[gps=([-%d%.]+),([-%d%.]+)%]")
+                local surface, position, err = teleportToLocation(victim, target)
+                if not surface then
+                    UTIL_SmartPrint(player, err)
+                    return
                 end
-                if gx and gy then
-                    xpos = tonumber(gx)
-                    ypos = tonumber(gy)
-                    if gsurf and game.surfaces[gsurf] then
-                        surface = game.surfaces[gsurf]
-                    end
-                else
-                    -- Try x,y format
-                    local x, y = target:match("([-%d%.]+),([-%d%.]+)")
-                    if x and y then
-                        xpos = tonumber(x)
-                        ypos = tonumber(y)
-                    else
-                        -- Try surface name
-                        local named_surface = game.surfaces[target]
-                        if named_surface and named_surface.valid then
-                            surface = named_surface
-                            xpos = 0
-                            ypos = 0
-                        end
-                    end
-                end
-
-                if xpos and ypos then
-                    local position = { x = xpos, y = ypos }
-                    local newpos = surface.find_non_colliding_position("character", position, 1024, 1, false)
-                    if not newpos then
-                        newpos = position
-                        UTIL_ConsolePrint("[ERROR] transport: unable to find non_colliding_position.")
-                    end
-                    UTIL_ExitRemoteView(victim)
-                    victim.teleport(newpos, surface)
-                    UTIL_SmartPrint(player,
-                        "You transported " ..
-                        victim.name .. " to (" .. xpos .. "," .. ypos .. ") on '" .. surface.name .. "'.")
-                    UTIL_SmartPrint(victim, actor_name .. " has transported you.")
-                elseif surface then
-                    local position = { x = 0, y = 0 }
-                    local newpos = surface.find_non_colliding_position("character", position, 1024, 1, false)
-                    UTIL_ExitRemoteView(victim)
-                    victim.teleport(newpos or position, surface)
-                    UTIL_SmartPrint(player,
-                        "You transported " .. victim.name .. " to the spawn of '" .. surface.name .. "'.")
-                    UTIL_SmartPrint(victim, actor_name .. " has transported you.")
-                else
-                    UTIL_SmartPrint(player, "Transport target location invalid.")
-                end
+                UTIL_SmartPrint(player, "You transported " .. victim.name ..
+                    " to (" .. position.x .. "," .. position.y .. ") on '" .. surface.name .. "'.")
+                UTIL_SmartPrint(victim, actor_name .. " has transported you.")
             end)
 
         -- List surfaces

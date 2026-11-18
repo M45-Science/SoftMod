@@ -544,6 +544,44 @@ test("reveal keeps an omitted size and resolves the explicit GPS surface", funct
     assert(not charted, "invalid coordinates should not chart an area")
 end)
 
+test("teleport commands resolve explicit surfaces and reject invalid destinations", function()
+    local e = environment()
+    local player = e.player("Moderator", true)
+    local traveler = e.player("Traveler")
+    local surface = {name = "space-platform 1", valid = true,
+        find_non_colliding_position = function(_, position) return position end}
+    e.game.surfaces[3] = surface
+    for _, case in ipairs({
+        {name = "tp", victim = player, prefix = "", caller = player.index},
+        {name = "transport", victim = traveler, prefix = "Traveler "},
+    }) do
+        local function run(destination)
+            e.registered[case.name]{name = case.name, player_index = case.caller,
+                parameter = case.prefix .. destination}
+        end
+        local arrivals, last_position = 0, nil
+        case.victim.teleport = function(position, target)
+            arrivals = arrivals + 1
+            last_position = position
+            assert(target == surface, "teleport used the wrong surface")
+            return true
+        end
+        run("not-a-surface")
+        run("[gps=1,2,removed]")
+        run(".,2")
+        assert(arrivals == 0)
+        run("[gps=10,-20,space-platform 1]")
+        assert(arrivals == 1 and last_position.x == 10 and last_position.y == -20)
+        run("space-platform 1")
+        assert(arrivals == 2 and last_position.x == 0 and last_position.y == 0)
+        local messages = {}
+        e.UTIL_SmartPrint = function(_, message) messages[#messages + 1] = message end
+        case.victim.teleport = function() return false end
+        run("space-platform 1")
+        assert(#messages == 1 and messages[1]:lower():find("unable", 1, true))
+    end
+end)
+
 test("failed teleport stays queued and succeeds on a later retry", function()
     local e = banish_env()
     local p = e.player("target")
