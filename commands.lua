@@ -378,7 +378,7 @@ function CMD_RegisterCommands()
 
         -- Reveal map
         CMD_AddCommand("reveal",
-            "Moderators only: <size> [x,y]|[gps=x,y]|[gps=x,y,surface] -- Reveals map from a given position or the center of map. Size is in tiles. Default size 1024. Min 128, Max 8192.",
+            "Moderators only: /reveal [size] [location]. Use x,y, a GPS tag, or a surface name. Size defaults to 1024 tiles (128 to 8192).",
             function(param)
                 if CMD_ModsOnly(param) then
                     return
@@ -396,41 +396,36 @@ function CMD_RegisterCommands()
                     center = victim.position
                 end
 
-                if param.parameter then
-                    local str = param.parameter
+                local target = (param.parameter or ""):match("^%s*(.-)%s*$")
+                local first, rest = target:match("^(%S+)%s*(.*)$")
+                local requested_size = tonumber(first)
+                if requested_size then
+                    size = math.max(128, math.min(8192, requested_size))
+                    target = rest
+                end
 
-                    -- Attempt to extract gps format
-                    local gx, gy, gsurf = str:match("%[gps=([-%d%.]+),([-%d%.]+),([%w_]+)%]")
-                    if not gx then gx, gy = str:match("%[gps=([-%d%.]+),([-%d%.]+)%]") end
-
-                    local x, y = str:match("([-%d%.]+),([-%d%.]+)")
-                    local surfname = str:match("^%s*([%w_]+)%s*$")
-
-                    local tokens = {}
-                    for token in str:gmatch("[^%s,]+") do
-                        table.insert(tokens, token)
-                    end
-
-                    -- First numeric token = size
-                    local s = tonumber(tokens[1])
-                    if s then
-                        size = math.max(128, math.min(8192, s))
-                        table.remove(tokens, 1)
-                    end
-
-                    -- Handle GPS
-                    if gx and gy then
-                        center = { x = tonumber(gx), y = tonumber(gy) }
-                        if gsurf and game.surfaces[gsurf] then
-                            psurface = game.surfaces[gsurf]
-                        end
-                        -- Handle x,y
-                    elseif x and y then
-                        center = { x = tonumber(x), y = tonumber(y) }
-                        -- Handle surface name if valid
-                    elseif surfname and game.surfaces[surfname] then
-                        psurface = game.surfaces[surfname]
+                if target ~= "" then
+                    if game.surfaces[target] then
+                        psurface = game.surfaces[target]
                         center = { x = 0, y = 0 }
+                    else
+                        local gps = target:match("^%[gps=(.+)%]$")
+                        local coordinates, surface_name
+                        if gps then coordinates, surface_name = gps:match("^([^,]+,[^,]+),(.+)$") end
+                        local x, y = (coordinates or gps or target):match("^([-%d%.]+),([-%d%.]+)$")
+                        x, y = tonumber(x), tonumber(y)
+                        if not x or not y or math.abs(x) == math.huge or math.abs(y) == math.huge then
+                            UTIL_SmartPrint(victim, "Invalid reveal location: " .. target)
+                            return
+                        end
+                        if surface_name then
+                            psurface = game.surfaces[surface_name]
+                            if not psurface then
+                                UTIL_SmartPrint(victim, "Invalid surface: " .. surface_name)
+                                return
+                            end
+                        end
+                        center = { x = x, y = y }
                     end
                 end
 

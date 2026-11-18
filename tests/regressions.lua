@@ -526,6 +526,24 @@ test("reveal supplies valid bounds from console and from a player", function()
     assert(e.chart_area.left_top.x == -54 and e.chart_area.right_bottom.y == 84)
 end)
 
+test("reveal keeps an omitted size and resolves the explicit GPS surface", function()
+    local e = environment()
+    local surface = {name = "space-platform 1"}
+    e.game.surfaces[3] = surface
+    local charted, bounds
+    e.game.forces.player.chart = function(s, area) charted, bounds = s, area end
+    e.registered.reveal{parameter = "750,-20"}
+    assert(bounds.left_top.x == 750 - 512 and bounds.right_bottom.y == -20 + 512,
+        "the x coordinate became the reveal size")
+    e.registered.reveal{parameter = "128 [gps=12,-20,space-platform 1]"}
+    assert(charted == surface and bounds.left_top.x == -52 and bounds.right_bottom.y == 44)
+    charted = nil
+    e.registered.reveal{parameter = "[gps=12,-20,removed-surface]"}
+    assert(not charted, "charted the default surface for an unknown GPS destination")
+    e.registered.reveal{parameter = ".,20"}
+    assert(not charted, "invalid coordinates should not chart an area")
+end)
+
 test("failed teleport stays queued and succeeds on a later retry", function()
     local e = banish_env()
     local p = e.player("target")
