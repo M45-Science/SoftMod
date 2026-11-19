@@ -36,7 +36,8 @@ function LOGO_DrawLogo(force)
         end
 
         local newPos = UTIL_GetDefaultSpawn()
-        local cpos = msurf.find_non_colliding_position("crash-site-spaceship", newPos, 4096, 1, true)
+        local footprint = prototypes.entity["crash-site-spaceship"] and "crash-site-spaceship" or "character"
+        local cpos = msurf.find_non_colliding_position(footprint, newPos, 4096, 1, true)
         if not cpos then
             cpos = { x = 0, y = 0 }
         end

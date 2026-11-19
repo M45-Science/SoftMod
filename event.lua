@@ -3,6 +3,8 @@
 -- GitHub: https://github.com/M45-Science/SoftMod
 -- License: MPL 2.0
 
+local krastorio = require("krastorio")
+
 local function insWeapons(player, ammo_amount)
     if player.force.technologies["military"].researched then
         player.insert {
@@ -217,6 +219,7 @@ local function e_playerCreated(event)
 
     EVENT_PlayerInit(player)
     storage.PData[player.index].qb_first_join = true
+    krastorio.on_player_created(player)
     UTIL_SendToDefaultSpawn(player)
 
     -- Cutoff-point, just becomes annoying.
